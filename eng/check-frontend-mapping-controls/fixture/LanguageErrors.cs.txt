@@ -1,0 +1,23 @@
+// A FIXTURE of eng/check-frontend-mapping.py's controls: LanguageErrors' shape.
+namespace Fixture;
+
+internal static class LanguageErrors
+{
+    internal static RefusalClass Classify(SliceSourceDiagnosticCode code) => code switch
+    {
+        SliceSourceDiagnosticCode.UnexpectedToken => RefusalClass.EarlyError,
+        SliceSourceDiagnosticCode.AwaitOutsideItsFunction => RefusalClass.EarlyError,
+        SliceSourceDiagnosticCode.ConstructOutsideManifest => RefusalClass.OutsideManifest,
+        SliceSourceDiagnosticCode.BigIntWiderThanTheFormat => RefusalClass.OutsideManifest,
+        _ => Unclassified,
+    };
+
+    internal static IReadOnlySet<SliceSourceDiagnosticCode> Classified { get; } =
+        new HashSet<SliceSourceDiagnosticCode>
+        {
+            SliceSourceDiagnosticCode.UnexpectedToken,
+            SliceSourceDiagnosticCode.ConstructOutsideManifest,
+            SliceSourceDiagnosticCode.BigIntWiderThanTheFormat,
+            SliceSourceDiagnosticCode.AwaitOutsideItsFunction,
+        };
+}

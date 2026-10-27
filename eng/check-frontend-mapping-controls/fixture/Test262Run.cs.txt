@@ -1,0 +1,18 @@
+// A FIXTURE of eng/check-frontend-mapping.py's controls: Test262Run's grading of a refusal.
+namespace Fixture;
+
+internal static class Test262Run
+{
+    private static Test262Outcome Refused(string relativePath, string variant, IReadOnlyList<SliceSourceDiagnostic> diagnostics)
+    {
+        var first = diagnostics.Count == 0 ? null : diagnostics[0];
+
+        if (first is not null && first.Code is SliceSourceDiagnosticCode.ConstructOutsideManifest
+                or SliceSourceDiagnosticCode.BigIntWiderThanTheFormat)
+        {
+            return new Test262Outcome(relativePath, variant, Test262Verdict.Unsupported, first.ToString());
+        }
+
+        return new Test262Outcome(relativePath, variant, Test262Verdict.Passed, "refused at parse");
+    }
+}

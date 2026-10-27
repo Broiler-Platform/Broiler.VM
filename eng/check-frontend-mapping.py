@@ -51,14 +51,56 @@
 # Part E's population is the three files above, and it does not need this mode: the digest is the
 # binding, and the header names the commit for a reader. The inventory is read only here.
 #
+# REVISION 19 AND AFTER (added 2026-10-27, at SJL-13's tools commit; part E of
+# docs/evidence/sjl-13-001/decision-rule-area.md, JSD-0083 decisions D12 and D27). Checks E10 to E14
+# are INERT while registry.txt states a revision below 19: below it the checker reads exactly what it
+# read before and refuses exactly what it refused. From revision 19 it also reads the stage table's copy
+# the mapping's header names, SliceSourceDiagnosticCode (SliceSourceDiagnostics.cs), the conformance
+# root's LanguageErrors.cs and Test262Run.cs, and the retained source corpus's manifest, and refuses
+# when:
+#
+#   E10 a mapping row is marked split: no split relation remains from revision 19 (decision D12);
+#   E11 the header does not name the stage table (stage-table-path, stage-table-commit,
+#       stage-table-sha256, stage-table-copy), or its copy's SHA-256 is not the one it names, or, with
+#       --broiler-js, the copy differs from the stage table at the commit the header names;
+#   E12 registry.txt names no owning decision (`# owning-decision: JSD-nnnn`), or its
+#       published-at-milestone list does not name the revision it states;
+#   E13 a code the registry adds at revision 19 or later (an embedder-seam row whose `since` is 19 or
+#       more) has no member of that name and number in SliceSourceDiagnosticCode; or its stage is not one
+#       of the half's four, or its reachability is not `source`, or its case is not a `refused` entry of
+#       the retained source corpus answered with its name (rule N7 admits no new defensive row); or the
+#       mapping has no `registry` row for it whose `notes` names the code it left, as
+#       `left <code> <Name>` - a code of an earlier revision, under its registry name;
+#   E14 such a code has no class: it is missing from LanguageErrors.Classified, or Classify gives it no
+#       arm; or it is not graded as decision D12 grades it: a code whose registry row's `notes` says
+#       `a language rule` left 2104, is classed EarlyError, and is not among the codes Test262Run's
+#       Refused grades unsupported; every other new code has the class of the code it left and is graded
+#       unsupported exactly when that code is.
+#
+# and, from revision 19, E7's scope takes in every code the registry adds at revision 19 or later.
+#
+# The C# files are read as text, by the anchors their declarations have today: the enumeration's
+# `Name = number,` lines; LanguageErrors' `Classify(...) => code switch` arms and its `Classified` set;
+# and, in Test262Run, every SliceSourceDiagnosticCode named between `static Test262Outcome Refused(`
+# and the first `Test262Verdict.Unsupported` after it, which are the codes graded unsupported. An
+# anchor that is gone is an input that cannot be read (exit 2), never a pass.
+#
+# --controls <directory> runs this checker's own controls: the directory's controls.json names a
+# fixture (a small registry, mapping, catalogue and stage table copy, and the four files above, at
+# revision 19), which must pass, and edits of it, each of which must be refused by the checks it names;
+# and edits of this checkout's own mapping and registry. See that directory's README.md.
+#
 # Exit status: 0 when nothing is refused, 1 when anything is, 2 when an input cannot be read.
 
 import argparse
 import hashlib
+import json
 import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 
 TOOL = "check-frontend-mapping"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -86,6 +128,19 @@ CODE = re.compile(r"^\d{4}$")
 REACHED_RANGES = ((2001, 2210), (2401, 2406))
 NOT_REQUIRED = {"2104"}
 
+# Revision 19's checks (E10 to E14), inert below it.
+REVISION_19 = 19
+STAGE_TABLE_KEYS = ("stage-table-path", "stage-table-commit", "stage-table-sha256", "stage-table-copy")
+DEFAULT_ENUM = "src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceDiagnostics.cs"
+DEFAULT_LANGUAGE_ERRORS = "src/compositions/Broiler.VM.Composition.JavaScript.Conformance/LanguageErrors.cs"
+DEFAULT_TEST262_RUN = "src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Run.cs"
+DEFAULT_SOURCE_MANIFEST = "src/tests/corpus/js-1/source/source.manifest"
+SEAM_STAGES = ("tokenizer", "parser", "semantics", "lowering")
+LEFT = re.compile(r"\bleft (?P<code>\d{4}) (?P<name>[A-Za-z]+)\b")
+LANGUAGE_RULE = "a language rule"
+CONSTRUCT_OUTSIDE_MANIFEST = "2104"
+EARLY_ERROR = "EarlyError"
+
 
 class Unreadable(Exception):
     pass
@@ -111,7 +166,7 @@ def read_mapping(path):
             continue
         if line.startswith("#"):
             match = re.match(r"^# ([a-z0-9-]+): (.+)$", line)
-            if match and match.group(1) in HEADER_KEYS:
+            if match and (match.group(1) in HEADER_KEYS or match.group(1) in STAGE_TABLE_KEYS):
                 if match.group(1) in header:
                     raise Unreadable(f"{path}:{number}: the header names {match.group(1)} twice")
                 header[match.group(1)] = match.group(2).strip()
@@ -159,22 +214,45 @@ def read_catalogue(path):
 
 
 def read_registry(path):
+    revision, codes, _ = read_registry_header(path)
+    return revision, codes
+
+
+def read_registry_header(path):
+    # The registry's rows, and what its header states: its owning decision and the text of its
+    # published-at-milestone list, which E12 reads from revision 19.
     _, text = read_text(path, "registry")
     revision, codes = None, {}
+    header = {"owning-decision": None, "published-at-milestone": ""}
+    in_published = False
     for line in text.split("\n"):
         match = re.match(r"^# registry-revision: (\d+)\s*$", line)
         if match:
             revision = match.group(1)
+            in_published = False
             continue
+        key = re.match(r"^# ([a-z-]+): (.*)$", line)
+        if key:
+            in_published = key.group(1) == "published-at-milestone"
+            if in_published:
+                header["published-at-milestone"] = key.group(2).strip()
+            elif key.group(1) == "owning-decision":
+                header["owning-decision"] = key.group(2).strip()
+            continue
+        if in_published and re.match(r"^#\s{2,}\S", line):
+            header["published-at-milestone"] += " " + line[1:].strip()
+            continue
+        in_published = False
         if not line or line.startswith("#"):
             continue
         cells = line.split("|")
         if len(cells) != 8 or not CODE.match(cells[0]):
             raise Unreadable(f"{path}: a row that is not code|name|half|reason|stage|reachability|case|since: {line}")
-        codes[cells[0]] = {"name": cells[1], "half": cells[2]}
+        codes[cells[0]] = {"name": cells[1], "half": cells[2], "stage": cells[4], "reachability": cells[5],
+                           "case": cells[6], "since": cells[7]}
     if revision is None:
         raise Unreadable(f"{path}: no registry-revision line")
-    return revision, codes
+    return revision, codes, header
 
 
 def git_show(checkout, commit, path):
@@ -223,11 +301,17 @@ def split_codes(cell):
     return cell.split(";")
 
 
-def check(mapping_path, catalogue_override, registry_path, broiler_js):
+def check(mapping_path, catalogue_override, registry_path, broiler_js, root=ROOT, sources=None):
+    # `root` is the directory the header's paths are read under; `sources` names the four files the
+    # revision-19 checks read ({"enum", "language-errors", "test262-run", "source-manifest"}), each
+    # under `root` by default. Neither is read below revision 19.
+    sources = dict(sources or {})
     header, mapping = read_mapping(mapping_path)
-    copy_path = catalogue_override or os.path.join(ROOT, header["catalogue-copy"])
+    copy_path = catalogue_override or os.path.join(root, header["catalogue-copy"])
     digest, catalogue = read_catalogue(copy_path)
-    revision, registry = read_registry(registry_path or os.path.join(ROOT, header["registry"]))
+    revision, registry, registry_header = read_registry_header(
+        registry_path or os.path.join(root, header["registry"]))
+    revision_19 = int(revision) >= REVISION_19
 
     problems = []
 
@@ -481,10 +565,17 @@ def check(mapping_path, catalogue_override, registry_path, broiler_js):
             refuse("E6", f"registry {code}'s row says its meaning covers {', '.join(stale)}, which no "
                          f"row reaches within its meaning")
 
-    # E7 - every registry code in the ranges is reached within its meaning, or explained.
+    # The codes the registry adds at revision 19 or later; empty below revision 19.
+    new_codes = sorted(code for code, row in registry.items()
+                       if revision_19 and row["half"] == "embedder-seam" and row["since"].isdigit()
+                       and int(row["since"]) >= REVISION_19)
+
+    # E7 - every registry code in the ranges is reached within its meaning, or explained; from
+    # revision 19, every code the registry adds too, wherever its number falls.
     for code in sorted(registry):
         number = int(code)
-        if code in NOT_REQUIRED or not any(low <= number <= high for low, high in REACHED_RANGES):
+        if code in NOT_REQUIRED or not (any(low <= number <= high for low, high in REACHED_RANGES)
+                                        or code in new_codes):
             continue
         if reached_within.get(code):
             continue
@@ -506,13 +597,279 @@ def check(mapping_path, catalogue_override, registry_path, broiler_js):
             refuse("E7", f"registry {code} names {explanation}, which is not an engine-only row of the "
                          f"catalogue")
 
+    if revision_19:
+        check_revision_19(header, revision, registry, registry_header, registry_rows, code_rows, new_codes,
+                          broiler_js, root, sources, refuse)
+
     return header, digest, inventory, len(code_rows), len(registry_rows), problems
+
+
+def read_enum(path):
+    # SliceSourceDiagnosticCode's members, {name: number}, from its `Name = number,` lines.
+    _, text = read_text(path, "SliceSourceDiagnosticCode declaration")
+    start = text.find("enum SliceSourceDiagnosticCode")
+    if start < 0:
+        raise Unreadable(f"{path}: no `enum SliceSourceDiagnosticCode`")
+    open_brace = text.find("{", start)
+    close_brace = text.find("\n}", open_brace)
+    if open_brace < 0 or close_brace < 0:
+        raise Unreadable(f"{path}: the enumeration's body cannot be found")
+    members = {}
+    for match in re.finditer(r"^\s*([A-Za-z]\w*)\s*=\s*(\d+)\s*,?\s*$", text[open_brace:close_brace], re.M):
+        members[match.group(1)] = match.group(2)
+    if not members:
+        raise Unreadable(f"{path}: the enumeration declares no `Name = number,` member")
+    return members
+
+
+def region(text, path, opening, closing, what):
+    start = text.find(opening)
+    if start < 0:
+        raise Unreadable(f"{path}: no `{opening}` ({what})")
+    end = text.find(closing, start + len(opening))
+    if end < 0:
+        raise Unreadable(f"{path}: `{opening}` is not closed by `{closing}` ({what})")
+    return text[start:end]
+
+
+def read_language_errors(path):
+    # LanguageErrors' classes, {name: class}, from Classify's arms, and the names Classified lists.
+    _, text = read_text(path, "LanguageErrors")
+    arms = region(text, path, "Classify(SliceSourceDiagnosticCode code) => code switch", "};", "Classify")
+    classes = {match.group(1): match.group(2) for match in re.finditer(
+        r"SliceSourceDiagnosticCode\.(\w+)\s*=>\s*RefusalClass\.(\w+)", arms)}
+    listed = region(text, path, "Classified { get; } =", "};", "Classified")
+    classified = set(re.findall(r"SliceSourceDiagnosticCode\.(\w+)", listed))
+    if not classes or not classified:
+        raise Unreadable(f"{path}: Classify gives no arm, or Classified lists no code")
+    return classes, classified
+
+
+def read_unsupported(path):
+    # The codes Test262Run's Refused grades unsupported: every SliceSourceDiagnosticCode it names
+    # before the first `Test262Verdict.Unsupported` of its body.
+    _, text = read_text(path, "Test262Run")
+    graded = region(text, path, "static Test262Outcome Refused(", "Test262Verdict.Unsupported", "Refused")
+    names = set(re.findall(r"SliceSourceDiagnosticCode\.(\w+)", graded))
+    if not names:
+        raise Unreadable(f"{path}: Refused grades no code unsupported, so its anchor no longer reads")
+    return names
+
+
+def read_source_cases(path):
+    # The retained source corpus's refused entries, {name: answer}.
+    _, text = read_text(path, "source corpus manifest")
+    cases = {}
+    for line in text.split("\n"):
+        cells = line.split("|")
+        if len(cells) == 5 and cells[0] == "refused":
+            cases[cells[1]] = cells[3]
+    if not cases:
+        raise Unreadable(f"{path}: no refused entry")
+    return cases
+
+
+def check_revision_19(header, revision, registry, registry_header, registry_rows, code_rows, new_codes,
+                      broiler_js, root, sources, refuse):
+    # E10 - no split relation remains.
+    for row in code_rows:
+        if row["relation"] == "split":
+            refuse("E10", f"line {row['line']} ({row['shared_code']}, {row['row']}): marked split at registry "
+                          f"revision {revision}; no split relation remains from revision {REVISION_19} "
+                          f"(JSD-0083 decision D12)")
+
+    # E11 - the stage table the header names, by its copy's digest.
+    missing = [key for key in STAGE_TABLE_KEYS if key not in header]
+    if missing:
+        refuse("E11", f"at registry revision {revision} the header does not name {', '.join(missing)}")
+    else:
+        copy = os.path.join(root, header["stage-table-copy"])
+        data, _ = read_text(copy, "stage table copy")
+        digest = hashlib.sha256(data).hexdigest()
+        if digest != header["stage-table-sha256"]:
+            refuse("E11", f"the stage table copy {shown(copy)} has SHA-256 {digest}, and the mapping's header "
+                          f"names {header['stage-table-sha256']}")
+        if broiler_js:
+            committed = hashlib.sha256(
+                git_show(broiler_js, header["stage-table-commit"], header["stage-table-path"])).hexdigest()
+            if committed != digest:
+                refuse("E11", f"{header['stage-table-path']} at {header['stage-table-commit']} has SHA-256 "
+                              f"{committed}, and the copy has {digest}")
+
+    # E12 - the registry states its owning decision and names its revision.
+    owner = registry_header["owning-decision"]
+    if not owner or not re.match(r"^JSD-\d{4}\b", owner):
+        refuse("E12", "registry.txt names no owning decision (`# owning-decision: JSD-nnnn`)")
+    published = registry_header["published-at-milestone"]
+    if not re.search(rf"\brevisions?\b[^;()]*?\b{revision}\b", published):
+        refuse("E12", f"registry.txt states revision {revision} and its published-at-milestone list does not "
+                      f"name it")
+
+    if not new_codes:
+        return
+
+    def source(key, default):
+        return sources.get(key) or os.path.join(root, default)
+
+    members = read_enum(source("enum", DEFAULT_ENUM))
+    classes, classified = read_language_errors(source("language-errors", DEFAULT_LANGUAGE_ERRORS))
+    unsupported = read_unsupported(source("test262-run", DEFAULT_TEST262_RUN))
+    cases = read_source_cases(source("source-manifest", DEFAULT_SOURCE_MANIFEST))
+    registry_row_of = {row["registry_code"]: row for row in registry_rows}
+
+    for code in new_codes:
+        entry = registry[code]
+        name = entry["name"]
+        where = f"registry {code} {name} (since {entry['since']})"
+
+        # E13 - the code's member, its row's stage and reachability, its case, and the code it left.
+        if members.get(name) != code:
+            refuse("E13", f"{where}: SliceSourceDiagnosticCode has no member {name} = {code}")
+        if entry["stage"] not in SEAM_STAGES:
+            refuse("E13", f"{where}: the stage {entry['stage']!r} is not one of {', '.join(SEAM_STAGES)}")
+        if entry["reachability"] != "source":
+            refuse("E13", f"{where}: the reachability is {entry['reachability']!r}, and a new code is reached "
+                          f"from a case of the retained source corpus (rule N7 lists every defensive row)")
+        elif cases.get(entry["case"]) != name:
+            refuse("E13", f"{where}: the case {entry['case']!r} is not a refused entry of the retained source "
+                          f"corpus answered with {name}")
+        mapping_row = registry_row_of.get(code)
+        left = LEFT.search(mapping_row["notes"]) if mapping_row else None
+        if mapping_row is None:
+            refuse("E13", f"{where}: the mapping has no registry row for it")
+        elif not left:
+            refuse("E13", f"{where}: the mapping's registry row (line {mapping_row['line']}) does not name the "
+                          f"code it left, as `left <code> <Name>`")
+        elif (left.group("code") not in registry or registry[left.group("code")]["name"] != left.group("name")
+              or not registry[left.group("code")]["since"].isdigit()
+              or int(registry[left.group("code")]["since"]) >= int(entry["since"])
+              or registry[left.group("code")]["half"] != "embedder-seam"):
+            refuse("E13", f"{where}: it names `left {left.group('code')} {left.group('name')}`, which is no "
+                          f"embedder-seam code of an earlier revision under that name")
+            left = None
+
+        # E14 - its class, and its grading.
+        if name not in classified or name not in classes:
+            refuse("E14", f"{where}: LanguageErrors gives it no class (Classified lists it: "
+                          f"{'yes' if name in classified else 'no'}; Classify has an arm: "
+                          f"{'yes' if name in classes else 'no'})")
+            continue
+        if left is None:
+            continue
+        left_code, left_name = left.group("code"), left.group("name")
+        graded = name in unsupported
+        if LANGUAGE_RULE in mapping_row["notes"]:
+            if left_code != CONSTRUCT_OUTSIDE_MANIFEST:
+                refuse("E14", f"{where}: named a language rule, and it left {left_code}, where decision D12's "
+                              f"three language rules left {CONSTRUCT_OUTSIDE_MANIFEST}")
+            if classes[name] != EARLY_ERROR or graded:
+                refuse("E14", f"{where}: a language rule is classed {EARLY_ERROR} and not graded unsupported "
+                              f"(decision D12); it is classed {classes[name]} and "
+                              f"{'graded' if graded else 'not graded'} unsupported")
+        else:
+            if classes[name] != classes.get(left_name):
+                refuse("E14", f"{where}: classed {classes[name]}, and the code it left, {left_code} {left_name}, "
+                              f"is classed {classes.get(left_name, 'nothing')}")
+            if graded != (left_name in unsupported):
+                refuse("E14", f"{where}: Test262Run {'grades' if graded else 'does not grade'} it unsupported, "
+                              f"and {'grades' if left_name in unsupported else 'does not grade'} the code it "
+                              f"left, {left_code} {left_name}, so (decision D12: graded as the code it left)")
+
+
+def run_controls(directory):
+    # The checker's own controls (see the directory's README.md): a fixture at revision 19 that must
+    # pass, edits of it each of which must be refused by the checks it names, and edits of this
+    # checkout's own mapping and registry. Every edit replaces a text that occurs exactly once.
+    try:
+        with open(os.path.join(directory, "controls.json"), encoding="utf-8") as handle:
+            plan = json.load(handle)
+    except (OSError, ValueError) as error:
+        print(f"{TOOL}: cannot run the controls: {error}")
+        return 2
+
+    def edited(source_directory, names, edits, target):
+        for name in names:
+            shutil.copyfile(os.path.join(source_directory, name), os.path.join(target, name))
+        for edit in edits:
+            path = os.path.join(target, edit["file"])
+            with open(path, encoding="utf-8", newline="") as handle:
+                text = handle.read()
+            if text.count(edit["old"]) != 1:
+                raise Unreadable(f"the edit of {edit['file']} names a text that occurs "
+                                 f"{text.count(edit['old'])} times, not once: {edit['old'][:60]!r}")
+            with open(path, "w", encoding="utf-8", newline="") as handle:
+                handle.write(text.replace(edit["old"], edit["new"]))
+
+    def outcome(run):
+        try:
+            return run()[-1], None
+        except Unreadable as error:
+            return None, str(error)
+
+    fixture = os.path.join(directory, plan["fixture"])
+    files = plan["files"]
+    names = sorted(set(files.values()) | set(plan["fixture-files"]))
+    failures = 0
+
+    def fixture_run(target):
+        return lambda: check(
+            os.path.join(target, files["mapping"]), None, None, None, root=target,
+            sources={key: os.path.join(target, files[key])
+                     for key in ("enum", "language-errors", "test262-run", "source-manifest")})
+
+    def real_run(target, sources):
+        return lambda: check(
+            os.path.join(target, "frontend-mapping.tsv"), None, os.path.join(target, "registry.txt"), None,
+            root=ROOT, sources=sources)
+
+    cases = [("fixture", {"id": "F0", "what": "the fixture, unedited", "edits": [], "refused": []})]
+    cases += [("fixture", control) for control in plan["controls"]]
+    cases += [("real", control) for control in plan["real"]]
+
+    for kind, control in cases:
+        with tempfile.TemporaryDirectory() as target:
+            try:
+                if kind == "fixture":
+                    edited(fixture, names, control["edits"], target)
+                    run = fixture_run(target)
+                else:
+                    shutil.copyfile(os.path.join(ROOT, DEFAULT_MAPPING), os.path.join(target, "frontend-mapping.tsv"))
+                    shutil.copyfile(os.path.join(ROOT, "src/Broiler.VM.Profile.JavaScript/docs/diagnostics/registry.txt"),
+                                    os.path.join(target, "registry.txt"))
+                    edited(target, [], control["edits"], target)
+                    sources = {key: os.path.join(target, value) for key, value in control.get("sources", {}).items()}
+                    run = real_run(target, sources)
+            except (Unreadable, OSError) as error:
+                print(f"{TOOL}: control {control['id']} cannot be made: {error}")
+                return 2
+            problems, unreadable = outcome(run)
+        expected = control["refused"]
+        if unreadable is not None:
+            seen = "could not be read: " + unreadable
+            met = False
+        else:
+            ids = sorted({problem.split(" ", 1)[0] for problem in problems})
+            seen = "passed" if not problems else "refused at " + ", ".join(ids)
+            met = (not problems) if not expected else all(check_id in ids for check_id in expected)
+        failures += 0 if met else 1
+        wanted = "to pass" if not expected else "to be refused at " + ", ".join(expected)
+        print(f"{TOOL}: control {control['id']} ({control['what']}): {seen}; "
+              f"{'as stated' if met else 'NOT AS STATED'} ({wanted})")
+        if problems and not met or (problems and os.environ.get("CHECK_FRONTEND_MAPPING_VERBOSE")):
+            for problem in problems:
+                print(f"{TOOL}:     {problem}")
+    if failures:
+        print(f"{TOOL}: CONTROLS NOT AS STATED: {failures} of {len(cases)}")
+        return 1
+    print(f"{TOOL}: controls: all {len(cases)} behave as stated")
+    return 0
 
 
 def main():
     parser = argparse.ArgumentParser(
         description="Hold the front end's diagnostic mapping to the early-error catalogue and the "
-                    "registry (bundle sjl-12-001, part E).")
+                    "registry (bundle sjl-12-001, part E; from registry revision 19, bundle sjl-13-001, "
+                    "part E).")
     parser.add_argument("--mapping", default=os.path.join(ROOT, DEFAULT_MAPPING),
                         help="the mapping (default: %(default)s)")
     parser.add_argument("--catalogue", default=None,
@@ -523,21 +880,45 @@ def main():
                         help="a Broiler.JS checkout: also compare the copy with the catalogue at the "
                              "commit the header names, and hold each row's codes to the catalogue's "
                              "VM site inventory there")
+    parser.add_argument("--root", default=ROOT,
+                        help="the directory the header's paths and the files below are read under "
+                             "(default: this checkout)")
+    parser.add_argument("--enum-source", default=None,
+                        help=f"from revision 19, SliceSourceDiagnosticCode's declaration (default: {DEFAULT_ENUM})")
+    parser.add_argument("--language-errors", default=None,
+                        help=f"from revision 19, LanguageErrors.cs (default: {DEFAULT_LANGUAGE_ERRORS})")
+    parser.add_argument("--test262-run", default=None,
+                        help=f"from revision 19, Test262Run.cs (default: {DEFAULT_TEST262_RUN})")
+    parser.add_argument("--source-manifest", default=None,
+                        help=f"from revision 19, the retained source corpus's manifest (default: "
+                             f"{DEFAULT_SOURCE_MANIFEST})")
+    parser.add_argument("--controls", default=None,
+                        help="run this checker's controls from the directory named, and nothing else")
     arguments = parser.parse_args()
 
+    if arguments.controls:
+        return run_controls(arguments.controls)
+
+    sources = {"enum": arguments.enum_source, "language-errors": arguments.language_errors,
+               "test262-run": arguments.test262_run, "source-manifest": arguments.source_manifest}
     try:
         header, digest, inventory, codes, registry_rows, problems = check(
-            arguments.mapping, arguments.catalogue, arguments.registry, arguments.broiler_js)
+            arguments.mapping, arguments.catalogue, arguments.registry, arguments.broiler_js,
+            root=arguments.root, sources=sources)
     except Unreadable as error:
         print(f"{TOOL}: cannot check: {error}")
         return 2
 
+    revision_19 = int(header["registry-revision"]) >= REVISION_19
     print(f"{TOOL}: mapping {shown(arguments.mapping)}")
     print(f"{TOOL}: catalogue {header['catalogue-repository']} {header['catalogue-path']} at "
           f"{header['catalogue-commit']}, copy SHA-256 {digest}")
     if inventory is not None:
         print(f"{TOOL}: inventory {header['catalogue-repository']} {SITES_PATH} at "
               f"{header['catalogue-commit']}, SHA-256 {inventory[0]}, {inventory[1]} sites")
+    if revision_19 and all(key in header for key in STAGE_TABLE_KEYS):
+        print(f"{TOOL}: stage table {header['catalogue-repository']} {header['stage-table-path']} at "
+              f"{header['stage-table-commit']}, copy SHA-256 {header['stage-table-sha256']}")
     print(f"{TOOL}: registry revision {header['registry-revision']}")
     for problem in problems:
         print(f"{TOOL}: refused: {problem}")
@@ -545,7 +926,9 @@ def main():
         print(f"{TOOL}: REFUSED: {len(problems)} problem(s)")
         return 1
     print(f"{TOOL}: passed: {codes} shared codes, each mapped to one registry code; "
-          f"{registry_rows} registry rows; checks E1 to E9 hold")
+          f"{registry_rows} registry rows; "
+          + ("checks E1 to E14 hold" if revision_19 else
+             f"checks E1 to E9 hold, and E10 to E14 are inert below registry revision {REVISION_19}"))
     return 0
 
 
