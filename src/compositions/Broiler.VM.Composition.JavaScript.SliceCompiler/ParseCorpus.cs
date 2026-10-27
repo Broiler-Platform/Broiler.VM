@@ -53,7 +53,11 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// <c>Requests</c> answers them, as one JSON array of strings in ASCII (every other code unit, and
 /// the NUL that separates a request's type from its specifier, written as a <c>\u</c> escape), and its
 /// sha256 and length are those of the note's UTF-8 bytes: so a comparison that reads an accepted
-/// row's hash, as one of the other sub-populations' rows is read, reads the ordered specifiers.
+/// row's hash, as one of the other sub-populations' rows is read, reads the ordered specifiers. That
+/// holds of a report this mode wrote, whose note and hash agree; a copy whose note was edited and whose
+/// hash was not is not one, and a comparison that reads only the hash does not see the edit, so a
+/// control that changes a specifier in a copy of a report changes the hash and the length with it, or
+/// the comparison reads the note or checks it against its hash.
 /// <b>B5 is asked for, never assumed</b>: a run without <c>--populations</c> runs B1 to B4 and writes
 /// the bytes it wrote before B5 existed, because <c>eng/compare-parse-corpus.py</c>, which the parse
 /// corpus parts of the earlier rules read as their commits hold it, refuses a report that holds any
@@ -118,7 +122,8 @@ internal static class ParseCorpus
     /// <c>Requests</c> parses inside <c>CompilationStack.Run</c>, as <c>JsCompiler.Compile</c> and the
     /// slice front end's <c>SliceSourceCompiler.Compile</c> do, so every parse and walk of a syntax tree
     /// this run asks for runs on the stack the compiler declares, and none on this one. What runs here is
-    /// the mode's own code: the graph walk, the front-matter reader, hashing and the report. The figure
+    /// the mode's own code: the graph walk, the front-matter reader and hashing; the report is written on
+    /// the calling thread after every worker has been joined. The figure
     /// is unchanged, and so is what the mode does. Bundle <c>sjl-12-001</c> carried the stale summary
     /// because its part B held this file unchanged between its corpus commit and its after commit.
     /// </remarks>
