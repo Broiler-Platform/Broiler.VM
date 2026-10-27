@@ -15,7 +15,8 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// <summary>
 /// The parse corpus's identity run: every input of a parse-corpus manifest, compiled in the four
 /// sub-populations bundle sjl-12-001's rule names, with each compilation's outcome, its ordered
-/// diagnostics and, for an accepted input, the SHA-256 and length of its artifact.
+/// diagnostics and, for an accepted input, the SHA-256 and length of its artifact; and, when asked,
+/// the fifth bundle sjl-13-001's rule adds, each module-goal input's ordered module requests.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -40,6 +41,23 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// manifest's header lists, in the bytecode form.
 /// B4, each input compiled by the slice front end once, under its goal (script or module), with
 /// its text unchanged: the rule's B4 names the goal and no variant, so it is keyed by the goal.
+/// </para>
+/// <para>
+/// <b>B5, added 2026-10-27 at SJL-13's tools commit</b> (JSD-0083 decision D27; bundle sjl-13-001's
+/// rule, part B, and bundle sjl-13-002's). Each module-goal input through
+/// <see cref="JsCompiler.Requests"/> under the module options, keyed by its goal and the form
+/// <c>requests</c>: the public entry point <c>Broiler.JSeal.Vm</c> and
+/// <c>Broiler.HtmlBridge.Scripting.Vm</c> call, which parses with the shared syntax library from
+/// SJL-13's step 1 and walks the shared tree from its step 2. A row writes the outcome and the ordered
+/// diagnostics as every row does. An accepted row's note holds the ordered specifiers, as
+/// <c>Requests</c> answers them, as one JSON array of strings in ASCII (every other code unit, and
+/// the NUL that separates a request's type from its specifier, written as a <c>\u</c> escape), and its
+/// sha256 and length are those of the note's UTF-8 bytes: so a comparison that reads an accepted
+/// row's hash, as one of the other sub-populations' rows is read, reads the ordered specifiers.
+/// <b>B5 is asked for, never assumed</b>: a run without <c>--populations</c> runs B1 to B4 and writes
+/// the bytes it wrote before B5 existed, because <c>eng/compare-parse-corpus.py</c>, which the parse
+/// corpus parts of the earlier rules read as their commits hold it, refuses a report that holds any
+/// sub-population beyond B1 to B4.
 /// </para>
 /// <para>
 /// <b>Three readings of the rule, fixed here before any run and repeated in every report's header.</b>
@@ -106,8 +124,14 @@ internal static class ParseCorpus
     /// </remarks>
     private const int WorkerStackBytes = 64 * 1024 * 1024;
 
-    /// <summary>The four sub-populations, in report order.</summary>
-    private static readonly string[] Populations = ["B1", "B2", "B3", "B4"];
+    /// <summary>The five sub-populations, in report order.</summary>
+    private static readonly string[] Populations = ["B1", "B2", "B3", "B4", "B5"];
+
+    /// <summary>
+    /// The sub-populations a run without <c>--populations</c> compiles: bundle sjl-12-001's four, so
+    /// that such a run writes what it wrote before B5 was added.
+    /// </summary>
+    private static readonly string[] DefaultPopulations = ["B1", "B2", "B3", "B4"];
 
     /// <summary>The flag sets of part B's B3, by name and value, as the rule fixes them.</summary>
     private static readonly (string Name, byte Value)[] RuleEvalFlags =
@@ -228,7 +252,7 @@ internal static class ParseCorpus
             Console.WriteLine("broiler-js-slice-compiler: " + failure);
             Console.WriteLine(
                 "usage: --parse-corpus <manifest> <report> [--workers <n>] [--twice-concurrent] " +
-                "[--write-bytes <directory>] [--populations B1,B2,B3,B4] [--select <keys file>] " +
+                "[--write-bytes <directory>] [--populations B1,B2,B3,B4,B5] [--select <keys file>] " +
                 "[--archive <test262 archive>] [--journal <file>]");
             return 2;
         }
@@ -322,7 +346,7 @@ internal static class ParseCorpus
         string? select = null;
         string? archive = null;
         string? journal = null;
-        var populations = new HashSet<string>(Populations, StringComparer.Ordinal);
+        var populations = new HashSet<string>(DefaultPopulations, StringComparer.Ordinal);
 
         for (var index = 0; index < args.Length; index++)
         {
@@ -364,7 +388,7 @@ internal static class ParseCorpus
 
                     if (populations.Count == 0 || !populations.IsSubsetOf(Populations))
                     {
-                        failure = "--populations takes a comma-separated subset of B1, B2, B3 and B4";
+                        failure = "--populations takes a comma-separated subset of B1, B2, B3, B4 and B5";
                         return false;
                     }
 
@@ -871,6 +895,10 @@ internal static class ParseCorpus
                         // ONE COMPILATION PER INPUT, UNDER ITS GOAL: the rule's B4 names no variant.
                         items.Add(new Item(row.Index, population, row.Goal, "slice"));
                         break;
+                    case "B5" when string.Equals(row.Goal, "module", StringComparison.Ordinal):
+                        // ONE REQUEST PER MODULE-GOAL INPUT, under the module options, keyed like B4.
+                        items.Add(new Item(row.Index, population, row.Goal, "requests"));
+                        break;
                 }
             }
         }
@@ -1060,6 +1088,8 @@ internal static class ParseCorpus
                     return Wide(
                         inputs, row, item, writeBytes, suffix, new Units(evaluated, [], string.Empty),
                         new JsCompileRequest(JsFeatureManifest.Wide, JsOutputForm.Bytecode));
+                case "B5":
+                    return Requests(row, item, writeBytes, suffix, text);
                 default:
                     return Slice(row, item, writeBytes, suffix, text);
             }
@@ -1194,6 +1224,90 @@ internal static class ParseCorpus
         return Answer(row, item, writeBytes, suffix, compiled.Artifact, compiled.Diagnostics);
     }
 
+    /// <summary>
+    /// B5: the module requests <see cref="JsCompiler.Requests"/> answers for the input's text under
+    /// the module options, the text unchanged.
+    /// </summary>
+    /// <remarks>
+    /// <b>The answer is the ordered specifiers, not an artifact</b>: an accepted row's note holds them
+    /// as <see cref="SpecifierList"/> writes them, and its sha256 and length are the note's bytes', which
+    /// <c>--write-bytes</c> writes as it writes an artifact's.
+    /// </remarks>
+    private static Result Requests(Row row, Item item, string? writeBytes, string suffix, string text)
+    {
+        var requests = JsCompiler.Requests(text, SliceParseOptions.Module);
+        var listed = Listed(requests.Diagnostics);
+
+        if (!requests.Succeeded)
+        {
+            return new Result("refused", listed, "-", "-", "-");
+        }
+
+        var specifiers = SpecifierList(requests.Specifiers);
+        var bytes = Encoding.UTF8.GetBytes(specifiers);
+
+        if (writeBytes is not null)
+        {
+            File.WriteAllBytes(
+                Path.Combine(writeBytes, $"{row.Id}.{item.Population}.{item.Variant}.{item.Form}{suffix}"),
+                bytes);
+        }
+
+        return new Result(
+            "accepted", listed, Sha256(bytes), bytes.Length.ToString(CultureInfo.InvariantCulture), specifiers);
+    }
+
+    /// <summary>
+    /// The ordered specifiers as one JSON array of strings, in ASCII: a quotation mark and a backslash
+    /// escaped, and every code unit below a space or above a tilde written as a <c>\u</c> escape of
+    /// four lowercase hexadecimal digits, so the list holds no tab, no line break and no byte that is
+    /// not ASCII, and a JSON reader gives back each string exactly.
+    /// </summary>
+    private static string SpecifierList(IReadOnlyList<string> specifiers)
+    {
+        var list = new StringBuilder("[");
+
+        for (var index = 0; index < specifiers.Count; index++)
+        {
+            if (index != 0)
+            {
+                list.Append(',');
+            }
+
+            list.Append('"');
+
+            foreach (var unit in specifiers[index])
+            {
+                if (unit is '"' or '\\')
+                {
+                    list.Append('\\').Append(unit);
+                }
+                else if (unit < ' ' || unit > '~')
+                {
+                    list.Append("\\u").Append(((int)unit).ToString("x4", CultureInfo.InvariantCulture));
+                }
+                else
+                {
+                    list.Append(unit);
+                }
+            }
+
+            list.Append('"');
+        }
+
+        return list.Append(']').ToString();
+    }
+
+    /// <summary>The ordered diagnostics as <c>code:line:column</c>, separated by semicolons, or <c>-</c>.</summary>
+    private static string Listed(IReadOnlyList<SliceSourceDiagnostic> diagnostics) =>
+        diagnostics.Count == 0
+            ? "-"
+            : string.Join(
+                ';',
+                diagnostics.Select(diagnostic => string.Create(
+                    CultureInfo.InvariantCulture,
+                    $"{(int)diagnostic.Code}:{diagnostic.Line}:{diagnostic.Column}")));
+
     /// <summary>Reports one compilation's answer, and writes its bytes when the run was asked to.</summary>
     private static Result Answer(
         Row row,
@@ -1203,13 +1317,7 @@ internal static class ParseCorpus
         byte[]? artifact,
         IReadOnlyList<SliceSourceDiagnostic> diagnostics)
     {
-        var listed = diagnostics.Count == 0
-            ? "-"
-            : string.Join(
-                ';',
-                diagnostics.Select(diagnostic => string.Create(
-                    CultureInfo.InvariantCulture,
-                    $"{(int)diagnostic.Code}:{diagnostic.Line}:{diagnostic.Column}")));
+        var listed = Listed(diagnostics);
 
         if (artifact is null)
         {
@@ -1410,6 +1518,15 @@ internal static class ParseCorpus
             "# B1 each input alone, under each variant (strict: ForceStrict, text unchanged), bytecode " +
             "and native; B2 the conformance root's composition, bytecode; B3 eval code under E0-E7, " +
             "bytecode; B4 the slice front end, once per input, under its goal, text unchanged.");
+
+        // B5'S LINE ONLY WHEN B5 RAN, so that a run of B1 to B4 writes the header it wrote before B5.
+        if (options.Populations.Contains("B5"))
+        {
+            Line(
+                "# B5 each module-goal input through JsCompiler.Requests under the module options, form " +
+                "requests: an accepted row's note is the ordered specifiers as one JSON array in ASCII, " +
+                "and its sha256 and length are the note's UTF-8 bytes'.");
+        }
         Line(
             "# reading 1: alone in B1 is nothing composed around the input; a module is compiled with " +
             "the graph the conformance root's resolution reaches from it, so its hash covers the " +
