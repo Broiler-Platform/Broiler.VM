@@ -12,10 +12,13 @@ shared library, no tools commit, no registry revision, no admission, no adapter 
 
 **Records:** [JSD-0083](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md),
 the area verdict, which records the owner's decisions D2 to D39 of 2026-10-26, with D1 a reading of the owner's words
-of 2026-10-25. Its input is [`correspondence.md`](correspondence.md), with
+of 2026-10-25, and *(added 2026-10-27)* the owner's decisions D-asi and D-t24 of 2026-10-27, which add row P16b to
+the correspondence and the answer of rows T24b and T24f where `;` or the end of input follows the literal. Its input
+is [`correspondence.md`](correspondence.md), with
 [`correspondence-runs/`](correspondence-runs/):
 - `vm/` and `js/`: each engine's answer to every probe, its reports, logs and the programs a value probe ran;
-- `probes/`: every probe's input, the plan of the runs and the script that ran them;
+- `probes/`: every probe's input, the plan of the runs and the script that ran them *(added 2026-10-27: with the
+  probes of that day, their plan `plan-p16b.tsv` and the script that ran them, `run_p16b.sh`)*;
 - `analysis/`: the derived tables the rows cite, among them the anchor lists decision D15 reads
   (`jsparser-anchors.tsv`, `binder-anchors.tsv`) and the corpus joins Broiler.JS's classifier pins by digest
   (`rows-P-baseline.tsv.gz`, `rows-P-agree.tsv.gz`).
@@ -27,14 +30,18 @@ keeps every byte under `correspondence-runs/` as hashed. **Some of its files are
   `continuation-crlf.js` and `comment-lines.js` (CR LF), `lone-cr-lines.js` (a lone CR) and `template-lines.js` (CR LF
   and LF);
 - as run, the worktree logs `vm/logs/worktree.log` and `js/logs/worktree.log`, whose carriage returns are git's
-  progress output.
+  progress output, and *(added 2026-10-27)* `vm/logs/p16b-worktree.log` and `js/logs/p16b-worktree.log`, the same for
+  the probes of 2026-10-27.
 
 **Running the probes again.** `probes/run_all.sh` is kept as it ran, so it expects the layout it ran in, which its
 hashed bytes cannot change: `SCRATCH` names a folder holding `sjl-rest/sjl13-corr/`, whose `probes/` is
 `correspondence-runs/probes/` here, whose `runs/vm/` and `runs/js/` became `correspondence-runs/vm/` and `js/`, and
 whose `runner-work/` is the scratch folder the runs call `<work>`; `VM_REPO` and `JS_REPO` name the clones and
 `VMW` and `JSW` the worktrees to add; and the .NET SDK is the one at `/root/.dotnet`, which the script names. The
-correspondence's section "The runs" lists every rewrite of the runs' bytes.
+correspondence's section "The runs" lists every rewrite of the runs' bytes. *(Added 2026-10-27.)* `probes/run_p16b.sh`
+runs the probes of 2026-10-27 the same way, from a folder `sjl-rest/sjl13-corr-p16b/` under `SCRATCH` whose `probes/`
+is a copy of `correspondence-runs/probes/`; its answers joined `vm/` and `js/` as new files, and the `hashes.txt` of
+`probes/`, `vm/` and `js/` were written again over every file, each earlier line unchanged.
 
 The rule's own inputs are [`inputs/fuzz-seeds.txt`](inputs/fuzz-seeds.txt), part G's seeds, and
 [`inputs/workloads/`](inputs/workloads/README.md), part J's workloads, each with its control.
@@ -63,7 +70,8 @@ does not read.
   2026-10-26 or by the record named to carry it.
 
 **The owner's direction.** On 2026-10-18 the owner wrote: "Please do all recommended decisions and skip waiting for
-review." JSD-0083 records decisions D2 to D39 under it. It changes no programme rule: nothing is accepted without
+review." JSD-0083 records decisions D2 to D39 under it, and *(added 2026-10-27)* decisions D-asi and D-t24 of
+2026-10-27. It changes no programme rule: nothing is accepted without
 review, rules still come before runs, and SJL-13 may not meet its gate before SJL-12, SJL-3 and SJL-7 meet theirs.
 
 **The commits the rule names.**

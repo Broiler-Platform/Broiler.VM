@@ -1,0 +1,1 @@
+var b = 2, g = 3, x; x = function () {} /b/g

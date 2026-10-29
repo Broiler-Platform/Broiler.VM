@@ -1,0 +1,10 @@
+# probe T24B5 (js): input inputs/sjl13-T/t24b5-function-expression-regex-then-semicolon.js; its rows of reports/T24-end-parse.tsv
+# command (in <corr>): dotnet <js>/docs/evidence/sjl-12-001/tools/parse-corpus/bin/Release/net10.0/parse-corpus.dll --manifest <probes>/T/parse/t24-end.manifest --test262 <work>/t262 --out <runs>/js/reports/T24-end-parse.tsv 
+# exit=0
+#% format	broiler-js-parse-corpus-report	1
+#% manifest-sha256	3a35c3675bb305c00961ee715add99b3715f5a1467af3b88b5a1b5dc24745184
+#% corpus	sjl13-T24-end
+#% end	12
+id	variant	entry	outcome	type	message
+T24B5	sloppy	P	accepted	-	-
+T24B5	sloppy	K	accepted	-	-

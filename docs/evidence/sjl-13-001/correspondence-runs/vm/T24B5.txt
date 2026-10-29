@@ -1,0 +1,10 @@
+# probe T24B5 (vm): input inputs/sjl13-T/t24b5-function-expression-regex-then-semicolon.js; its rows of reports/T24-end-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/T/parse/t24-end.manifest <runs>/vm/reports/T24-end-parse.tsv --populations B1\,B4 --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-T24-end
+#% manifest-sha256	3a35c3675bb305c00961ee715add99b3715f5a1467af3b88b5a1b5dc24745184
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+T24B5	B1	sloppy	bytecode	accepted	-	52183a83eb11e2eeca5e65d80d93117453874b6f3801b08c6edcc693d98cbcb6	316	-
+T24B5	B1	sloppy	native	accepted	-	d670628639e25cde710c3571c4d1d144c9f0b0b45ba3335f5de31ba2c4af7f18	542	-
+T24B5	B4	script	slice	refused	2104:1:26	-	-	-

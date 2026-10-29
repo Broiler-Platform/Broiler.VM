@@ -1,0 +1,31 @@
+# The P16b probes for SJL-13.1's correspondence (sub-area P, row P16b), added 2026-10-27 under the owner's decision
+# of that day, in format 1 of the parse corpus's manifest (Broiler.JS conformance/parse/README.md). Written by hand;
+# every input is under inputs/ beside this file. probe-P.manifest, the probes of 2026-10-26, is unchanged.
+#% format	broiler-parse-corpus	1
+#% corpus	sjl13-probes-P16b
+#% rows	9
+#% virtual-root	/test262/
+#% stored-root	/probes-P/
+#% strict-prologue	"\"use strict\";\n"
+#% eval-flags	E0	0	None
+#% eval-flags	E1	1	Strict
+#% eval-flags	E2	2	InFunction
+#% eval-flags	E3	3	InFunction,Strict
+#% eval-flags	E4	6	InFunction,InMethod
+#% eval-flags	E5	14	InFunction,InMethod,InDerivedConstructor
+#% eval-flags	E6	22	InFunction,InMethod,InClassFieldInitializer
+#% eval-flags	E7	38	InFunction,InMethod,InClassBody
+#% eval-family-markers	eval	arguments	super	new.target	#
+#% pin-test262	ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#% pin-test262-archive	src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz	f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040
+#% builder	hand-written (sjl13 P16b)
+id	origin	path	sha256	goal	variants	negative	eval-family	provenance
+PP11	broiler-vm	inputs/for-head-var-line-break.js	db0a2a3dc9314e790616ba19461a875af84db4b5ac1287436da656e7efa77a3a	script	strict,sloppy	parse:SyntaxError	yes	sjl13 P16b: a line break where the head's first semicolon belongs, after a var declaration (12.10.1: no semicolon is inserted that would become one of a for statement's two)
+PP12	broiler-vm	inputs/for-head-let-line-break.js	e4121768fb57377e2aef9d6248de38a4d95180b4b47f2298cce67c83cb6505c3	script	strict,sloppy	parse:SyntaxError	yes	sjl13 P16b: the same after a let declaration
+PP13	broiler-vm	inputs/for-head-const-line-break.js	4ada035d5b93a3ad324b71437c48c7c3b5b8811b2b8e6d5a9e7c4d3b9d13f53b	script	strict,sloppy	parse:SyntaxError	yes	sjl13 P16b: the same after a const declaration
+PP14	broiler-vm	inputs/for-head-expression-line-break.js	213bdd4a4647d33476f7b74ffda9679f981e59d84037d290c986bc9c3172437a	script	strict,sloppy	parse:SyntaxError	yes	sjl13 P16b: the same after an expression
+PP15	broiler-vm	inputs/for-head-second-semicolon-line-break.js	5f37297af8c4d96eeea3f14ce653015c99f5599ed734d38d8c498f0deb3b4da4	script	strict,sloppy	parse:SyntaxError	yes	sjl13 P16b: a line break where the head's second semicolon belongs
+PP16	broiler-vm	inputs/for-in-head-line-break.js	bf3ae8e0d488489405317167f25c44ed6c7df4e91ff3c4d5d09425299c49c05d	script	strict,sloppy	-	yes	sjl13 P16b control: a line break inside a for-in head, which needs no semicolon
+PP17	broiler-vm	inputs/for-of-head-line-break.js	68b76d683d01ddbbde4b68b33e7b1b61e86bed3ee93248bc154ecb0d3c89631f	script	strict,sloppy	-	yes	sjl13 P16b control: a line break inside a for-of head, which needs no semicolon
+PP18	broiler-vm	inputs/for-head-var-no-line-break.js	6e41dcbd072889dc97d73cb18f99347998ac4d51ba6bf4c17b1109f64e2d8b32	script	strict,sloppy	parse:SyntaxError	yes	sjl13 P16b control: PP11 with no line break, so nothing for a semicolon to be inserted at
+PP19	broiler-vm	inputs/for-head-line-break-after-semicolon.js	432ca95f095119bb67d92530263272bafb184d67b86af554407a14ed6d6bc672	script	strict,sloppy	-	yes	sjl13 P16b control: PP11 with its semicolon written before the line break

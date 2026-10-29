@@ -1,0 +1,29 @@
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/P/probe-P16b.manifest <runs>/vm/reports/P16b-parse.tsv --workers 1 
+broiler-js-slice-compiler: --parse-corpus 5 of 117
+broiler-js-slice-compiler: --parse-corpus 10 of 117
+broiler-js-slice-compiler: --parse-corpus 15 of 117
+broiler-js-slice-compiler: --parse-corpus 20 of 117
+broiler-js-slice-compiler: --parse-corpus 25 of 117
+broiler-js-slice-compiler: --parse-corpus 30 of 117
+broiler-js-slice-compiler: --parse-corpus 35 of 117
+broiler-js-slice-compiler: --parse-corpus 40 of 117
+broiler-js-slice-compiler: --parse-corpus 45 of 117
+broiler-js-slice-compiler: --parse-corpus 50 of 117
+broiler-js-slice-compiler: --parse-corpus 55 of 117
+broiler-js-slice-compiler: --parse-corpus 60 of 117
+broiler-js-slice-compiler: --parse-corpus 65 of 117
+broiler-js-slice-compiler: --parse-corpus 70 of 117
+broiler-js-slice-compiler: --parse-corpus 75 of 117
+broiler-js-slice-compiler: --parse-corpus 80 of 117
+broiler-js-slice-compiler: --parse-corpus 85 of 117
+broiler-js-slice-compiler: --parse-corpus 90 of 117
+broiler-js-slice-compiler: --parse-corpus 95 of 117
+broiler-js-slice-compiler: --parse-corpus 100 of 117
+broiler-js-slice-compiler: --parse-corpus 105 of 117
+broiler-js-slice-compiler: --parse-corpus 110 of 117
+broiler-js-slice-compiler: --parse-corpus 115 of 117
+broiler-js-slice-compiler: B1: accepted 12, refused 24
+broiler-js-slice-compiler: B3: accepted 24, refused 48
+broiler-js-slice-compiler: B4: refused 9
+broiler-js-slice-compiler: --parse-corpus reported 117 compilations of 9 inputs with 1 worker(s) in 0.5 s; 0 crashed
+# exit=0

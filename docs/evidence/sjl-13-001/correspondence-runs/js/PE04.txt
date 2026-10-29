@@ -1,0 +1,4 @@
+# probe PE04 (js): the line labelled PE04 of p-values.js's run; whole transcript reports/P16b-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host p-values.js 
+# exit=0
+PE04 PP14 an expression, a line break for the first semicolon => THROWS SyntaxError: Unexpected token BracketEnd: ) at 3, 11

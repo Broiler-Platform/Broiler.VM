@@ -15,6 +15,14 @@ correction of both; implementation-defined; engine policy (a parameter of the re
 ceilings, rendering and each engine's own surfaces). No row's class is unknown. The area verdict filed with this file
 records the classes; a class it changes is the verdict's.
 
+*(Added 2026-10-27, under the owner's decisions D-asi and D-t24 of that day, which JSD-0083 records: row **P16b**,
+automatic semicolon insertion in a for statement's head, is added, a correction of Broiler.JS, and P16 is narrowed to
+the rest of automatic semicolon insertion; rows **T24b** and **T24f** record, beside the answer they held, Broiler.JS's
+answer where `;` or the end of input follows the regular-expression literal. SJL-13.2's first runs of the `syntax`
+vectors (Broiler.JS's corpus revision 29, classified at revision 30) found both. Both were read from code and probed
+in both engines at the heads below on 2026-10-27, by `probes/run_p16b.sh` (section "How each probe was run"). Every
+other row stands as written on 2026-10-26.)*
+
 **Read and run at**
 - **Broiler.VM `4cf9ca4`** (`4cf9ca449fc96a1a5be810f6d0ca31c42b855c8f`, the merge of #171). Every first-parent merge
   since SJL-12's after commit `1de3af6` changes only `docs/`, so the product code read and run is `1de3af6`'s.
@@ -76,6 +84,17 @@ records the classes; a class it changes is the verdict's.
   so), and the phase was run again. The retained answers are the second run's. With that path written as `<corr>`,
   every answer and every report of the first run equals the second's; only the logs' elapsed times, restore order
   and progress lines differ.
+- *(Added 2026-10-27.)* **The probes of 2026-10-27** (rows P16b, T24b and T24f) were run by `probes/run_p16b.sh`,
+  which takes them as `run_all.sh` took the others, at the same heads, `4cf9ca4` and `d6795fc8`: one Release build
+  (`--disable-build-servers`) of a detached scratch worktree of each, serially, Broiler.VM's of the slice compiler
+  and the conformance root, Broiler.JS's of the shell and SJL-12's parse-corpus tool, each worktree's `bin/` and
+  `obj/` deleted and the worktree removed after its phase. The slice compiler ran `P/probe-P16b.manifest` over every
+  population (B3 compiles each input as eval code under E0 to E7) and `T/parse/t24-end.manifest` over B1 and B4; the
+  conformance root ran `P/value/p-values.js` and `T/value/t24-values.js` as raw test262 tests under the same fuel and
+  wall clock; the tool ran both manifests (entries P and K) and the shell both value files (`--script-host`). The
+  environment, the timeouts, the machine, the .NET SDK and runtime, and the rewrite of local paths are those above.
+  The answers the code reading expected are `probes/plan-p16b.tsv`, written before the run; every answer is the one
+  it expected.
 
 **References.** "The specification" is ECMA-262 ES2026 at `tc39/ecma262@0248456c` as Broiler.VM archives it
 (`src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html`). The plan is SJL-13 to SJL-16's
@@ -147,6 +166,21 @@ gives is of code or records (sites, catalogue rows, constants), or is an answer 
   holds an identifier token written with a `\u` escape, and each such token with its place, offsets, spelling, cooked
   name and keyword-table kind); `hashes.txt`.
 - Nothing in it is over 50 MB, no file is a project file (a probe project is `*.csproj.txt`), and no file holds a NUL.
+- *(Added 2026-10-27.)* **The probes of 2026-10-27 joined these folders as new files only.** In `probes/`:
+  `P/probe-P16b.manifest` with its inputs under `P/inputs/` (`for-head-*.js`, `for-in-head-line-break.js`,
+  `for-of-head-line-break.js`), `P/value/` (`prelude.js`, T's with only its opening comment changed, `p-values.js`,
+  and T's `epilogue.js`), `T/parse/t24-end.manifest` with its inputs under `T/parse/inputs/sjl13-T/`
+  (`t24b3-` to `t24b6-`, `t24f2-` and `t24f3-*.js`), `T/value/t24-values.js`, `plan-p16b.tsv` (`plan.tsv`'s columns)
+  and `run_p16b.sh`; `plan.tsv`, `run_all.sh` and every earlier manifest are unchanged. In `vm/` and `js/`: each new
+  probe's answer, named as above (`PP11.txt` to `PP19.txt`, `T24B3.txt` to `T24F3.txt`, `PE01.txt` to `PE09.txt` for
+  P's value lines and `TV-T24b3.txt` to `TV-T24f3.txt` for T's), the reports `reports/P16b-parse.tsv`,
+  `T24-end-parse.tsv`, `P16b-values.transcript.txt` and `T24-end-values.transcript.txt`, the logs
+  `logs/P16b-parse.log`, `T24-end-parse.log` and `p16b-*.log` (the builds and the worktree), the programs
+  `built/p-values*` and `built/t24-values*`, and `p16b-revision.txt` and `p16b-build.txt` beside `revision.txt` and
+  `build.txt`. The new worktree logs, `vm/logs/p16b-worktree.log` and `js/logs/p16b-worktree.log`, hold git's
+  carriage returns as the earlier ones do. The `hashes.txt` of `probes/`, `vm/` and `js/` were written again, by the
+  runner's own function, over every file each folder holds: every earlier line is unchanged and the new files' lines
+  are added. No earlier file changed, and `analysis/` is untouched.
 
 ## T. The tokenizer
 
@@ -193,11 +227,11 @@ node 22 was run on a value line it agrees with the specification except where th
 | T22 | Decorators `@` | the tokenizer refuses `@` with 2104 over the whole input (`VMT:2756-2769`); mapping `frontend-mapping.tsv:354` JSE7201/EP0009 → 2104 within meaning, registry EX0017 `:93` | parsed (`JSS:725-726`, `JSP.Decorator:28-40`) | refused 2104 | accepted | baseline T031800-T031807, T043428-T043439, T052001-T052002 (VM 2104, JS accepted); probe T09B (the stage) | engine policy (a proposal flag, off by default in the contract; D17 moves the refusal's stage: S6, (G)) |
 | T23 | Escaped reserved words and contextual keywords | the token carries IsEscaped; the parser refuses an escaped word where it would be a keyword, and escaped `await`/`yield` where reserved: `VMJP:6575-6598` RefuseEscapedReservedWord and the contextual sites `:1510`, `:1603`, `:1622`, `:2054`, `:5625`, `:5666` (2209) | `JSS:2042-2140` CommitIdentifier: escaped `yield`, `await`, `let`, `static` and others are "OK as identifiers" whatever the context (`:2066-2084`) | refused 2209 | accepted | baseline: the `*-escaped` rows where they differ (e.g. T030364, T030976: VM 2209, JS accepted) | correction of Broiler.JS |
 | T24a | Regex or division after a line terminator or a line comment | the previous significant token decides (`VMT:1804-1826`); trivia is not a token | the LineTerminator token is `lastToken` (`JSS:409-411`; a line comment returns one, `:1676`) and falls to the default (scan a regex) in ReadCommentsOrRegExOrSymbol `JSS:1222-1287` | `a⏎/b/g` divides | `a⏎/b/g` is `a; /b/g` (a different program, no error) | values T24a, T24a2 (VM 1, JS 6) | correction of Broiler.JS |
-| T24b | After a `}` that closes an expression (object literal, function expression) | bracket stack: `VMT:1944-2087` Follow, OpeningForBrace, `:2130` OpensBlock; the brace's EndsStatement decides | CurlyBracketEnd falls to the default: a regex is tried first and kept if it scans. The parser then takes the regular-expression token as a binary operator: after an operand, `FastParser.Expression.cs:266-296` refuses a following token only if it is the first token's kind, an identifier or `IsLiteralValueStart` (`:33-40`), which omits `RegExLiteral`, so `NextExpression` consumes it as the operator; the compiler refuses the node, "Undefined binary operation RegExLiteral" (`JSC/Expressions/FastCompiler.VisitBinaryExpression.cs:163`) | division | a regex, P accepted, K refused "Undefined binary operation RegExLiteral" (stage E) | probes T24B, T24B2; value T24b | correction of Broiler.JS |
+| T24b | After a `}` that closes an expression (object literal, function expression) | bracket stack: `VMT:1944-2087` Follow, OpeningForBrace, `:2130` OpensBlock; the brace's EndsStatement decides | CurlyBracketEnd falls to the default: a regex is tried first and kept if it scans. The parser then takes the regular-expression token as a binary operator: after an operand, `FastParser.Expression.cs:266-296` refuses a following token only if it is the first token's kind, an identifier or `IsLiteralValueStart` (`:33-40`), which omits `RegExLiteral`, so `NextExpression` consumes it as the operator; the compiler refuses the node, "Undefined binary operation RegExLiteral" (`JSC/Expressions/FastCompiler.VisitBinaryExpression.cs:163`). *(Added 2026-10-27, decision D-t24.)* Where `;` or the end of input follows the literal, `NextExpression` consumes the token (`FastParser.NextExpression.cs:218`), finds no right operand, is not refused because the token has no operator precedence (`:227-228`; `OperatorPrecedence` `:466-492`, `_ => int.MaxValue`), and ends at `EndOfStatement` (`:230-234`, `FastParser.cs:207-226`); `Expression` keeps the left operand alone (`FastParser.Expression.cs:301-304`), so the literal is dropped | division (also where `;` or the end of input follows: NaN, *added 2026-10-27*) | a regex, P accepted, K refused "Undefined binary operation RegExLiteral" (stage E). *(Added 2026-10-27, decision D-t24.)* Where `;` or the end of input follows the literal: P and K accepted, and the program completes with the left operand's value, the object or the function, where the specification divides (NaN) | probes T24B, T24B2; value T24b; *added 2026-10-27*: probes T24B3 to T24B6, values T24b3 to T24b8 (T24b7 and T24b8 are the sources of the vectors `syntax/lexical/regexp-delimiting/0047` and `0046`) | correction of Broiler.JS (the answer added 2026-10-27 has the same class, D-t24) |
 | T24c | After `of` in a for-of head, `extends`, `export default` | `of` in a for head reads a regex (Follow's `Of` arm); `extends`, `default` fall to `_ => true` | identifier-keywords not in the list `JSS:1268-1284` read division | a regex | division (refused) | probes T24C1-T24C3; values T24c1, T24c2 | correction of Broiler.JS |
 | T24d | After a `for await (…)` head | Opening.Head needs If/While/For/With before `(` (Follow `VMT:1971-1972`); after `await` it is no head: division | OpensStatementHead `JSS:220-223` is the same set: division | refused | refused | probe T24D | correction of both |
 | T24e | After prefix `++`/`--` | PlusPlus/MinusMinus read division (`VMT:1818`) | Increment/Decrement read division (`JSS:1258-1265`: "no valid program has a regex here"; `++/x/.lastIndex` is one) | refused | refused | probe T24E; value T24e (node 1) | correction of both |
-| T24f | After `await` used as an identifier (Script) | Await falls to `_ => true`: a regex | `await` is in the keyword list (`JSS:1275`): a regex, which the parser then takes as a binary operator (as T24b) | refused | refused (P accepted, K refused "Undefined binary operation RegExLiteral", stage E) | probe T24F; value T24f (node 2) | correction of both |
+| T24f | After `await` used as an identifier (Script) | Await falls to `_ => true`: a regex | `await` is in the keyword list (`JSS:1275`): a regex, which the parser then takes as a binary operator (as T24b); *(added 2026-10-27, decision D-t24)* where `;` or the end of input follows it, the token is dropped and the left operand kept, by T24b's sites | refused (also where `;` or the end of input follows: B1 2102:1:36, *added 2026-10-27*) | refused (P accepted, K refused "Undefined binary operation RegExLiteral", stage E). *(Added 2026-10-27, decision D-t24.)* Where `;` or the end of input follows the literal: P and K accepted, and the program completes with `await`'s value (6) where the specification divides (1) | probe T24F; value T24f (node 2); *added 2026-10-27*: probes T24F2, T24F3, values T24f2, T24f3 (T24f3 is the source of the vector `syntax/lexical/regexp-delimiting/0052`) | correction of both (the answer added 2026-10-27 has the same class, D-t24) |
 | T24g | After `yield` | InGenerator `VMT:2179` (nearest function body, arrows included) | YieldIsKeyword set by the parser (`Parser/FastParser.cs:66-70`, `JSP.Function:127`, arrows `JSP.Expression:212`) | as the spec | as the spec | probes T24G1-T24G3; values T24g1-g3 | same |
 | T24h | After a statement head's `)`, a block's `}`, a function declaration's `}` | Head and EndsStatement in Follow | parenIsStatementHead `JSS:500-509`; `}` reads a regex by default | a regex | a regex | probe T24H; value T24h | same |
 | T24i | A literal that fails to scan or validate | reported as the literal's refusal (2006, or the pattern's later, D7) | ScanRegEx returns false (including the validator `:1505-1506` and flags) and the `/` is re-read as division (`JSS:1313-1329`); the parser then refuses | refused | refused, "Unexpected token …" | baseline T041390, T041391, T041392 (VM 2101/2102, JS "Unexpected token Identifier: G"), T041418, T041420 | correction of Broiler.JS (diagnostic; JSD-0081 D22 keeps it SJL-14's, S9) |
@@ -222,7 +256,9 @@ and B4 is the slice front end, whose answer for a probe of the wide grammar is t
 Broiler.JS's `P` and `K` give the outcome and, for a refusal, the message's first line. A value is printed as the
 value probes print it. Rows T2, T4, T5, T10, T15, T21, T23, T24i, T27 and T29 have no probe and are
 answered by the baselines their rows cite; the other rows' baselines stand beside their probes, and the hand-offs need
-no probe.
+no probe. *(Added 2026-10-27: the rows of `T/parse/t24-end.manifest` (corpus `sjl13-T24-end`, B1 and B4, P and K) and
+the lines of `T/value/t24-values.js` (each answer `TV-<label>.txt`), run the same way that day, are rows T24b's and
+T24f's probes with `;` or the end of input after the literal, decision D-t24's; they are the rows below marked so.)*
 
 | Probe | Row | Input (`correspondence-runs/probes/`) | Broiler.VM, as run | Broiler.JS, as run |
 |---|---|---|---|---|
@@ -268,6 +304,12 @@ no probe.
 | T24G2 | T24g | `T/parse/inputs/sjl13-T/t24g2-yield-division-in-arrow-in-generator.js` | `B1 accepted; B4 refused 2101:1:76` | `P accepted; K accepted` |
 | T24G3 | T24g | `T/parse/inputs/sjl13-T/t24g3-yield-identifier-division.js` | `B1 accepted; B4 refused 2101:1:44` | `P accepted; K accepted` |
 | T24H | T24h | `T/parse/inputs/sjl13-T/t24h-statement-head-then-regex.js` | `B1 accepted; B4 refused 2104:1:20 (+13)` | `P accepted; K accepted` |
+| T24B3 (added 2026-10-27) | T24b | `T/parse/inputs/sjl13-T/t24b3-object-literal-regex-then-semicolon.js` | `B1 accepted; B4 refused 2104:1:26` | `P accepted; K accepted` |
+| T24B4 (added 2026-10-27) | T24b | `T/parse/inputs/sjl13-T/t24b4-object-literal-regex-at-end-of-input.js` | `B1 accepted; B4 refused 2104:1:26` | `P accepted; K accepted` |
+| T24B5 (added 2026-10-27) | T24b | `T/parse/inputs/sjl13-T/t24b5-function-expression-regex-then-semicolon.js` | `B1 accepted; B4 refused 2104:1:26` | `P accepted; K accepted` |
+| T24B6 (added 2026-10-27) | T24b | `T/parse/inputs/sjl13-T/t24b6-function-expression-regex-at-end-of-input.js` | `B1 accepted; B4 refused 2104:1:26` | `P accepted; K accepted` |
+| T24F2 (added 2026-10-27) | T24f | `T/parse/inputs/sjl13-T/t24f2-await-identifier-regex-then-semicolon.js` | `B1 refused 2102:1:36; B4 refused 2104:1:30 (+1)` | `P accepted; K accepted` |
+| T24F3 (added 2026-10-27) | T24f | `T/parse/inputs/sjl13-T/t24f3-await-identifier-regex-at-end-of-input.js` | `B1 refused 2102:1:36; B4 refused 2104:1:30 (+1)` | `P accepted; K accepted` |
 | T30A | T30 | `T/parse/inputs/sjl13-T/t30a-html-close-comment-slice-path.js` | `B1 accepted; B4 refused 2101:2:3` | `P accepted; K accepted` |
 | T30B | T30 | `T/parse/inputs/sjl13-T/t30b-html-open-comment-slice-path.js` | `B1 accepted; B4 refused 2101:1:12` | `P accepted; K accepted` |
 | T32A | T31, T32 (F17) | `T/tokens/inputs/sjl13-T-tokens/t32a-escaped-identifiers-slice-path.js` | B1 accepted; B4 accepted; token fields below | P accepted; K accepted; token fields below |
@@ -316,6 +358,14 @@ no probe.
 | T24g2 | T24g | `T/value/t-values.js (line T24g2)` | `1` | `1` |
 | T24g3 | T24g | `T/value/t-values.js (line T24g3)` | `1` | `1` |
 | T24h | T24h | `T/value/t-values.js (line T24h)` | `boolean true` | `boolean true` |
+| T24b3 (added 2026-10-27) | T24b | `T/value/t24-values.js (line T24b3)` | `NaN` | `object [object Object]` |
+| T24b4 (added 2026-10-27) | T24b | `T/value/t24-values.js (line T24b4)` | `NaN` | `object [object Object]` |
+| T24b5 (added 2026-10-27) | T24b | `T/value/t24-values.js (line T24b5)` | `NaN` | `function function () {}` |
+| T24b6 (added 2026-10-27) | T24b | `T/value/t24-values.js (line T24b6)` | `NaN` | `function function () {}` |
+| T24b7 (added 2026-10-27) | T24b | `T/value/t24-values.js (line T24b7)` | `NaN` | `object [object Object]` |
+| T24b8 (added 2026-10-27) | T24b | `T/value/t24-values.js (line T24b8)` | `NaN` | `function function () {}` |
+| T24f2 (added 2026-10-27) | T24f | `T/value/t24-values.js (line T24f2)` | `THROWS SyntaxError: the evaluated source is not a program this profile admits` | `6` |
+| T24f3 (added 2026-10-27) | T24f | `T/value/t24-values.js (line T24f3)` | `THROWS SyntaxError: the evaluated source is not a program this profile admits` | `6` |
 | T26a | T26 | `T/value/t-values.js (line T26a)` | `"\u005cu{1F600}"` | `"\u005cud83d\u005cude00"` |
 | T26b | T26 | `T/value/t-values.js (line T26b)` | `"\u005cu{61}"` | `"\u005cu0061"` |
 | T26c | T26 | `T/value/t-values.js (line T26c)` | `"\u005cu{D83D}"` | `"\u005cu{d83d}"` |
@@ -390,7 +440,8 @@ unassigned. The buckets other sub-areas hold are listed after the rows.
 | P14 | Arrow parameters: a reserved word is no ArrowParameters (`switch => 1`) | `VMC/JsParser.cs:4709-4842` TryParseArrow (a bracket scan of the head, no rewinding); IsAsyncArrowHead `:4881-4915`; parameters by ParseParameters `:2498` and BindingName `:6602` | arrow detection `JSP/FastParser.SingleExpression.cs:241`; `JSP/FastParser.Expression.cs:179` `CheckAndConsumeNoLineTerminator(Lambda)`; parameters converted from the expression by `VariableDeclarator.From` (backtracking: `JSP/FastParser.cs:127` BeginUndo) | refused 2101 | accepted | baseline: T029525:strict/sloppy; every other test/language/expressions/arrow-function row differs only in P15 or D rows (T029209:strict accepted in both, T029226:strict refused in both) | correction of Broiler.JS |
 | P15a | Cover grammars to patterns (JS misses): rest element not last, with an initialiser, or followed by an elision; object rest not last; `yield` as an identifier target in strict code; `({...import.meta} = …)` | `VMC/JsParser.cs:7072-7208` ToPattern; `:7213-7220` ToPatternElement; RefusedAfterRest `:7447` (called at `:2541`, `:2632`, `:2672`); BindingName `:6602` (2209 for `yield`) | cover grammar by conversion (`VariableDeclarator.From` in `JSP/FastParser.Expression.cs`; `JSP/FastParser.AssignmentLeftPattern.cs`) with no rest-position check; a rest with an initialiser reaches a compiler NotImplementedException at K | refused (2101, 2102, 2205, 2209) | accepted at P; several crashed at K | baseline: T029705:strict (array-rest-before-element), T029711:strict (array-rest-init, K crashed), T029904:strict (obj-rest-not-last), T029606:strict (yield-ident), T029283:strict (ary-ptrn-rest-not-final), T029280:strict (rest-init, K crashed), T037844:module | correction of Broiler.JS |
 | P15b | Cover grammars to patterns (VM misses): a parenthesised nested target that is not a simple target: `({ a: (b = 7) } = …)`, `({ a: ([b]) } = …)` | the `parenthesised` set (`VMC/JsParser.cs:441`) is consulted only for the whole left-hand side (`:4492-4500`); ToPatternElement `:7213-7220` turns `(b = 7)` into a target with a default, and ToPattern `:7072` turns `([b])` into a pattern, neither consulting it | P admits; K refuses in `JSC/SyntaxValidation.cs:1010` "Invalid parenthesized destructuring pattern" (stage E) | accepted | P accepted, K refused | baseline: J000802:strict/sloppy, J001458:strict/sloppy | correction of Broiler.VM (the JS stage is D's) |
-| P16 | Automatic semicolon insertion (outside the restricted productions of P09 and P10) | `VMC/JsParser.cs:7286-7304` Semicolon (`}`, end of input, or a preceding line terminator carried on the token) | EndOfStatement in `JSP/FastParser.cs` (LineTerminator tokens end a statement) | as the specification | as the specification | baseline: every test/language/asi row agrees but S7.9_A9_T8 (P10): T028331:strict refused in both, T028332:strict accepted in both | same |
+| P16 | Automatic semicolon insertion (outside the restricted productions of P09 and P10, and outside a for statement's head, which is P16b's) *(revised 2026-10-27, decision D-asi: it read "Automatic semicolon insertion (outside the restricted productions of P09 and P10)". The row was read from test262's `test/language/asi` tests, none of which puts a declaration before the line break, so its answers and class hold for the rest of automatic semicolon insertion and P16b holds the for statement's head)* | `VMC/JsParser.cs:7286-7304` Semicolon (`}`, end of input, or a preceding line terminator carried on the token) | EndOfStatement in `JSP/FastParser.cs` (LineTerminator tokens end a statement) | as the specification | as the specification | baseline: every test/language/asi row agrees but S7.9_A9_T8 (P10): T028331:strict refused in both, T028332:strict accepted in both | same |
+| P16b | Automatic semicolon insertion in a for statement's head *(row added 2026-10-27, decision D-asi)*: no semicolon is inserted where it would become one of the two semicolons of the head (ES2026 12.10.1), so a line break where either belongs is a SyntaxError; a line break elsewhere in a head stands (a for-in or for-of head has no semicolon) | `VMC/JsParser.cs:1899` ParseFor reads each of the head's semicolons with `Expect(SliceTokenKind.Semicolon, ";")`: after a declaration (`:2049`), after an expression (`:2101`) and after the test (`:2111`). `Expect` (`:7269-7281`) takes the token itself or refuses 2102 (ExpectedToken); the head never calls `Semicolon` (`:7286-7304`), the one place a preceding line terminator stands for a `;`. A for-in or for-of head is taken before either `Expect`, at the `in` or `of` (`:1981`, `:2058`) | `VariableDeclarationStatement` (`JSP/FastParser.VariableDeclaration.cs:57-69`) reads a head's declarators with `Parameters(…, TokenTypes.SemiColon, …)` (`:64`). The initialiser's `Expression` ends at a line break before a token that is no operator (`JSP/FastParser.Expression.cs:252-275`); `Parameters` then skips the line break (`JSP/FastParser.Parameters.cs:47-49`) and ends the list at any token that is neither the `;` it was called for nor `,`, consuming nothing (`:51-55`). `ForStatement` (`JSP/FastParser.ForStatement.cs:36`) takes that declaration for a `var`, `let` or `const` head (`:93`, `:99`, `:105`), skips line breaks (`:145`) and reads the test (`:200`) with no check that the head's first `;` was read. An expression head (`ExpressionList`, `:548-595`) loops until it consumes a `;`, so its test then ends at the `)` and `:212` refuses it; a line break where the second `;` belongs ends the test with no terminator (`JSP/FastParser.WhileStatement.cs:89-112`), refused at `JSP/FastParser.ForStatement.cs:212`. With no line break at all, the initialiser's `Expression` refuses the identifier that follows it (`JSP/FastParser.Expression.cs:297-298`) | refused 2102 at the token after the line break, after a `var`, `let` or `const` declaration, after an expression and where the second semicolon belongs (B1 in both variants and forms, B3 under E0 to E7); the controls as the specification | after a `var`, `let` or `const` declaration, P and K accepted, and the loop runs as though the `;` were written (PE01, PE02: 3; PE03: the `const` binding's update throws TypeError); after an expression and where the second semicolon belongs, refused ("Unexpected token BracketEnd: )", "Unexpected token Identifier: i"); the controls as the specification | probes PP11 to PP15, controls PP16 to PP19 (a line break in a for-in and in a for-of head, PP11 with no line break, a line break after a written `;`); values PE01 to PE09 (node 22: SyntaxError for PE01 to PE05 and PE08, "a", 3 and 3 for the controls). Found by the vector `syntax/lexical/asi/0009` of Broiler.JS's corpus revision 30, `for (var i = 0` LF `i < 1; i++) ;` under PerformEval, which Broiler.JS accepted in SJL-13.2's run (its parser is the same at that run's commit as at `d6795fc8`) | correction of Broiler.JS: SJL-14 answers it as decision D45's other corrections of Broiler.JS (K10's rows, by JSD-0083's note of 2026-10-27; hand-off H22). Broiler.VM's answer is the specification's, so no correction of this family and nothing for step 1 |
 | P17 | Templates, tagged templates, substitutions | `VMC/JsParser.cs:6708` ParseTemplate, `:6816` CookEscape, `:6997` ParseSubstitution; tree `VMC/JsSyntax.cs:416` JsTemplateLiteral(Cooked nullable, Raw, Substitutions) | `JSP/FastParser.Template.cs`; tree `JSA/Expressions/AstTemplateExpression.cs:8-11` (Parts: string literal expressions, cooked from the token's CookedText, raw from its span) | parses | parses | baseline: template-literal positives agree (T039978:strict), tagged-template rows agree (T039950:strict); the template-literal negatives that differ are D's stage-E bucket (legacy octal escapes, T000741:strict) | same (grammar); the chunk structure the adapter rebuilds is N's and T's (D15) |
 | P18 | Classes and private names: `# x` (space after `#`); `super.#x`; `for (#x in …)`; ClassHeritage is a LeftHandSideExpression | private name is one token (`VMC/JsParser.cs:6472` IsPrivateName), so `# x` is refused 2102; `super.#x` refused 2101 at `:3463-3473`; `#x in` read only where `!noIn` (`:5026`); heritage `:2986-2993` `ParseCallChain()` then Expect('{') | `#` and the name are separate tokens (`JSP/FastParser.SingleMemberExpression.cs:176-188`; `JSP/FastParser.Identifier.cs:34-48`), so whitespace is admitted; `super` followed by `.` admits `#m` (`JSP/FastParser.SingleExpression.cs:103-112`); heritage by `Expression(out @base)` (`JSP/FastParser.Class.cs:48-52`) | refused (2101, 2102) | accepted | baseline: T034988:strict (`# x`), T034995..T035010:strict (whitespace forms), T034993/T034994/T035003/T035004:strict (accessor-named forms), T034973:strict and T035083:strict (`super.#`), T037862:strict (`for (#x in`), T034862, T034863, T046663, T046664 (arrow heritage); probe PP06 (conditional heritage) | correction of Broiler.JS |
 | P19 | Decorators (EP0009) | `VMC/SliceTokenizer.cs:2754-2760` refuses `@` with 2104 before any parse (the tokenizer's diagnostics return first, `VMC/JsCompiler.cs:821-933`; the catalogue's `:2316` is an older line) | parsed and discarded: `JSP/FastParser.Statement.cs:45-52`, `JSP/FastParser.Decorator.cs`, `JSP/FastParser.Class.cs:70` | refused 2104 | accepted (no node kept) | baseline: T031800:strict, T043429:strict | engine policy (proposal flag, D17, off by default); with the flag on, the library's tree carries the decorators that JS's tree drops |
@@ -486,7 +537,10 @@ module test with two `_FIXTURE` neighbours, which Broiler.JS's shell ran through
 harness preloaded). Answers are written as in section T. Rows answered by a cited baseline and not probed: P12's
 duplicate `default`, and every row whose probe cell cites baseline rows only (P06b, P34, P35 and P36 among them). P32
 (but its item 10) and P33 have no probe: their only observable check is byte identity at step 1 and step 2 (rule 4.1
-part B, rule 4.2 part B) and SJL-14's identity and side-by-side runs.
+part B, rule 4.2 part B) and SJL-14's identity and side-by-side runs. *(Added 2026-10-27: row P16b's probes, run that
+day, are the rows of `P/probe-P16b.manifest` (corpus `sjl13-probes-P16b`, every population, B3 under E0 to E7) and the
+lines of `P/value/p-values.js`, run as T's value lines are (each answer `PE<nn>.txt`); they are the rows below marked
+so, and every answer is the one `probes/plan-p16b.tsv` expected.)*
 
 | Probe | Row | Input (`correspondence-runs/probes/`) | Broiler.VM, as run | Broiler.JS, as run |
 |---|---|---|---|---|
@@ -506,6 +560,24 @@ part B, rule 4.2 part B) and SJL-14's identity and side-by-side runs.
 | PR04 | P25 | `P/t262/test/sjl13-P/PR04-eval-using-top.js` (Broiler.VM); `P/run/eval-using-top.js` (Broiler.JS) | `pass test/sjl13-P/PR04-eval-using-top.js [raw]` | `PR04 threw SyntaxError` |
 | PR05 | P26 control | `P/t262/test/sjl13-P/PR05-function-separate-parse-control.js` (Broiler.VM); `P/run/function-separate-parse-control.js` (Broiler.JS) | `pass test/sjl13-P/PR05-function-separate-parse-control.js [raw]` | `PR05 accepted 3` |
 | PR06 | P32 item 10 (F12) | `P/t262/test/sjl13-P/PR06-arrow-await-not-tla.js (+ PR06-a_FIXTURE.js, PR06-b_FIXTURE.js)` (Broiler.VM); `P/t262/test/sjl13-P/PR06-arrow-await-not-tla.js (+ the two fixtures, copied to $WORK/js-mod)` (Broiler.JS) | `FAIL test/sjl13-P/PR06-arrow-await-not-tla.js [module] Test262:AsyncTestFailure:Test262Error: Test262Error: PR06 order a,tick,b` | `Test262:AsyncTestComplete` |
+| PP11 (added 2026-10-27) | P16b | `P/inputs/for-head-var-line-break.js` | `B1 refused 2102:2:1; B3 refused 2102:2:1; B4 refused 2102:2:1` | `P accepted; K accepted [strict,sloppy]` |
+| PP12 (added 2026-10-27) | P16b | `P/inputs/for-head-let-line-break.js` | `B1 refused 2102:2:1; B3 refused 2102:2:1; B4 refused 2102:2:1` | `P accepted; K accepted [strict,sloppy]` |
+| PP13 (added 2026-10-27) | P16b | `P/inputs/for-head-const-line-break.js` | `B1 refused 2102:2:1; B3 refused 2102:2:1; B4 refused 2102:2:1` | `P accepted; K accepted [strict,sloppy]` |
+| PP14 (added 2026-10-27) | P16b | `P/inputs/for-head-expression-line-break.js` | `B1 refused 2102:2:1; B3 refused 2102:2:1; B4 refused 2102:2:1` | `strict: P refused "Unexpected token BracketEnd: ) at 3, 11"; K refused "Unexpected token BracketEnd: ) at 3, 11" \| sloppy: P refused "Unexpected token BracketEnd: ) at 2, 11"; K refused "Unexpected token BracketEnd: ) at 2, 11"` |
+| PP15 (added 2026-10-27) | P16b | `P/inputs/for-head-second-semicolon-line-break.js` | `B1 refused 2102:2:1; B3 refused 2102:2:1; B4 refused 2102:2:1` | `strict: P refused "Unexpected token Identifier: i at 3, 1"; K refused "Unexpected token Identifier: i at 3, 1" \| sloppy: P refused "Unexpected token Identifier: i at 2, 1"; K refused "Unexpected token Identifier: i at 2, 1"` |
+| PP16 (added 2026-10-27) | P16b control | `P/inputs/for-in-head-line-break.js` | `B1 accepted; B3 accepted; B4 refused 2104:1:1 (+1)` | `P accepted; K accepted [strict,sloppy]` |
+| PP17 (added 2026-10-27) | P16b control | `P/inputs/for-of-head-line-break.js` | `B1 accepted; B3 accepted; B4 refused 2104:1:1 (+1)` | `P accepted; K accepted [strict,sloppy]` |
+| PP18 (added 2026-10-27) | P16b control | `P/inputs/for-head-var-no-line-break.js` | `B1 refused 2102:1:16; B3 refused 2102:1:16; B4 refused 2102:1:16` | `strict: P refused "Unexpected token Identifier: i at 2, 16"; K refused "Unexpected token Identifier: i at 2, 16" \| sloppy: P refused "Unexpected token Identifier: i at 1, 16"; K refused "Unexpected token Identifier: i at 1, 16"` |
+| PP19 (added 2026-10-27) | P16b control | `P/inputs/for-head-line-break-after-semicolon.js` | `B1 accepted; B3 accepted; B4 refused 2104:2:8` | `P accepted; K accepted [strict,sloppy]` |
+| PE01 (added 2026-10-27) | P16b | `P/value/p-values.js (line PE01)` | `THROWS SyntaxError: the evaluated source is not a program this profile admits` | `3` |
+| PE02 (added 2026-10-27) | P16b | `P/value/p-values.js (line PE02)` | `THROWS SyntaxError: the evaluated source is not a program this profile admits` | `3` |
+| PE03 (added 2026-10-27) | P16b | `P/value/p-values.js (line PE03)` | `THROWS SyntaxError: the evaluated source is not a program this profile admits` | `THROWS TypeError: Cannot assign to read only variable` |
+| PE04 (added 2026-10-27) | P16b | `P/value/p-values.js (line PE04)` | `THROWS SyntaxError: the evaluated source is not a program this profile admits` | `THROWS SyntaxError: Unexpected token BracketEnd: ) at 3, 11` |
+| PE05 (added 2026-10-27) | P16b | `P/value/p-values.js (line PE05)` | `THROWS SyntaxError: the evaluated source is not a program this profile admits` | `THROWS SyntaxError: Unexpected token Identifier: i at 2, 1` |
+| PE06 (added 2026-10-27) | P16b control | `P/value/p-values.js (line PE06)` | `"a"` | `"a"` |
+| PE07 (added 2026-10-27) | P16b control | `P/value/p-values.js (line PE07)` | `3` | `3` |
+| PE08 (added 2026-10-27) | P16b control | `P/value/p-values.js (line PE08)` | `THROWS SyntaxError: the evaluated source is not a program this profile admits` | `THROWS SyntaxError: Unexpected token Identifier: i at 1, 16` |
+| PE09 (added 2026-10-27) | P16b control | `P/value/p-values.js (line PE09)` | `3` | `3` |
 
 ## N. Positions
 
@@ -1231,7 +1303,10 @@ duplicate regexp group names (T or R) and `L1: L2: while` (D).
 Every probe's answer was compared with the answer its row read from the code (`probes/plan.tsv`, column `expected`).
 Where they differed, the code was read again and the row now states what the run showed; the run is the evidence and
 the reading was the hypothesis. Every other answer, in both engines, is the one the reading expected, the open
-questions the readings left to the run among them (section "The reading's open questions, and where each went").
+questions the readings left to the run among them (section "The reading's open questions, and where each went"). *(Added
+2026-10-27: the probes of that day were compared with `probes/plan-p16b.tsv` the same way, and every answer is the one
+it expected. The two rows marked so below are where SJL-13.2's runs of the `syntax` vectors, not a probe of this file,
+corrected rows P16, T24b and T24f; the owner's decisions D-asi and D-t24 of that day answer them.)*
 
 | Probe | Row | The reading expected | The run showed | The code, read again | What it changes |
 |---|---|---|---|---|---|
@@ -1246,6 +1321,8 @@ questions the readings left to the run among them (section "The reading's open q
 | NR01 (Broiler.JS) | N15 | frames for `f`, `m` and the script, at their statement starts | frames for `f` (2,3) and the script (5,1) only, the script's named `native` | the shell's `--script-host` turns proper tail calls on (`Broiler.JavaScript.Runtime/DictionaryCodeCache.cs:156`; `Broiler.JavaScript.ExpressionCompiler/Generator/ILCodeGenerator.VisitCall.cs:44-48`), so `return f();` leaves `m`'s frame; a frame with no name prints as `native` (`Broiler.JavaScript.BuiltIns/Error/JSError.cs:31-50`) | none (engine-kept rendering); the positions matched |
 | PD14 (Broiler.JS) | D40 | refused (`as` expected) | accepted at P and K | only a string and the five keyword-typed tokens (`true`, `false`, `in`, `instanceof`, `null`) must be renamed with `as`; every other reserved word reaches `Identitifer` as an `Identifier` token, and `RejectReservedImportedBinding` (`FastParser.Import.cs:210-219`) refuses only `await` and the strict-mode restricted names | D40 becomes a correction of both (F19, F28) |
 | RE19 (Broiler.JS) | R24 | `THROWS SyntaxError` | `THROWS TypeError: Value is not a constructor` | `eval('super()')` in a base-class constructor is admitted at the parse, because `MemberInits` is set for every class constructor (`CreateClass.cs:705`; `FastFunctionScope.cs:564`), and fails when it runs | R24 becomes a correction of Broiler.JS (F23) |
+| `syntax/lexical/asi/0009` (Broiler.JS's engine-level run of corpus revision 30, SJL-13.2; added 2026-10-27) | P16 | as the specification (read from test262's `test/language/asi` tests, none of which puts a declaration before the line break) | accepted: `for (var i = 0` LF `i < 1; i++) ;` | `Parameters` ends a declaration head's declarator list at the line break without reading the head's first `;`, and `ForStatement` reads the test without it (P16b's sites; probes PP11 to PP19, values PE01 to PE09) | P16 narrowed to automatic semicolon insertion outside a for statement's head; P16b added, a correction of Broiler.JS that SJL-14 answers (decision D-asi) |
+| `syntax/lexical/regexp-delimiting/0046`, `0047` and `0052` (the same run; added 2026-10-27) | T24b, T24f | refused at compilation, "Undefined binary operation RegExLiteral" (the rows' probes put an operand after the literal) | the program completes with the left operand's value: `;` or the end of input follows the literal | `NextExpression` takes the regular-expression token as an operator and, with no right operand, ends the expression with the left operand alone (`FastParser.NextExpression.cs:218-234`, `FastParser.Expression.cs:301-304`) | the classes stand; T24b and T24f record the answer beside the one they held (decision D-t24; probes T24B3 to T24F3, values TV-T24b3 to TV-T24f3) |
 
 ## The reading's open questions, and where each went
 
@@ -1623,6 +1700,12 @@ recorded as it stands when the verdict is filed; none of them changes a class ab
   `:42`, `:66`, `:101`, `:138`; corpus J000243, J000451, J000799, J001976), which are C3 under rule 4.4 or are revised
   at SJL-14 (D27, D47). **Changes:** D45's K10 names these rows; the stage table's `js_stage` for D63's rows carries
   the case-clause hole, so that SJL-14's parts A and C meet the moves with a named row.
+  *(Note of 2026-10-27, decision D-asi.)* The rows that need naming in `corrections.md` beyond K1 to K9 include
+  **P16b**, automatic semicolon insertion in a for statement's head: Broiler.JS accepts a line break where the head's
+  first `;` belongs after a `var`, `let` or `const` declaration, at P and K (PP11 to PP13, PE01 to PE03), and the
+  catalogue's `completeness.md`, which K8 reads, does not list it. D45's K10 names it by JSD-0083's note of the same
+  day. T24b and T24f, named above, also record the answer where `;` or the end of input follows the literal: P and K
+  accept and the program completes with the left operand's value (decision D-t24; T24B3 to T24F3).
 
 ### Task 1.2, the stage table and the classification
 
@@ -1677,12 +1760,14 @@ area verdict filed with this file records these classes.
 |---|---|---|---|---|---|---|
 | Same | T1, T2, T3, T4, T5, T10, T11, T14, T15, T17, T20, T24g, T24h, T25, T27, T29, T32 | P01, P03, P05d, P05e, P06b, P08, P16, P17, P25, P35 | N1, N2, N3, N4, N5, N6, N7, N8, N16, N17, N20, N21 | D12-1, D12-2, D12-5, D12-6, D12-7, D12-8, D12-9, D31, D43, D44, D45, D47, D48, D50, D51, D52, D53, D54, D56, D57, D58, D59, D60, D62, B01, B02, B03, B04, B05, B07, B08, B09, B10, B11, B12, B13, B14, B15, B16, B17, B18, B19, B20, B22, B23, B24, B26, B27, B28, B29, B30, B31, B32, B33, B34 | R02, R03, R06, R07, R08, R17, R22, R23, R25, R26, R27, R28, R30, R31, R33 | 109 |
 | Correction of Broiler.VM | T6, T7, T8, T13 | P05a, P15b | none | D30, D32 | R19 | 9 |
-| Correction of Broiler.JS | T12, T19, T21, T23, T24a, T24b, T24c, T24i, T26, T28 | P02, P05c, P07, P09, P10, P11, P12, P13, P14, P15a, P18, P21, P22, P23, P24 | N11, N25, N26 | D33, D34, D35, D36, D37, D38, D39, D41, D42, D46, D55, D63, B06, B21 | R20, R24, R36 | 45 |
+| Correction of Broiler.JS | T12, T19, T21, T23, T24a, T24b, T24c, T24i, T26, T28 | P02, P05c, P07, P09, P10, P11, P12, P13, P14, P15a, P16b, P18, P21, P22, P23, P24 | N11, N25, N26 | D33, D34, D35, D36, D37, D38, D39, D41, D42, D46, D55, D63, B06, B21 | R20, R24, R36 | 46 |
 | Correction of both | T16, T24d, T24e, T24f | P26, P31 | none | D40, D49, D61 | none | 9 |
 | Implementation-defined | T9, T31 | none | N10, N12, N24, N27 | D02, D05 | R13, R14 | 10 |
 | Engine policy (a parameter of the request) | T18, T22, T30 | P06a, P19, P20 | N13 | D03, D04, D12-10, D18-4, D18-6, D18-7, B25 | R04, R05, R09, R10, R12, R16, R18 | 21 |
 | Engine-kept | none | P04, P05b, P27, P28, P29, P30, P32, P33, P34, P36 | N9, N14, N15, N18, N19, N22, N23 | D01, D06, D07, D08, D09, D12-3, D12-4, D18-1, D18-2, D18-3, D18-5 | R01, R11, R15, R21, R29, R32, R34, R35 | 36 |
-| All rows | 40 | 42 | 27 | 94 | 36 | 239 |
+| All rows | 40 | 43 | 27 | 94 | 36 | 240 |
+
+*(Revised 2026-10-27, decision D-asi: row P16b joins the class "Correction of Broiler.JS". The table read "| Correction of Broiler.JS | … | P02, P05c, P07, P09, P10, P11, P12, P13, P14, P15a, P18, P21, P22, P23, P24 | … | 45 |" and "| All rows | 40 | 42 | 27 | 94 | 36 | 239 |". P16 stays under "Same", narrowed to automatic semicolon insertion outside a for statement's head. T24b and T24f keep their classes, with the answer decision D-t24 adds.)*
 
 **Notes.**
 - **Rows listed under one class with a second class for some inputs:** P06a (engine policy for the call forms'

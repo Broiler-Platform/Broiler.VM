@@ -1,0 +1,20 @@
+# probe PP16 (vm): input inputs/for-in-head-line-break.js; its rows of reports/P16b-parse.tsv
+# command (in <corr>): dotnet <vm>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus <probes>/P/probe-P16b.manifest <runs>/vm/reports/P16b-parse.tsv --workers 1 
+# exit=0
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	sjl13-probes-P16b
+#% manifest-sha256	dbbc27eabf721a1ed70281e92e77cbdfc491f2fa48e361ce9997c1918398d313
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+PP16	B1	strict	bytecode	accepted	-	5759ca93b9632c88cb394aa7386a6b0fead83010e3371013901a41da3c66dcdf	176	-
+PP16	B1	strict	native	accepted	-	04027b212d03cdfd3291dd3090d7afc18522984bdade8ef97bee0bbb46e084b6	421	-
+PP16	B1	sloppy	bytecode	accepted	-	707b4810acde2f2f314829c279ac811d925a55abcd79acb3da7cbdf18117e5a3	176	-
+PP16	B1	sloppy	native	accepted	-	8faa1b19467ddcfa7af03171e9a597254fdc5ed90983b174a27c60dba11ba20f	421	-
+PP16	B3	E0	bytecode	accepted	-	0df3c59d5c2776833d2edb6c3f797339fe10f4fa7f7e687ab82c68c8d85d1148	161	-
+PP16	B3	E1	bytecode	accepted	-	114d36ee6af6b773e83d9240b4e7cf038559febaa47114a86cb49d15f3ba6fc8	162	-
+PP16	B3	E2	bytecode	accepted	-	64c1efaadcac3c0136f96b3fb785efebe0c414d936a78361ae551c249043542e	161	-
+PP16	B3	E3	bytecode	accepted	-	85adb41a904f46f1a09f8ecbe0a70d77e2f6f6b262b6d4125a49b663a5e1d9ec	162	-
+PP16	B3	E4	bytecode	accepted	-	650ba784c39f26cee6bc2f7073e1f7e03f80b8cbc1dee61e509b0eef9cb577e6	161	-
+PP16	B3	E5	bytecode	accepted	-	100dda03bec519c2fa9aa3e59b8b77d84681949cfc6b981d5e55334e52145e05	161	-
+PP16	B3	E6	bytecode	accepted	-	065ce01d6305b63f50ae5ab1cb444fc9a8d27e4560b054ab9dcc1ff73d970ba7	161	-
+PP16	B3	E7	bytecode	accepted	-	ac447591bb0cdc539d4d6620bacc4f668e2c3c5566b56cd3b96e406b2b5851b4	161	-
+PP16	B4	script	slice	refused	2104:1:1;2104:2:4	-	-	-

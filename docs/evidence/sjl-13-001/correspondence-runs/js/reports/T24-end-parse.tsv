@@ -1,0 +1,42 @@
+#% format	broiler-js-parse-corpus-report	1
+#% mode	acceptance
+#% tool	docs/evidence/sjl-12-001/tools/parse-corpus
+#% manifest-sha256	3a35c3675bb305c00961ee715add99b3715f5a1467af3b88b5a1b5dc24745184
+#% manifest-rows	6
+#% corpus	sjl13-T24-end
+#% pin-test262	ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#% selection	all
+#% order	manifest
+#% threads	1
+#% thread-stack-bytes	268435456
+#% compile-stack-bytes	0	CompilationStack.SizeBytes: 0 compiles on the calling thread
+#% environment	TZ=UTC	LANG unset	LC_* unset	BROILER_* unset
+#% culture	(invariant)
+#% time-zone	UTC
+#% runtime	.NET 10.0.12
+#% os	Ubuntu 24.04.5 LTS X64
+#% processors	4
+#% context	JSContext(experimentalFeatures: JavaScriptFeatureFlags.AllExperimentalEs2026), one per thread
+#% strict-variant	the manifest's strict-prologue followed by the text
+#% source-names	virtual-root or stored-root followed by the path
+#% json-goal	the text unchanged at the entry points of every goal but module: ParseProgram, and CoreScript.Compile with isModule false
+#% assembly	Broiler.JavaScript.Ast	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	bda455e0-787c-49e7-8098-96bbc5a72061
+#% assembly	Broiler.JavaScript.Parser	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	80e8377e-993c-4ddf-ae7e-081d7bb8e796
+#% assembly	Broiler.JavaScript.Compiler	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	3a194220-4f5e-46dc-92a4-61b2a404e508
+#% assembly	Broiler.JavaScript.Engine	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	dcb2ad85-f40d-44a7-98dd-771f1a05c05e
+#% assembly	Broiler.JavaScript.Runtime	0.1.0-preview.1+d6795fc86ca607698983a06739ddd15b9aaa9ccd	405041c6-6b96-4a1a-a5df-3bc9e5cf015d
+#% rows	12
+id	variant	entry	outcome	type	message
+T24B3	sloppy	P	accepted	-	-
+T24B3	sloppy	K	accepted	-	-
+T24B4	sloppy	P	accepted	-	-
+T24B4	sloppy	K	accepted	-	-
+T24B5	sloppy	P	accepted	-	-
+T24B5	sloppy	K	accepted	-	-
+T24B6	sloppy	P	accepted	-	-
+T24B6	sloppy	K	accepted	-	-
+T24F2	sloppy	P	accepted	-	-
+T24F2	sloppy	K	accepted	-	-
+T24F3	sloppy	P	accepted	-	-
+T24F3	sloppy	K	accepted	-	-
+#% end	12

@@ -1,0 +1,4 @@
+# probe PE03 (js): the line labelled PE03 of p-values.js's run; whole transcript reports/P16b-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host p-values.js 
+# exit=0
+PE03 PP13 const, a line break for the first semicolon => THROWS TypeError: Cannot assign to read only variable

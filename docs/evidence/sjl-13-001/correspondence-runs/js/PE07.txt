@@ -1,0 +1,4 @@
+# probe PE07 (js): the line labelled PE07 of p-values.js's run; whole transcript reports/P16b-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host p-values.js 
+# exit=0
+PE07 PP17 control, a line break in a for-of head => 3

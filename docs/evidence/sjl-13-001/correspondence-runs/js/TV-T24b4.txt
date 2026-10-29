@@ -1,0 +1,4 @@
+# probe TV-T24b4 (js): the line labelled T24b4 of t24-values.js's run; whole transcript reports/T24-end-values.transcript.txt
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host t24-values.js 
+# exit=0
+T24b4 object literal, then /b/g and the end of input => object [object Object]

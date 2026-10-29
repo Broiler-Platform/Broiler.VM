@@ -1,0 +1,10 @@
+# command (in <runs>/js/built): dotnet <js>/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host t24-values.js 
+T24b3 object literal, then /b/g and ; => object [object Object]
+T24b4 object literal, then /b/g and the end of input => object [object Object]
+T24b5 function expression, then /b/g and ; => function function () {}
+T24b6 function expression, then /b/g and the end of input => function function () {}
+T24b7 object literal, then /b/g and ; then x => object [object Object]
+T24b8 function expression, then /b/g and ; then x => function function () {}
+T24f2 await / b / g and ; in a script => 6
+T24f3 await / b / g and the end of input in a script => 6
+# exit=0
