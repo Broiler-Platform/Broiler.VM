@@ -136,7 +136,7 @@ def isolated(packages, http_cache):
     return env
 
 
-def write_manifest(out, bundle):
+def write_manifest(out, bundle, rid="linux-x64"):
     commit = run(["git", "rev-parse", "HEAD"])[1].strip()
     status = run(["git", "status", "--porcelain"])[1]
     sdk = run(["dotnet", "--version"])[1].strip()
@@ -158,7 +158,9 @@ def write_manifest(out, bundle):
         "previous-packages " + " ".join(PREVIOUS_PACKAGES),
         "negative-control " + UNPUBLISHED,
         "upstream-during-restore " + UNREACHABLE,
-        "aot-seeded " + " ".join(AOT_PACKS),
+        "aot-seeded " + " ".join(
+            [name.replace("linux-x64", rid) for name in AOT_PACKS]
+            + (["microsoft.windowsdesktop.app.runtime." + rid] if rid.startswith("win-") else [])),
     ]
     if status.strip():
         lines.append("dirty:")
@@ -204,7 +206,7 @@ def main():
 
     out = os.path.join(ROOT, arguments.out)
     os.makedirs(out, exist_ok=True)
-    manifest, clean = write_manifest(out, arguments.bundle)
+    manifest, clean = write_manifest(out, arguments.bundle, arguments.rid)
     print("manifest " + manifest + (" (clean tree)" if clean else " (DIRTY tree)"))
 
     # 2. The candidate pack, into a directory of its own, then onto an empty feed.
@@ -292,7 +294,10 @@ def main():
     packages = os.path.join(scratch, "packages")
     os.makedirs(packages)
     home = os.environ.get("NUGET_PACKAGES") or os.path.join(os.path.expanduser("~"), ".nuget", "packages")
-    for pack in AOT_PACKS:
+    aot_packs = [name.replace("linux-x64", arguments.rid) for name in AOT_PACKS]
+    if arguments.rid.startswith("win-"):
+        aot_packs.append("microsoft.windowsdesktop.app.runtime." + arguments.rid)
+    for pack in aot_packs:
         shutil.copytree(os.path.join(home, pack), os.path.join(packages, pack))
     env = isolated(packages, os.path.join(scratch, "http-cache"))
     for directory in ("bin", "obj"):
@@ -302,7 +307,7 @@ def main():
                         "-p:BroilerVmVersion=" + CANDIDATE, "-o", published], cwd=SAMPLE, env=env)
     step(lines, "publish the consumer as Native AOT from the candidate", code, output)
     aot = code
-    binary = os.path.join(published, "Broiler.VM.Sample.JavaScriptConsumer")
+    binary = os.path.join(published, "Broiler.VM.Sample.JavaScriptConsumer" + (".exe" if arguments.rid.startswith("win-") else ""))
     if code == 0 and os.path.isfile(binary):
         lines.append("native image size: %d bytes" % os.path.getsize(binary))
         code, output = run([binary], cwd=published)

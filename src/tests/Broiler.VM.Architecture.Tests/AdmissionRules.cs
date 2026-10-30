@@ -492,7 +492,8 @@ internal static class AdmissionRules
     internal static IReadOnlyList<(string Assembly, string Field, string Value)> DeclaredUnicodeVersions(string assemblyName, byte[] image) =>
         DeclaredStrings(assemblyName, image, static (type, name) =>
             UnicodeVersionFields.Contains(name, StringComparer.Ordinal) &&
-            !(name == "PinnedVersion" && TimePinTypes.Contains(type, StringComparer.Ordinal)));
+            !(name == "PinnedVersion" && (TimePinTypes.Contains(type, StringComparer.Ordinal)
+                || type == "Broiler.ECMAScript.Generation.Intl.IntlCldrPin")));
 
     /// <summary>
     /// Every literal string field of an assembly image that <paramref name="select"/> chooses by its

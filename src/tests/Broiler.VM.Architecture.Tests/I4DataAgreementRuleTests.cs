@@ -116,7 +116,12 @@ public sealed class I4DataAgreementRuleTests
         Assert.Empty(AdmissionRules.I4TimeVersions(pinned, declared));
 
         // The two pin readers' PinnedVersion are time versions, and the Unicode clause does not read them.
-        Assert.DoesNotContain(AdmissionRules.AdmittedUnicodeVersions(), static d => d.Assembly == "Broiler.ECMAScript.Generation");
+        Assert.DoesNotContain(AdmissionRules.AdmittedUnicodeVersions(), static d =>
+            d.Field == "Broiler.ECMAScript.Generation.Time.CldrPin.PinnedVersion"
+            || d.Field == "Broiler.ECMAScript.Generation.Time.TzdbPin.PinnedVersion"
+            || d.Field == "Broiler.ECMAScript.Generation.Intl.IntlCldrPin.PinnedVersion");
+        Assert.Contains(AdmissionRules.AdmittedUnicodeVersions(), static d =>
+            d.Field == "Broiler.ECMAScript.Generation.Intl.IntlUcdPin.PinnedVersion" && d.Value == "17.0.0");
     }
 
     [Fact]

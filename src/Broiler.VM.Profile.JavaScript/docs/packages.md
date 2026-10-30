@@ -7,7 +7,7 @@
 **whatever JS-10 makes packable be frozen in a baseline of its own, compared in both directions so an
 addition and a removal each fail**. This is that baseline: the JavaScript family's packable set, each
 package's dependencies and each package's files, as the candidate pack of
-**bundle [JS-10-011](evidence/js-10-011/README.md)** produced them *(corrected: JSC-300, JSC-302,
+**bundle [JS-10-012](evidence/js-10-012/README.md)** produced them *(recertified on 2026-10-30 for ECMAScript preview.8; previously JS-10-011. Earlier corrections: JSC-300, JSC-302,
 JSC-308, JSC-311, JSC-312, JSC-314, JSC-318; it was bundle JS-10-010's pack, before the shared algorithms
 dependency moved to `0.1.0-preview.7`, before that bundle JS-10-009's pack, before it moved to `0.1.0-preview.6`, before that bundle JS-10-008's pack, before it moved to `0.1.0-preview.5`, before that bundle JS-10-007's pack, before the Unicode area's dependencies moved to
 `0.1.0-preview.5`, before that bundle JS-10-006's pack, before the Unicode cut-over gave the family's packages the
@@ -41,7 +41,7 @@ restores. `Broiler.VM.Profile.MachineCode` is packable and is its own family's, 
 package rule I1 admits for shipping, for the projects that declare it and no other:
 
 - `Broiler.ECMAScript.Algorithms`, the shared JavaScript libraries' algorithms package, which
-  `Broiler.VM.Profile.JavaScript` and `.Compiler` declare at `0.1.0-preview.7` since they took decision
+  `Broiler.VM.Profile.JavaScript` and `.Compiler` declare at `0.1.0-preview.8` since they took decision
   D12 of [JSD-0078](decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md) on
   2026-10-19, published to nuget.org from Broiler.JS `5ddee40`, as the baseline's candidate pack does; they
   declared it at `0.1.0-preview.6` from the Temporal core's cut-over (SJL-10.4, on JSD-0078), published to
