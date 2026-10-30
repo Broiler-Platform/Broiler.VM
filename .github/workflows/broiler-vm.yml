@@ -35,7 +35,7 @@
 # check it turns off: the fuzz sessions run at 2,000 iterations rather than 25,000, and the Octane
 # workload runs six of its fifteen benchmarks rather than all of them. The Octane entry was added
 # on 2026-09-05 after the workload step's first run measured what it costs - 23m28s for fifteen
-# benchmarks on `ubuntu-latest`, on a job whose every other step totals 78 to 208 seconds - and
+# benchmarks on `ubuntu-24.04`, on a job whose every other step totals 78 to 208 seconds - and
 # the six are named below by what they reach.
 #
 # Everything else this lane runs is unabridged: the whole suite, the graph and drift rules, the
@@ -94,7 +94,7 @@ jobs:
   gate:
     name: gate (quick lane)
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       # The check runs on the pull request's head are what the decision reads.
@@ -129,7 +129,7 @@ jobs:
       # for linux-arm64 against 108 for osx-arm64, once the long fuzz sessions are out.
       matrix: >-
         {"include":[
-          {"os":"ubuntu-latest","rid":"linux-x64"},
+          {"os":"ubuntu-24.04","rid":"linux-x64"},
           {"os":"ubuntu-24.04-arm","rid":"linux-arm64"}
         ]}
       # Four sessions, short. A session is a total function of its seed and its seed corpus, so a
@@ -141,7 +141,7 @@ jobs:
       # stops building is a defect a pull request introduced.
       android: false
       # SIX OF OCTANE'S FIFTEEN, AND THE FULL SET IS THE FULL LANE'S. All fifteen out of the
-      # published image took 23m28s on `ubuntu-latest`, on a job whose every other step totals 78
+      # published image took 23m28s on `ubuntu-24.04`, on a job whose every other step totals 78
       # to 208 seconds; twice that per push is the cost this split exists to refuse. The six are
       # chosen by what they REACH rather than by what they cost, because what changes with a
       # runtime identifier is whether the published image can execute a corpus at all: `richards`

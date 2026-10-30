@@ -112,7 +112,7 @@ env:
 jobs:
   plan:
     name: resolve the commit, the bounds and the families
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     outputs:
       commit: ${{ steps.resolve.outputs.commit }}
@@ -212,7 +212,7 @@ jobs:
   measure:
     name: measure (${{ matrix.bounds }}, ${{ matrix.shape }}, ${{ matrix.form }})
     needs: plan
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # 195 for the measuring step and 30 for everything else; the argument is in the header.
     timeout-minutes: 225
     strategy:
@@ -327,7 +327,7 @@ jobs:
     # It runs when a family failed, because the merged artifact and the list of what is missing are
     # what a failed run is read from. The last step still fails the workflow for it.
     if: ${{ always() && needs.plan.result == 'success' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - name: Download every family's log

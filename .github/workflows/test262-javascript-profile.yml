@@ -9,7 +9,7 @@
 #   machinecode   the native form, under `broiler.javascript.wide` with the harness prelude loaded
 #                 exactly as the bytecode run loads it. Every unit of the wide artifact is emitted
 #                 as x86-64 machine code for this runner's calling convention (x86-64-sysv on
-#                 ubuntu-latest). Each block of instructions is one call into the interpreter's own
+#                 ubuntu-24.04). Each block of instructions is one call into the interpreter's own
 #                 dispatch, and the control flow between blocks is emitted.
 #
 # WHAT A machinecode RUN WILL SAY, SO NOBODY READS IT AS A REGRESSION. Its verdicts are expected to
@@ -96,7 +96,7 @@ env:
 jobs:
   plan:
     name: resolve the profile
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       form: ${{ steps.resolve.outputs.form }}
       manifest: ${{ steps.resolve.outputs.manifest }}
@@ -133,7 +133,7 @@ jobs:
   shard:
     name: score shards (runner ${{ matrix.runner }})
     needs: plan
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 340
     strategy:
       fail-fast: false
@@ -235,7 +235,7 @@ jobs:
     # A merge runs even when a shard job failed, because the merged report is what names which
     # shard is missing; the step below still fails the workflow for it.
     if: ${{ always() && needs.plan.result == 'success' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
         with:

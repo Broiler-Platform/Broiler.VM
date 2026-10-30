@@ -8,7 +8,7 @@ NuGet.config whose relative paths are made absolute and which is otherwise uncha
 
   1. THE COMMITTED FEED. A scratch project references the first admitted shared package at its pinned
      version; the source mapping sends the Broiler.ECMAScript and Broiler.Unicode prefixes to
-     eng/packages/ (and nuget.org), and the restore succeeds from the committed feed. Its lock file's
+     eng/packages/ (and nuget.org), and the restore succeeds from the committed feed. Its restore metadata's
      content hash is printed beside the allow-list's pin. (Revised 2026-10-16, at SJL-7.4, when the
      Broiler.Unicode prefix was mapped. It read "the admitted shared package" and "sends the
      Broiler.ECMAScript prefix to eng/packages/".)
@@ -60,20 +60,19 @@ def config_copy(target, feed=None):
     tree.write(target, encoding="utf-8", xml_declaration=True)
 
 
-def project(directory, package, version, lock=False):
+def project(directory, package, version):
     os.makedirs(directory, exist_ok=True)
     with open(os.path.join(directory, "Scratch.csproj"), "w", encoding="utf-8", newline="\n") as handle:
         handle.write("""<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
-    <RestorePackagesWithLockFile>%s</RestorePackagesWithLockFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="%s" Version="[%s]" />
   </ItemGroup>
 </Project>
-""" % ("true" if lock else "false", package, version))
+""" % (package, version))
 
 
 def environment(scratch):
@@ -101,12 +100,12 @@ def main():
     entry = next(e for e in admitted_packages.load() if "committed-feed" in e["sources"])
     scratch = tempfile.mkdtemp(prefix="broiler-sources-feed-")
     config_copy(os.path.join(scratch, "NuGet.config"))
-    project(os.path.join(scratch, "project"), entry["id"], entry["version"], lock=True)
+    project(os.path.join(scratch, "project"), entry["id"], entry["version"])
     transcript.append("## 1. the committed feed: %s %s" % (entry["id"], entry["version"]))
     code, _ = restore(scratch, transcript)
-    with open(os.path.join(scratch, "project", "packages.lock.json"), encoding="utf-8") as handle:
-        locked = json.load(handle)["dependencies"]["net10.0"][entry["id"]]["contentHash"]
-    transcript.append("lock file content hash: " + locked)
+    with open(os.path.join(scratch, "project", "obj", "project.assets.json"), encoding="utf-8") as handle:
+        locked = json.load(handle)["libraries"][entry["id"] + "/" + entry["version"]]["sha512"]
+    transcript.append("restored content hash: " + locked)
     transcript.append("allow-list pin:         " + entry["contentHash"])
     transcript.append("")
     results.append(code == 0 and locked == entry["contentHash"])

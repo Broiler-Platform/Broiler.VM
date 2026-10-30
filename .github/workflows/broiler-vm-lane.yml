@@ -13,7 +13,7 @@
 # and for evidence in bundles, and those are different things.
 #
 # HONESTY NOTE, and it belongs at the top rather than in a footnote. When this file was written it
-# had NEVER RUN, and it said so here. It has run since - on ubuntu-latest and windows-latest,
+# had NEVER RUN, and it said so here. It has run since - on ubuntu-24.04 and windows-latest,
 # publishing and running every composition root as Native AOT on linux-x64 and win-x64 - so the RID
 # matrix below is not aspirational for either of those. It ran on macos-latest and osx-arm64 too,
 # until 2026-09-01: that RID is one ADR 0012 marks RESERVED, no head in the consuming repository
@@ -121,7 +121,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-24.04, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
@@ -151,7 +151,7 @@ jobs:
   # the project graph has the same answer everywhere.
   checks:
     name: build, suites, graph and drift
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
         with:
@@ -165,21 +165,8 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      # RULE I1'S LOCKED-MODE RESTORE, COPIED FROM ci.yml ON 2026-10-19 AND NOT MOVED. Every project
-      # that references an admitted shared package restores with a lock file, and each restores here
-      # in locked mode, so a content hash that moved fails rather than being rewritten (milestone
-      # SJL-2.1). It runs here because this job is a required check and ci.yml's legs are not: a
-      # moved hash now blocks the merge. ci.yml keeps the same loop, because a publish validates
-      # through that workflow and never through this lane.
-      - name: Restore lock-file projects in locked mode
-        shell: bash
-        run: |
-          found=0
-          while IFS= read -r lock; do
-            found=1
-            dotnet restore "$(dirname "$lock")" --locked-mode --nologo
-          done < <(git ls-files '*packages.lock.json')
-          if [ "$found" = 0 ]; then echo "No project carries a lock file."; fi
+      - name: Restore projects without version locks
+        run: dotnet restore Broiler.VM.slnx --nologo
 
       - name: Build with warnings as errors
         run: dotnet build Broiler.VM.slnx -c Release -warnaserror
@@ -299,7 +286,7 @@ jobs:
       matrix: ${{ fromJSON(inputs.matrix) }}
     # THE SIX CELLS, AND THE RULE THAT PRODUCES THEM.
     #
-    #   - { os: ubuntu-latest,   rid: linux-x64 }
+    #   - { os: ubuntu-24.04,   rid: linux-x64 }
     #   - { os: windows-latest,  rid: win-x64 }
     #   - { os: ubuntu-24.04-arm, rid: linux-arm64 }
     #   - { os: windows-11-arm,  rid: win-arm64 }
@@ -477,7 +464,7 @@ jobs:
       # identifier changes them, while what DOES change with the identifier is whether the
       # published image can execute the corpus at all. The Octane pin is 37 files and extracting it
       # costs nothing - but RUNNING it is not free, which is the correction. Fifteen benchmarks out
-      # of the published image took 23m28s on `ubuntu-latest`, on a job whose every other step
+      # of the published image took 23m28s on `ubuntu-24.04`, on a job whose every other step
       # totals 78 to 208 seconds, and that is not a cost the push path can carry twice per push.
       #
       # THE WALL IS THE PROFILE'S OWN MAXIMUM, which is the second correction and the one that took
@@ -579,7 +566,7 @@ jobs:
           # JSC-182 records the measurement and JSC-183 the decision.
           #
           # The estimate that stood here before that run said "above forty-one minutes", scaled
-          # from `richards` at 32.0 on this image against 46.3 on `ubuntu-latest`. The measurement
+          # from `richards` at 32.0 on this image against 46.3 on `ubuntu-24.04`. The measurement
           # is BELOW it, so the estimate was not a lower bound at all: one benchmark's speed ratio
           # does not carry to another, and `zlib`'s own ratio is at least 1.54. That is recorded in
           # JSC-182 rather than quietly dropped, because it is the kind of number a reader would
@@ -1025,7 +1012,7 @@ jobs:
   mobile:
     name: android head (build only)
     if: ${{ !inputs.android }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v7
@@ -1043,7 +1030,7 @@ jobs:
   android:
     name: android head (emulator)
     if: ${{ inputs.android }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
 
     steps:

@@ -12,7 +12,8 @@ internal sealed record AdmittedPackage(
     string Use,
     IReadOnlyList<string> Projects,
     IReadOnlyList<string> Sources,
-    string Pin)
+    string Pin,
+    string? ArchiveHash = null)
 {
     internal bool IsTestOnly => string.Equals(Use, "test-only", StringComparison.Ordinal);
 
@@ -22,7 +23,7 @@ internal sealed record AdmittedPackage(
 }
 
 /// <summary>A lock file's resolution of one package: what restored and the content hash it recorded.</summary>
-internal sealed record LockedPackage(string Id, string Resolved, string ContentHash);
+internal sealed record RestoredPackage(string Id, string Resolved, string ContentHash);
 
 /// <summary>
 /// Group I: the admission of shared JavaScript library packages (ADR 0014; the programme's
@@ -35,8 +36,8 @@ internal sealed record LockedPackage(string Id, string Resolved, string ContentH
 /// Broiler package, N1 refused every package in the profile, and the product graph declared none.
 /// The shared libraries are the first packages a product project will ever reference, so the
 /// admission is spelled out per package and per project, and the hash that restored is part of
-/// the tree: a project that references an admitted package restores with a lock file, and the lock
-/// file's content hash is held to the list.
+/// the tree: a project that references an admitted package uses NuGet assets metadata, and the lock
+/// metadata content hash is held to the list.
 /// </para>
 /// </remarks>
 internal static class AdmissionRules
@@ -75,42 +76,56 @@ internal static class AdmissionRules
                 entry.GetProperty("use").GetString()!,
                 entry.GetProperty("projects").EnumerateArray().Select(static p => p.GetString()!).ToArray(),
                 entry.GetProperty("sources").EnumerateArray().Select(static s => s.GetString()!).ToArray(),
-                entry.GetProperty("pin").GetString()!))
+                entry.GetProperty("pin").GetString()!,
+                entry.TryGetProperty("archiveHash", out var archiveHash) ? archiveHash.GetString() : null))
             .ToArray();
     }
 
     /// <summary>The packages a lock file resolved for net10.0, direct and transitive.</summary>
-    internal static IReadOnlyList<LockedPackage> ReadLockFile(string text)
+    internal static IReadOnlyList<RestoredPackage> ReadLockFile(string text)
     {
         using var document = JsonDocument.Parse(text);
         return document.RootElement.GetProperty("dependencies").EnumerateObject()
             .SelectMany(static framework => framework.Value.EnumerateObject())
             .Where(static package => package.Value.TryGetProperty("contentHash", out _))
-            .Select(static package => new LockedPackage(
+            .Select(static package => new RestoredPackage(
                 package.Name,
                 package.Value.GetProperty("resolved").GetString()!,
                 package.Value.GetProperty("contentHash").GetString()!))
             .ToArray();
     }
 
+    /// <summary>Read the actual package versions/hashes from ordinary NuGet restore output.</summary>
+    internal static IReadOnlyList<RestoredPackage> ReadRestoreAssets(string text)
+    {
+        using var document = JsonDocument.Parse(text);
+        return document.RootElement.GetProperty("libraries").EnumerateObject()
+            .Where(static library => library.Value.GetProperty("type").GetString() == "package")
+            .Select(static library => new RestoredPackage(
+                library.Name[..library.Name.LastIndexOf('/')],
+                library.Name[(library.Name.LastIndexOf('/') + 1)..],
+                library.Value.GetProperty("sha512").GetString()!))
+            .ToArray();
+    }
+
     /// <summary>
     /// I1: every PackageReference is on the allow-list, from a project the list names for it, in
-    /// the JavaScript family, restored with a lock file whose content hash equals the list's pin.
+    /// the JavaScript family, restored with NuGet assets metadata whose content hash equals the list's pin.
     /// A test-only package is admitted for no product project.
     /// </summary>
     /// <remarks>
     /// <b>Revised 2026-10-16, at SJL-7.4</b>, when the owner's table generator reached the
     /// architecture tests as a pinned, test-only package (JSD-0074, decision SJL-D-6 (c)): a test
     /// project may hold an admitted reference through a test-only entry that names it, restored with
-    /// a lock file at the pin like any other, and never through a product entry. A test project's
+    /// restore metadata at the pin like any other, and never through a product entry. A test project's
     /// test frameworks are not Broiler packages and are not this rule's subject; rule A2 refuses a
     /// Broiler package outside the list in every project. Until then the rule read "every
     /// PackageReference ... from a project the list names for it, in the JavaScript family", and a
     /// test project outside the family was refused whatever its entry said.
     /// </remarks>
     /// <param name="project">The project file.</param>
-    /// <param name="lockFile">Its packages.lock.json, or null when it has none.</param>
-    internal static IEnumerable<string> I1(ComponentGraph.ProjectFile project, IReadOnlyList<LockedPackage>? lockFile)
+    /// <param name="lockFile">Its resolved package metadata, or null before restore.</param>
+    internal static IEnumerable<string> I1(ComponentGraph.ProjectFile project, IReadOnlyList<RestoredPackage>? lockFile)
     {
         foreach (var reference in project.PackageReferences)
         {
@@ -154,24 +169,19 @@ internal static class AdmissionRules
                 continue;
             }
 
-            if (!project.RawText.Contains("<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>", StringComparison.Ordinal))
-            {
-                yield return $"{where}: the project does not restore with a lock file";
-            }
-
             var locked = lockFile?.SingleOrDefault(package => string.Equals(package.Id, admitted.Id, StringComparison.OrdinalIgnoreCase));
 
             if (locked is null)
             {
-                yield return $"{where}: no lock file records what restored";
+                yield return $"{where}: no restore metadata records what restored";
             }
             else if (!string.Equals(locked.Resolved, admitted.Version, StringComparison.Ordinal))
             {
-                yield return $"{where}: the lock file resolved {locked.Resolved}, the allow-list pins {admitted.Version}";
+                yield return $"{where}: restore resolved {locked.Resolved}, the allow-list pins {admitted.Version}";
             }
             else if (!string.Equals(locked.ContentHash, admitted.ContentHash, StringComparison.Ordinal))
             {
-                yield return $"{where}: the lock file's content hash {locked.ContentHash} differs from the pin {admitted.ContentHash}";
+                yield return $"{where}: the restored content hash {locked.ContentHash} differs from the pin {admitted.ContentHash}";
             }
         }
     }
@@ -225,7 +235,8 @@ internal static class AdmissionRules
                 .ToDictionary(static parts => parts[0], static parts => parts[1], StringComparer.Ordinal);
 
             if (pin.GetValueOrDefault("id") != package.Id || pin.GetValueOrDefault("version") != package.Version
-                || pin.GetValueOrDefault("content-hash") != package.ContentHash)
+                || pin.GetValueOrDefault("content-hash") != package.ContentHash
+                || pin.GetValueOrDefault("archive-hash") != package.ArchiveHash)
             {
                 yield return $"{package.Id}: the allow-list and {package.Pin} disagree on identity or content hash";
             }
@@ -236,7 +247,7 @@ internal static class AdmissionRules
                 {
                     yield return $"{package.Id}: {package.Version} is not on the committed feed";
                 }
-                else if (ContentHash(File.ReadAllBytes(package.FeedPath)) != package.ContentHash)
+                else if (ContentHash(File.ReadAllBytes(package.FeedPath)) != (package.ArchiveHash ?? package.ContentHash))
                 {
                     yield return $"{package.Id}: the committed feed's copy does not hash to the pin";
                 }
