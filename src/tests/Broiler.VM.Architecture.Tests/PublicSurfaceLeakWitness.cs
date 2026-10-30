@@ -13,5 +13,5 @@ namespace Broiler.VM.Architecture.Tests;
 /// </remarks>
 public sealed class PublicSurfaceLeakWitness
 {
-    public Xunit.Abstractions.ITestOutputHelper? Output { get; init; }
+    public Xunit.ITestOutputHelper? Output { get; init; }
 }

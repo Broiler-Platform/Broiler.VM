@@ -7,8 +7,8 @@
   "packages": [
     {
       "id": "Broiler.Unicode.Algorithms",
-      "version": "0.1.0-preview.5",
-      "contentHash": "KMLRX1YipkukyafcoZuVxKP2qC5I05FIHTv4z1eyUgOu5aUpPq2eLYXtt4CP6CKbBJFUaWAUCZBZoEeOe04qsw==",
+      "version": "0.1.0-preview.6",
+      "contentHash": "ix5d1rK49zNV7mWQLg780RV8VrTaAuGaerMbTwsR4g0Zgm8cOKCesB+MLQIfHojEMBpP8dAzOqn0PBnre1fmAQ==",
       "use": "product",
       "projects": [
         "Broiler.VM.Architecture.Tests"
@@ -17,8 +17,9 @@
         "committed-feed",
         "nuget.org"
       ],
-      "pin": "eng/packages/Broiler.Unicode.Algorithms.0.1.0-preview.5.pin",
-      "admittedBy": "witness"
+      "pin": "eng/packages/Broiler.Unicode.Algorithms.0.1.0-preview.6.pin",
+      "admittedBy": "witness",
+      "archiveHash": "uSv5c1Rd8z2WLI0VlkBe3JcwrRBMu2fQCKXsPh+NMGlv+zGa98xUk/ZXaG9WRMZ0L+kdEXcn2mlaOGix/iEkNg=="
     }
   ]
 }

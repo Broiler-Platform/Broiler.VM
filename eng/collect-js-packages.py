@@ -136,7 +136,7 @@ def isolated(packages, http_cache):
     return env
 
 
-def write_manifest(out, bundle, rid="linux-x64"):
+def write_manifest(out, bundle, rid="linux-x64", aot_pack_version=None):
     commit = run(["git", "rev-parse", "HEAD"])[1].strip()
     status = run(["git", "status", "--porcelain"])[1]
     sdk = run(["dotnet", "--version"])[1].strip()
@@ -152,6 +152,7 @@ def write_manifest(out, bundle, rid="linux-x64"):
         "commit " + commit,
         "tree " + ("clean" if status.strip() == "" else "dirty"),
         "sdk " + sdk,
+        "aot-pack-version " + (aot_pack_version or "all cached versions"),
         "machine " + platform.platform() + " " + platform.machine() + " cpus=" + str(os.cpu_count()),
         "candidate " + CANDIDATE,
         "previous " + PREVIOUS + " from " + UPSTREAM.format(lower="{id}", version=PREVIOUS),
@@ -202,11 +203,12 @@ def main():
     parser.add_argument("--bundle", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--rid", default="linux-x64")
+    parser.add_argument("--aot-pack-version", help="Seed only this SDK runtime/compiler version instead of every cached version")
     arguments = parser.parse_args()
 
     out = os.path.join(ROOT, arguments.out)
     os.makedirs(out, exist_ok=True)
-    manifest, clean = write_manifest(out, arguments.bundle, arguments.rid)
+    manifest, clean = write_manifest(out, arguments.bundle, arguments.rid, arguments.aot_pack_version)
     print("manifest " + manifest + (" (clean tree)" if clean else " (DIRTY tree)"))
 
     # 2. The candidate pack, into a directory of its own, then onto an empty feed.
@@ -298,7 +300,12 @@ def main():
     if arguments.rid.startswith("win-"):
         aot_packs.append("microsoft.windowsdesktop.app.runtime." + arguments.rid)
     for pack in aot_packs:
-        shutil.copytree(os.path.join(home, pack), os.path.join(packages, pack))
+        source = os.path.join(home, pack)
+        target = os.path.join(packages, pack)
+        if arguments.aot_pack_version:
+            source = os.path.join(source, arguments.aot_pack_version)
+            target = os.path.join(target, arguments.aot_pack_version)
+        shutil.copytree(source, target)
     env = isolated(packages, os.path.join(scratch, "http-cache"))
     for directory in ("bin", "obj"):
         shutil.rmtree(os.path.join(SAMPLE, directory), ignore_errors=True)

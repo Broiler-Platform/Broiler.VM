@@ -57,6 +57,9 @@ internal static class CompositionRules
     [
         "Broiler.VM.Fixtures",
         "xunit.core",
+        "xunit.v3.core",
+        "xunit.v3.common",
+        "xunit.v3.runner.inproc.console",
         "xunit.execution.dotnet",
         "xunit.assert",
     ];

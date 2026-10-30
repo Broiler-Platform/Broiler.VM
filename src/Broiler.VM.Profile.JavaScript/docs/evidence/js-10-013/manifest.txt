@@ -1,0 +1,61 @@
+bundle JS-10-013
+evidence-class packaging
+decision The candidate set is recorded as this profile's packable baseline if every family package's metadata names only Broiler.VM packages, the pristine consumer restores and runs against it with upstream unreachable, rolls back to the published previous set and forward again, and the negative control fails to restore; otherwise the bundle records which step failed and no baseline is taken.
+collected 2026-10-30T23:25:15Z
+commit 5ecd40503f2b3a174027a0044554073c059886a5
+tree dirty
+sdk 10.0.403
+aot-pack-version 10.0.14
+machine Windows-10-10.0.26200-SP0 AMD64 cpus=16
+candidate 0.1.0-preview.6.f9-candidate
+previous 0.1.0-preview.5 from https://api.nuget.org/v3-flatcontainer/{id}/0.1.0-preview.5/{id}.0.1.0-preview.5.nupkg
+previous-packages Broiler.VM.Abstractions Broiler.VM.Binary Broiler.VM.Runtime Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Compiler
+negative-control 0.1.0-preview.4
+upstream-during-restore http://127.0.0.1:9
+aot-seeded microsoft.aspnetcore.app.runtime.win-x64 microsoft.dotnet.ilcompiler microsoft.net.illink.tasks microsoft.netcore.app.runtime.win-x64 microsoft.netcore.app.runtime.nativeaot.win-x64 runtime.win-x64.microsoft.dotnet.ilcompiler microsoft.windowsdesktop.app.runtime.win-x64
+dirty:
+   M Directory.Build.props
+   M Directory.Packages.props
+   M eng/collect-js-packages.py
+   D eng/packages/Broiler.Unicode.Algorithms.0.1.0-preview.5.nupkg
+   D eng/packages/Broiler.Unicode.Algorithms.0.1.0-preview.5.pin
+   D eng/packages/Broiler.Unicode.Generation.0.1.0-preview.5.nupkg
+   D eng/packages/Broiler.Unicode.Generation.0.1.0-preview.5.pin
+   D eng/packages/Broiler.Unicode.Segmentation.0.1.0-preview.5.nupkg
+   D eng/packages/Broiler.Unicode.Segmentation.0.1.0-preview.5.pin
+   M eng/packages/README.md
+   M src/tests/Broiler.VM.Architecture.Tests/AssuranceFingerprintTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/AssuranceRuleTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/AssuranceScannerTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj
+   M src/tests/Broiler.VM.Architecture.Tests/CompilationStackRuleTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/CompositionRules.cs
+   M src/tests/Broiler.VM.Architecture.Tests/DiagnosticRegistryRuleTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/IngestionPathRuleTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/LegacyBoundaryTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/N16WideSurfaceRuleTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/N23PlatformNormalizerRuleTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/N25NoFinalizerRuleTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/N26FixedRealmRuleTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/PublicSurfaceLeakWitness.cs
+   M src/tests/Broiler.VM.Architecture.Tests/RegisterFigureTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/ReviewRecordRuleTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/WebAssemblyIngestionRuleTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/admitted-packages.json
+   M src/tests/Broiler.VM.Architecture.Tests/graph.manifest.json
+   M src/tests/Broiler.VM.Contract.Tests/ArtifactBoundaryTests.cs
+   M src/tests/Broiler.VM.Contract.Tests/Broiler.VM.Contract.Tests.csproj
+   M src/tests/Broiler.VM.Contract.Tests/CatalogRegistrationTests.cs
+   M src/tests/Broiler.VM.Contract.Tests/ConcurrencyTests.cs
+   M src/tests/Broiler.VM.Contract.Tests/DisposalAndCancellationTests.cs
+   M src/tests/Broiler.VM.Contract.Tests/FuelChargeExactnessTests.cs
+  ?? eng/packages/Broiler.ECMAScript.Algorithms.0.1.0-preview.8.nupkg
+  ?? eng/packages/Broiler.ECMAScript.Algorithms.0.1.0-preview.8.pin
+  ?? eng/packages/Broiler.ECMAScript.Generation.0.1.0-preview.8.nupkg
+  ?? eng/packages/Broiler.ECMAScript.Generation.0.1.0-preview.8.pin
+  ?? eng/packages/Broiler.Unicode.Algorithms.0.1.0-preview.6.nupkg
+  ?? eng/packages/Broiler.Unicode.Algorithms.0.1.0-preview.6.pin
+  ?? eng/packages/Broiler.Unicode.Generation.0.1.0-preview.6.nupkg
+  ?? eng/packages/Broiler.Unicode.Generation.0.1.0-preview.6.pin
+  ?? eng/packages/Broiler.Unicode.Segmentation.0.1.0-preview.6.nupkg
+  ?? eng/packages/Broiler.Unicode.Segmentation.0.1.0-preview.6.pin

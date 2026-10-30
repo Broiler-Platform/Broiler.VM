@@ -373,7 +373,7 @@ public sealed class AssuranceFingerprintTests
             AssuranceFingerprint.OfFile(AssuranceProbe.Source(commented).Tree));
         Assert.DoesNotContain(
             "GENERATED",
-            AssuranceFingerprint.TokenStream(AssuranceProbe.Source(commented).Tree.GetRoot()),
+            AssuranceFingerprint.TokenStream(AssuranceProbe.Source(commented).Tree.GetRoot(TestContext.Current.CancellationToken)),
             StringComparison.Ordinal);
 
         // ...and the half no unit can cover: the attribute is in the file stream and in no unit.

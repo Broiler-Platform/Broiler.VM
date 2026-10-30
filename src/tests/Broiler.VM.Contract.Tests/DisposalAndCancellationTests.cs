@@ -102,7 +102,7 @@ public sealed class DisposalAndCancellationTests
         // Disposal is not waiting for this one: the instance is not registered yet, so there is
         // nothing in the runtime's list to drain. It completes, and the instantiation then finds a
         // runtime that is no longer taking instances.
-        Assert.True(disposal.Wait(Patience), "runtime disposal did not complete");
+        Assert.True(disposal.Wait(Patience, TestContext.Current.CancellationToken), "runtime disposal did not complete");
 
         gate.Release();
         var result = instantiation.GetAwaiter().GetResult();
@@ -198,7 +198,7 @@ public sealed class DisposalAndCancellationTests
             return runtime.Dispose();
         });
 
-        Assert.True(disposal.Wait(Patience), "disposal blocked on a paused operation");
+        Assert.True(disposal.Wait(Patience, TestContext.Current.CancellationToken), "disposal blocked on a paused operation");
         Assert.Equal(VmControlOutcome.Accepted, disposal.GetAwaiter().GetResult().Kind);
 
         // The resume token is dead, and answers so rather than resuming an abandoned continuation.
@@ -302,7 +302,7 @@ public sealed class DisposalAndCancellationTests
         var results = new VmControlResult[8];
         Parallel.For(0, results.Length, index => results[index] = runtime.Dispose());
 
-        Assert.Single(results.Where(static result => result.Kind is VmControlOutcome.Accepted));
+        Assert.Single(results, static result => result.Kind is VmControlOutcome.Accepted);
         Assert.All(
             results,
             result => Assert.True(

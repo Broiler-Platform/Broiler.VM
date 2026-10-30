@@ -245,8 +245,8 @@ public sealed class AssuranceRuleTests
 
         // Non-vacuous: the predicate answers both ways over the checkout, so the clean result is
         // a classification and not a predicate that exempts everything.
-        Assert.NotEmpty(ProductUnits.Where(static unit => unit.IsRelevant));
-        Assert.NotEmpty(ProductUnits.Where(static unit => unit.IsExempt));
+        Assert.Contains(ProductUnits, static unit => unit.IsRelevant);
+        Assert.Contains(ProductUnits, static unit => unit.IsExempt);
         Assert.All(
             ProductUnits.Where(static unit => unit.IsRelevant),
             static unit => Assert.NotNull(unit.Annotation));
@@ -295,8 +295,8 @@ public sealed class AssuranceRuleTests
         // otherwise be relevant; a reason a human wrote outranks the predicate, and the case is
         // reported apart from the eight so that it stays countable in the component report.
         var hatched = WitnessUnits("J1-an-explicit-exemption-covers-a-unit.cs.witness");
-        var shim = Assert.Single(hatched.Where(static unit =>
-            unit.Name.EndsWith(".Shim(int)", StringComparison.Ordinal)));
+        var shim = Assert.Single(hatched, static unit =>
+            unit.Name.EndsWith(".Shim(int)", StringComparison.Ordinal));
         Assert.Equal(AssuranceExemption.DeclaredInSource, shim.Exemption);
         Assert.Equal(AssuranceReviewState.Exempt, shim.State);
         Assert.Empty(CoverageViolations(hatched));
@@ -318,10 +318,10 @@ public sealed class AssuranceRuleTests
         var supplied = CoverageViolations(
             WitnessUnits("J1-a-delegation-that-supplies-a-value-is-relevant.cs.witness"));
         Assert.Equal(2, supplied.Count);
-        Assert.Single(supplied.Where(static claim => claim.Contains(
-            "Probe.Routed.TryReadWide(out ulong) is relevant", StringComparison.Ordinal)));
-        Assert.Single(supplied.Where(static claim => claim.Contains(
-            "Probe.Routed.TryReserve(ulong) is relevant", StringComparison.Ordinal)));
+        Assert.Single(supplied, static claim => claim.Contains(
+            "Probe.Routed.TryReadWide(out ulong) is relevant", StringComparison.Ordinal));
+        Assert.Single(supplied, static claim => claim.Contains(
+            "Probe.Routed.TryReserve(ulong) is relevant", StringComparison.Ordinal));
 
         // ...and the accepting half of the same witness: the member that forwards its parameters
         // unchanged stays exempt, so the case is narrowed rather than deleted.
@@ -336,10 +336,10 @@ public sealed class AssuranceRuleTests
         var constants = WitnessUnits("J1-an-initialized-constant-is-a-code-unit.cs.witness");
         var uninitialized = CoverageViolations(constants);
         Assert.Equal(2, uninitialized.Count);
-        Assert.Single(uninitialized.Where(static claim => claim.Contains(
-            "Probe.Budgeted.MaximumEntries is relevant", StringComparison.Ordinal)));
-        Assert.Single(uninitialized.Where(static claim => claim.Contains(
-            "Probe.Budgeted.Widths is relevant", StringComparison.Ordinal)));
+        Assert.Single(uninitialized, static claim => claim.Contains(
+            "Probe.Budgeted.MaximumEntries is relevant", StringComparison.Ordinal));
+        Assert.Single(uninitialized, static claim => claim.Contains(
+            "Probe.Budgeted.Widths is relevant", StringComparison.Ordinal));
 
         // ...and the other half: EVERY field declaration is a unit, and the two that state no fixed
         // value are exempt rather than absent. Six units in that witness, `used` and `mutable`
@@ -374,10 +374,10 @@ public sealed class AssuranceRuleTests
             WitnessUnits("J1-a-property-that-publishes-another-field-is-relevant.cs.witness"));
 
         Assert.Equal(2, published.Count);
-        Assert.Single(published.Where(static claim => claim.Contains(
-            "Probe.Published.MaxSectionCount is relevant", StringComparison.Ordinal)));
-        Assert.Single(published.Where(static claim => claim.Contains(
-            "Probe.Published.SectionCeiling is relevant", StringComparison.Ordinal)));
+        Assert.Single(published, static claim => claim.Contains(
+            "Probe.Published.MaxSectionCount is relevant", StringComparison.Ordinal));
+        Assert.Single(published, static claim => claim.Contains(
+            "Probe.Published.SectionCeiling is relevant", StringComparison.Ordinal));
 
         Assert.All(
             WitnessUnits("J1-a-property-that-publishes-another-field-is-relevant.cs.witness")
@@ -566,18 +566,18 @@ public sealed class AssuranceRuleTests
         Assert.Empty(VocabularyViolations(ProductUnits));
         Assert.Empty(ParseViolations(GeneratedSources));
         Assert.Empty(SpecViolations(ProductUnits));
-        Assert.NotEmpty(ProductUnits.Where(static unit => unit.Annotation is not null));
+        Assert.Contains(ProductUnits, static unit => unit.Annotation is not null);
 
         // Non-vacuous for the citation clause specifically: the tree cites records, so the check
         // resolves something rather than never running.
-        Assert.NotEmpty(ProductUnits.Where(static unit =>
+        Assert.Contains(ProductUnits, static unit =>
             unit.Annotation?.Field("Spec") is { } spec &&
-            spec.StartsWith("ADR-", StringComparison.Ordinal)));
+            spec.StartsWith("ADR-", StringComparison.Ordinal));
 
         // ...and for the criterion clauses: the tree carries falsification criteria, so they are
         // parsed and held to their shape rather than never encountered.
-        Assert.NotEmpty(ProductUnits.Where(static unit =>
-            unit.Annotation?.HasFalsificationCriterion == true));
+        Assert.Contains(ProductUnits, static unit =>
+            unit.Annotation?.HasFalsificationCriterion == true);
 
         // Clause, one per closed vocabulary and one per required field.
         AssertOneVocabularyProblem(
@@ -619,20 +619,20 @@ public sealed class AssuranceRuleTests
         // its lines are reported - the human line because a human line alone opens no block.
         var unparsed = ParseViolations([Witness("J2-a-field-carries-no-equals-sign.cs.witness")]);
         Assert.Equal(2, unparsed.Count);
-        Assert.Single(unparsed.Where(static problem =>
-            problem.Contains("has a field with no '=': 'IP Low'", StringComparison.Ordinal)));
-        Assert.Single(unparsed.Where(static problem =>
-            problem.Contains("does not open with '// Broiler-AI:'", StringComparison.Ordinal)));
+        Assert.Single(unparsed, static problem =>
+            problem.Contains("has a field with no '=': 'IP Low'", StringComparison.Ordinal));
+        Assert.Single(unparsed, static problem =>
+            problem.Contains("does not open with '// Broiler-AI:'", StringComparison.Ordinal));
 
         // Clause: a well-formed block attached to no declaration. The only unit in that witness is
         // an auto-property the predicate exempts, so J1 has nothing to say about it and this is
         // the only rule that sees the block at all.
         var stranded = ParseViolations([Witness("J2-an-annotation-attached-to-no-declaration.cs.witness")]);
         Assert.Equal(2, stranded.Count);
-        Assert.Single(stranded.Where(static problem =>
-            problem.Contains("attached to no declaration", StringComparison.Ordinal)));
-        Assert.Single(stranded.Where(static problem =>
-            problem.Contains("does not open with '// Broiler-AI:'", StringComparison.Ordinal)));
+        Assert.Single(stranded, static problem =>
+            problem.Contains("attached to no declaration", StringComparison.Ordinal));
+        Assert.Single(stranded, static problem =>
+            problem.Contains("does not open with '// Broiler-AI:'", StringComparison.Ordinal));
         Assert.Empty(CoverageViolations(
             WitnessUnits("J2-an-annotation-attached-to-no-declaration.cs.witness")));
 
@@ -674,9 +674,9 @@ public sealed class AssuranceRuleTests
         // of one - which is J1's problem as well and reported here as the wrap it is.
         var wrapped = ParseViolations([Witness("J2-a-criterion-wrapped-onto-a-second-line.cs.witness")]);
 
-        Assert.Single(wrapped.Where(static problem => problem.Contains(
+        Assert.Single(wrapped, static problem => problem.Contains(
             "carries a second '// Broiler-Falsified-If:' line, and a falsification criterion is one line",
-            StringComparison.Ordinal)));
+            StringComparison.Ordinal));
         Assert.Null(WitnessUnit(
             "J2-a-criterion-wrapped-onto-a-second-line.cs.witness", "Probe.Wrapped.Fold(int[])").Annotation);
 
@@ -874,16 +874,16 @@ public sealed class AssuranceRuleTests
         // well-formedness assertion above does not reach an EXEMPT line - which it used to, so
         // the documented hatch failed J3 the moment anyone used it.
         var hatched = WitnessUnits("J3-an-exempt-annotation-records-no-fingerprint.cs.witness");
-        var exempt = Assert.Single(hatched.Where(static unit =>
-            unit.Name.EndsWith(".Shim(int[])", StringComparison.Ordinal)));
+        var exempt = Assert.Single(hatched, static unit =>
+            unit.Name.EndsWith(".Shim(int[])", StringComparison.Ordinal));
 
         Assert.Null(exempt.Annotation!.RecordedFingerprint);
         Assert.Equal(AssuranceReviewState.Exempt, exempt.State);
         Assert.Empty(FingerprintViolations(hatched));
         Assert.Empty(VocabularyViolations(hatched));
-        Assert.Empty(hatched.Where(static unit =>
+        Assert.DoesNotContain(hatched, static unit =>
             unit.Annotation is { ExemptReason: null } &&
-            unit.Name.EndsWith(".Shim(int[])", StringComparison.Ordinal)));
+            unit.Name.EndsWith(".Shim(int[])", StringComparison.Ordinal));
     }
 
     private static List<string> FingerprintViolations(IEnumerable<AssuranceUnit> units)
@@ -987,7 +987,7 @@ public sealed class AssuranceRuleTests
         // each, so the comparison is over a real corpus rather than over an empty one. The count is
         // over the SOURCE artefacts: the human-review record quotes an annotation block in a fenced
         // example, and an example of the shape a reviewer writes is not a line anybody wrote.
-        Assert.NotEmpty(ProductUnits.Where(static unit => unit.Annotation is not null));
+        Assert.Contains(ProductUnits, static unit => unit.Annotation is not null);
         Assert.Equal(
             ProductUnits.Count(static unit => unit.Annotation is not null),
             AssuranceGenerator.Current.Artefacts
@@ -1012,25 +1012,25 @@ public sealed class AssuranceRuleTests
         // either check would leave the other reporting the same input and look like coverage.
         var named = ApprovalViolations(WitnessUnits("J4-a-unit-names-a-reviewer.cs.witness"));
         Assert.Equal(2, named.Count);
-        Assert.Single(named.Where(static claim =>
-            claim.Contains("names reviewer 'WITNESS-ONLY' on its human line", StringComparison.Ordinal)));
-        Assert.Single(named.Where(static claim => claim.Contains(
-            "carries a human line reading 'WITNESS-ONLY; Fingerprint=TBF'", StringComparison.Ordinal)));
+        Assert.Single(named, static claim =>
+            claim.Contains("names reviewer 'WITNESS-ONLY' on its human line", StringComparison.Ordinal));
+        Assert.Single(named, static claim => claim.Contains(
+            "carries a human line reading 'WITNESS-ONLY; Fingerprint=TBF'", StringComparison.Ordinal));
 
         // Clause: the VERIFIED state itself, which is what makes a unit eligible for release.
         var verified = ApprovalViolations(WitnessUnits("J4-a-unit-is-verified.cs.witness"));
         Assert.Equal(3, verified.Count);
-        Assert.Single(verified.Where(static claim => claim.Contains("is VERIFIED", StringComparison.Ordinal)));
-        Assert.Single(verified.Where(static claim =>
-            claim.Contains("names reviewer 'WITNESS-ONLY'", StringComparison.Ordinal)));
+        Assert.Single(verified, static claim => claim.Contains("is VERIFIED", StringComparison.Ordinal));
+        Assert.Single(verified, static claim =>
+            claim.Contains("names reviewer 'WITNESS-ONLY'", StringComparison.Ordinal));
 
         // Clause: a reviewer preserved as history. J3 accepts it and J4 does not, and the
         // difference is the point: Previous here would say a human once reviewed this code.
         var previous = ApprovalViolations(
             WitnessUnits("J4-a-stale-line-preserves-a-previous-reviewer.cs.witness"));
         Assert.Equal(2, previous.Count);
-        Assert.Single(previous.Where(static claim => claim.Contains(
-            "preserves previous reviewer 'WITNESS-ONLY' on its human line", StringComparison.Ordinal)));
+        Assert.Single(previous, static claim => claim.Contains(
+            "preserves previous reviewer 'WITNESS-ONLY' on its human line", StringComparison.Ordinal));
 
         // Clause: the accepted direction, and the state of every unit in this component.
         var pending = WitnessUnits("J4-a-pending-line-claims-nothing.cs.witness");
@@ -1042,8 +1042,8 @@ public sealed class AssuranceRuleTests
         // Clause: the refusal. The generator is handed the transformation the policy forbids and
         // must throw, naming the reviewer, the unit and the line it was reading.
         var source = Witness("J4-the-generator-is-asked-to-name-a-reviewer.cs.witness");
-        var unit = Assert.Single(AssuranceScanner.Scan(source).Where(static scanned =>
-            scanned.Name.EndsWith(".Fold(int[])", StringComparison.Ordinal)));
+        var unit = Assert.Single(AssuranceScanner.Scan(source), static scanned =>
+            scanned.Name.EndsWith(".Fold(int[])", StringComparison.Ordinal));
 
         Assert.True(unit.Annotation!.HumanIsPending);
 
@@ -1673,11 +1673,11 @@ public sealed class AssuranceRuleTests
             WitnessText("J5-report-overstates-the-criteria-count.md.witness"), uncovered);
 
         Assert.Equal(2, criteriaFigures.Count);
-        Assert.Single(criteriaFigures.Where(static claim => claim.Contains(
+        Assert.Single(criteriaFigures, static claim => claim.Contains(
             "states Units carrying a criterion 2 where the annotations give 0",
-            StringComparison.Ordinal)));
-        Assert.Single(criteriaFigures.Where(static claim => claim.Contains(
-            "states Required and missing 0 where the annotations give 2", StringComparison.Ordinal)));
+            StringComparison.Ordinal));
+        Assert.Single(criteriaFigures, static claim => claim.Contains(
+            "states Required and missing 0 where the annotations give 2", StringComparison.Ordinal));
 
         // ...and the real report's own three figures, which the clean direction at the top of this
         // rule already compares against the annotations. They are asserted to be THERE rather than
@@ -1903,10 +1903,10 @@ public sealed class AssuranceRuleTests
             [Witness("J6-a-conditional-region-hides-code.cs.witness")]);
 
         Assert.Equal(2, conditional.Count);
-        Assert.Single(conditional.Where(static problem => problem.Contains(
-            "carries the preprocessor directive '#if NET10_0_OR_GREATER'", StringComparison.Ordinal)));
-        Assert.Single(conditional.Where(static problem => problem.Contains(
-            "carries the preprocessor directive '#endif'", StringComparison.Ordinal)));
+        Assert.Single(conditional, static problem => problem.Contains(
+            "carries the preprocessor directive '#if NET10_0_OR_GREATER'", StringComparison.Ordinal));
+        Assert.Single(conditional, static problem => problem.Contains(
+            "carries the preprocessor directive '#endif'", StringComparison.Ordinal));
 
         // Clause: a directive that compiles nothing away is still a directive. The rule is about
         // the whole class, not about `#if`.
@@ -1914,12 +1914,12 @@ public sealed class AssuranceRuleTests
             [Witness("J6-a-directive-that-is-not-conditional.cs.witness")]);
 
         Assert.Equal(2, pragma.Count);
-        Assert.Single(pragma.Where(static problem => problem.Contains(
+        Assert.Single(pragma, static problem => problem.Contains(
             "carries the preprocessor directive '#pragma warning disable CA1822'",
-            StringComparison.Ordinal)));
-        Assert.Single(pragma.Where(static problem => problem.Contains(
+            StringComparison.Ordinal));
+        Assert.Single(pragma, static problem => problem.Contains(
             "carries the preprocessor directive '#pragma warning restore CA1822'",
-            StringComparison.Ordinal)));
+            StringComparison.Ordinal));
 
         // Clause: the second defence, asserted apart from the first. Under the scanner's parse the
         // guarded region is ACTIVE - no disabled text anywhere in the witness - so the method
@@ -1928,11 +1928,11 @@ public sealed class AssuranceRuleTests
         var region = Witness("J6-a-conditional-region-hides-code.cs.witness");
 
         Assert.DoesNotContain(
-            region.Tree.GetRoot().DescendantTrivia(descendIntoTrivia: true),
+            region.Tree.GetRoot(TestContext.Current.CancellationToken).DescendantTrivia(descendIntoTrivia: true),
             static trivia => trivia.IsKind(SyntaxKind.DisabledTextTrivia));
 
-        var guarded = Assert.Single(AssuranceScanner.Scan(region).Where(static unit =>
-            unit.Name.Contains(".Admit(", StringComparison.Ordinal)));
+        var guarded = Assert.Single(AssuranceScanner.Scan(region), static unit =>
+            unit.Name.Contains(".Admit(", StringComparison.Ordinal));
 
         Assert.Contains("Conditioned.Admit(uint)", guarded.Name, StringComparison.Ordinal);
         Assert.Contains("4242", AssuranceFingerprint.TokenStream(guarded.Declaration), StringComparison.Ordinal);
@@ -2009,8 +2009,8 @@ public sealed class AssuranceRuleTests
         var covered = AssuranceManifest.Entries(AssuranceScanner.Units);
 
         Assert.Equal(AssuranceScanner.Units.Count, covered.Count);
-        Assert.NotEmpty(covered.Where(static entry => entry.Exempt));
-        Assert.NotEmpty(covered.Where(static entry => !entry.Exempt));
+        Assert.Contains(covered, static entry => entry.Exempt);
+        Assert.Contains(covered, static entry => !entry.Exempt);
         Assert.All(covered, static entry => Assert.True(
             AssuranceFingerprint.IsWellFormed(entry.Fingerprint), entry.Name));
 
@@ -2251,11 +2251,11 @@ public sealed class AssuranceRuleTests
             [.. AssuranceArtefactShape.ManifestHeader, .. appended]);
 
         Assert.Equal(2, forgedHeader.Count);
-        Assert.Single(forgedHeader.Where(claim => claim.Contains(
+        Assert.Single(forgedHeader, claim => claim.Contains(
             "reviewState=VERIFIED; humanReviewed=true; reviewer=WITNESS-ONLY for all 1169 units.",
-            StringComparison.Ordinal)));
-        Assert.Single(forgedHeader.Where(static claim => claim.Contains(
-            "The component is eligible for release.", StringComparison.Ordinal)));
+            StringComparison.Ordinal));
+        Assert.Single(forgedHeader, static claim => claim.Contains(
+            "The component is eligible for release.", StringComparison.Ordinal));
         Assert.All(forgedHeader, static claim => Assert.Contains(
             "assurance.manifest.json", claim, StringComparison.Ordinal));
 
@@ -2281,8 +2281,8 @@ public sealed class AssuranceRuleTests
             WitnessUnits("J8-a-file-header-with-an-invented-row.cs.witness"));
 
         Assert.NotEmpty(invented);
-        Assert.Single(invented.Where(static claim => claim.Contains(
-            "generated: // Release gate:     open", StringComparison.Ordinal)));
+        Assert.Single(invented, static claim => claim.Contains(
+            "generated: // Release gate:     open", StringComparison.Ordinal));
         Assert.All(invented, static claim => Assert.Contains(
             "J8-a-file-header-with-an-invented-row.cs.witness", claim, StringComparison.Ordinal));
 
@@ -2336,8 +2336,8 @@ public sealed class AssuranceRuleTests
             ProductUnits);
 
         Assert.NotEmpty(doctored);
-        Assert.Single(doctored.Where(claim =>
-            claim.Contains($"generated: {invention}", StringComparison.Ordinal)));
+        Assert.Single(doctored, claim =>
+            claim.Contains($"generated: {invention}", StringComparison.Ordinal));
         Assert.All(doctored, static claim => Assert.Contains(
             "CODE-ASSURANCE.md", claim, StringComparison.Ordinal));
 
@@ -2364,8 +2364,8 @@ public sealed class AssuranceRuleTests
             ProductUnits);
 
         Assert.NotEmpty(dropped);
-        Assert.Single(dropped.Where(claim => claim.Contains(
-            $"declared:  {HighSecurityEntry(high[0])}", StringComparison.Ordinal)));
+        Assert.Single(dropped, claim => claim.Contains(
+            $"declared:  {HighSecurityEntry(high[0])}", StringComparison.Ordinal));
 
         // ---- HUMAN_REVIEW.md ----
         //
@@ -2389,8 +2389,8 @@ public sealed class AssuranceRuleTests
             ProductUnits);
 
         Assert.NotEmpty(forgedRecord);
-        Assert.Single(forgedRecord.Where(violation =>
-            violation.Contains($"generated: {claimed}", StringComparison.Ordinal)));
+        Assert.Single(forgedRecord, violation =>
+            violation.Contains($"generated: {claimed}", StringComparison.Ordinal));
         Assert.All(forgedRecord, static violation => Assert.Contains(
             "HUMAN_REVIEW.md", violation, StringComparison.Ordinal));
 
@@ -2579,21 +2579,21 @@ public sealed class AssuranceRuleTests
             ProductUnits);
 
         Assert.Equal(2, claimed.Count);
-        Assert.Single(claimed.Where(static claim => claim.Contains(
+        Assert.Single(claimed, static claim => claim.Contains(
             "says '\"reviewState=VERIFIED; humanReviewed=true; reviewer=WITNESS-ONLY for all 1169 units.\",'",
-            StringComparison.Ordinal)));
-        Assert.Single(claimed.Where(static claim => claim.Contains(
-            "says '\"The component is eligible for release.\"'", StringComparison.Ordinal)));
+            StringComparison.Ordinal));
+        Assert.Single(claimed, static claim => claim.Contains(
+            "says '\"The component is eligible for release.\"'", StringComparison.Ordinal));
         Assert.All(claimed, static claim => Assert.Contains(
             "and the annotations hold no such state", claim, StringComparison.Ordinal));
-        Assert.Single(claimed.Where(claim => claim.Contains(
+        Assert.Single(claimed, claim => claim.Contains(
             $"the term 'verified' is stated with neither the count the annotations give ({carried}) " +
             "nor a negation before it",
-            StringComparison.Ordinal)));
-        Assert.Single(claimed.Where(static claim => claim.Contains(
+            StringComparison.Ordinal));
+        Assert.Single(claimed, static claim => claim.Contains(
             "the term 'eligible for release' is stated with neither the count the annotations give " +
             "(none is defined for it) nor a negation before it",
-            StringComparison.Ordinal)));
+            StringComparison.Ordinal));
 
         // Clause: the accepting direction, through the same function, over lines that carry the
         // very same vocabulary - so the rule is a comparison and not a prohibition on words.
@@ -2624,8 +2624,8 @@ public sealed class AssuranceRuleTests
 
         // Clause: the corpus of a source artefact is its generated header and not its code. Without
         // that this rule would report the component for declaring a type called VmVerifiedArtifact.
-        Assert.NotEmpty(GeneratedSources.Where(static file =>
-            file.Text.Contains("verified", StringComparison.OrdinalIgnoreCase)));
+        Assert.Contains(GeneratedSources, static file =>
+            file.Text.Contains("verified", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(
             generated
                 .Where(static text => text.Where.EndsWith(".cs", StringComparison.Ordinal))
@@ -2743,11 +2743,11 @@ public sealed class AssuranceRuleTests
 
         // Non-vacuous: the requirement answers both ways over the checkout, so a clean result
         // would be a classification and not a predicate that requires nothing of anything.
-        Assert.NotEmpty(ProductUnits.Where(AssuranceScanner.RequiresAFalsificationCriterion));
-        Assert.NotEmpty(ProductUnits.Where(static unit =>
-            unit.Annotation is not null && !AssuranceScanner.RequiresAFalsificationCriterion(unit)));
-        Assert.NotEmpty(ProductUnits.Where(static unit =>
-            unit.Annotation?.HasFalsificationCriterion == true));
+        Assert.Contains(ProductUnits, AssuranceScanner.RequiresAFalsificationCriterion);
+        Assert.Contains(ProductUnits, static unit =>
+            unit.Annotation is not null && !AssuranceScanner.RequiresAFalsificationCriterion(unit));
+        Assert.Contains(ProductUnits, static unit =>
+            unit.Annotation?.HasFalsificationCriterion == true);
 
         // Clause: a High unit and a Critical unit that carry none are each named, and the Medium
         // unit beside them is not - below High the line is permitted rather than required.
@@ -2755,10 +2755,10 @@ public sealed class AssuranceRuleTests
             WitnessUnits("J10-a-high-unit-carries-no-criterion.cs.witness"));
 
         Assert.Equal(2, missingInWitness.Count);
-        Assert.Single(missingInWitness.Where(static named => named.Contains(
-            "Probe.Unfalsifiable.Fold(int[]) is assessed Security=High", StringComparison.Ordinal)));
-        Assert.Single(missingInWitness.Where(static named => named.Contains(
-            "Probe.Unfalsifiable.Reduce(int[]) is assessed Security=Critical", StringComparison.Ordinal)));
+        Assert.Single(missingInWitness, static named => named.Contains(
+            "Probe.Unfalsifiable.Fold(int[]) is assessed Security=High", StringComparison.Ordinal));
+        Assert.Single(missingInWitness, static named => named.Contains(
+            "Probe.Unfalsifiable.Reduce(int[]) is assessed Security=Critical", StringComparison.Ordinal));
         Assert.All(missingInWitness, static named => Assert.Contains(
             "carries no '// Broiler-Falsified-If:' line, so nothing at the declaration says what " +
             "would make it wrong",
@@ -2883,16 +2883,16 @@ public sealed class AssuranceRuleTests
             publishable.Files,
             publishable.Units);
 
-        Assert.Single(AssuranceRelease.Blockers(stale).Where(static blocker => blocker.Contains(
-            "is not what the generator would write", StringComparison.Ordinal)));
+        Assert.Single(AssuranceRelease.Blockers(stale), static blocker => blocker.Contains(
+            "is not what the generator would write", StringComparison.Ordinal));
 
         // Clause: the review syntax. A value outside its vocabulary is a line this system cannot
         // read, which is a decision nothing recorded.
         var malformed = AssuranceRelease.Blockers(ReleasePlan(
             WitnessText(Witness).Replace("IP=Low; Security=Low; Resources=3", "IP=Sideways; Security=Low; Resources=3", StringComparison.Ordinal)));
 
-        Assert.Single(malformed.Where(static blocker => blocker.Contains(
-            "IP=Sideways is outside its vocabulary", StringComparison.Ordinal)));
+        Assert.Single(malformed, static blocker => blocker.Contains(
+            "IP=Sideways is outside its vocabulary", StringComparison.Ordinal));
 
         // ...and a well-formed block attached to no declaration at all, which is the shape a block
         // left behind by a deleted member takes: it parses, it says something, and it describes
@@ -2902,8 +2902,8 @@ public sealed class AssuranceRuleTests
             "\n// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=TBF" +
             "\n// Broiler-Human:        WITNESS-ONLY\n"));
 
-        Assert.Single(stranded.Where(static blocker => blocker.Contains(
-            "an assurance comment that is attached to no declaration", StringComparison.Ordinal)));
+        Assert.Single(stranded, static blocker => blocker.Contains(
+            "an assurance comment that is attached to no declaration", StringComparison.Ordinal));
 
         // Clause: a recorded fingerprint that is not the one its declaration produces now. The
         // human line still names the current version, so the unit is VERIFIED and the fifth clause
@@ -2919,8 +2919,8 @@ public sealed class AssuranceRuleTests
                 "Resources=3; Fingerprint=000000",
                 StringComparison.Ordinal)));
 
-        Assert.Single(mismatched.Where(blocker =>
-            blocker.Contains("records Fingerprint=000000 and the declaration hashes to", StringComparison.Ordinal)));
+        Assert.Single(mismatched, blocker =>
+            blocker.Contains("records Fingerprint=000000 and the declaration hashes to", StringComparison.Ordinal));
         Assert.DoesNotContain(mismatched, static blocker => blocker.Contains(
             "blocks a release", StringComparison.Ordinal));
 
@@ -2930,8 +2930,8 @@ public sealed class AssuranceRuleTests
             WitnessText(Witness).Replace(
                 "IP=Low; Security=Low; Resources=2", "IP=Low; Security=High; Resources=2", StringComparison.Ordinal)));
 
-        Assert.Single(unfalsifiable.Where(static blocker => blocker.Contains(
-            "is assessed Security=High and carries no", StringComparison.Ordinal)));
+        Assert.Single(unfalsifiable, static blocker => blocker.Contains(
+            "is assessed Security=High and carries no", StringComparison.Ordinal));
 
         // Clause: a relevant unit left in a state that blocks a release, named with the declaration
         // and the line that produced the state rather than counted.

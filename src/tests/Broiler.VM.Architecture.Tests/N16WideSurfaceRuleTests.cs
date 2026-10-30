@@ -109,7 +109,7 @@ public sealed class N16WideSurfaceRuleTests
     {
         var declaring = AssuranceSources.Files
             .Where(static file => file.Assembly == ArchitectureRules.JavaScriptProfileAssembly)
-            .SelectMany(static file => file.Tree.GetRoot()
+            .SelectMany(static file => file.Tree.GetRoot(TestContext.Current.CancellationToken)
                 .DescendantNodes()
                 .OfType<TypeDeclarationSyntax>()
                 .Where(static type => type.BaseList is not null &&
@@ -143,7 +143,7 @@ public sealed class N16WideSurfaceRuleTests
     [Fact]
     public void N16_The_Second_Pass_Is_Reached_From_The_First_And_Not_From_The_Payload()
     {
-        var verify = AssuranceSources.File(FirstPassPath).Tree.GetRoot()
+        var verify = AssuranceSources.File(FirstPassPath).Tree.GetRoot(TestContext.Current.CancellationToken)
             .DescendantNodes()
             .OfType<MethodDeclarationSyntax>()
             .Single(static method =>

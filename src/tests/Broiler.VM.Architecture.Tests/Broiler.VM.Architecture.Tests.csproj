@@ -6,20 +6,22 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="xunit" />
-    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
 
     <!-- The Broiler Code Assurance scanner parses the product sources with Roslyn, because the
          policy asks for a fingerprint over syntax rather than over file text.
 
-         5.3.0 is a stable release that ships a net10.0 lib rather than only netstandard2.0, and
-         it is pinned exactly. Newer stable releases exist (5.6.0, 5.9.0) and would also serve;
-         the scanner uses only the syntax API, which has not moved, so the reason to prefer this
-         one is that it needs nothing newer, not that nothing newer works.
+         The centrally selected Microsoft.CodeAnalysis.CSharp release supplies the syntax API.
+         Its version remains in Directory.Packages.props; no product project acquires it.
 
          THIS PROJECT ONLY. Rule A2 forbids a Broiler package outside rule I1's allow-list and this
          is not one; rule B1 constrains Abstractions and Binary and this project is neither;

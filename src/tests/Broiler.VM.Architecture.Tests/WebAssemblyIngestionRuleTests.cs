@@ -14,8 +14,8 @@ public sealed class WebAssemblyIngestionRuleTests
 
         // Non-vacuous: exactly one project builds the harness, the closure reports were read, and a
         // renamed harness is reported rather than read as a clean checkout.
-        Assert.Single(ComponentGraph.Projects.Where(static project =>
-            string.Equals(project.AssemblyName, WebAssemblyIngestionRules.Harness, StringComparison.Ordinal)));
+        Assert.Single(ComponentGraph.Projects, static project =>
+            string.Equals(project.AssemblyName, WebAssemblyIngestionRules.Harness, StringComparison.Ordinal));
 
         Assert.NotEmpty(CompositionRegisterTests.Closures());
 

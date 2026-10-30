@@ -299,8 +299,8 @@ public sealed class DiagnosticRegistryRuleTests
         // kind is withdrawn and the row is held to the corpus like every other. What is asserted
         // here is the absence, because a withdrawn word that quietly came back would otherwise be
         // a row excused from the manifest.
-        Assert.Empty(DiagnosticRegistry.Reachabilities.Where(static kind => kind == "check"));
-        Assert.Empty(Registry.Where(static row => row.Reachability == "check"));
+        Assert.DoesNotContain(DiagnosticRegistry.Reachabilities, static kind => kind == "check");
+        Assert.DoesNotContain(Registry, static row => row.Reachability == "check");
 
         // And the row itself, named rather than counted: it is `corpus`, and the entry it names is
         // the one recording the four zero bytes that verified, were armed and killed a process.

@@ -7,7 +7,7 @@
 **whatever JS-10 makes packable be frozen in a baseline of its own, compared in both directions so an
 addition and a removal each fail**. This is that baseline: the JavaScript family's packable set, each
 package's dependencies and each package's files, as the candidate pack of
-**bundle [JS-10-012](evidence/js-10-012/README.md)** produced them *(recertified on 2026-10-30 for ECMAScript preview.8; previously JS-10-011. Earlier corrections: JSC-300, JSC-302,
+**bundle [JS-10-013](evidence/js-10-013/README.md)** produced them *(recertified on 2026-10-31 for the already selected Unicode preview.6; previously JS-10-012. Recertified on 2026-10-30 for ECMAScript preview.8; previously JS-10-011. Earlier corrections: JSC-300, JSC-302,
 JSC-308, JSC-311, JSC-312, JSC-314, JSC-318; it was bundle JS-10-010's pack, before the shared algorithms
 dependency moved to `0.1.0-preview.7`, before that bundle JS-10-009's pack, before it moved to `0.1.0-preview.6`, before that bundle JS-10-008's pack, before it moved to `0.1.0-preview.5`, before that bundle JS-10-007's pack, before the Unicode area's dependencies moved to
 `0.1.0-preview.5`, before that bundle JS-10-006's pack, before the Unicode cut-over gave the family's packages the

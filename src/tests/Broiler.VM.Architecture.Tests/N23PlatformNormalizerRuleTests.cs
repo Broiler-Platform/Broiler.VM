@@ -91,7 +91,7 @@ public sealed class N23PlatformNormalizerRuleTests
 
         var fence = witness.IndexOf("```csharp\n", StringComparison.Ordinal) + "```csharp\n".Length;
         var source = witness[fence..witness.IndexOf("```", fence, StringComparison.Ordinal)];
-        var violations = Violations("witness.cs", CSharpSyntaxTree.ParseText(source)).ToArray();
+        var violations = Violations("witness.cs", CSharpSyntaxTree.ParseText(source, cancellationToken: TestContext.Current.CancellationToken)).ToArray();
 
         // Exactly the three code occurrences: the query, the call and the form. The comment and
         // the string literal name all three again and are not reported.
