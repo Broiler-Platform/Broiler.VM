@@ -8,8 +8,8 @@
   "packages": [
     {
       "id": "Broiler.Unicode.Generation",
-      "version": "0.1.0-preview.5",
-      "contentHash": "wVI62hdy+ujEfag6Uua4QJbBUzHA4+cHpB4RF8L91GNpmCJPRgHd/VDGDiwzZ66+CinNfs6/pX+zDc5xjFufGw==",
+      "version": "0.1.0-preview.6",
+      "contentHash": "Vp49i3xFcVYwbw8vTqDJS0emJmWG29zaUVQhNc+vnUn0cXakGOo9xEG0utHu0rk8CeN4D9KAH0Albetz7g2u2Q==",
       "use": "test-only",
       "projects": [
         "Broiler.VM.Architecture.Tests",
@@ -19,8 +19,9 @@
         "committed-feed",
         "nuget.org"
       ],
-      "pin": "eng/packages/Broiler.Unicode.Generation.0.1.0-preview.5.pin",
-      "admittedBy": "witness"
+      "pin": "eng/packages/Broiler.Unicode.Generation.0.1.0-preview.6.pin",
+      "admittedBy": "witness",
+      "archiveHash": "j9blARe3SSdi/fhfGWQbLEBZ+DyitsV8Cjg119QHrECzsuBEFdNNJHmEbeQb2UV82sO2HLbpFnq6eGKpxsHMJg=="
     }
   ]
 }

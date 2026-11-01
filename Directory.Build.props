@@ -43,4 +43,9 @@
           Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 
+  <!-- Retain the existing VSTest dotnet-test/filter/TRX workflow with the xUnit v3 runner. -->
+  <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
+    <IsTestingPlatformApplication>false</IsTestingPlatformApplication>
+  </PropertyGroup>
+
 </Project>

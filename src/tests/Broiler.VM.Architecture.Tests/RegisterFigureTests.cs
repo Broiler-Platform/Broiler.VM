@@ -54,8 +54,8 @@ public sealed class RegisterFigureTests
             "unresolved for want of a catalog entry rather than for want of a metric");
 
         // ...and the register really does cite them, so clause one has something to resolve.
-        Assert.NotEmpty(Rows.Where(static row =>
-            row.Text.Contains("{criteria:", StringComparison.Ordinal)));
+        Assert.Contains(Rows, static row =>
+            row.Text.Contains("{criteria:", StringComparison.Ordinal));
 
         Assert.Empty(RegisterFigureRules.UnresolvableCitations(Rows, figures));
         Assert.Empty(RegisterFigureRules.RestatedFigures(Rows));

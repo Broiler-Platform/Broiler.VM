@@ -67,8 +67,8 @@ public sealed class IngestionPathRuleTests
         // Non-vacuous in both of the ways this rule can be empty for the wrong reason. It passes by
         // finding nothing, so a renamed harness would be its cleanest-looking result, and a closure
         // list it never reads would make its most expensive clause free.
-        Assert.Single(ComponentGraph.Projects.Where(project =>
-            string.Equals(project.AssemblyName, Harness, StringComparison.Ordinal)));
+        Assert.Single(ComponentGraph.Projects, project =>
+            string.Equals(project.AssemblyName, Harness, StringComparison.Ordinal));
 
         Assert.NotEmpty(CompositionRegisterTests.Closures());
 

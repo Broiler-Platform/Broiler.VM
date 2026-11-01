@@ -97,10 +97,8 @@ public sealed class CatalogRegistrationTests
         // Composition is the one place the core throws. A catalog is authored from trusted
         // compile-time data, so a defect in it is a wiring bug that must be loud, and no
         // VmCatalogResult type exists for it to be quietly checked through.
-        Assert.Empty(
-            typeof(VmCatalog).Assembly
-                .GetExportedTypes()
-                .Where(type => type.Name.Contains("CatalogResult", StringComparison.Ordinal)));
+        Assert.DoesNotContain(typeof(VmCatalog).Assembly.GetExportedTypes(),
+            type => type.Name.Contains("CatalogResult", StringComparison.Ordinal));
     }
 
     [Fact]

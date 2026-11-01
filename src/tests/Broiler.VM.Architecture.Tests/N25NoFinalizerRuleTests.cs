@@ -67,7 +67,7 @@ public sealed class N25NoFinalizerRuleTests
 
         var fence = witness.IndexOf("```csharp\n", StringComparison.Ordinal) + "```csharp\n".Length;
         var source = witness[fence..witness.IndexOf("```", fence, StringComparison.Ordinal)];
-        var violations = Violations("witness.cs", CSharpSyntaxTree.ParseText(source)).ToArray();
+        var violations = Violations("witness.cs", CSharpSyntaxTree.ParseText(source, cancellationToken: TestContext.Current.CancellationToken)).ToArray();
 
         // Exactly the two declarations: the destructor and the Finalize method. The comment and the
         // string literal name both again and are not reported.

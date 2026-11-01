@@ -58,7 +58,7 @@ public sealed class ArtifactBoundaryTests
         finally
         {
             await stop.CancelAsync();
-            await vandal.WaitAsync(TimeSpan.FromSeconds(10));
+            await vandal.WaitAsync(TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken);
         }
     }
 
@@ -243,10 +243,8 @@ public sealed class ArtifactBoundaryTests
         Assert.DoesNotContain(typeof(VmInstance), reachable);
         Assert.DoesNotContain(typeof(VmInstantiationResult), reachable);
 
-        Assert.Empty(
-            typeof(VmGuestLoadResult)
-                .GetMethods()
-                .Where(static method => method.ReturnType == typeof(VmInstantiationResult)));
+        Assert.DoesNotContain(typeof(VmGuestLoadResult).GetMethods(),
+            static method => method.ReturnType == typeof(VmInstantiationResult));
     }
 
     [Fact]

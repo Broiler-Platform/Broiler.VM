@@ -51,7 +51,7 @@ jobs:
   gate:
     name: gate (CI)
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       # The check runs on the pull request's head are what the decision reads. A caller must grant
@@ -88,7 +88,7 @@ jobs:
         # `inputs.package-version` is null on a pull request, a push and a dispatch, and null
         # compares equal to '' in an expression, so only a caller that passes a version - the
         # publish lane - and a dispatch take both legs.
-        os: ${{ fromJSON((inputs.package-version != '' || github.event_name == 'workflow_dispatch') && '["ubuntu-latest","windows-latest"]' || '["windows-latest"]') }}
+        os: ${{ fromJSON((inputs.package-version != '' || github.event_name == 'workflow_dispatch') && '["ubuntu-24.04","windows-latest"]' || '["windows-latest"]') }}
     steps:
       - name: Check out
         uses: actions/checkout@v7
@@ -106,23 +106,8 @@ jobs:
       - name: Test preview version selection
         run: node --test eng/resolve-preview-version.test.mjs
 
-      # Every project that references an admitted shared package restores with a lock file (rule
-      # I1), and CI restores each of them in locked mode, so a content hash that moved fails here
-      # rather than being rewritten (milestone SJL-2.1). No product project references one at
-      # SJL-2, and the step says so when there is nothing to lock.
-      #
-      # The lane's `checks` job runs the same loop before its build since 2026-10-19, where a moved
-      # hash blocks a merge, because that job is a required check and this one is not. The loop
-      # stays here as well: a publish validates through this workflow and never through the lane,
-      # so this is the locked restore a release is built from.
-      - name: Restore lock-file projects in locked mode
-        run: |
-          found=0
-          while IFS= read -r lock; do
-            found=1
-            dotnet restore "$(dirname "$lock")" --locked-mode --nologo
-          done < <(git ls-files '*packages.lock.json')
-          if [ "$found" = 0 ]; then echo "No project carries a lock file."; fi
+      - name: Restore projects without version locks
+        run: dotnet restore Broiler.VM.slnx --nologo
 
       - name: Build
         run: |

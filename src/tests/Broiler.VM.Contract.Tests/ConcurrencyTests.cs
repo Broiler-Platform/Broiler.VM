@@ -281,12 +281,12 @@ public sealed class ConcurrencyTests
 
         // Disposal must still be waiting: the profile is inside the step and has not returned.
         Assert.False(
-            disposal.Wait(TimeSpan.FromMilliseconds(250)),
+            disposal.Wait(TimeSpan.FromMilliseconds(250), TestContext.Current.CancellationToken),
             "disposal completed while the profile was still executing a step");
 
         gate.Release();
 
-        Assert.True(disposal.Wait(Patience), "disposal did not complete after the step returned");
+        Assert.True(disposal.Wait(Patience, TestContext.Current.CancellationToken), "disposal did not complete after the step returned");
         invocation.GetAwaiter().GetResult();
 
         Assert.Equal(VmInstanceState.Disposed, instance.State);
@@ -312,12 +312,12 @@ public sealed class ConcurrencyTests
         var disposal = Task.Run(() => runtime.Dispose());
 
         Assert.False(
-            disposal.Wait(TimeSpan.FromMilliseconds(250)),
+            disposal.Wait(TimeSpan.FromMilliseconds(250), TestContext.Current.CancellationToken),
             "runtime disposal completed while a profile step was still executing");
 
         gate.Release();
 
-        Assert.True(disposal.Wait(Patience), "runtime disposal did not complete after the step returned");
+        Assert.True(disposal.Wait(Patience, TestContext.Current.CancellationToken), "runtime disposal did not complete after the step returned");
         invocation.GetAwaiter().GetResult();
         artifact.Dispose();
     }
@@ -344,7 +344,11 @@ public sealed class ConcurrencyTests
         var suspended = FixtureComposition.Invoke(instance);
         Assert.True(suspended.TryGetSuspension(out var suspension), $"expected a suspension, got {suspended.Outcome}");
 
-        var elsewhere = Task.Run(() => runtime.Resume(suspension)).GetAwaiter().GetResult();
+        // Task.Run may inline a queued task while GetResult waits on the test's pool thread.
+        // A dedicated thread is required to exercise the thread-affinity guard.
+        var elsewhere = Task.Factory.StartNew(() => runtime.Resume(suspension),
+            TestContext.Current.CancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default)
+            .GetAwaiter().GetResult();
 
         Assert.Equal(VmOutcome.InvalidState, elsewhere.Outcome);
         Assert.Equal(VmReason.ThreadAffinityViolation, elsewhere.Reason);

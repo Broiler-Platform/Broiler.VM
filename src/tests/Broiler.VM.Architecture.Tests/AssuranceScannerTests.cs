@@ -485,8 +485,8 @@ public sealed class AssuranceScannerTests
     {
         // A predicate that exempted everything, or nothing, would satisfy every case above only by
         // accident of the probe. Over the checkout it must do both, or it is not classifying.
-        Assert.NotEmpty(AssuranceScanner.Units.Where(static unit => unit.IsRelevant));
-        Assert.NotEmpty(AssuranceScanner.Units.Where(static unit => unit.IsExempt));
+        Assert.Contains(AssuranceScanner.Units, static unit => unit.IsRelevant);
+        Assert.Contains(AssuranceScanner.Units, static unit => unit.IsExempt);
 
         // The product projects on disk, found without going through the covered list.
         var onDisk = Directory

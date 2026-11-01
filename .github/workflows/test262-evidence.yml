@@ -81,7 +81,7 @@ env:
 jobs:
   prepare:
     name: resolve the commit and the slices
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       commit: ${{ steps.plan.outputs.commit }}
       forms: ${{ steps.plan.outputs.forms }}
@@ -122,7 +122,7 @@ jobs:
   shard:
     name: score ${{ matrix.slice.form }} shards (runner ${{ matrix.slice.runner }})
     needs: prepare
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 300
     strategy:
       fail-fast: false
@@ -193,7 +193,7 @@ jobs:
     # A merge runs even when a shard job failed, because the merge is what names a missing shard; the
     # last step still fails the workflow for it.
     if: ${{ always() && !cancelled() && needs.prepare.result == 'success' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
       - name: Check out this workflow's driver

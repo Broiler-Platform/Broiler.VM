@@ -1,0 +1,24 @@
+bundle JS-10-012
+evidence-class packaging
+decision The candidate set is recorded as this profile's packable baseline if every family package's metadata names only Broiler.VM packages, the pristine consumer restores and runs against it with upstream unreachable, rolls back to the published previous set and forward again, and the negative control fails to restore; otherwise the bundle records which step failed and no baseline is taken.
+collected 2026-10-30T06:48:35Z
+commit 9d0f80ea7ed8a2bea47da0c3485a48752243677f
+tree dirty
+sdk 10.0.403
+machine Windows-10-10.0.26200-SP0 AMD64 cpus=16
+candidate 0.1.0-preview.6.f9-candidate
+previous 0.1.0-preview.5 from https://api.nuget.org/v3-flatcontainer/{id}/0.1.0-preview.5/{id}.0.1.0-preview.5.nupkg
+previous-packages Broiler.VM.Abstractions Broiler.VM.Binary Broiler.VM.Runtime Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Compiler
+negative-control 0.1.0-preview.4
+upstream-during-restore http://127.0.0.1:9
+aot-seeded microsoft.aspnetcore.app.runtime.win-x64 microsoft.dotnet.ilcompiler microsoft.net.illink.tasks microsoft.netcore.app.runtime.win-x64 microsoft.netcore.app.runtime.nativeaot.win-x64 runtime.win-x64.microsoft.dotnet.ilcompiler
+dirty:
+   M eng/collect-js-packages.py
+   M src/tests/Broiler.VM.Architecture.Tests/AdmissionRules.cs
+   M src/tests/Broiler.VM.Architecture.Tests/I4DataAgreementRuleTests.cs
+  ?? eng/packages/Broiler.ECMAScript.Algorithms.0.1.0-preview.8.nupkg
+  ?? eng/packages/Broiler.ECMAScript.Algorithms.0.1.0-preview.8.pin
+  ?? eng/packages/Broiler.ECMAScript.Generation.0.1.0-preview.8.nupkg
+  ?? eng/packages/Broiler.ECMAScript.Generation.0.1.0-preview.8.pin
+  ?? samples/Broiler.VM.Sample.JavaScriptConsumer/NuGet.config
+  ?? src/Broiler.VM.Profile.JavaScript/docs/evidence/js-10-012/

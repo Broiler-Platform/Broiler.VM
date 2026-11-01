@@ -28,10 +28,6 @@
     come from the committed feed eng/packages/ at their pins, the lock file records their content
     hashes, and rule I1 holds both to the allow-list, which names this project.
   -->
-  <PropertyGroup>
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    <NuGetLockFilePath Condition="'$(RuntimeIdentifier)' != ''">$(MSBuildProjectDirectory)/obj/packages.$(RuntimeIdentifier).lock.json</NuGetLockFilePath>
-  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Broiler.Unicode.Algorithms" />

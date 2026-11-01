@@ -313,10 +313,10 @@ public sealed class ReviewRecordRuleTests
             [Witness("H1-profile-document-uses-a-core-mark.md.witness")], ProfileLegend);
 
         Assert.Equal(2, borrowed.Count);
-        Assert.Single(borrowed.Where(static violation =>
-            violation.Contains("table cell mark token [MET]", StringComparison.Ordinal)));
-        Assert.Single(borrowed.Where(static violation =>
-            violation.Contains("list item mark token [UNMET]", StringComparison.Ordinal)));
+        Assert.Single(borrowed, static violation =>
+            violation.Contains("table cell mark token [MET]", StringComparison.Ordinal));
+        Assert.Single(borrowed, static violation =>
+            violation.Contains("list item mark token [UNMET]", StringComparison.Ordinal));
         Assert.All(borrowed, static violation => Assert.Contains(
             "which the section 2 legend does not publish", violation, StringComparison.Ordinal));
 
@@ -326,10 +326,10 @@ public sealed class ReviewRecordRuleTests
             Witness("H1-profile-legend-does-not-publish-the-three.md.witness"), ProfileLegend);
 
         Assert.Equal(2, profileLegend.Count);
-        Assert.Single(profileLegend.Where(static violation =>
-            violation.Contains("publishes [SOME]", StringComparison.Ordinal)));
-        Assert.Single(profileLegend.Where(static violation =>
-            violation.Contains("does not publish [PARTIAL]", StringComparison.Ordinal)));
+        Assert.Single(profileLegend, static violation =>
+            violation.Contains("publishes [SOME]", StringComparison.Ordinal));
+        Assert.Single(profileLegend, static violation =>
+            violation.Contains("does not publish [PARTIAL]", StringComparison.Ordinal));
 
         // Clause: a table cell whose whole trimmed text is a mark token. The token is eight
         // characters inside the brackets, so it also carries the no-length-cap requirement.
@@ -364,20 +364,20 @@ public sealed class ReviewRecordRuleTests
         var quotedBlock = UnpublishedMarkViolations(
             [Witness("H1-marks-inside-a-block-quote.md.witness")], CoreLegend);
         Assert.Equal(3, quotedBlock.Count);
-        Assert.Single(quotedBlock.Where(static violation =>
-            violation.Contains("list item mark token [APPROVED]", StringComparison.Ordinal)));
-        Assert.Single(quotedBlock.Where(static violation =>
-            violation.Contains("heading mark token [WAIVED]", StringComparison.Ordinal)));
-        Assert.Single(quotedBlock.Where(static violation =>
-            violation.Contains("table cell mark token [REJECTED]", StringComparison.Ordinal)));
+        Assert.Single(quotedBlock, static violation =>
+            violation.Contains("list item mark token [APPROVED]", StringComparison.Ordinal));
+        Assert.Single(quotedBlock, static violation =>
+            violation.Contains("heading mark token [WAIVED]", StringComparison.Ordinal));
+        Assert.Single(quotedBlock, static violation =>
+            violation.Contains("table cell mark token [REJECTED]", StringComparison.Ordinal));
 
         // Clause: the legend itself, parsed independently of the body scan, in both directions.
         var legend = LegendViolations(Witness("H1-legend-does-not-publish-the-nine.md.witness"), CoreLegend);
         Assert.Equal(2, legend.Count);
-        Assert.Single(legend.Where(static violation =>
-            violation.Contains("publishes [WAIVED]", StringComparison.Ordinal)));
-        Assert.Single(legend.Where(static violation =>
-            violation.Contains("does not publish [?]", StringComparison.Ordinal)));
+        Assert.Single(legend, static violation =>
+            violation.Contains("publishes [WAIVED]", StringComparison.Ordinal));
+        Assert.Single(legend, static violation =>
+            violation.Contains("does not publish [?]", StringComparison.Ordinal));
 
         // Clause: the legend scan reads a row that omits the leading pipe, so a tenth mark cannot
         // be published past the equality check by dropping one character.
@@ -923,10 +923,10 @@ public sealed class ReviewRecordRuleTests
         var cited = SourceLineCitations(Witness("H3-a-document-cites-a-source-line-number.md.witness"));
 
         Assert.Equal(2, cited.Count);
-        Assert.Single(cited.Where(static violation => violation.Contains(
-            "`src/Broiler.VM.Binary/VmBoundedAllocator.cs` 34-68", StringComparison.Ordinal)));
-        Assert.Single(cited.Where(static violation => violation.Contains(
-            "`src/Broiler.VM.Binary/VmBoundedReader.cs:57`", StringComparison.Ordinal)));
+        Assert.Single(cited, static violation => violation.Contains(
+            "`src/Broiler.VM.Binary/VmBoundedAllocator.cs` 34-68", StringComparison.Ordinal));
+        Assert.Single(cited, static violation => violation.Contains(
+            "`src/Broiler.VM.Binary/VmBoundedReader.cs:57`", StringComparison.Ordinal));
         Assert.All(cited, static violation => Assert.Contains(
             "a line number does not survive an edit - name the member instead",
             violation,
@@ -1366,11 +1366,11 @@ public sealed class ReviewRecordRuleTests
             AssuranceSources.Files,
             AssuranceScanner.Units);
 
-        Assert.Single(omitted.Where(violation => violation.Contains(
-            $"does not name the covered file {dropped}", StringComparison.Ordinal)));
-        Assert.Single(omitted.Where(static violation => violation.Contains(
+        Assert.Single(omitted, violation => violation.Contains(
+            $"does not name the covered file {dropped}", StringComparison.Ordinal));
+        Assert.Single(omitted, static violation => violation.Contains(
             "names src/Broiler.VM.Elsewhere/Gone.cs, which is not a covered file",
-            StringComparison.Ordinal)));
+            StringComparison.Ordinal));
 
         // Clause: a file named twice. One row duplicated is a row whose figures nobody can act on.
         var twice = CoverageViolations(
@@ -1381,8 +1381,8 @@ public sealed class ReviewRecordRuleTests
             AssuranceSources.Files,
             AssuranceScanner.Units);
 
-        Assert.Single(twice.Where(violation => violation.Contains(
-            $"names {dropped} 2 times", StringComparison.Ordinal)));
+        Assert.Single(twice, violation => violation.Contains(
+            $"names {dropped} 2 times", StringComparison.Ordinal));
 
         // Clause: a row whose figures are not the annotations'. This is the row a reader uses to
         // decide where to spend their time, and nothing else compares it with the tree.
@@ -1400,9 +1400,9 @@ public sealed class ReviewRecordRuleTests
             AssuranceSources.Files,
             AssuranceScanner.Units);
 
-        Assert.Single(untrue.Where(violation => violation.Contains(
+        Assert.Single(untrue, violation => violation.Contains(
             $"gives {dropped} {relevant + 7} relevant units; the tree declares {relevant}",
-            StringComparison.Ordinal)));
+            StringComparison.Ordinal));
 
         // Clause: exactly one coverage section. A decoy heading above the real one is how every
         // section-reading clause in this group was defeated at once, and a generated document is no
@@ -1412,8 +1412,8 @@ public sealed class ReviewRecordRuleTests
             AssuranceSources.Files,
             AssuranceScanner.Units);
 
-        Assert.Single(twoSections.Where(static violation => violation.Contains(
-            "carries 2 'section 6 coverage' headings", StringComparison.Ordinal)));
+        Assert.Single(twoSections, static violation => violation.Contains(
+            "carries 2 'section 6 coverage' headings", StringComparison.Ordinal));
 
         // Clause: the summary's own file count agrees with the tree, so dropping a row and
         // correcting the count is not a way through.
@@ -1424,9 +1424,9 @@ public sealed class ReviewRecordRuleTests
                 "| Files scanned | 44 |"),
             AssuranceSources.Files);
 
-        Assert.Single(miscounted.Where(violation => violation.Contains(
+        Assert.Single(miscounted, violation => violation.Contains(
             $"states 44 files scanned; the tree carries {AssuranceSources.Files.Count}",
-            StringComparison.Ordinal)));
+            StringComparison.Ordinal));
     }
 
     private static readonly Regex CoverageSection = new(@"^##\s+6\.\s", RegexOptions.Compiled);
@@ -1664,23 +1664,23 @@ public sealed class ReviewRecordRuleTests
         var overstated = StatusViolations(
             Doctored(record, "**Status: PARTIAL.**", "**Status: COMPLETE.**"), units);
 
-        Assert.Single(overstated.Where(static violation => violation.Contains(
-            "records the decision COMPLETE; the annotations give PARTIAL", StringComparison.Ordinal)));
+        Assert.Single(overstated, static violation => violation.Contains(
+            "records the decision COMPLETE; the annotations give PARTIAL", StringComparison.Ordinal));
 
         // Clause: a figure the annotations do not give, beside a status word that does.
         var miscounted = StatusViolations(
             Doctored(record, "Human-reviewed: 1 of 3", "Human-reviewed: 2 of 3"), units);
 
-        Assert.Single(miscounted.Where(static violation => violation.Contains(
-            "states 2 units carrying a decision; the annotations give 1", StringComparison.Ordinal)));
+        Assert.Single(miscounted, static violation => violation.Contains(
+            "states 2 units carrying a decision; the annotations give 1", StringComparison.Ordinal));
 
         // Clause: exactly one status line, so a decoy above the real one is not the line under test.
         var twoStatuses = StatusViolations(
             Doctored(record, "> **Status: PARTIAL.**", "> **Status: COMPLETE.** Human-reviewed: 3 of 3 relevant units.\n> **Status: PARTIAL.**"),
             units);
 
-        Assert.Single(twoStatuses.Where(static violation => violation.Contains(
-            "states 2 status lines; exactly one is required", StringComparison.Ordinal)));
+        Assert.Single(twoStatuses, static violation => violation.Contains(
+            "states 2 status lines; exactly one is required", StringComparison.Ordinal));
 
         // Clause: an invented alias. Nobody in the tree is called this, and the record says they
         // read one unit.
@@ -1688,18 +1688,18 @@ public sealed class ReviewRecordRuleTests
             Doctored(record, "| WITNESS-ONLY | 1 | 1 | 1 | 0 |", "| WITNESS-ONLY | 1 | 1 | 1 | 0 |\n| NOBODY | 1 | 1 | 1 | 0 |"),
             units);
 
-        Assert.Single(invented.Where(static violation => violation.Contains(
+        Assert.Single(invented, static violation => violation.Contains(
             "names the alias NOBODY, and no human line in the product tree carries it",
-            StringComparison.Ordinal)));
+            StringComparison.Ordinal));
 
         // Clause: the other direction. An alias dropped from the record is a decision the release
         // record cannot see, and deleting a row is cheaper than inventing one.
         var lost = AliasViolations(
             Doctored(record, "| WITNESS-TWO | 1 | 1 | 0 | 1 |\n", string.Empty), units);
 
-        Assert.Single(lost.Where(static violation => violation.Contains(
+        Assert.Single(lost, static violation => violation.Contains(
             "does not name the alias WITNESS-TWO, which a human line in the product tree carries",
-            StringComparison.Ordinal)));
+            StringComparison.Ordinal));
 
         // Clause: a row whose counts are not the lines' counts - the shape that keeps an alias in
         // the record while overstating what they read.
@@ -1707,16 +1707,16 @@ public sealed class ReviewRecordRuleTests
             Doctored(record, "| WITNESS-ONLY | 1 | 1 | 1 | 0 |", "| WITNESS-ONLY | 9 | 1 | 1 | 0 |"),
             units);
 
-        Assert.Single(inflated.Where(static violation => violation.Contains(
-            "gives WITNESS-ONLY 9 units; the tree gives 1", StringComparison.Ordinal)));
+        Assert.Single(inflated, static violation => violation.Contains(
+            "gives WITNESS-ONLY 9 units; the tree gives 1", StringComparison.Ordinal));
 
         // Clause: exactly one alias section.
         var twoSections = AliasViolations(
             Doctored(record, "## 5. Aliases In The Tree", "## 5. Aliases In The Tree\n\n## 5. Aliases In The Tree"),
             units);
 
-        Assert.Single(twoSections.Where(static violation => violation.Contains(
-            "carries 2 'section 5 alias' headings", StringComparison.Ordinal)));
+        Assert.Single(twoSections, static violation => violation.Contains(
+            "carries 2 'section 5 alias' headings", StringComparison.Ordinal));
     }
 
     private static readonly Regex AliasSection = new(@"^##\s+5\.\s", RegexOptions.Compiled);
@@ -1978,10 +1978,10 @@ public sealed class ReviewRecordRuleTests
         // Clause: each image size is bound to the log that records it, so a swap fails twice.
         var swapped = FigureViolations(Witness("H5-image-sizes-are-swapped.md.witness"), current);
         Assert.Equal(2, swapped.Count);
-        Assert.Single(swapped.Where(static violation => violation.Contains(
-            "quotes a Native AOT image size of 78256 bytes", StringComparison.Ordinal)));
-        Assert.Single(swapped.Where(static violation => violation.Contains(
-            "quotes a trimmed image size of 1565576 bytes", StringComparison.Ordinal)));
+        Assert.Single(swapped, static violation => violation.Contains(
+            "quotes a Native AOT image size of 78256 bytes", StringComparison.Ordinal));
+        Assert.Single(swapped, static violation => violation.Contains(
+            "quotes a trimmed image size of 1565576 bytes", StringComparison.Ordinal));
 
         // Clause, one per recognised native-size phrasing.
         AssertRecognisedFigure("H5-native-image-size-in-every-phrasing.md.witness", current, 3,
@@ -2029,7 +2029,7 @@ public sealed class ReviewRecordRuleTests
 
         foreach (var phrase in quoted)
         {
-            Assert.Single(violations.Where(violation => violation.Contains(phrase, StringComparison.Ordinal)));
+            Assert.Single(violations, violation => violation.Contains(phrase, StringComparison.Ordinal));
         }
     }
 

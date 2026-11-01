@@ -1,0 +1,89 @@
+Wiederherzustellende Projekte werden ermittelt...
+  "D:\Broiler\Broiler.VM\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" wiederhergestellt (in 157 ms.).
+  "D:\Broiler\Broiler.VM\src\Broiler.VM.Profile.MachineCode\Broiler.VM.Profile.MachineCode.csproj" wiederhergestellt (in 157 ms.).
+  "D:\Broiler\Broiler.VM\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj" wiederhergestellt (in 145 ms.).
+  "D:\Broiler\Broiler.VM\src\tests\Broiler.VM.Fuzz.Host\Broiler.VM.Fuzz.Host.csproj" wiederhergestellt (in 157 ms.).
+  "D:\Broiler\Broiler.VM\src\tests\Broiler.VM.Fixtures\Broiler.VM.Fixtures.csproj" wiederhergestellt (in 157 ms.).
+  "D:\Broiler\Broiler.VM\src\Broiler.VM.Profile.WebAssembly\Broiler.VM.Profile.WebAssembly.csproj" wiederhergestellt (in 5 ms.).
+  "D:\Broiler\Broiler.VM\src\tests\Com.Example.Calculator\Com.Example.Calculator.csproj" wiederhergestellt (in 277 ms.).
+  "D:\Broiler\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Intl\Broiler.VM.Profile.JavaScript.Intl.csproj" wiederhergestellt (in 277 ms.).
+  "D:\Broiler\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj" wiederhergestellt (in 97 ms.).
+  "D:\Broiler\Broiler.VM\src\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" wiederhergestellt (in 96 ms.).
+  "D:\Broiler\Broiler.VM\src\tests\Broiler.VM.Bench.Host\Broiler.VM.Bench.Host.csproj" wiederhergestellt (in 280 ms.).
+  "D:\Broiler\Broiler.VM\src\Broiler.VM.Emitter.Bytecode\Broiler.VM.Emitter.Bytecode.csproj" wiederhergestellt (in 279 ms.).
+  "D:\Broiler\Broiler.VM\src\tests\Broiler.VM.Soak.Host\Broiler.VM.Soak.Host.csproj" wiederhergestellt (in 280 ms.).
+  "D:\Broiler\Broiler.VM\src\tests\Broiler.VM.Fixtures.Host\Broiler.VM.Fixtures.Host.csproj" wiederhergestellt (in 280 ms.).
+  "D:\Broiler\Broiler.VM\src\tests\Com.Example.Ledger\Com.Example.Ledger.csproj" wiederhergestellt (in 277 ms.).
+  "D:\Broiler\Broiler.VM\src\tests\Com.Example.Tally\Com.Example.Tally.csproj" wiederhergestellt (in 280 ms.).
+  "D:\Broiler\Broiler.VM\src\compositions\Broiler.VM.Composition.Workbench\Broiler.VM.Composition.Workbench.csproj" wiederhergestellt (in 92 ms.).
+  "D:\Broiler\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.Conformance\Broiler.VM.Composition.JavaScript.Conformance.csproj" wiederhergestellt (in 280 ms.).
+  "D:\Broiler\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.Cli\Broiler.VM.Composition.JavaScript.Cli.csproj" wiederhergestellt (in 280 ms.).
+  "D:\Broiler\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj" wiederhergestellt (in 280 ms.).
+  "D:\Broiler\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\Broiler.VM.Architecture.Tests.csproj" wiederhergestellt (in 132 ms.).
+  "D:\Broiler\Broiler.VM\src\tests\Broiler.VM.Contract.Tests\Broiler.VM.Contract.Tests.csproj" wiederhergestellt (in 132 ms.).
+  "D:\Broiler\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj" wiederhergestellt (in 2 ms.).
+  "D:\Broiler\Broiler.VM\src\compositions\Broiler.VM.Composition.Calculator\Broiler.VM.Composition.Calculator.csproj" wiederhergestellt (in 11 ms.).
+  "D:\Broiler\Broiler.VM\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" wiederhergestellt (in 3 ms.).
+  "D:\Broiler\Broiler.VM\src\Broiler.VM.Ubc\Broiler.VM.Ubc.csproj" wiederhergestellt (in 8 ms.).
+  "D:\Broiler\Broiler.VM\src\compositions\Broiler.VM.Composition.Ubc.Fixture\Broiler.VM.Composition.Ubc.Fixture.csproj" wiederhergestellt (in 8 ms.).
+  "D:\Broiler\Broiler.VM\src\compositions\Broiler.VM.Composition.WebAssembly.Execution\Broiler.VM.Composition.WebAssembly.Execution.csproj" wiederhergestellt (in 8 ms.).
+  "D:\Broiler\Broiler.VM\src\compositions\Broiler.VM.Composition.PolyglotCli\Broiler.VM.Composition.PolyglotCli.csproj" wiederhergestellt (in 10 ms.).
+  "D:\Broiler\Broiler.VM\src\compositions\Broiler.VM.Composition.WebAssembly.Harness\Broiler.VM.Composition.WebAssembly.Harness.csproj" wiederhergestellt (in 15 ms.).
+  "D:\Broiler\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.SliceCompiler\Broiler.VM.Composition.JavaScript.SliceCompiler.csproj" wiederhergestellt (in 13 ms.).
+  Broiler.VM.Binary -> D:\Broiler\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Abstractions.0.1.0-preview.6.f9-candidate.nupkg" wurde erfolgreich erstellt.
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Abstractions.0.1.0-preview.6.f9-candidate.snupkg" wurde erfolgreich erstellt.
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Binary.0.1.0-preview.6.f9-candidate.nupkg" wurde erfolgreich erstellt.
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Binary.0.1.0-preview.6.f9-candidate.snupkg" wurde erfolgreich erstellt.
+  Broiler.VM.Profile.MachineCode -> D:\Broiler\Broiler.VM\src\Broiler.VM.Profile.MachineCode\bin\Release\net10.0\Broiler.VM.Profile.MachineCode.dll
+  Broiler.VM.Runtime -> D:\Broiler\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Ubc -> D:\Broiler\Broiler.VM\src\Broiler.VM.Ubc\bin\Release\net10.0\Broiler.VM.Ubc.dll
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Profile.MachineCode.0.1.0-preview.6.f9-candidate.nupkg" wurde erfolgreich erstellt.
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Profile.MachineCode.0.1.0-preview.6.f9-candidate.snupkg" wurde erfolgreich erstellt.
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Runtime.0.1.0-preview.6.f9-candidate.nupkg" wurde erfolgreich erstellt.
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Runtime.0.1.0-preview.6.f9-candidate.snupkg" wurde erfolgreich erstellt.
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Ubc.0.1.0-preview.6.f9-candidate.nupkg" wurde erfolgreich erstellt.
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Ubc.0.1.0-preview.6.f9-candidate.snupkg" wurde erfolgreich erstellt.
+  Broiler.VM.Profile.WebAssembly -> D:\Broiler\Broiler.VM\src\Broiler.VM.Profile.WebAssembly\bin\Release\net10.0\Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Emitter.Bytecode -> D:\Broiler\Broiler.VM\src\Broiler.VM.Emitter.Bytecode\bin\Release\net10.0\Broiler.VM.Emitter.Bytecode.dll
+  Broiler.VM.Profile.JavaScript.Format -> D:\Broiler\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Format.dll
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Emitter.Bytecode.0.1.0-preview.6.f9-candidate.nupkg" wurde erfolgreich erstellt.
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Emitter.Bytecode.0.1.0-preview.6.f9-candidate.snupkg" wurde erfolgreich erstellt.
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Profile.WebAssembly.0.1.0-preview.6.f9-candidate.nupkg" wurde erfolgreich erstellt.
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Profile.WebAssembly.0.1.0-preview.6.f9-candidate.snupkg" wurde erfolgreich erstellt.
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Profile.JavaScript.Format.0.1.0-preview.6.f9-candidate.nupkg" wurde erfolgreich erstellt.
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Profile.JavaScript.Format.0.1.0-preview.6.f9-candidate.snupkg" wurde erfolgreich erstellt.
+  Broiler.VM.Profile.JavaScript.Compiler -> D:\Broiler\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Compiler\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Compiler.dll
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Profile.JavaScript.Compiler.0.1.0-preview.6.f9-candidate.nupkg" wurde erfolgreich erstellt.
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Profile.JavaScript.Compiler.0.1.0-preview.6.f9-candidate.snupkg" wurde erfolgreich erstellt.
+  Broiler.VM.Profile.JavaScript.Intl -> D:\Broiler\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Intl\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Intl.dll
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Profile.JavaScript.Intl.0.1.0-preview.6.f9-candidate.nupkg" wurde erfolgreich erstellt.
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Profile.JavaScript.Intl.0.1.0-preview.6.f9-candidate.snupkg" wurde erfolgreich erstellt.
+  Broiler.VM.Profile.JavaScript -> D:\Broiler\Broiler.VM\src\Broiler.VM.Profile.JavaScript\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.dll
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Profile.JavaScript.0.1.0-preview.6.f9-candidate.nupkg" wurde erfolgreich erstellt.
+  Das Paket "C:\Users\proof\AppData\Local\Temp\broiler-js-pack-pjvi1g3r\Broiler.VM.Profile.JavaScript.0.1.0-preview.6.f9-candidate.snupkg" wurde erfolgreich erstellt.
+exit code: 0
+--- produced ---
+Broiler.VM.Abstractions.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Abstractions.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Binary.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Binary.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Emitter.Bytecode.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Emitter.Bytecode.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Profile.JavaScript.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Profile.JavaScript.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Profile.JavaScript.Compiler.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Profile.JavaScript.Compiler.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Profile.JavaScript.Format.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Profile.JavaScript.Format.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Profile.JavaScript.Intl.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Profile.JavaScript.Intl.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Profile.MachineCode.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Profile.MachineCode.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Profile.WebAssembly.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Profile.WebAssembly.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Runtime.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Runtime.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Ubc.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Ubc.0.1.0-preview.6.f9-candidate.snupkg

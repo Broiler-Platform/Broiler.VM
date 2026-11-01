@@ -426,9 +426,9 @@ public sealed class FuelChargeExactnessTests
                 Interlocked.Increment(ref reads);
                 watching.Set();
             }
-        });
+        }, TestContext.Current.CancellationToken);
 
-        Assert.True(watching.Wait(Patience), "the observer never read the budget");
+        Assert.True(watching.Wait(Patience, TestContext.Current.CancellationToken), "the observer never read the budget");
 
         for (var invocation = 0; invocation < 40; invocation++)
         {

@@ -491,7 +491,7 @@ public sealed class CompilationStackRuleTests
 
         Assert.Empty(NamedCompileOnly.Matches(witness));
 
-        var entries = ParsingEntryPoints(CSharpSyntaxTree.ParseText(witness)).ToArray();
+        var entries = ParsingEntryPoints(CSharpSyntaxTree.ParseText(witness, cancellationToken: TestContext.Current.CancellationToken)).ToArray();
         var refused = Assert.Single(entries);
         Assert.Equal("Requests", refused.Name);
         Assert.False(refused.Compliant);
@@ -535,7 +535,7 @@ public sealed class CompilationStackRuleTests
             }
             """;
 
-        var entries = ParsingEntryPoints(CSharpSyntaxTree.ParseText(Source)).ToArray();
+        var entries = ParsingEntryPoints(CSharpSyntaxTree.ParseText(Source, cancellationToken: TestContext.Current.CancellationToken)).ToArray();
 
         Assert.Equal(new[] { "First", "Second" }, entries.Select(static entry => entry.Name));
         Assert.All(entries, static entry => Assert.False(entry.Compliant));
@@ -564,7 +564,7 @@ public sealed class CompilationStackRuleTests
             }
             """;
 
-        var entries = ParsingEntryPoints(CSharpSyntaxTree.ParseText(Source)).ToArray();
+        var entries = ParsingEntryPoints(CSharpSyntaxTree.ParseText(Source, cancellationToken: TestContext.Current.CancellationToken)).ToArray();
 
         Assert.Equal(new[] { "ByEnding", "ByNamespace", "OnTheStack" }, entries.Select(static entry => entry.Name));
         Assert.Equal(new[] { false, false, true }, entries.Select(static entry => entry.Compliant));

@@ -41,7 +41,7 @@ internal sealed class AdmissionProbe : IDisposable
 
     internal string ProjectPath => Path.Combine(Directory, "probe", AssemblyName + ".csproj");
 
-    internal string LockFilePath => Path.Combine(Directory, "probe", "packages.lock.json");
+    internal string AssetsPath => Path.Combine(Directory, "probe", "obj", "project.assets.json");
 
     internal string PackagesFolder => Path.Combine(Directory, "packages");
 
@@ -71,7 +71,6 @@ internal sealed class AdmissionProbe : IDisposable
                 <ImplicitUsings>disable</ImplicitUsings>
                 <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
                 <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
-                <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
               </PropertyGroup>
               <ItemGroup>
                 <PackageReference Include="{package.Id}" Version="[{package.Version}]" />
@@ -115,9 +114,9 @@ internal sealed class AdmissionProbe : IDisposable
     /// <summary>The probe's project file, parsed as the rules parse every project file.</summary>
     internal ComponentGraph.ProjectFile Project => ComponentGraph.ParseOutside(ProjectPath);
 
-    /// <summary>What the lock file recorded, or null before a restore.</summary>
-    internal IReadOnlyList<LockedPackage>? LockFile =>
-        File.Exists(LockFilePath) ? AdmissionRules.ReadLockFile(File.ReadAllText(LockFilePath)) : null;
+    /// <summary>What ordinary restore resolved, or null before a restore.</summary>
+    internal IReadOnlyList<RestoredPackage>? RestoreMetadata =>
+        File.Exists(AssetsPath) ? AdmissionRules.ReadRestoreAssets(File.ReadAllText(AssetsPath)) : null;
 
     /// <summary>The admitted assembly as it restored into the isolated package folder.</summary>
     internal string RestoredAssembly(string assemblyName) => Path.Combine(
@@ -126,10 +125,7 @@ internal sealed class AdmissionProbe : IDisposable
     /// <summary>The probe's own built assembly.</summary>
     internal string BuiltAssembly => Path.Combine(Directory, "probe", "bin", "Release", "net10.0", AssemblyName + ".dll");
 
-    internal int Restore(bool locked) => Run(
-        locked
-            ? ["restore", ProjectPath, "--configfile", ConfigPath, "--packages", PackagesFolder, "--locked-mode", "--no-http-cache"]
-            : ["restore", ProjectPath, "--configfile", ConfigPath, "--packages", PackagesFolder, "--no-http-cache"]);
+    internal int Restore() => Run(["restore", ProjectPath, "--configfile", ConfigPath, "--packages", PackagesFolder, "--no-http-cache"]);
 
     internal int Build() => Run(["build", ProjectPath, "-c", "Release", "--no-restore", "--nologo"]);
 

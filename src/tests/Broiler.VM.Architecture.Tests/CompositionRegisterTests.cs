@@ -183,6 +183,20 @@ public sealed class CompositionRegisterTests
             message => message.Contains("retained no catalog table", StringComparison.Ordinal));
     }
 
+    [Theory]
+    [InlineData("xunit.v3.core")]
+    [InlineData("xunit.v3.common")]
+    [InlineData("xunit.v3.runner.inproc.console")]
+    public void K4_Rejects_Xunit_V3_Assemblies_In_Product_Closures(string assembly)
+    {
+        var calculator = Rows.Single(row => row.Composition == "Broiler.VM.Composition.Calculator");
+        Assert.Contains(CompositionRules.K4(calculator, [
+            new CompositionRules.ClosureMode("trimmed", [
+                .. CompositionRules.CoreAssemblies, calculator.Composition,
+                .. calculator.ProfileAssemblies, assembly])]),
+            message => message.Contains("ships " + assembly, StringComparison.Ordinal));
+    }
+
     [Fact]
     public void K4_Each_Published_Closure_Contains_Exactly_What_It_Declares()
     {

@@ -89,7 +89,7 @@ public sealed class N26FixedRealmRuleTests
 
         var fence = witness.IndexOf("```csharp\n", StringComparison.Ordinal) + "```csharp\n".Length;
         var source = witness[fence..witness.IndexOf("```", fence, StringComparison.Ordinal)];
-        var violations = Violations("witness.cs", CSharpSyntaxTree.ParseText(source)).ToArray();
+        var violations = Violations("witness.cs", CSharpSyntaxTree.ParseText(source, cancellationToken: TestContext.Current.CancellationToken)).ToArray();
 
         // Exactly two: the cached field and the read of the first realm from a built-in's body. The
         // expression-bodied property that forwards the running realm, and the comment and string that

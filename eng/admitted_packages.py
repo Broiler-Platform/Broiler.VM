@@ -65,7 +65,10 @@ def identities(assemblies, root=ROOT):
         path = feed_path(entry, root)
         record = {"id": entry["id"], "version": entry["version"], "contentHash": entry["contentHash"], "use": entry["use"]}
         if os.path.isfile(path):
-            record["feedContentHash"] = content_hash(path)
+            archive_hash = content_hash(path)
+            if archive_hash != entry.get("archiveHash", entry["contentHash"]):
+                raise ValueError("Committed package archive hash mismatch: " + path)
+            record["feedContentHash"] = entry["contentHash"]
             record["commit"] = nuspec_commit(path)
         records.append(record)
     return records

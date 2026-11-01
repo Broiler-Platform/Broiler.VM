@@ -24,7 +24,7 @@ namespace Broiler.VM.Architecture.Tests;
 /// repository, which milestone VM-0 does not own; ADR 0001 records that as a recommendation.
 /// </para>
 /// </remarks>
-public sealed class LegacyBoundaryTests(Xunit.Abstractions.ITestOutputHelper output)
+public sealed class LegacyBoundaryTests(Xunit.ITestOutputHelper output)
 {
     /// <summary>
     /// The switch that makes this test write into the retained bundle, per the convention rules

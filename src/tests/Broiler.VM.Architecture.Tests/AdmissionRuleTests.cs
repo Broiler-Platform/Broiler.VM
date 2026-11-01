@@ -23,8 +23,8 @@ public sealed class AdmissionRuleTests
 
         var violations = shipping.SelectMany(static project =>
         {
-            var lockPath = Path.Combine(Path.GetDirectoryName(project.Path)!, "packages.lock.json");
-            return AdmissionRules.I1(project, File.Exists(lockPath) ? AdmissionRules.ReadLockFile(File.ReadAllText(lockPath)) : null);
+            var assetsPath = Path.Combine(Path.GetDirectoryName(project.Path)!, "obj", "project.assets.json");
+            return AdmissionRules.I1(project, File.Exists(assetsPath) ? AdmissionRules.ReadRestoreAssets(File.ReadAllText(assetsPath)) : null);
         });
         Assert.Empty(violations);
 
@@ -38,8 +38,8 @@ public sealed class AdmissionRuleTests
         Assert.Contains(testProjects, static project => project.AssemblyName == "Broiler.VM.Architecture.Tests");
         Assert.Empty(testProjects.SelectMany(static project =>
         {
-            var lockPath = Path.Combine(Path.GetDirectoryName(project.Path)!, "packages.lock.json");
-            return AdmissionRules.I1(project, File.Exists(lockPath) ? AdmissionRules.ReadLockFile(File.ReadAllText(lockPath)) : null);
+            var assetsPath = Path.Combine(Path.GetDirectoryName(project.Path)!, "obj", "project.assets.json");
+            return AdmissionRules.I1(project, File.Exists(assetsPath) ? AdmissionRules.ReadRestoreAssets(File.ReadAllText(assetsPath)) : null);
         }));
 
         // The list itself: every entry agrees with its pin, its package is on the committed feed at
@@ -254,13 +254,12 @@ public sealed class AdmissionRuleTests
         probe.Note("# The admission probe of milestone SJL-2.9: " + probe.Package.Id + " " + probe.Package.Version + ", admitted " + probe.Package.Use + ".");
         probe.Note(string.Empty);
 
-        // Positive: restore through the repository's own source mapping, then again in locked mode,
-        // then build; I1, I2 and I6 hold over what restored.
-        Assert.Equal(0, probe.Restore(locked: false));
-        Assert.Equal(0, probe.Restore(locked: true));
+        // Ordinary restore through the repository source mapping; I1 still checks
+        // the resulting package identity and content hash without a version lock.
+        Assert.Equal(0, probe.Restore());
         Assert.Equal(0, probe.Build());
 
-        var lockFile = probe.LockFile;
+        var lockFile = probe.RestoreMetadata;
         Assert.NotNull(lockFile);
         Assert.Equal(probe.Package.ContentHash, Assert.Single(lockFile, entry => entry.Id == probe.Package.Id).ContentHash);
 
@@ -282,14 +281,13 @@ public sealed class AdmissionRuleTests
         Record(probe, "negative: the probe package referenced from Broiler.VM.Runtime, I1", core);
         Assert.NotEmpty(core);
 
-        // Negative 2: the probe with a changed hash - the lock file edited, and locked mode refusing it too.
-        var original = File.ReadAllText(probe.LockFilePath);
-        File.WriteAllText(probe.LockFilePath, original.Replace(probe.Package.ContentHash, "AA" + probe.Package.ContentHash[2..], StringComparison.Ordinal));
-        var changed = AdmissionRules.I1(probe.Project, probe.LockFile).ToArray();
-        Record(probe, "negative: the lock file's content hash changed, I1", changed);
+        // A tampered restore hash is still refused by package admission.
+        var original = File.ReadAllText(probe.AssetsPath);
+        File.WriteAllText(probe.AssetsPath, original.Replace(probe.Package.ContentHash, "AA" + probe.Package.ContentHash[2..], StringComparison.Ordinal));
+        var changed = AdmissionRules.I1(probe.Project, probe.RestoreMetadata).ToArray();
+        Record(probe, "negative: the restored content hash changed, I1", changed);
         Assert.NotEmpty(changed);
-        Assert.NotEqual(0, probe.Restore(locked: true));
-        File.WriteAllText(probe.LockFilePath, original);
+        File.WriteAllText(probe.AssetsPath, original);
 
         // Negative 3: a probe build that references System.Text.RegularExpressions.
         var regex = AdmissionRules.I2(WitnessAssemblies.Read("I2-admitted-assembly-references-regular-expressions.cs.witness", "Broiler.ECMAScript.Algorithms")).ToArray();

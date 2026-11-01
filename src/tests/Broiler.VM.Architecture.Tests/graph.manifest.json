@@ -394,7 +394,7 @@
         "Microsoft.CodeAnalysis.CSharp",
         "Microsoft.NET.Test.Sdk",
         "System.Reflection.MetadataLoadContext",
-        "xunit",
+        "xunit.v3",
         "xunit.runner.visualstudio"
       ]
     },
@@ -429,7 +429,7 @@
       ],
       "packageReferences": [
         "Microsoft.NET.Test.Sdk",
-        "xunit",
+        "xunit.v3",
         "xunit.runner.visualstudio"
       ]
     },
