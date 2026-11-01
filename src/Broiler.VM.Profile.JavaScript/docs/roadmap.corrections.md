@@ -13825,3 +13825,55 @@ that SJL-13.5 files. This entry judges nothing and moves no row: JS-2 stays wher
 **Authority and date.** [JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md), decisions D3 and
 D33, taken by the owner on 2026-10-26 under the direction of 2026-10-18, and the programme ledger's SJL-13.0 entry,
 which records SJL-13's start at the owner's words of 2026-10-25. 2026-10-26.
+
+### JSC-321
+
+**Where:** the records that carry the test-only generator package's version and identity:
+`Directory.Packages.props`, the committed feed `eng/packages/` with its README and the package's pin, the
+allow-list's entry and the architecture tests' lock file, and `THIRD_PARTY_NOTICES.md`'s row for the package; the
+architecture tests' rules N27 and N28, which read and regenerate through the new `CldrTableEmbedding`, and the three
+files they held until now, `CldrTableGenerator.cs`, `UnicodeDatabase.cs` and `CldrPin.cs`, deleted; rule I4's CLDR
+clause, its two witnesses, and the N27, N28 and I4 rows of `rules.register.json`; and the records that said this was
+SJL-9.2c's to do: a dated note in [JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md),
+the programme's governance row for I4 and its row for N22, N27, N28 and N29 to N32, and the programme's ledger.
+JSD-0082's decisions are not edited.
+
+**What the plan said.** [JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md),
+decision D2: "No JSC and no exclusion at SJL-9.1: SJL-9.2c takes the next free JSC". Decision D10: "**I4's CLDR
+clause is entry-wise**: each of this family's entries and header lines equals the home's, read at a recorded
+Broiler.JS commit, and the generator declares 48.2.0." Decision D11: "This family's options reproduce
+`JsCldrTables.g.cs` byte for byte through `TableSourceOptions` (rules N27 and N28), as SJL-8.5 did." Decision D12:
+"This family's `UnicodeDatabase.cs` is then deleted." Decision D24, this family's list: "on the test side,
+`CldrTableGenerator.cs`, `UnicodeDatabase.cs` and `CldrPin.cs`." And [JSC-317](#jsc-317): the generator package at
+`0.1.0-preview.7`, published to nuget.org "from Broiler.JS `5ddee404`", its code `0.1.0-preview.5`'s.
+
+**What replaced it.** The generator package moves to `0.1.0-preview.8`, published to nuget.org on 2026-10-29 from
+Broiler.JS `3b4b6860` by its publish-shared workflow (run 40927396540) and tagged `ecmascript-v0.1.0-preview.8`: the
+shared stream's version that carries the Intl data home's generator, which SJL-9.2b merged at Broiler.JS `ff54e1d8`.
+No file under `Broiler.ECMAScript/Broiler.ECMAScript.Generation` changes between `ff54e1d8` and `3b4b6860`, and
+between `5ddee404` and `3b4b6860` only its `Intl/` directory, its public API's Intl lines and its project file's
+comment and description do; its time code is unchanged. The feed holds the package exactly as that run pushed it,
+which is nuget.org's with its repository signature taken out, so a restore from either source records the pin's
+content hash; the `0.1.0-preview.7` package leaves. The algorithms package stays at `0.1.0-preview.7`, and no product
+project, product lock file or product package changes. No package was packed for this: the stream's procedure had
+already spent `0.1.0-preview.8` on the same generator code, and a pack would have taken the next number for it.
+
+Rules N27 and N28 read and regenerate through the home's generator: its `IntlCldrPin` verifies this repository's CLDR
+pin, its `CldrUcd` reads the two UCD files the collation tables need from this repository's pinned UCD, verified by
+this project's `UnicodePin` first, its `CldrTableGenerator` writes the tables for this family's list, and its
+`IntlTableSource` writes the file with the header and annotation lines the moved generator wrote as constants, before
+the assurance pass. `JsCldrTables.g.cs` does not change by a byte, and its text before the assurance pass hashes to
+the digest the home's fixture records for this family's file. The three files are deleted. Rule I4 gains its CLDR
+clause: this repository's CLDR pin's header lines, integrity lines and files, entry by entry, against the home's
+lines read at Broiler.JS `ff54e1d8` and recorded in the rule with their digest; and the CLDR release, CLDR major
+version and UCA version the generator declares, against this repository's pin. Its time clauses are unchanged.
+
+One reading of decision D12 is recorded with it. The deleted `UnicodeDatabase` read the whole pinned UCD, and its
+reading held the ECMAScript string-property table to the emoji sequence files, and some derived UCD files to each
+other, whenever rule N28 ran. The home's reader reads only what the collation tables need, as decision D12 says, so
+those cross-checks are not run here any longer; rule N22 and the owner's generator still read the same pinned files.
+
+**Authority and date.** [JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)'s
+decisions D2, D10 to D12 and D24, taken by the owner on 2026-10-26 under the direction of 2026-10-18; the package as
+published from Broiler.JS `3b4b6860` on 2026-10-29; Broiler-Platform/Broiler.JS#1080, merged as `ff54e1d8`.
+2026-11-01.
