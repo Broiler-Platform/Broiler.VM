@@ -42,16 +42,32 @@ public sealed class AdmissionRuleTests
             return AdmissionRules.I1(project, File.Exists(assetsPath) ? AdmissionRules.ReadRestoreAssets(File.ReadAllText(assetsPath)) : null);
         }));
 
-        // The list itself: every entry agrees with its pin, its package is on the committed feed at
-        // that hash, and every project it names is in the JavaScript family - or, for a test-only
-        // entry, a test project.
+        // The list itself: every entry carries its archive pin, the package as restored is there at
+        // its version with its archive hashing to that pin and its recorded content hash the entry's,
+        // and every project it names is in the JavaScript family - or, for a test-only entry, a test
+        // project. (Revised 2026-11-01: it read "every entry agrees with its pin, its package is on the
+        // committed feed at that hash", and the feed holds no package since 2026-10-30.)
         Assert.NotEmpty(AdmissionRules.AllowList);
         Assert.Empty(AdmissionRules.I1Entries(AdmissionRules.AllowList));
         Assert.Contains(AdmissionRules.AllowList, static package => package.IsTestOnly && package.Projects.Contains("Broiler.VM.Architecture.Tests"));
+        Assert.All(AdmissionRules.AllowList, static package => Assert.True(File.Exists(package.RestoredPath), package.RestoredPath));
+
+        // The archive clause's witness (2026-11-01): one real entry with its archive pin changed in
+        // two characters, and one with none. Each is refused alone, and the content hash both carry,
+        // which restore recorded, is not.
+        var archiveEntries = AdmissionRules.I1Entries(AdmissionRules.LoadAllowList(Path.Combine(WitnessAssemblies.Directory, "I1-archive-pin-differs-or-is-absent.json.witness"))).ToArray();
+        var generation = AdmissionRules.Admitted("Broiler.ECMAScript.Generation")!.ArchiveHash!;
+        Assert.Equal(
+            [
+                $"Broiler.ECMAScript.Generation: the restored archive hashes to {generation}, and the allow-list's archive pin is AA{generation[2..]}",
+                "Broiler.Unicode.Generation: the allow-list records no archive hash, and an admitted package is pinned by the SHA-512 of its archive",
+            ],
+            archiveEntries);
 
         // The revision's two witnesses: a product entry naming a test project, and a test-only
-        // entry naming a project that ships. Each is otherwise a real entry, so its pin, hash and
-        // feed copy agree and the refusal is the one the revision adds.
+        // entry naming a project that ships. Each is otherwise a real entry, so its archive pin and
+        // content hash agree with the package as restored and the refusal is the one the revision
+        // adds. (Revised 2026-11-01: they read "so its pin, hash and feed copy agree".)
         var productEntry = AdmissionRules.I1Entries(AdmissionRules.LoadAllowList(Path.Combine(WitnessAssemblies.Directory, "I1-product-entry-names-a-test-project.json.witness"))).ToArray();
         Assert.Equal(["Broiler.Unicode.Algorithms: admitted for product use, and the allow-list names the test project Broiler.VM.Architecture.Tests; only a test-only entry may name one"], productEntry);
         var testOnlyEntry = AdmissionRules.I1Entries(AdmissionRules.LoadAllowList(Path.Combine(WitnessAssemblies.Directory, "I1-test-only-entry-names-a-shipping-project.json.witness"))).ToArray();
@@ -77,10 +93,13 @@ public sealed class AdmissionRuleTests
         Assert.DoesNotContain(format, static message => message.Contains("Broiler.Unicode.Algorithms: the allow-list", StringComparison.Ordinal));
         Assert.Contains(AdmissionRules.Admitted("Broiler.Unicode.Algorithms")!.Projects, static project => project == "Broiler.VM.Profile.JavaScript.Format");
 
-        // And a lock file whose content hash is not the pin, read with the probe's own project file.
+        // And restore assets whose content hash is not the pin, read with the probe's own project
+        // file. (Revised 2026-11-01: the witness was a lock file, I1-lock-file-hash-differs.packages.lock.json.witness,
+        // read as one; the owner's change of 2026-10-30 removed the lock files, and restore's
+        // obj/project.assets.json is what I1 reads instead.)
         using var probe = AdmissionProbe.Create();
         Assert.Contains(
-            AdmissionRules.I1(probe.Project, AdmissionRules.ReadLockFile(WitnessText("I1-lock-file-hash-differs.packages.lock.json.witness"))),
+            AdmissionRules.I1(probe.Project, AdmissionRules.ReadRestoreAssets(WitnessText("I1-restored-content-hash-differs.project.assets.json.witness"))),
             static message => message.Contains("differs from the pin", StringComparison.Ordinal));
     }
 
@@ -89,8 +108,10 @@ public sealed class AdmissionRuleTests
     [Fact]
     public void I2_Every_Admitted_Assembly_Reaches_No_Dynamic_Code_And_No_Platform_Text_Api()
     {
+        // Every admitted package as restored, whose archive I1 holds to its archive pin. (Revised
+        // 2026-11-01: it read package.FeedPath, the committed feed's copy, which is gone since 2026-10-30.)
         var assemblies = AdmissionRules.AllowList
-            .SelectMany(static package => AdmissionRules.PackageAssemblies(package.FeedPath))
+            .SelectMany(static package => AdmissionRules.PackageAssemblies(package.RestoredPath))
             .Select(static assembly => AssemblyFacts.ReadImage(assembly.Name, assembly.Image))
             .ToArray();
 

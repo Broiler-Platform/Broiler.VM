@@ -1,0 +1,22 @@
+{
+  "$comment": [
+    "Violates I1 (witness revised 2026-11-01): restore assets, the obj/project.assets.json a restore writes, whose",
+    "content hash for the admitted package is not the allow-list's - the real one with its first two characters",
+    "changed to AA. It replaces I1-lock-file-hash-differs.packages.lock.json.witness, a packages.lock.json with",
+    "its contentHash so changed: the owner's change of 2026-10-30 removed the lock files, and I1 reads restore",
+    "assets instead. Read with the admission probe's own project file, which references the package."
+  ],
+  "version": 3,
+  "libraries": {
+    "Broiler.ECMAScript.Algorithms/0.1.0-preview.8": {
+      "sha512": "AATlGJXt9ynAoll3XWk+CpGo/TwXx3+0eXByLQEh+Zp2eWWr8r/VQszFZZLEPPTh57skVAxL9xSS61x0dnXkxA==",
+      "type": "package",
+      "path": "broiler.ecmascript.algorithms/0.1.0-preview.8",
+      "files": [
+        ".nupkg.metadata",
+        "broiler.ecmascript.algorithms.0.1.0-preview.8.nupkg.sha512",
+        "broiler.ecmascript.algorithms.nuspec"
+      ]
+    }
+  }
+}

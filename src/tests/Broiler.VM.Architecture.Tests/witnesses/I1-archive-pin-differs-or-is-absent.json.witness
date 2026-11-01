@@ -1,0 +1,40 @@
+{
+  "$comment": [
+    "Violates I1's archive clause (revised 2026-11-01, when the owner's change of 2026-10-30 restored the admitted",
+    "packages from nuget.org and recorded each one's archive hash in the allow-list): two entries, each otherwise the",
+    "real one, so that the content hash restore recorded agrees and every project they name is admitted. The first",
+    "carries the real archive hash with its first two characters changed to AA, and the restored archive does not hash",
+    "to it; the second carries no archive hash at all. Each is refused alone."
+  ],
+  "packages": [
+    {
+      "id": "Broiler.ECMAScript.Generation",
+      "version": "0.1.0-preview.8",
+      "contentHash": "C1rgQojk5eDD0obxYtAq/CbhlCDmwnwyc5QOhWZEKynXKqjJFqrSwm+OHB239hEu3GV3ICeLgL+ugL4ZbTIYTA==",
+      "use": "test-only",
+      "projects": [
+        "Broiler.VM.Architecture.Tests"
+      ],
+      "sources": [
+        "committed-feed",
+        "nuget.org"
+      ],
+      "pin": "eng/packages/Broiler.ECMAScript.Generation.0.1.0-preview.8.pin",
+      "archiveHash": "AA+s1sx17JCOf21zqqfvhq8Ixk64dpW1Sus2icsH//W1dv1P16e45Zd/c2wVW4Qh1m/k4S1BbsefToAIOSnSJA=="
+    },
+    {
+      "id": "Broiler.Unicode.Generation",
+      "version": "0.1.0-preview.6",
+      "contentHash": "Vp49i3xFcVYwbw8vTqDJS0emJmWG29zaUVQhNc+vnUn0cXakGOo9xEG0utHu0rk8CeN4D9KAH0Albetz7g2u2Q==",
+      "use": "test-only",
+      "projects": [
+        "Broiler.VM.Architecture.Tests"
+      ],
+      "sources": [
+        "committed-feed",
+        "nuget.org"
+      ],
+      "pin": "eng/packages/Broiler.Unicode.Generation.0.1.0-preview.6.pin"
+    }
+  ]
+}
