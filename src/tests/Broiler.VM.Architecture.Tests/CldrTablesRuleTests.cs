@@ -3,8 +3,8 @@ using System.Text.RegularExpressions;
 namespace Broiler.VM.Architecture.Tests;
 
 /// <summary>
-/// Rule N28: the internationalization tables are what <see cref="CldrTableGenerator"/> writes from
-/// the pinned CLDR and UCD archives.
+/// Rule N28: the internationalization tables are what the Intl data home's generator writes from the
+/// pinned CLDR and UCD archives (<see cref="CldrTableEmbedding"/>).
 /// </summary>
 /// <remarks>
 /// <para>
@@ -20,6 +20,14 @@ namespace Broiler.VM.Architecture.Tests;
 /// when the time zones' names needed more than 768 KiB left (JSD-0058). Growth past it is a decision
 /// rather than a drift.
 /// </para>
+/// <para>
+/// <b>The generator is the home's since SJL-9.2c</b> (JSD-0082, decisions D10 to D12): the test-only
+/// package <c>Broiler.ECMAScript.Generation</c>'s <c>CldrTableGenerator</c> and <c>IntlTableSource</c>, with
+/// this family's locale list and source options, as <see cref="CldrTableEmbedding"/> states them, and the
+/// file did not change by a byte. Until then the rule read "what <c>CldrTableGenerator</c> writes", this
+/// project's own generator, which read the UCD through this project's <c>UnicodeDatabase</c>; both are
+/// deleted, with this project's <c>CldrPin</c>.
+/// </para>
 /// </remarks>
 public sealed class CldrTablesRuleTests
 {
@@ -34,7 +42,7 @@ public sealed class CldrTablesRuleTests
     [Fact]
     public void N28_The_Generated_Tables_Are_What_The_Pinned_Archives_Generate()
     {
-        var artefact = CldrTableGenerator.Current;
+        var artefact = CldrTableEmbedding.Current;
 
         Assert.True(artefact.Desired.Length > 100_000, "the generated tables are not the size of the archive's data");
 
@@ -59,10 +67,10 @@ public sealed class CldrTablesRuleTests
         Assert.Contains("UnicodeTable.SegmentBreaks => SegmentBreaks,", unicode.Desired, StringComparison.Ordinal);
         Assert.True(unicode.Desired.Length > 10_000, "the break table is not the size of the code space's runs");
 
-        if (CldrTableGenerator.WriteRequested)
+        if (CldrTableEmbedding.WriteRequested)
         {
             File.WriteAllText(
-                Path.Combine(ComponentGraph.Root, CldrTableGenerator.OutputPath.Replace('/', Path.DirectorySeparatorChar)),
+                Path.Combine(ComponentGraph.Root, CldrTableEmbedding.OutputPath.Replace('/', Path.DirectorySeparatorChar)),
                 artefact.Desired,
                 AssuranceSources.Utf8NoBom);
             File.WriteAllText(
@@ -74,12 +82,12 @@ public sealed class CldrTablesRuleTests
 
         Assert.True(
             artefact.IsCurrent,
-            $"{CldrTableGenerator.OutputPath} is not what the CLDR table generator writes; change the generator or a " +
-            $"pinned archive and run with {CldrTableGenerator.WriteVariable}=1, never edit the file");
+            $"{CldrTableEmbedding.OutputPath} is not what the Intl data home's generator writes; change the admitted generator, " +
+            $"this family's options or a pinned archive and run with {CldrTableEmbedding.WriteVariable}=1, never edit the file");
         Assert.True(
             unicode.IsCurrent,
             $"{UnicodeTableEmbedding.IntlPath} is not what the owner's Unicode generator writes; change the pinned archive " +
-            $"or the admitted generator and run with {CldrTableGenerator.WriteVariable}=1, never edit the file");
+            $"or the admitted generator and run with {CldrTableEmbedding.WriteVariable}=1, never edit the file");
     }
 
     /// <summary>The Intl assembly's Unicode file, as the owner's generator writes it, beside the file on disk.</summary>
@@ -90,11 +98,11 @@ public sealed class CldrTablesRuleTests
     [Fact]
     public void N28_Generating_Twice_Yields_The_Same_Bytes()
     {
-        var pin = CldrPin.Load();
+        var pin = CldrTableEmbedding.LoadPin();
         var unicode = UnicodePin.Load();
 
-        var first = CldrTableGenerator.Generate(pin, pin.ReadArchive(), unicode, unicode.ReadArchive());
-        var second = CldrTableGenerator.Generate(pin, pin.ReadArchive(), unicode, unicode.ReadArchive());
+        var first = CldrTableEmbedding.Write(pin, CldrTableEmbedding.ReadArchive(pin), unicode, unicode.ReadArchive());
+        var second = CldrTableEmbedding.Write(pin, CldrTableEmbedding.ReadArchive(pin), unicode, unicode.ReadArchive());
 
         Assert.Equal(first, second);
     }
@@ -103,14 +111,14 @@ public sealed class CldrTablesRuleTests
     [Fact]
     public void N28_Rejects_A_Hand_Edit_And_A_Changed_Archive()
     {
-        var artefact = CldrTableGenerator.Current;
+        var artefact = CldrTableEmbedding.Current;
         var edited = artefact with { Current = artefact.Desired.Replace("de-DE", "de-AT", StringComparison.Ordinal) };
 
         Assert.False(edited.IsCurrent);
 
-        var pin = CldrPin.Load();
+        var pin = CldrTableEmbedding.LoadPin();
         var unicode = UnicodePin.Load();
-        var archive = new Dictionary<string, byte[]>(pin.ReadArchive(), StringComparer.Ordinal);
+        var archive = new Dictionary<string, byte[]>(CldrTableEmbedding.ReadArchive(pin), StringComparer.Ordinal);
         const string Name = "cldr-48.2.0/json/cldr-core/supplemental/likelySubtags.json";
         var changed = (byte[])archive[Name].Clone();
 
@@ -119,7 +127,7 @@ public sealed class CldrTablesRuleTests
         archive[Name] = changed;
 
         var refused = Assert.Throws<InvalidDataException>(() =>
-            CldrTableGenerator.Generate(pin, archive, unicode, unicode.ReadArchive()));
+            CldrTableEmbedding.Write(pin, archive, unicode, unicode.ReadArchive()));
 
         Assert.Contains("nothing is generated from it", refused.Message, StringComparison.Ordinal);
     }
@@ -128,14 +136,14 @@ public sealed class CldrTablesRuleTests
     [Fact]
     public void N28_The_Notices_Carry_The_Archived_Cldr_Licence()
     {
-        var pin = CldrPin.Load();
+        var pin = CldrTableEmbedding.LoadPin();
         var notices = File.ReadAllText(Path.Combine(ComponentGraph.Root, "THIRD_PARTY_NOTICES.md"));
-        var licence = CldrPin.Decode(pin.ReadArchive()["cldr-LICENSE.txt"]).TrimEnd('\n');
+        var licence = CldrTableEmbedding.Decode(CldrTableEmbedding.ReadArchive(pin)["cldr-LICENSE.txt"]).TrimEnd('\n');
 
         Assert.StartsWith("UNICODE LICENSE V3", licence, StringComparison.Ordinal);
-        Assert.Contains("Copyright \u00a9 2004-2026 Unicode, Inc.", licence, StringComparison.Ordinal);
+        Assert.Contains("Copyright © 2004-2026 Unicode, Inc.", licence, StringComparison.Ordinal);
         Assert.Contains(licence, notices, StringComparison.Ordinal);
-        Assert.Contains(CldrTableGenerator.OutputPath, notices, StringComparison.Ordinal);
+        Assert.Contains(CldrTableEmbedding.OutputPath, notices, StringComparison.Ordinal);
 
         // Since SJL-7.4 the assembly ships a second generated file, the break table, which the notices
         // name beside the Unicode data it is derived from.
@@ -153,7 +161,7 @@ public sealed class CldrTablesRuleTests
     {
         // SINCE SJL-7.4 the Intl assembly's Unicode file is counted too: it holds the break table the
         // CLDR generator wrote until then, now the owner's generator's (JSD-0074).
-        var text = CldrTableGenerator.Current.Desired + TimeTableEmbedding.TzdbCurrent.Desired + TimeTableEmbedding.CalendarsCurrent.Desired
+        var text = CldrTableEmbedding.Current.Desired + TimeTableEmbedding.TzdbCurrent.Desired + TimeTableEmbedding.CalendarsCurrent.Desired
             + IntlUnicodeArtefact.Desired;
 
         var bytes = Regex.Matches(text, @"new byte\[\]\s*\{(?<body>[^}]*)\}")

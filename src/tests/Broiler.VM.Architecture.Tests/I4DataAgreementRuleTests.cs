@@ -1,3 +1,4 @@
+using Broiler.ECMAScript.Generation.Intl;
 using HomeCalendarPin = Broiler.ECMAScript.Generation.Time.CalendarPin;
 using OwnerPin = Broiler.Unicode.Generation.UnicodePin;
 
@@ -92,7 +93,7 @@ public sealed class I4DataAgreementRuleTests
     {
         var tzdb = File.ReadAllBytes(Path.Combine(ComponentGraph.Root, TimeTableEmbedding.TzdbPinPath));
         var calendars = File.ReadAllBytes(Path.Combine(ComponentGraph.Root, TimeTableEmbedding.CalendarPinPath));
-        var cldr = CldrPin.Load();
+        var cldr = CldrTableEmbedding.LoadPin();
 
         // Not vacuous: the two pins are read whole, and the CLDR pin names the time zone keys among its
         // 114 files.
@@ -137,7 +138,7 @@ public sealed class I4DataAgreementRuleTests
     {
         var tzdb = File.ReadAllBytes(Path.Combine(ComponentGraph.Root, TimeTableEmbedding.TzdbPinPath));
         var calendars = File.ReadAllBytes(Path.Combine(ComponentGraph.Root, TimeTableEmbedding.CalendarPinPath));
-        var cldr = CldrEntries(CldrPin.Load()).ToArray();
+        var cldr = CldrEntries(CldrTableEmbedding.LoadPin()).ToArray();
 
         // The tzdb pin with one digit of one member's hash changed: that pin alone is reported.
         var differing = File.ReadAllBytes(Witness("I4-a-tzdb-pin-differing-from-the-home-by-one-hash.pin.witness"));
@@ -169,7 +170,7 @@ public sealed class I4DataAgreementRuleTests
     }
 
     /// <summary>The files this repository's CLDR pin names, as I4's CLDR clause reads them.</summary>
-    private static IEnumerable<(string Name, long Bytes, string Sha256)> CldrEntries(CldrPin pin) =>
+    private static IEnumerable<(string Name, long Bytes, string Sha256)> CldrEntries(IntlCldrPin pin) =>
         pin.Entries.Select(static entry => (entry.Name, entry.Bytes, entry.Sha256));
 
     /// <summary>
@@ -184,7 +185,7 @@ public sealed class I4DataAgreementRuleTests
         var versions = new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["tzdb"] = TimeTableEmbedding.LoadTzdbPin().Version,
-            ["cldr"] = CldrPin.Load().Version,
+            ["cldr"] = CldrTableEmbedding.LoadPin().Version,
         };
 
         foreach (var manifest in members.Keys.Where(static name => name.EndsWith("/Cargo.toml", StringComparison.Ordinal)))

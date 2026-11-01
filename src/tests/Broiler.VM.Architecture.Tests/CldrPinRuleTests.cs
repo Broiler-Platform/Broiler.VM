@@ -1,3 +1,5 @@
+using Broiler.ECMAScript.Generation.Intl;
+
 namespace Broiler.VM.Architecture.Tests;
 
 /// <summary>
@@ -19,6 +21,14 @@ namespace Broiler.VM.Architecture.Tests;
 /// records exactly its bytes, because the hash says a file is unchanged and only its stated version
 /// says which release it is.
 /// </para>
+/// <para>
+/// <b>The reader is the Intl data home's since SJL-9.2c</b> (JSD-0082, decisions D10 to D12): the pin is
+/// parsed and verified by <c>Broiler.ECMAScript.Generation</c>'s <c>IntlCldrPin</c>, ported from the
+/// reader this project held until then, which also checks the pin's <c>uca-version</c> line against the
+/// Unicode version the generator reads. The pin, its archive and this rule's clauses are unchanged. Until
+/// SJL-9.2c the rule read the pin with this project's own <c>CldrPin</c>, whose <c>PinnedUcaVersion</c>
+/// was <see cref="UnicodePin.PinnedVersion"/>; the gate below still holds the two equal.
+/// </para>
 /// </remarks>
 public sealed class CldrPinRuleTests
 {
@@ -26,19 +36,20 @@ public sealed class CldrPinRuleTests
     [Fact]
     public void N27_The_Archive_Is_The_One_The_Pin_Describes()
     {
-        var pin = CldrPin.Load();
+        var pin = CldrTableEmbedding.LoadPin();
 
-        Assert.Empty(pin.Violations(pin.ReadArchive()));
+        Assert.Empty(pin.Violations(CldrTableEmbedding.ReadArchive(pin)));
         Assert.True(pin.Entries.Count > 20, $"the pin names {pin.Entries.Count} files, and the archive holds more than twenty");
         Assert.Equal("48", pin.Values["cldr-major"]);
-        Assert.Equal(CldrPin.PinnedUcaVersion, pin.Values["uca-version"]);
+        Assert.Equal(IntlCldrPin.PinnedUcaVersion, pin.Values["uca-version"]);
+        Assert.Equal(UnicodePin.PinnedVersion, pin.Values["uca-version"]);
         Assert.Equal("2 byte-identical", pin.Values["retrievals"]);
         Assert.Contains(pin.Integrities, static line => line.StartsWith("cldr-core sha512-", StringComparison.Ordinal));
         Assert.Contains(pin.Integrities, static line => line.StartsWith("cldr-bcp47 sha512-", StringComparison.Ordinal));
 
         // THE PIN NAMES EVERY FILE BESIDE IT: a file archived and not pinned is a file nothing
         // verified, and it would be read by the first generator that globbed the directory.
-        var directory = Path.Combine(ComponentGraph.Root, CldrPin.PinDirectory);
+        var directory = Path.Combine(ComponentGraph.Root, CldrTableEmbedding.PinDirectory);
         var archived = Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories)
             .Select(file => Path.GetRelativePath(directory, file).Replace(Path.DirectorySeparatorChar, '/'))
             .Where(static name => name is not "cldr.pin" and not "README.md")
@@ -59,8 +70,8 @@ public sealed class CldrPinRuleTests
     [Fact]
     public void N27_Rejects_A_Changed_Input_Byte()
     {
-        var pin = CldrPin.Load();
-        var archive = new Dictionary<string, byte[]>(pin.ReadArchive(), StringComparer.Ordinal);
+        var pin = CldrTableEmbedding.LoadPin();
+        var archive = new Dictionary<string, byte[]>(CldrTableEmbedding.ReadArchive(pin), StringComparer.Ordinal);
         const string Name = "cldr-48.2.0/common/uca/allkeys_CLDR.txt";
         var changed = (byte[])archive[Name].Clone();
 
@@ -86,14 +97,19 @@ public sealed class CldrPinRuleTests
     /// The version clause: a supplemental file of CLDR 45 and a UCA file of 16.0.0 are refused even
     /// under a pin that records exactly their bytes.
     /// </summary>
+    /// <remarks>
+    /// The forged pin states <c>uca-version 17.0.0</c> since SJL-9.2c, because the home's reader refuses a
+    /// pin without the line, and the clause read here is the files' own statements. Until then it began
+    /// <c>"version 48.2.0\narchived yes\n"</c>.
+    /// </remarks>
     [Fact]
     public void N27_Rejects_A_File_Stating_Another_Release()
     {
         var supplemental = File.ReadAllBytes(Witness("N27-a-supplemental-file-of-another-release.json.witness"));
         var uca = File.ReadAllBytes(Witness("N27-a-uca-file-of-another-version.txt.witness"));
 
-        var forged = CldrPin.Parse(
-            "version 48.2.0\narchived yes\n" +
+        var forged = IntlCldrPin.Parse(
+            "version 48.2.0\nuca-version 17.0.0\narchived yes\n" +
             $"file cldr-48.2.0/json/cldr-core/supplemental/likelySubtags.json {supplemental.Length} {Hash(supplemental)}\n" +
             $"file cldr-48.2.0/common/uca/allkeys_CLDR.txt {uca.Length} {Hash(uca)}\n");
 
@@ -108,8 +124,8 @@ public sealed class CldrPinRuleTests
         Assert.Contains(violations, static violation => violation.Contains("does not state `# UCA Version: 17.0.0`", StringComparison.Ordinal));
 
         // A package of another release is refused the same way.
-        Assert.NotNull(CldrPin.VersionViolation("cldr-48.2.0/json/cldr-core/package.json", "{\"version\":\"47.0.0\"}"u8.ToArray()));
-        Assert.Null(CldrPin.VersionViolation("cldr-48.2.0/json/cldr-core/package.json", "{\"version\":\"48.2.0\"}"u8.ToArray()));
+        Assert.NotNull(IntlCldrPin.VersionViolation("cldr-48.2.0/json/cldr-core/package.json", "{\"version\":\"47.0.0\"}"u8.ToArray()));
+        Assert.Null(IntlCldrPin.VersionViolation("cldr-48.2.0/json/cldr-core/package.json", "{\"version\":\"48.2.0\"}"u8.ToArray()));
     }
 
     /// <summary>
@@ -124,13 +140,13 @@ public sealed class CldrPinRuleTests
         Assert.Contains("src/tests/cldr/pins/cldr-48.2.0/** binary", attributes, StringComparison.Ordinal);
         Assert.Contains("src/tests/cldr/pins/cldr-LICENSE.txt binary", attributes, StringComparison.Ordinal);
 
-        var readme = File.ReadAllText(Path.Combine(ComponentGraph.Root, CldrPin.PinDirectory, "README.md"));
+        var readme = File.ReadAllText(Path.Combine(ComponentGraph.Root, CldrTableEmbedding.PinDirectory, "README.md"));
 
         Assert.Contains("CLDR 48.2.0", readme, StringComparison.Ordinal);
         Assert.Contains("JSD-0027", readme, StringComparison.Ordinal);
 
-        var pin = CldrPin.Load();
-        var licence = CldrPin.Decode(pin.ReadArchive()["cldr-LICENSE.txt"]);
+        var pin = CldrTableEmbedding.LoadPin();
+        var licence = CldrTableEmbedding.Decode(CldrTableEmbedding.ReadArchive(pin)["cldr-LICENSE.txt"]);
 
         Assert.StartsWith("UNICODE LICENSE V3", licence, StringComparison.Ordinal);
     }
