@@ -2318,9 +2318,16 @@ made, and SJL-11.4's span opens only when its landing branch is cut), and step 1
   to the allow-list's archive pin, and I7's register row says so by a dated note.
 - **The owner's version decision for Broiler.Regex, 2026-11-01**: "Please keep using version 0.1.0-x scheme!" It
   revises [JSD-0081](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0081-regular-expressions-move-to-broiler-regex-under-its-owner-conditions.md)'s
-  decision D12: the SJL-11 surface ships in the `0.1.0-preview.N` stream, not as `0.2.0-preview.1`, and since the owner
-  published `0.1.0-preview.5` on 2026-10-29 from Broiler.Regex `24344b3` (observed), the next is `0.1.0-preview.6`.
-  JSD-0081 and its index row carry dated notes. No other record of this repository named `0.2.0-preview.1` as the
+  decision D12: the SJL-11 surface ships in the `0.1.0-preview.N` stream, not as `0.2.0-preview.1`. The
+  `0.1.0-preview.5` the owner published on 2026-10-29 from Broiler.Regex `24344b3` already ships R11's breaks of the
+  `0.1` surface, and Broiler.JS has referenced it since the owner's `a58d31d1` of that day (both observed); the whole
+  surface ships in `0.1.0-preview.6` or after. So D12's sentences that no engine release depends on the surface's
+  version before both cut-overs merge and that Broiler.JS moves its pin only at SJL-11.5 no longer hold, and the
+  hazard D12 was made against, one Broiler.Regex in a process hosting both engines, is open; it cannot arise while
+  this family references no Broiler.Regex package. The breaks inside `0.1` depart, by the owner's decision, from
+  SJL-D-3's compatibility minimum as D12 read it, and the next pack is validated against `0.1.0-preview.5`, the last
+  published, where Broiler.Regex's default branch still names `0.1.0-preview.4` (observed). JSD-0081 and its index
+  row carry dated notes. No other record of this repository named `0.2.0-preview.1` as the
   SJL-11 package; the `Broiler.ECMAScript.Algorithms` `0.2.0-preview.1` of SJL-4.4a is another package.
 - **The owner's change to the evidence workflow, 2026-10-30**, in `9d0f80e`: each job of
   `.github/workflows/test262-evidence.yml` runs on `ubuntu-24.04`, where it ran on `ubuntu-latest`; the driver did not
