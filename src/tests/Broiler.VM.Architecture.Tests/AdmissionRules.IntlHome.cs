@@ -276,10 +276,15 @@ internal static partial class AdmissionRules
             string.Equals(type, IntlDataVersionsType, StringComparison.Ordinal) ||
             string.Equals(type, IntlCldrPinType, StringComparison.Ordinal));
 
-    /// <summary>Every Intl data version every admitted assembly declares, read from the committed feed's packages.</summary>
+    /// <summary>
+    /// Every Intl data version every admitted assembly declares, read from the packages as restored, whose
+    /// archives rule I1 holds to their archive pins, as the Unicode and time clauses read them. (Revised
+    /// 2026-11-01, when SJL-9.2c merged with the admission rules' move to the restored packages: it read
+    /// "read from the committed feed's packages", which hold none since 2026-10-30.)
+    /// </summary>
     internal static IReadOnlyList<(string Assembly, string Field, string Value)> AdmittedIntlVersions() => AllowList
-        .Where(static package => File.Exists(package.FeedPath))
-        .SelectMany(static package => PackageAssemblies(package.FeedPath))
+        .Where(static package => File.Exists(package.RestoredPath))
+        .SelectMany(static package => PackageAssemblies(package.RestoredPath))
         .SelectMany(static assembly => DeclaredIntlVersions(assembly.Name, assembly.Image))
         .ToArray();
 
