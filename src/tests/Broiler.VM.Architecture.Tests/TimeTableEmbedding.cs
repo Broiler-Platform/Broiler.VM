@@ -155,7 +155,7 @@ internal static class TimeTableEmbedding
     internal static IReadOnlyDictionary<string, byte[]> ReadTzdbArchive(TzdbPin pin) => pin.Extract(ReadTzdbTarball(pin));
 
     /// <summary>This repository's CLDR pin, as the home's reader parses it: the generator reads one of its files.</summary>
-    internal static HomeCldrPin LoadCldrPin() => HomeCldrPin.Parse(File.ReadAllText(Path.Combine(ComponentGraph.Root, CldrPin.PinPath)));
+    internal static HomeCldrPin LoadCldrPin() => HomeCldrPin.Parse(File.ReadAllText(Path.Combine(ComponentGraph.Root, CldrTableEmbedding.PinPath)));
 
     /// <summary>This repository's calendar pin, as the home's reader parses it.</summary>
     internal static CalendarPin LoadCalendarPin() => CalendarPin.Parse(File.ReadAllText(Path.Combine(ComponentGraph.Root, CalendarPinPath)));
@@ -171,11 +171,18 @@ internal static class TimeTableEmbedding
     internal static IReadOnlyDictionary<string, byte[]> ReadCalendarArchive(CalendarPin pin) => pin.Extract(ReadCalendarCrates(pin));
 
     /// <summary>The time zone tables, from this checkout's tzdb and CLDR pins, by the home's generator.</summary>
+    /// <remarks>
+    /// Since SJL-9.2c the CLDR archive is read through the Intl data home's reader, by the files
+    /// <c>IntlCldrPin</c> parses this repository's pin to name (<see cref="CldrTableEmbedding.ReadArchive"/>),
+    /// and the time generator's own CLDR pin reader verifies the one file it reads, as before. Until then
+    /// the archive was read by this project's <c>CldrPin</c>, deleted with its CLDR table generator
+    /// (JSD-0082, decision D24): the line read <c>CldrPin.Load().ReadArchive()</c>.
+    /// </remarks>
     internal static TzdbTables GenerateTzdb()
     {
         var tzdb = LoadTzdbPin();
         var cldr = LoadCldrPin();
-        return TzdbTableGenerator.Generate(tzdb, ReadTzdbArchive(tzdb), cldr, CldrPin.Load().ReadArchive());
+        return TzdbTableGenerator.Generate(tzdb, ReadTzdbArchive(tzdb), cldr, CldrTableEmbedding.ReadArchive(CldrTableEmbedding.LoadPin()));
     }
 
     /// <summary>The calendar table, from this checkout's calendar pin, by the home's generator.</summary>
