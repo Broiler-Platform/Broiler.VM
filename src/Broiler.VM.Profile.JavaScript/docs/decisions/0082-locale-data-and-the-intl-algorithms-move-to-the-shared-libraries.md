@@ -46,7 +46,10 @@ read it.
 - The same verdict is recorded in Broiler.JS's shared-libraries plan, `docs/roadmap/SharedLibraries.md`, section
   "Area verdicts", "Locale data and the Intl algorithms (SJL-9.1)", with this repository's half of the decisions that
   bind Broiler.JS, by these numbers. It is filed in Broiler.JS's own change, observed on its branch until it merges;
-  the ledger names its merge commit when it has.
+  the ledger names its merge commit when it has. *(Note of 2026-11-01: it merged into Broiler.JS's default branch in
+  Broiler-Platform/Broiler.JS#1077 as `509788820f7cfa60517e6aecc61437f6ecc2bde2`, observed, which stands here for the
+  branch, as the programme ledger's SJL-9.1 entry asked; the ledger's entry of 2026-11-01 names it, and its SJL-9 row
+  and SJL-D-22's and SJL-D-24's rows now do. This record named no branch commit to replace.)*
 - **SJL-9 started before SJL-7 and SJL-8, which it waits on, and SJL-3 met their gates**, at the owner's words of
   2026-10-19, which the programme ledger's SJL-9.0 entry records. SJL-9 also takes SJL-4's unsigned rounding. It may
   not meet its gate before SJL-7 and SJL-8 meet theirs, and so not before SJL-3 meets SJL-3's. This record moves no

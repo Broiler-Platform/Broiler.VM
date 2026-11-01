@@ -62,7 +62,10 @@ it.
 - The same verdict is recorded in Broiler.JS's shared-libraries plan, `docs/roadmap/SharedLibraries.md`, section
   "Area verdicts", with that repository's half of the decisions that bind it (D6 to D17, D25, D26 and D28), by these
   numbers. It is filed in Broiler.JS's own change, on its branch `sjl-13-1-js`, and is observed until it merges; the
-  ledger names its merge commit when it has. The same change carries the stage table
+  ledger names its merge commit when it has. *(Note of 2026-11-01: it merged into Broiler.JS's default branch in
+  Broiler-Platform/Broiler.JS#1081 as `238069ab8150858a112461b42b95c1f49c1f4eb1`, observed, which stands here for the
+  branch, as the programme ledger's SJL-13.1 entry asked; the ledger's entry of 2026-11-01 names it. The stage table's
+  SHA-256 there is the one this record names at `684667e2`.)* The same change carries the stage table
   (`Broiler.ECMAScript/docs/frontend/stages.tsv`), the parse corpus's classification and the home's rule.
 - **SJL-13 started before SJL-12, SJL-3 and SJL-7, which it waits on, met their gates**, at the owner's words of
   2026-10-25, which the programme ledger's SJL-13.0 entry records and reads (decision D1). SJL-13 may not meet its
@@ -167,7 +170,8 @@ what the run showed.
 its branch `sjl-13-1-js`, cut from `8a95076c`, where the stage table's SHA-256 is
 `3c9c49d97162650a48acfeec33b3d1d084dddda6bf649ad648c2e5ff1f1ce6a6`; both were first committed at `70bc4899`, and
 `684667e2` fills the stage table's goal rows' compiler-only and lazy cells and three of this family's site cells, the
-classification changing only in the digest it records):
+classification changing only in the digest it records; *note of 2026-11-01:* the change merged as `238069ab`,
+Broiler-Platform/Broiler.JS#1081, where the stage table has the same SHA-256):
 - `Broiler.ECMAScript/docs/frontend/stages.tsv` gives every catalogue row its stage under decision D10, `syntax`,
   `request`, `engine` or `semantics`, with each engine's stage and site re-read at the heads above, whether Broiler.JS
   checks a `syntax` row only in its compiler and whether lazily, and the catalogue cells that no longer hold
