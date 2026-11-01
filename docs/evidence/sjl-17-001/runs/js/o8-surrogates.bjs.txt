@@ -1,0 +1,21 @@
+# command (from <rows>/, JS_ROOT=/home/user/js-s17p): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/js-s17p/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/o8-surrogates.js
+# revision: Broiler.JS 61cb15b5472955079f3b0bf98c600f4128094614; Broiler.Unicode.Algorithms 0.1.0-preview.6
+# probe: built/o8-surrogates.js sha256 c6684c9aea12327f4e42772a77dafcfe46607e1314919934faa84b4f9ff4d01f
+o8 "\ud800" vs "\udc00" => < / base <
+o8 "\ud800" vs "\ufffd" => < / base <
+o8 "\udc00" vs "\ufffd" => < / base <
+o8 "\ud800" vs "a" => > / base >
+o8 "\ud800" vs "\ud800" => = / base =
+o8 "\ud800" vs "\udbff" => < / base <
+o8 "a\ud800" vs "a" => > / base >
+o8 "a\ud800" vs "a\udc00" => < / base <
+o8 "\ud800\udc00" vs "\ud800" => < / base <
+o8 "\ud800\udc00" vs "\ufffd" => < / base <
+o8 "\ud800b" vs "\udc00a" => < / base <
+o8 "\ufffd" vs "\uffff" => < / base <
+o8 "\ud83d" vs "\ud83d\ude00" => > / base >
+o8 "\udfff" vs "\u4e00" => > / base >
+o8 "\ud800" vs "\u0378" => > / base >
+o8 "a\u0308\ud800" vs "\u00e4\ud800" => = / base =
+o8 localeCompare lone => <
+exit=0

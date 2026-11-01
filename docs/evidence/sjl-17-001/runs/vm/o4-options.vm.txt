@@ -1,0 +1,33 @@
+o4 sensitivity base => "a" = "A" = "\u00e1" = "\u00c1" = "a\u0308" = "\u00c4" < "b"
+o4 sensitivity base search => "a" = "A" = "\u00e1" = "\u00c1" = "a\u0308" = "\u00c4" < "b"
+o4 sensitivity accent => "a" = "A" < "\u00e1" = "\u00c1" < "a\u0308" = "\u00c4" < "b"
+o4 sensitivity accent search => "a" = "A" < "\u00e1" = "\u00c1" < "a\u0308" = "\u00c4" < "b"
+o4 sensitivity case => "a" = "\u00e1" = "a\u0308" < "A" = "\u00c1" = "\u00c4" < "b"
+o4 sensitivity case search => "a" = "\u00e1" = "a\u0308" < "A" = "\u00c1" = "\u00c4" < "b"
+o4 sensitivity variant => "a" < "A" < "\u00e1" < "\u00c1" < "a\u0308" < "\u00c4" < "b"
+o4 sensitivity variant search => "a" < "A" < "\u00e1" < "\u00c1" < "a\u0308" < "\u00c4" < "b"
+o4 defaults sort => "en sort variant ip=false co=default kn=false kf=false"
+o4 defaults search => "en search variant ip=false co=default kn=false kf=false"
+o4 defaults de search => "de search variant ip=false co=default kn=false kf=false"
+o5 ignorePunctuation false => "" < " " < "-" < "a b" < "a\u00a0b" < "a_b" < "a-b" < "a\u2010b" < "a.b" < "a+b" < "a$b" < "a\u20acb" < "ab" < "aB"
+o5 ignorePunctuation false base => "" < " " < "-" < "a b" = "a\u00a0b" < "a_b" < "a-b" < "a\u2010b" < "a.b" < "a+b" < "a$b" < "a\u20acb" < "ab" = "aB"
+o5 ignorePunctuation true => "" = " " = "-" < "a+b" < "a$b" < "a\u20acb" < "ab" = "a b" = "a-b" = "a_b" = "a.b" = "a\u00a0b" = "a\u2010b" < "aB"
+o5 ignorePunctuation true base => "" = " " = "-" < "a+b" < "a$b" < "a\u20acb" < "ab" = "a b" = "a-b" = "a_b" = "a.b" = "a\u00a0b" = "aB" = "a\u2010b"
+o5 th default => "en-US sort variant ip=false co=default kn=false kf=false"
+o5 th-u-ka-noignore => "en-US sort variant ip=false co=default kn=false kf=false"
+o6 numeric absent => en sort variant ip=false co=default kn=false kf=false: "1.10" < "1.5" < "10" < "9" < "a" < "a001" < "a01" < "a02" < "a1" < "a10" = "a\u0661\u0660" < "a2" = "a\u0662" < "a\uff12" < "a9" < "b1"
+o6 numeric true => en sort variant ip=false co=default kn=true kf=false: "1.5" < "1.10" < "9" < "10" < "a" < "a1" = "a01" = "a001" < "a2" = "a02" = "a\u0662" = "a\uff12" < "a9" < "a10" = "a\u0661\u0660" < "b1"
+o6 -u-kn => en-u-kn sort variant ip=false co=default kn=true kf=false: "1.5" < "1.10" < "9" < "10" < "a" < "a1" = "a01" = "a001" < "a2" = "a02" = "a\u0662" = "a\uff12" < "a9" < "a10" = "a\u0661\u0660" < "b1"
+o6 -u-kn-false => en-u-kn-false sort variant ip=false co=default kn=false kf=false
+o6 -u-kn with numeric false => en sort variant ip=false co=default kn=false kf=false: >
+o6 a2 a10 localeCompare numeric => <
+o7 caseFirst false => en sort variant ip=false co=default kn=false kf=false: "a" < "A" < "\u00e4" < "\u00c4" < "ab" < "aB" < "Ab" < "AB" < "b" < "B"
+o7 caseFirst false case => "a" = "\u00e4" < "A" = "\u00c4" < "ab" < "aB" < "Ab" < "AB" < "b" < "B"
+o7 caseFirst upper => en sort variant ip=false co=default kn=false kf=upper: "A" < "a" < "\u00c4" < "\u00e4" < "AB" < "Ab" < "aB" < "ab" < "B" < "b"
+o7 caseFirst upper case => "A" = "\u00c4" < "a" = "\u00e4" < "AB" < "Ab" < "aB" < "ab" < "B" < "b"
+o7 caseFirst lower => en sort variant ip=false co=default kn=false kf=lower: "a" < "A" < "\u00e4" < "\u00c4" < "ab" < "aB" < "Ab" < "AB" < "b" < "B"
+o7 caseFirst lower case => "a" = "\u00e4" < "A" = "\u00c4" < "ab" < "aB" < "Ab" < "AB" < "b" < "B"
+o7 -u-kf-upper => en-u-kf-upper sort variant ip=false co=default kn=false kf=upper: "A" < "a" < "\u00c4" < "\u00e4" < "AB" < "Ab" < "aB" < "ab" < "B" < "b"
+o7 -u-kf-upper caseFirst lower => en sort variant ip=false co=default kn=false kf=lower
+o7 de phonebk upper => de-u-co-phonebk-kf-upper sort variant ip=false co=phonebk kn=false kf=upper: "AE" < "Ae" < "ae" < "\u00c4" < "\u00e4" < "af"
+o7 a A localeCompare upper => >

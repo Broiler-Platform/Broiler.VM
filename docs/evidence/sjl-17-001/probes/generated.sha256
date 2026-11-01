@@ -1,0 +1,6 @@
+# The two CollationTest probes and their built programs as run, not retained: scripts/make_collationtest_probes.py
+# writes the probes again from src/tests/cldr/pins/cldr-48.2.0/common/uca/ at 83290f9, and run-vm.sh or run-js.sh builds them.
+e3a3e5067a3484c57c4667cc6106d1c089c108f9eb7405d9a68c7c7733efea54  rows-O/o2-collationtest-non-ignorable.js
+649452d707d53e50e2d93a7d30825d9ff5dab0fa39e8f02d2e7b9fdcd43533f6  rows-O/o2-collationtest-shifted.js
+7822c8ac0963a13b595eeecf490926c3fdd20555969639e9c45be2ab9a458db1  rows-O/built/o2-collationtest-non-ignorable.js
+7535a9a5d16bd1dfbe5b867e164e11ac0cf47e77a91c2ff6d718251e2a3aa97d  rows-O/built/o2-collationtest-shifted.js

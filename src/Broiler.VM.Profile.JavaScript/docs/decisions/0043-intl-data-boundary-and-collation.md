@@ -126,6 +126,14 @@ every locale.
   ECMA-402 keys those rules on the language, not on the supported-locale list, so they apply although
   none of the three is a collation locale here.
 
+*(Dated note, 2026-11-01, at SJL-17.1, by [JSD-0084](0084-collation-moves-to-the-shared-intl-library.md). This section moves where it reads "The Unicode
+Collation Algorithm over CLDR's root", "Options map to UCA settings" and "It is metered": at SJL-17.4 the algorithm,
+the element lookup and the options' mapping become `Broiler.ECMAScript.Intl`'s `UcaCollator`, unchanged, and the
+charges are the caller's meter at the same points and in the same units (JSD-0084's decision E7). Its sentence "A
+string is normalized to NFD by the profile's own normalization" reads, since SJL-7.4, Broiler.Unicode's normalization,
+which the shared collator keeps (decision E6). "`localeCompare` routes through the realm's own `%Intl.Collator%`" and
+the locale-named case methods stay in the profile. The text above is not edited.)*
+
 ## 6. Validation
 
 - **UCA's own conformance files**: `CollationTest_CLDR_NON_IGNORABLE_SHORT.txt` and
@@ -154,6 +162,13 @@ every locale.
   without data is refused; German phonebook and search orders; alias replacement; and the ICU
   orderings above.
 
+*(Dated note, 2026-11-01, at SJL-17.1, by [JSD-0084](0084-collation-moves-to-the-shared-intl-library.md). Where this section reads "UCA's own conformance files
+... compare every consecutive pair in order through `Intl.Collator`" and "The retained German and English orderings",
+both become the shared collator's acceptance data too: the archived CollationTest files are the library's oracle at
+SJL-17.3 (JSD-0084's decision E9), and `src/tests/cldr/orderings/` is the acceptance data of both engines (the
+milestone's SJL-17.1). The slice compiler's checks stay, and are part B of bundle `sjl-17-001`'s rule. The test262
+figures above are this record's date's, and are not restated.)*
+
 ## 7. What is not done
 
 - **`Intl.NumberFormat` (I2), `Intl.DateTimeFormat` (I3), `Intl.Locale` and the remaining
@@ -163,6 +178,11 @@ every locale.
 - **Collations the data does not carry**: `eor` needs the `[reorder]` syntax and the European
   ordering rules. Thai's default `ignorePunctuation` needs Thai's tailoring and a locale the list does
   not have. Each is a line of section 4's size.
+
+  *(Dated note, 2026-11-01, at SJL-17.1, by [JSD-0084](0084-collation-moves-to-the-shared-intl-library.md). For this profile the item stands: its locale list and
+  its tables do not change (JSD-0084's decisions E3 and E13). It moves for Broiler.JS's embedding of the shared data,
+  where Thai's tailoring and its default `ignorePunctuation` come from the tailoring data (decisions E3 and E5); `eor`
+  stays outside the shared data until the data home's rule engine implements its syntax (JSD-0084's finding F2).)*
 - **The composition images do not carry the notice.** `THIRD_PARTY_NOTICES.md` records this as owed,
   as it does for the UCD.
 

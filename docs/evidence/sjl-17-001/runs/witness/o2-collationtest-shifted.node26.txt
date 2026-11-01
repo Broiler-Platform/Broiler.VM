@@ -1,0 +1,5 @@
+# command (from <rows>/): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC node -e 'globalThis.print = console.log; (0, eval)(require("fs").readFileSync("built/o2-collationtest-shifted.js", "utf8"))'
+# node: 26.12.0 icu 78.3 cldr 48.0
+# probe: built/o2-collationtest-shifted.js sha256 7535a9a5d16bd1dfbe5b867e164e11ac0cf47e77a91c2ff6d718251e2a3aa97d
+o2 pairs 227808 out-of-order 0
+exit=0

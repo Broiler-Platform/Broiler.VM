@@ -88,6 +88,12 @@ produces, held byte for byte by rule N28.
 **Unchanged:** optionality, and what `localeCompare` does in a composition that carries no Intl
 data.
 
+*(Noted 2026-11-01, at SJL-17.1, by [JSD-0084](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0084-collation-moves-to-the-shared-intl-library.md).)* "The collation core of the `JsRealm.*` Intl files" is read
+by JSD-0084's decision E11: `NewCollator`'s tailoring core (`JsRealm.Intl.cs:202-215` at `83290f9`) and
+`CollatorKeyData` (`:235-242`); the option reads in the specification's order, the resolved-option slots, the bound
+`compare` and `localeCompare`'s coercion stay. This family's locale list and tables do not change (decisions E3 and
+E13), and it has no correction in this area. The text above is left as written.
+
 ### SJL-17.5 — Broiler.JS's cut-over
 
 **Deleted:** the `CompareInfo` path of `Intl.Collator` and `String.prototype.localeCompare` for the
@@ -106,6 +112,20 @@ provider as decision [SJL-D-22](../decisions.md#sjl-d-22) (c).
 
 - `numeric` and `caseFirst` applied;
 - ordering that no longer depends on the host's ICU for the covered locales.
+
+*(Noted 2026-11-01, at SJL-17.1, by [JSD-0084](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0084-collation-moves-to-the-shared-intl-library.md).)* The note of 2026-10-26 above stands: the collator's platform
+normalization was gone at SJL-7.5, and the item holds nothing for SJL-17.5 to delete. "The locales the shared data
+covers" is read **per component** (decision E3): root, and CLDR 48.2.0's tailorings for `de` (phonebook, search), root
+`search`, `en`, `es`, `sv` and `th`, each with its own collations; a collation the shared data does not carry for a
+covered locale (`eor` for `de`, a collation for `en` that `getCollations` lists), CJK and every other locale stay on
+the optional host provider. The deletion list is read by decision E11: `ResolveCompareInfo` for the covered locales,
+`StripIgnorablePunctuation`'s tie-break, the `CompareOptions` mapping and the hard-coded Thai default go;
+`NetCollationSuffix` moves into the host provider. Of the corrections listed above, the first is JSD-0084's rows O7
+and O8, with the `orderings` lines they move (O18), in its column "Correction of Broiler.JS"; the second is its data
+policy (C5), rows O1, O2, O3 and O16 under decision E3. The column's other rows are `ignorePunctuation` ignoring
+symbols (O5a), `base` keeping width differences (O5b), the constructor's reads (O10), the bound `compare`'s identity
+(O12, decision E8), and code-unit comparison under invariant globalization (O14, decision E4). The text above is left
+as written.
 
 ### SJL-17.6 — Evidence
 
@@ -135,6 +155,9 @@ bundles.
 **Broiler.JS clauses.**
 
 3. The deletion list is absent, and host collation remains only behind the optional provider.
+
+   *(Noted 2026-11-01, at SJL-17.1, by [JSD-0084](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0084-collation-moves-to-the-shared-intl-library.md): clause 3 is read against decision E3's list, per locale and
+   collation, as SJL-17.5's note above reads it. The clause is left as written.)*
 4. test262 `intl402/Collator` and `localeCompare` per path meet the area rule.
 5. Every correction is listed.
 

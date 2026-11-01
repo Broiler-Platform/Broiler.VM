@@ -1,0 +1,25 @@
+# command (from <rows>/, JS_ROOT=/home/user/js-s17p): env -u LANG -u LC_ALL -u LANGUAGE DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 TZ=UTC timeout 900 dotnet /home/user/js-s17p/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/o3-tailorings.js
+# revision: Broiler.JS 61cb15b5472955079f3b0bf98c600f4128094614; Broiler.Unicode.Algorithms 0.1.0-preview.6
+# probe: built/o3-tailorings.js sha256 1c8bc9f5b643307bef602ee28e9ef49dd845910fc3acf935b23703683233d2d7
+o3 de {} de-words => en-US/default: "Ab" < "Ae" < "Af" < "\u00c4b" < "Od" < "Oe" < "\u00d6b" < "Ub" < "Ue" < "\u00dcb" < "a" < "ae" < "\u00e4" < "b" < "ss" < "st" < "\u00df"
+o3 de {collation: "phonebk"} de-words => en-US/default: "Ab" < "Ae" < "Af" < "\u00c4b" < "Od" < "Oe" < "\u00d6b" < "Ub" < "Ue" < "\u00dcb" < "a" < "ae" < "\u00e4" < "b" < "ss" < "st" < "\u00df"
+o3 de-u-co-phonebk {} de-words => en-US/default: "Ab" < "Ae" < "Af" < "\u00c4b" < "Od" < "Oe" < "\u00d6b" < "Ub" < "Ue" < "\u00dcb" < "a" < "ae" < "\u00e4" < "b" < "ss" < "st" < "\u00df"
+o3 de {usage: "search"} de-words => en-US/default: "Ab" < "Ae" < "Af" < "\u00c4b" < "Od" < "Oe" < "\u00d6b" < "Ub" < "Ue" < "\u00dcb" < "a" < "ae" < "\u00e4" < "b" < "ss" < "st" < "\u00df"
+o3 de {usage: "search", sensitivity: "base"} de-words => en-US/default: "a" < "Ab" < "Ae" = "ae" < "Af" < "\u00e4" < "\u00c4b" < "b" < "Od" < "Oe" < "\u00d6b" < "ss" < "st" < "Ub" < "Ue" < "\u00dcb" < "\u00df"
+o3 en {} de-words => en-US/default: "Ab" < "Ae" < "Af" < "\u00c4b" < "Od" < "Oe" < "\u00d6b" < "Ub" < "Ue" < "\u00dcb" < "a" < "ae" < "\u00e4" < "b" < "ss" < "st" < "\u00df"
+o3 en {usage: "search"} de-words => en-US/default: "Ab" < "Ae" < "Af" < "\u00c4b" < "Od" < "Oe" < "\u00d6b" < "Ub" < "Ue" < "\u00dcb" < "a" < "ae" < "\u00e4" < "b" < "ss" < "st" < "\u00df"
+o3 en {usage: "search", sensitivity: "base"} de-words => en-US/default: "a" < "Ab" < "Ae" = "ae" < "Af" < "\u00e4" < "\u00c4b" < "b" < "Od" < "Oe" < "\u00d6b" < "ss" < "st" < "Ub" < "Ue" < "\u00dcb" < "\u00df"
+o3 und {usage: "search"} de-words => en-US/default: "Ab" < "Ae" < "Af" < "\u00c4b" < "Od" < "Oe" < "\u00d6b" < "Ub" < "Ue" < "\u00dcb" < "a" < "ae" < "\u00e4" < "b" < "ss" < "st" < "\u00df"
+o3 es {} => en-US/default/ip=false: "ch" < "cz" < "d" < "ll" < "lz" < "m" < "n" < "nz" < "\u00f1" < "\u00f1a" < "o"
+o3 es {collation: "trad"} => en-US/default/ip=false: "ch" < "cz" < "d" < "ll" < "lz" < "m" < "n" < "nz" < "\u00f1" < "\u00f1a" < "o"
+o3 sv {} => en-US/default/ip=false: "a" < "\u00e4" < "\u00e5" < "o" < "\u00f6" < "\u00fc" < "v" < "w" < "y" < "z" < "\u00e6" < "\u00f8"
+o3 fi {} => en-US/default/ip=false: "a" < "\u00e4" < "\u00e5" < "o" < "\u00f6" < "\u00fc" < "v" < "w" < "y" < "z" < "\u00e6" < "\u00f8"
+o3 th {} => en-US/default/ip=false: "" < " " < "a" < "a b" < "ab" < "\u0e01" < "\u0e01\u0e32" < "\u0e01\u0e48" < "\u0e02" < "\u0e2f" < "\u0e40\u0e01" < "\u0e41\u0e01"
+o3 zh {} => en-US/default/ip=false: "a" < "\uac00" < "\u3042" < "\u30a2" < "\u4e00" < "\u4e01" < "\u4e2d" < "\u554a" < "\u5b57" < "\u6c49" < "\u963f"
+o3 zh {collation: "stroke"} => en-US/default/ip=false: "a" < "\uac00" < "\u3042" < "\u30a2" < "\u4e00" < "\u4e01" < "\u4e2d" < "\u554a" < "\u5b57" < "\u6c49" < "\u963f"
+o3 ja {} => en-US/default/ip=false: "a" < "\uac00" < "\u3042" < "\u30a2" < "\u4e00" < "\u4e01" < "\u4e2d" < "\u554a" < "\u5b57" < "\u6c49" < "\u963f"
+o3 ko {} => en-US/default/ip=false: "a" < "\uac00" < "\u3042" < "\u30a2" < "\u4e00" < "\u4e01" < "\u4e2d" < "\u554a" < "\u5b57" < "\u6c49" < "\u963f"
+o3 tr {} => en-US/default/ip=false: "I" < "\u0130" < "h" < "i" < "j" < "\u0131"
+o3 da {} => en-US/default/ip=false: "aa" < "\u00e5" < "z" < "\u00e6" < "\u00f8"
+o3 supportedLocalesOf => []
+exit=0
