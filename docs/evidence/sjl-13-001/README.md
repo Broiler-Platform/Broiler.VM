@@ -107,6 +107,12 @@ review, rules still come before runs, and SJL-13 may not meet its gate before SJ
   T1). Its C1 kinds are named before any run: (R) the regrade of the three language rules coded 2104, (G) the
   decorator's stage, (B) the admission walk and (F) the corrections step 1 makes, by row; C3 for the left-operand
   charge, in the four shapes row R14 names; no C2 and no C5.
+  *(Noted 2026-11-01.)* The owner changed `.github/workflows/test262-evidence.yml` on 2026-10-30, in `9d0f80e`, by a
+  decision of the owner's own, which JSD-0083's note under its decision D37 records: each of its three jobs'
+  `runs-on: ubuntu-latest` reads `runs-on: ubuntu-24.04`, and `eng/test262-evidence.py` did not change. Part A holds
+  the workflow and the driver at the dispatched ref byte-identical to the base commit's, which descends from the
+  change, and its base and after runs are dispatched together after step 1 merges, so both run on the image GitHub
+  serves for `ubuntu-24.04`, and no run before the change is compared with one after it.
 - **Part B**: artifact identity over the parse corpus, sub-populations B1 to B5, at the base, the registry commit and
   the after commit (template T6), with classes R, R2, S (S1 and S3 to S8), F and L, each named before any run.
 - **Part C**: determinism, and the source front end's checks rows, the two the tools commit adds and the one step 1
