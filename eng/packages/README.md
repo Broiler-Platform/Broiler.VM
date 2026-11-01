@@ -7,23 +7,57 @@ directory and to nuget.org, and every other package to nuget.org only. *(Revised
 when the Unicode area's owner packages were admitted. It read "sends the `Broiler.ECMAScript.*` prefix to
 this directory and to nuget.org".)*
 
-- **Every package here has a `.pin` beside it**: its identifier, version, NuGet content hash, SHA-256,
-  and the upstream commit it was packed from. A lock file pins the same content hash whichever source
-  supplied the package, and rule `I1` holds the lock file, the pin and the allow-list
-  (`src/tests/Broiler.VM.Architecture.Tests/admitted-packages.json`) to one another.
+## How a shared package is admitted, since 2026-10-30
+
+**This directory holds no package since 2026-10-30.** The owner's change of 2026-10-30 and 2026-10-31
+took every `.nupkg` and `.pin` out of it and removed the lock files; every admitted package now
+restores from nuget.org, and its pins are in the allow-list. Rule `I1` and the rules that read a
+package (`I2`, `I4`, `I6`) were moved onto that model on 2026-11-01.
+
+- **The allow-list is the pin.** Each entry of
+  [`admitted-packages.json`](../../src/tests/Broiler.VM.Architecture.Tests/admitted-packages.json)
+  names the package, its exact version (the version `Directory.Packages.props` declares), its use
+  (product or test-only), the projects that may reference it, and two hashes: `contentHash`, NuGet's
+  content hash, which restore records in a project's `obj/project.assets.json` and in the
+  `.nupkg.metadata` beside the restored package, and which leaves a signed package's signature out; and
+  `archiveHash`, the base64 SHA-512 of the complete archive as nuget.org serves it, signature included.
+  The two differ for a signed package, and both are held.
+- **Rule `I1` holds what restored to the list.** Every project that references an admitted package is
+  held, through its `obj/project.assets.json`, to the entry's version and content hash. Every entry is
+  held to the package as restored into the NuGet global packages folder (the folder the architecture
+  tests' own `obj/project.assets.json` names under `packageFolders`): its `.nupkg` must hash to
+  `archiveHash` and its `.nupkg.metadata` must record `contentHash`, whichever source supplied it. An
+  entry with no `archiveHash` is refused.
+- **Rules `I2`, `I4` and `I6` read that restored archive**, the one `I1` holds to its archive pin: the
+  assemblies' metadata for `I2`, the Unicode and time data versions they declare for `I4`, and their
+  public types for `I6`.
+- **This directory stays a mapped source.** [`NuGet.config`](../../NuGet.config) still sends the two
+  prefixes here and to nuget.org, so a package not yet published can be placed here for development with
+  a `.pin` beside it; where a pin file or a copy here is present, `I1` holds it to the entry too. The
+  entries' `pin` field still names the pin file each package last had here, and their `sources` still
+  list `committed-feed`, because `eng/admitted_packages.py` and `eng/verify-sources.py` read those
+  fields; `eng/admitted_packages.py` reads a package's source commit, for rule `I7`, from a copy here,
+  and records none while this directory holds no package.
 - **Nothing else is a source.** No other repository's local folder, `D:\local-packages` included, is
   ever added to a configuration in this repository.
 - **A package a Broiler.VM release depends on comes from nuget.org**, and `eng/verify-feed.ps1`
-  refuses a release whose admitted dependency is not there yet. This directory is for development and
-  for test-only admissions.
+  refuses a release whose admitted dependency is not there yet.
 
-| Package | Version | Admitted as | Why it is here |
+*(Revised 2026-11-01, completing the owner's change of 2026-10-30 and 2026-10-31. The section's
+heading was not there, and its first bullet read: "**Every package here has a `.pin` beside it**: its
+identifier, version, NuGet content hash, SHA-256, and the upstream commit it was packed from. A lock file
+pins the same content hash whichever source supplied the package, and rule `I1` holds the lock file, the
+pin and the allow-list (`src/tests/Broiler.VM.Architecture.Tests/admitted-packages.json`) to one
+another." The last bullet ended "This directory is for development and for test-only admissions.", and
+the table's last column was headed "Why it is here".)*
+
+| Package | Version | Admitted as | Why it is admitted |
 |---|---|---|---|
 | `Broiler.ECMAScript.Algorithms` | `0.1.0-preview.8` | product | Published package downloaded from nuget.org on 2026-10-29; source commit `3b4b6860d66a82a5dd6e6538f60b2bc4b1632fd6`. Existing admission scope is retained. |
 | `Broiler.ECMAScript.Generation` | `0.1.0-preview.8` | test-only | Published package downloaded from nuget.org on 2026-10-29; source commit `3b4b6860d66a82a5dd6e6538f60b2bc4b1632fd6`. Existing admission scope is retained. |
-| `Broiler.Unicode.Algorithms` | `0.1.0-preview.6` | product | The Unicode area of SJL-7's code package (JSD-0074): property lookups, lexical classes, case folding, case mapping, normalization and properties of strings, over tables this repository embeds; referenced by Format, the runtime, the compiler and the Intl data since SJL-7.4, and `Broiler.Unicode.Generation`'s dependency. Downloaded from nuget.org on 2026-10-31; see its pin for archive hash and source commit. |
-| `Broiler.Unicode.Segmentation` | `0.1.0-preview.6` | product | The Unicode area's optional segmentation (JSD-0074), referenced by the Intl data assembly alone since SJL-7.4. Downloaded from nuget.org on 2026-10-31; see its pin for archive hash and source commit. |
-| `Broiler.Unicode.Generation` | `0.1.0-preview.6` | test-only | The owner's table generator and pin (JSD-0074, decision SJL-D-6 (c)), which the architecture tests run for rules N22, N28 and I4 since SJL-7.4; no shipping project may reference it. Downloaded from nuget.org on 2026-10-31; see its pin for archive hash and source commit. |
+| `Broiler.Unicode.Algorithms` | `0.1.0-preview.6` | product | The Unicode area of SJL-7's code package (JSD-0074): property lookups, lexical classes, case folding, case mapping, normalization and properties of strings, over tables this repository embeds; referenced by Format, the runtime, the compiler and the Intl data since SJL-7.4, and `Broiler.Unicode.Generation`'s dependency. Downloaded from nuget.org on 2026-10-31; its archive hash is in the allow-list, and its nuspec names Broiler.Unicode `ccef653c8aa903f7eecf25faafb8bc5d458e6cc4`. |
+| `Broiler.Unicode.Segmentation` | `0.1.0-preview.6` | product | The Unicode area's optional segmentation (JSD-0074), referenced by the Intl data assembly alone since SJL-7.4. Downloaded from nuget.org on 2026-10-31; its archive hash is in the allow-list, and its nuspec names Broiler.Unicode `ccef653c8aa903f7eecf25faafb8bc5d458e6cc4`. |
+| `Broiler.Unicode.Generation` | `0.1.0-preview.6` | test-only | The owner's table generator and pin (JSD-0074, decision SJL-D-6 (c)), which the architecture tests run for rules N22, N28 and I4 since SJL-7.4; no shipping project may reference it. Downloaded from nuget.org on 2026-10-31; its archive hash is in the allow-list, and its nuspec names Broiler.Unicode `ccef653c8aa903f7eecf25faafb8bc5d458e6cc4`. |
 
 *(Revised 2026-10-12, at SJL-3.4. The table's row read: "| `Broiler.ECMAScript.Algorithms` | `0.0.1-probe.1` | test-only | The admission probe of SJL-2.9: the contract types only, never published to nuget.org |". The probe pre-release, its `.nupkg` and its pin left the feed in the same change: no project references it, and the allow-list admits one version of a package.)*
 
@@ -62,3 +96,5 @@ this directory and to nuget.org".)*
 For signed preview.8 packages, `content-hash` is NuGet's restored content identity;
 `archive-hash` separately pins SHA-512 of the complete signed archive. Both are
 recorded in the admission list and checked by I1; they need not be equal.
+
+*(Revised 2026-11-01. The three `Broiler.Unicode.*` rows ended "Downloaded from nuget.org on 2026-10-31; see its pin for archive hash and source commit.": no pin file was committed for them, so their archive hashes are the allow-list's `archiveHash`, and the source commit is the one each restored package's nuspec records.)*
