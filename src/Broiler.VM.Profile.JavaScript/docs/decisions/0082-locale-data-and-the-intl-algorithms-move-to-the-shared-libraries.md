@@ -1175,8 +1175,9 @@ no decision is revised.*
 - *Decision D24. The test side of this family's deletion list, `CldrTableGenerator.cs`, `UnicodeDatabase.cs` and
   `CldrPin.cs`, is absent from the architecture tests.*
 - *Decision D29. The generator reached nuget.org before the library: the shared stream's `0.1.0-preview.8`, published
-  on 2026-10-29 from Broiler.JS `3b4b6860`, carries the generator and not `Broiler.ECMAScript.Intl`, and this family's
-  architecture tests take it test-only. The decision's "one stream version carrying the complete library and the
+  on 2026-10-29 from Broiler.JS `3b4b6860`, carries the generator and not `Broiler.ECMAScript.Intl`; this repository's main
+  admitted it test-only on 2026-10-29 (`9d0f80e`), and this family's architecture tests use its Intl generator since
+  SJL-9.2c. The decision's "one stream version carrying the complete library and the
   generator" still describes the version SJL-9.4 takes; the generator then moves with the stream's version, as it did
   at SJL-10.4, and its Intl code is held by rules N28 and I4 at each move.)*
 

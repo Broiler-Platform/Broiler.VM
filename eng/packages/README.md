@@ -62,3 +62,8 @@ this directory and to nuget.org".)*
 For signed preview.8 packages, `content-hash` is NuGet's restored content identity;
 `archive-hash` separately pins SHA-512 of the complete signed archive. Both are
 recorded in the admission list and checked by I1; they need not be equal.
+
+*(Added 2026-11-01, at SJL-9.2c (JSC-321).)* `Broiler.ECMAScript.Generation` `0.1.0-preview.8`, admitted above on
+2026-10-29, carries the Intl data home's generator (JSD-0082, decisions D10 to D12) beside the time data home's, and
+the architecture tests run it for rules N27, N28 and I4 since SJL-9.2c. Its admission, version, hashes and test-only
+scope are unchanged by that, and no package joined or left this directory.
