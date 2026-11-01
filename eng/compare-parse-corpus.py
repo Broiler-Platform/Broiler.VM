@@ -42,11 +42,16 @@
 #       second accepted B1 bytecode compilation into a refusal with no diagnostic, and says which in
 #       a comment line. `identity BASE OUT --manifest M --no-census` must then report exactly those
 #       two, both unclassified. With --specifier (BASE a run of B1 to B5), it also changes one
-#       specifier of a B5 input: the last code unit of the first specifier of the first accepted B5
-#       compilation whose first specifier is not empty. `with-hash` writes the note's SHA-256 and
-#       length again from the changed note, as the mode would have written them, and identity must
-#       then report three differences, the third a `specifiers` one; `note-only` leaves them as they
-#       were, and identity must then refuse OUT as a report this mode did not write.
+#       specifier of a B5 input: the last character of the first specifier of the first accepted B5
+#       compilation whose first specifier ends in an ASCII letter, replaced by another ASCII letter,
+#       so one code unit of the note changes and its length does not. `with-hash` writes the note's
+#       SHA-256 and length again from the changed note, as the mode would have written them, and
+#       identity must then report three differences, the third a `specifiers` one; `note-only` leaves
+#       them as they were, and identity must then refuse OUT as a report this mode did not write.
+#       (Revised 2026-11-01, the day it was added. It read "the last code unit of the first specifier
+#       of the first accepted B5 compilation whose first specifier is not empty", which a specifier
+#       ending in a character the mode writes escaped, as a \u escape or as a surrogate pair, did not
+#       meet: the note's length changed, and more than one code unit with it.)
 #
 # B5, ADDED 2026-11-01 BEFORE SJL-13'S STEP 1 (bundle sjl-13-001's part B and bundle sjl-13-002's,
 # JSD-0083 decision D27). The slice compiler's tools commit (58b0c84) added sub-population B5 to the
@@ -583,6 +588,11 @@ def determinism(args):
     return 1 if differing else 0
 
 
+def ends_in_letter(specifier):
+    """Whether a specifier's last character is an ASCII letter, which the mode writes as itself."""
+    return specifier[-1:].isascii() and specifier[-1:].isalpha()
+
+
 def control(args):
     data = read_bytes(args.base).decode("utf-8")
     report = Report(args.base)
@@ -592,9 +602,12 @@ def control(args):
     if len(accepted) < 2:
         refuse(f"{args.base}: fewer than two accepted B1 bytecode compilations to change")
     changed, flipped = accepted[0], accepted[1]
-    # ONE SPECIFIER OF A B5 INPUT (2026-11-01; bundle sjl-13-002's part B control): the last code unit
-    # of the first specifier of the first accepted B5 compilation whose first specifier is not empty,
-    # moved to another letter, so the note stays the mode's JSON array and keeps its length.
+    # ONE SPECIFIER OF A B5 INPUT (2026-11-01; bundle sjl-13-002's part B control): the last character
+    # of the first specifier of the first accepted B5 compilation whose first specifier ends in an
+    # ASCII letter, replaced by another ASCII letter. The mode writes an ASCII letter as itself, so the
+    # note stays its JSON array, one code unit of it changes and its length does not; a specifier
+    # ending in anything else is passed over, because the mode writes a quotation mark or a backslash
+    # escaped, and a unit outside the printable ASCII range as a \u escape.
     specified = None
     if args.specifier:
         if REQUESTS not in report.covered:
@@ -602,9 +615,9 @@ def control(args):
                    f"{','.join(report.covered)}")
         specified = next((key for key in report.order
                           if key[1] == REQUESTS and report.rows[key].outcome == "accepted"
-                          and (specifier_list(report.rows[key].note) or [""])[0] != ""), None)
+                          and ends_in_letter((specifier_list(report.rows[key].note) or [""])[0])), None)
         if specified is None:
-            refuse(f"{args.base}: no accepted B5 compilation with a first specifier to change")
+            refuse(f"{args.base}: no accepted B5 compilation whose first specifier ends in an ASCII letter")
     lines = data[:-1].split("\n")
     out = []
     for line in lines:
