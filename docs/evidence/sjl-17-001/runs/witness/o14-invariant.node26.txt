@@ -1,0 +1,19 @@
+# command (from <rows>/): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC node -e 'globalThis.print = console.log; (0, eval)(require("fs").readFileSync("built/o14-invariant.js", "utf8"))'
+# node: 26.12.0 icu 78.3 cldr 48.0
+# probe: built/o14-invariant.js sha256 12457dd87490f11c2ca73c1cd6125ca41ca26526ad39da34aa0ce5550c6ed6b2
+o14 en {} => en: " " < "-" < "1" < "10" < "2" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" < "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 de {} => de: " " < "-" < "1" < "10" < "2" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" < "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 de-u-co-phonebk {} => de-u-co-phonebk: " " < "-" < "1" < "10" < "2" < "a" < "A" < "a-b" < "ab" < "ae" < "\u00e4" < "\u00c4" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 sv {} => sv: " " < "-" < "1" < "10" < "2" < "a" < "A" < "a-b" < "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z" < "\u00e4" < "\u00c4"
+o14 es {} => es: " " < "-" < "1" < "10" < "2" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" < "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 th {} => th: " " = "-" < "1" < "10" < "2" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" = "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 ja {} => ja: " " < "-" < "1" < "10" < "2" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" < "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 xx {} => en-US: " " < "-" < "1" < "10" < "2" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" < "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 undefined {} => en-US: " " < "-" < "1" < "10" < "2" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" < "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 en {sensitivity: "base"} => en: " " < "-" < "1" < "10" < "2" < "a" = "A" = "\u00e4" = "\u00c4" < "a-b" < "ab" < "ae" < "b" = "B" < "\u00e9" = "e" = "E" < "\u00f1" = "n" < "z"
+o14 en {numeric: true} => en: " " < "-" < "1" < "2" < "10" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" < "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 en {caseFirst: "upper"} => en: " " < "-" < "1" < "10" < "2" < "A" < "a" < "\u00c4" < "\u00e4" < "a-b" < "ab" < "ae" < "B" < "b" < "E" < "e" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 en {ignorePunctuation: true} => en: " " = "-" < "1" < "10" < "2" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" = "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 localeCompare a B => < < <
+o14 supportedLocalesOf => ["de", "en", "en-US", "sv", "th", "ja"]
+exit=0

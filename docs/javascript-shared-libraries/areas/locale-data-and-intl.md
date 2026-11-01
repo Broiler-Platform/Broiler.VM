@@ -179,6 +179,17 @@ The table's "Today" cell for Broiler.JS ends "platform normalization first", whi
 collator decomposes both strings through Broiler.Unicode's normalization, not the platform's, before the host's
 collation runs. The cell is left as written.
 
+*(Noted 2026-11-01, at SJL-17.1, by
+[JSD-0084](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0084-collation-moves-to-the-shared-intl-library.md).)*
+The table's "After SJL-17" cell for Broiler.JS, "`UcaCollator` for the locales the shared data covers; the optional host
+provider for the rest", is read per component (decision E3): root, and the tailorings for `de` (phonebook, search),
+root `search`, `en`, `es`, `sv` and `th`, each with its own collations, are the shared collator's; CJK, every other
+locale and a collation the shared data does not carry stay on the host provider. Its "Today" cell, "`numeric` and
+`caseFirst` resolved but **not applied**", is confirmed by the correspondence's rows O7 and O8, and under invariant
+globalization Broiler.JS compares by code unit today (row O14), which decision E4 corrects. Broiler.VM's cell "a few
+tailorings for its locales" is German phonebook and search and root search, which do not change (decision E13). The
+library takes the caller's meter at Broiler.VM's points (decision E7). The cells are left as written.
+
 ---
 
 ## 4. Deletion lists

@@ -1,0 +1,30 @@
+# command (from <rows>/, JS_ROOT=/home/user/js-s17p): env -u LANG -u LC_ALL -u LANGUAGE DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 TZ=UTC timeout 900 dotnet /home/user/js-s17p/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/o2-collationtest-non-ignorable.js
+# revision: Broiler.JS 61cb15b5472955079f3b0bf98c600f4128094614; Broiler.Unicode.Algorithms 0.1.0-preview.6
+# probe: built/o2-collationtest-non-ignorable.js sha256 7822c8ac0963a13b595eeecf490926c3fdd20555969639e9c45be2ab9a458db1
+o2 pairs 206297 out-of-order 51752
+o2 line 1: "\u0338\u0334" > "\u0336\u0334"
+o2 line 10: "\ud82f\udc9e\u0334" > "\u0335\u0334"
+o2 line 11: "\u0335\u0334" > "\u0334\u0591"
+o2 line 361: "\ufe2f\u0334" > "\u0334\ud800\udee0"
+o2 line 479: "\ud834\udd69\u0334" > "\u0332\u0334"
+o2 line 481: "\u0334\u0332" > "\u0313\u0334"
+o2 line 489: "\u2cf1\u0334" > "\u0314\u0334"
+o2 line 495: "\u2cf0\u0334" > "\u0301\u0334"
+o2 line 501: "\u0954\u0334" > "\u0300\u0334"
+o2 line 507: "\u0953\u0334" > "\u0306\u0334"
+o2 line 509: "\u0334\u0306" > "\u0302\u0334"
+o2 line 513: "\u0334\u030c" > "\u030a\u0334"
+o2 line 517: "\u0342\u0334" > "\u0308\u0334"
+o2 line 525: "\u0334\u030b" > "\u0303\u0334"
+o2 line 533: "\u0334\u0328" > "\u0304\u0334"
+o2 line 716: "\ud839\uddee\u0334" > "\u0316\u0334"
+o2 line 840: "\ufe27\u0334" > "\u0334\ud800\uddfd"
+o2 line 866: "\ud839\uddef\u0334" > "\u0334\u3099"
+o2 line 870: "\u309a\u0334" > "\u0305\u0334"
+o2 line 915: "\ufe29\u0334" > "\u0334\u0361"
+o2 line 919: "\ufe20\u0334" > "\u0334\u0483"
+o2 line 923: "\ufe2e\u0334" > "\u0334\ua66f"
+o2 line 925: "\ua66f\u0334" > "\u0334\u05b0"
+o2 line 945: "\u05c7\u0334" > "\u0334\u05b9"
+o2 line 953: "\u05c2\u0334" > "\u0334\u05c1"
+exit=0

@@ -1,0 +1,43 @@
+# command (from harness/, VM_ROOT=/home/user/vm-s17p): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/vm-s17p/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 vm262 --test test/sjl17/o3-tailorings.js --form native --fuel 200000000000 --wall 600000
+# revision: Broiler.VM 83290f9a56dbce0d538509dd77ab8dee6ea00f41
+# probe: built/o3-tailorings.js sha256 1c8bc9f5b643307bef602ee28e9ef49dd845910fc3acf935b23703683233d2d7
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@unpinned
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none); form native (x86-64-sysv)
+partition every selected file, unsharded
+selection candidates=1 selected=1 thisShard=1
+features features.txt declares 21 proposed, 172 standard and 2 test-harness flags; a test claiming a proposed one is skipped unless the proposal is admitted: Intl.Era-monthcode (JSD-0056), ShadowRealm (JSD-0040), Temporal (JSD-0054), explicit-resource-management (JSD-0034)
+allowance fuel=200000000000 wallClockMs=600000 per variant
+FAIL        test/sjl17/o3-tailorings.js [raw]  uncaught Error: OUT<<o3 de {} de-words => de/default: "a" < "\u00e4" < "Ab" < "\u00c4b" < "ae" < "Ae" < "Af" < "b" < "\u00d6b" < "Od" < "Oe" < "ss" < "\u00df" < "st" < "Ub" < "\u00dcb" < "Ue"
+o3 de {collation: "phonebk"} de-words => de/phonebk: "a" < "Ab" < "ae" < "Ae" < "\u00e4" < "\u00c4b" < "Af" < "b" < "Od" < "Oe" < "\u00d6b" < "ss" < "\u00df" < "st" < "Ub" < "Ue" < "\u00dcb"
+o3 de-u-co-phonebk {} de-words => de-u-co-phonebk/phonebk: "a" < "Ab" < "ae" < "Ae" < "\u00e4" < "\u00c4b" < "Af" < "b" < "Od" < "Oe" < "\u00d6b" < "ss" < "\u00df" < "st" < "Ub" < "Ue" < "\u00dcb"
+o3 de {usage: "search"} de-words => de/default: "a" < "Ab" < "ae" < "Ae" < "\u00e4" < "\u00c4b" < "Af" < "b" < "Od" < "Oe" < "\u00d6b" < "ss" < "\u00df" < "st" < "Ub" < "Ue" < "\u00dcb"
+o3 de {usage: "search", sensitivity: "base"} de-words => de/default: "a" < "Ab" < "Ae" = "\u00e4" = "ae" < "\u00c4b" < "Af" < "b" < "Od" < "Oe" < "\u00d6b" < "ss" = "\u00df" < "st" < "Ub" < "Ue" < "\u00dcb"
+o3 en {} de-words => en/default: "a" < "\u00e4" < "Ab" < "\u00c4b" < "ae" < "Ae" < "Af" < "b" < "\u00d6b" < "Od" < "Oe" < "ss" < "\u00df" < "st" < "Ub" < "\u00dcb" < "Ue"
+o3 en {usage: "search"} de-words => en/default: "a" < "\u00e4" < "Ab" < "\u00c4b" < "ae" < "Ae" < "Af" < "b" < "\u00d6b" < "Od" < "Oe" < "ss" < "\u00df" < "st" < "Ub" < "\u00dcb" < "Ue"
+o3 en {usage: "search", sensitivity: "base"} de-words => en/default: "a" = "\u00e4" < "Ab" = "\u00c4b" < "Ae" = "ae" < "Af" < "b" < "\u00d6b" < "Od" < "Oe" < "ss" = "\u00df" < "st" < "Ub" = "\u00dcb" < "Ue"
+o3 und {usage: "search"} de-words => en-US/default: "a" < "\u00e4" < "Ab" < "\u00c4b" < "ae" < "Ae" < "Af" < "b" < "\u00d6b" < "Od" < "Oe" < "ss" < "\u00df" < "st" < "Ub" < "\u00dcb" < "Ue"
+o3 es {} => en-US/default/ip=false: "ch" < "cz" < "d" < "ll" < "lz" < "m" < "n" < "\u00f1" < "\u00f1a" < "nz" < "o"
+o3 es {collation: "trad"} => en-US/default/ip=false: "ch" < "cz" < "d" < "ll" < "lz" < "m" < "n" < "\u00f1" < "\u00f1a" < "nz" < "o"
+o3 sv {} => en-US/default/ip=false: "a" < "\u00e5" < "\u00e4" < "\u00e6" < "o" < "\u00f6" < "\u00f8" < "\u00fc" < "v" < "w" < "y" < "z"
+o3 fi {} => en-US/default/ip=false: "a" < "\u00e5" < "\u00e4" < "\u00e6" < "o" < "\u00f6" < "\u00f8" < "\u00fc" < "v" < "w" < "y" < "z"
+o3 th {} => en-US/default/ip=false: "" < " " < "a" < "a b" < "ab" < "\u0e01" < "\u0e01\u0e48" < "\u0e01\u0e32" < "\u0e40\u0e01" < "\u0e41\u0e01" < "\u0e02" < "\u0e2f"
+o3 zh {} => en-US/default/ip=false: "a" < "\uac00" < "\u3042" < "\u30a2" < "\u4e00" < "\u4e01" < "\u4e2d" < "\u554a" < "\u5b57" < "\u6c49" < "\u963f"
+o3 zh {collation: "stroke"} => en-US/default/ip=false: "a" < "\uac00" < "\u3042" < "\u30a2" < "\u4e00" < "\u4e01" < "\u4e2d" < "\u554a" < "\u5b57" < "\u6c49" < "\u963f"
+o3 ja {} => en-US/default/ip=false: "a" < "\uac00" < "\u3042" < "\u30a2" < "\u4e00" < "\u4e01" < "\u4e2d" < "\u554a" < "\u5b57" < "\u6c49" < "\u963f"
+o3 ko {} => en-US/default/ip=false: "a" < "\uac00" < "\u3042" < "\u30a2" < "\u4e00" < "\u4e01" < "\u4e2d" < "\u554a" < "\u5b57" < "\u6c49" < "\u963f"
+o3 tr {} => en-US/default/ip=false: "h" < "i" < "I" < "\u0130" < "\u0131" < "j"
+o3 da {} => en-US/default/ip=false: "\u00e5" < "aa" < "\u00e6" < "\u00f8" < "z"
+o3 supportedLocalesOf => ["de", "de-DE", "en", "en-US", "en-GB"]>>OUT
+# this run met no construct outside the manifest
+# no variant spent an allowance
+# failure classification over 1 failing variant(s)
+#   by kind: 1 distinct, 1 variants
+#           1  an uncaught Error  e.g. test/sjl17/o3-tailorings.js [raw]
+#   by area: 1 distinct, 1 variants
+#           1  test/sjl17  e.g. test/sjl17/o3-tailorings.js [raw]
+#   by declared feature (0 of 1 failing variants declare one; a variant with two is in two rows): 0 distinct, 0 taggings over 0 variants
+# test262 1 files, 1 variants: pass 0, fail 1, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/sjl17/o3-tailorings.js; configuration failure MissingSuiteRevision
+CONFIGURATION MissingSuiteRevision: suite `test262` was read at no pinned revision; a branch name is not a pin and neither is nothing
+exit=1
