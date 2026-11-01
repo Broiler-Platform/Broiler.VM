@@ -187,11 +187,11 @@ folder and the notices change, and the conformance root references neither of th
 committed pin under `TZ=UTC`, with no `LANG` and no `LANGUAGE`, by a script that wrote each log whole: a header naming
 the commit, the build, the pin and its archive with their SHA-256, the host and the command; then the runner's output;
 then the exit code and the end time. The report was written outside the tree, which stayed clean, and is kept here
-gzip-compressed. A first run and its control, from 13:18Z, gave the same two reports byte for byte, but this README
-and the ledger were edited in the tree while they ran, so their logs could not say the tree stayed clean; they were
-set aside, the build's outputs removed, and the build and both runs taken again on the clean tree, whose logs say so
-before and after each run. [`vectors/hashes.txt`](vectors/hashes.txt) holds every file's SHA-256, which `sha256sum -c`
-verifies.
+gzip-compressed. A first run and its control were taken before these and set aside, because this README and the ledger
+were edited in the tree while they ran, so their logs could not say the tree stayed clean; this bundle keeps neither
+their logs nor their reports, and nothing here rests on them. The build's outputs were removed, and the build and both
+runs taken again on the clean tree, whose logs say so before and after each run.
+[`vectors/hashes.txt`](vectors/hashes.txt) holds every file's SHA-256, which `sha256sum -c` verifies.
 
 | Run | Taken | Result | Files |
 |---|---|---|---|
@@ -203,7 +203,9 @@ verifies.
 (4), T16 (3), T6, T8, D32, P15b, P31 and T24e (2 each), and T7, T24d and T24f (1 each), 21 `divergence` and one
 `impl-defined`; and the Intl area's 41 of rows Z8, L9 and L18, as at revision 28 (bundle `sjl-9-001`, section 3). Each
 is reported as a classified divergence, so none is unclassified and none no longer holds. So the vectors find no
-difference of this family's that the correspondence does not classify, which JSD-0083 names as falsifying it.
+difference of this family's that the correspondence does not classify: each field names the correspondence row that
+holds its difference, as decision D25 of JSD-0083 has the `syntax` vectors carry each correction step 1 makes with that
+row in its provenance.
 
 **The run agrees with the one Broiler.JS's bundle retains** of this family on revision 30 at `faa8af7`, on the corpus
 at `dc9e09e5` (its `engine/broiler-vm-run-revision-30.tsv.gz`), row for row and byte for byte:
@@ -214,10 +216,11 @@ at `dc9e09e5` (its `engine/broiler-vm-run-revision-30.tsv.gz`), row for row and 
   same content digest, since the merge changes nothing under `conformance/vectors/`.
 - The negative controls agree the same way: each reports the mutated vector, `syntax/scripts/ex0008/0001`, as its one
   unclassified difference, and every other row is the run's.
-- The logs differ where the hosts' records do: the retained log's host line says that .NET's globalization loads the
-  host's ICU, and this one that the root does not, since its project file sets `InvariantGlobalization` and it reads
-  its own CLDR 48.2.0 tables, as bundle `sjl-9-001`'s logs say. No report row differs, and the `syntax` area reads no
-  locale data.
+- The logs' host lines differ, and the retained one is wrong for its build: it says that .NET's globalization loads the
+  host's ICU, but the conformance root's project file sets `InvariantGlobalization` at `faa8af7` as it does at `6c6d9bf`
+  (the same line of `Broiler.VM.Composition.JavaScript.Conformance.csproj` at both), so that root, like this one, does
+  not load it and reads its own CLDR 48.2.0 tables, as this log and bundle `sjl-9-001`'s logs say. The misdescription is
+  the retained log's host line only, and Broiler.JS's bundle is that repository's to correct; no report row differs.
 
 This section is no part of the rule's parts A to J, and nothing in it is a verdict. Part H reads the same area at the
 base commit, at the revision the pin names there.
