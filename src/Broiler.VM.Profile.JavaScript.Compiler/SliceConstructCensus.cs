@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   7
-// Annotated:        7/7
+// Relevant units:   8
+// Annotated:        8/8
 // Exempt:           0
-// Human-reviewed:   0/7
+// Human-reviewed:   0/8
 // IP risk:          None
 // Security risk:    High
-// Criteria:         3/3
+// Criteria:         4/4
 // Resource impact:  2/10 max
-// Unverified:       7
+// Unverified:       8
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -73,13 +73,38 @@ public static class SliceConstructCensus
         SliceParseOptions.MaximumSupportedNestingDepth);
 
     /// <summary>Reads every source in <paramref name="sources"/> and counts what they contain.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=B3C49F
+    /// <remarks>
+    /// <b>The census runs on the stack this component declares for compilation</b>, as
+    /// <c>SliceSourceCompiler.Compile</c> and <c>JsCompiler</c>'s entry points do (rule N19,
+    /// JSD-0080 decision D16). It tokenizes, parses and walks every source it is given, and until
+    /// 2026-11-01 it did so on whatever stack its caller had, so the nesting bound its options admit
+    /// meant a different thing on every host, and a source deep enough for a small caller's stack ended
+    /// the process. Rule N19's test named it as the one known gap when its entry-point clause was
+    /// widened at SJL-13's tools commit (2026-10-27); routing it is a product change of its own, before
+    /// SJL-13's step 1. What the census counts, and in which order, is unchanged: the work is the same
+    /// work, on another thread, and whatever it raises reaches the caller as before.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=D6A3DE
     // Broiler-Falsified-If: a source that parses contributes no counts, or a source that does not parse is counted as containing nothing
     // Broiler-Human:        PENDING
     public static SliceCensus Take(System.Collections.Generic.IEnumerable<string> sources)
     {
         System.ArgumentNullException.ThrowIfNull(sources);
 
+        return CompilationStack.Run(() => TakeOnTheDeclaredStack(sources));
+    }
+
+    /// <summary>The census itself, on the stack <see cref="CompilationStack"/> declared.</summary>
+    /// <remarks>
+    /// Split from its entry point rather than wrapped in place, as <c>SliceSourceCompiler</c>'s
+    /// compilation is, so one thread serves the whole census: every source below is tokenized, parsed
+    /// and walked on it, each from the same frame.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=56CB7D
+    // Broiler-Falsified-If: a source is tokenized, parsed or walked on the caller's stack rather than the declared one
+    // Broiler-Human:        PENDING
+    private static SliceCensus TakeOnTheDeclaredStack(System.Collections.Generic.IEnumerable<string> sources)
+    {
         var occurrences = new System.Collections.Generic.Dictionary<SliceConstructKind, int>();
         var files = new System.Collections.Generic.Dictionary<SliceConstructKind, int>();
         var failures = new System.Collections.Generic.Dictionary<SliceSourceDiagnosticCode, int>();

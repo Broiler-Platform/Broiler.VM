@@ -92,20 +92,27 @@ public sealed class CompilationStackRuleTests
     /// the gap.
     /// </summary>
     /// <remarks>
-    /// <b>One entry, found when the clause was widened on 2026-10-27.</b> The construct census parses and
-    /// walks every source it is given on its caller's stack; it is no compilation, so the clause as it
-    /// read before did not reach it, and its routing through <c>CompilationStack</c> is a change to this
-    /// product assembly, which SJL-13's tools commit may not make (bundle <c>sjl-13-001</c>'s rule, "The
-    /// commits, named before they exist"). It is handed on to a product change of its own.
+    /// <para>
+    /// <b>No entry since 2026-11-01</b>, when the construct census, <c>SliceConstructCensus.Take</c>, was
+    /// routed through <c>CompilationStack</c> in a change of its own before SJL-13's step 1, and this
+    /// rule holds it as it holds every other member. Its entry is removed rather than left to be
+    /// reported, as the clause asks. The list stays, so that a gap found later is named here rather than
+    /// admitted.
+    /// </para>
+    /// <para>
+    /// <i>(Revised 2026-11-01. The remark read: "<b>One entry, found when the clause was widened on
+    /// 2026-10-27.</b> The construct census parses and walks every source it is given on its caller's
+    /// stack; it is no compilation, so the clause as it read before did not reach it, and its routing
+    /// through <c>CompilationStack</c> is a change to this product assembly, which SJL-13's tools commit
+    /// may not make (bundle <c>sjl-13-001</c>'s rule, "The commits, named before they exist"). It is
+    /// handed on to a product change of its own." The list held one entry: the file
+    /// <c>src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs</c>, the member
+    /// <c>Take</c>, and the reason "the construct census tokenizes, parses and walks each source on its
+    /// caller's stack; routing it through CompilationStack is a product change SJL-13's tools commit may
+    /// not make".)</i>
+    /// </para>
     /// </remarks>
-    private static readonly (string File, string Member, string Why)[] KnownOffTheStack =
-    [
-        (
-            "src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs",
-            "Take",
-            "the construct census tokenizes, parses and walks each source on its caller's stack; routing it " +
-            "through CompilationStack is a product change SJL-13's tools commit may not make"),
-    ];
+    private static readonly (string File, string Member, string Why)[] KnownOffTheStack = [];
 
     private static IEnumerable<AssuranceSourceFile> CompilerFiles =>
         AssuranceSources.Files.Where(static file => file.Assembly == Assembly);

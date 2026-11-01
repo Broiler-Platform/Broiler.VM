@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 330 |
 | Files carrying an annotation | 330 |
-| Code units | 11753 |
-| Relevant | 6711 |
+| Code units | 11754 |
+| Relevant | 6712 |
 | Exempt by predicate | 5042 |
-| Annotated | 6711 of 6711 (100%) |
-| Human reviewed | 0 of 6711 (0%) |
-| Unverified | 6711 |
+| Annotated | 6712 of 6712 (100%) |
+| Human reviewed | 0 of 6712 (0%) |
+| Unverified | 6712 |
 
 ## Review states
 
@@ -28,7 +28,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6711 |
+| HUMAN_PENDING | 6712 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -38,7 +38,7 @@ figures below are the measurement of how far from that claim the component is.
 
 | Value | Units |
 |---|---:|
-| None | 1779 |
+| None | 1780 |
 | Low | 6471 |
 | Medium | 90 |
 | High | 0 |
@@ -52,7 +52,7 @@ figures below are the measurement of how far from that claim the component is.
 | None | 9 |
 | Low | 1924 |
 | Medium | 4511 |
-| High | 1643 |
+| High | 1644 |
 | Critical | 253 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 6711 |
+| Units scored | 6712 |
 
 ## High-security review areas
 
@@ -256,6 +256,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64Walk.Step(int, JsX64Value[], int[], System.Collections.Generic.Stack<(int, JsX64Value[], int[])>, out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Walk.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceConstructCensus` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceConstructCensus.Take(System.Collections.Generic.IEnumerable<string>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceConstructCensus.TakeOnTheDeclaredStack(System.Collections.Generic.IEnumerable<string>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceConstructCensus.Walk(SliceNode, System.Collections.Generic.Dictionary<SliceConstructKind, int>, System.Collections.Generic.HashSet<SliceConstructKind>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceConstructExpression` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructs.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceConstructStatement` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructs.cs` - Security=High, human line PENDING
@@ -1967,8 +1968,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 2067 |
-| Units required to carry one | 1896 |
+| Units carrying a criterion | 2068 |
+| Units required to carry one | 1897 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -2084,7 +2085,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-11753 of them, exempt and relevant alike - with the fingerprint of its declaration.
+11754 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
