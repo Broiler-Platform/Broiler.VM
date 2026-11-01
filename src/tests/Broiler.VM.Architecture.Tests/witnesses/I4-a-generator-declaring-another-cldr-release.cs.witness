@@ -1,0 +1,34 @@
+// Witness for rule I4's CLDR clause (SJL-9.2c): the Intl data home's generator, compiled in memory under its
+// admitted package's assembly name, declaring the CLDR release its tables are taken from as 48.1.0 while this
+// repository's cldr.pin states 48.2.0. Rule I4 must report that one declaration; the CLDR major, UCA and
+// Unicode versions and the pin reader's versions, which equal the pin's, the field of a type of another name
+// holding the same text, and the comment and string naming CldrVersion again are not reported.
+namespace Broiler.ECMAScript.Generation.Intl
+{
+    public static class IntlDataVersions
+    {
+        public const string CldrVersion = "48.1.0";
+
+        public const string CldrMajor = "48";
+
+        public const string UcaVersion = UnicodeVersion;
+
+        public const string UnicodeVersion = "17.0.0";
+    }
+
+    public sealed class IntlCldrPin
+    {
+        public const string PinnedVersion = "48.2.0";
+
+        public const string PinnedMajor = "48";
+
+        public const string PinnedUcaVersion = "17.0.0";
+    }
+
+    public static class Releases
+    {
+        public const string CldrVersion = "48.1.0";
+
+        public const string Description = "CldrVersion 48.1.0, a description and not a declaration";
+    }
+}

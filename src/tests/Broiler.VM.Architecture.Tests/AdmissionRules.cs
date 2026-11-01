@@ -39,7 +39,7 @@ internal sealed record LockedPackage(string Id, string Resolved, string ContentH
 /// file's content hash is held to the list.
 /// </para>
 /// </remarks>
-internal static class AdmissionRules
+internal static partial class AdmissionRules
 {
     /// <summary>The allow-list, read once.</summary>
     internal static IReadOnlyList<AdmittedPackage> AllowList { get; } = LoadAllowList(
