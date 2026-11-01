@@ -169,13 +169,58 @@ internal static class VectorsCommand
             return ExitCodes.HarnessDefect;
         }
 
-        var report = new StringBuilder();
+        var run = RunVectors(vectors, script => Evaluate(compiled.Artifact, prelude, script, fuel, wallClock), verbose);
+        var report = Report(run, pin);
+
+        if (Argument(args, "--report") is { } output)
+        {
+            File.WriteAllText(output, report.ToString(), new UTF8Encoding(false));
+        }
+
+        Console.WriteLine(Summary(run));
+
+        return run.Counts.GetValueOrDefault("difference") == 0 ? ExitCodes.Ok : ExitCodes.Failed;
+    }
+
+    /// <summary>One run over the vectors read: each report line, the verdict counts, and the status vectors skipped.</summary>
+    /// <param name="Lines">One report line per vector evaluated, in the corpus's order.</param>
+    /// <param name="Counts">The vectors evaluated by verdict, and how many divergences no longer hold.</param>
+    /// <param name="Evaluated">How many vectors were evaluated.</param>
+    /// <param name="Skipped">The vectors whose <c>out</c> is a status, in the corpus's order, none of them evaluated.</param>
+    internal sealed record VectorsRun(
+        IReadOnlyList<string> Lines,
+        IReadOnlyDictionary<string, int> Counts,
+        int Evaluated,
+        IReadOnlyList<string> Skipped);
+
+    /// <summary>
+    /// Evaluates every vector through <paramref name="evaluate"/> and compares each with its expectation (the
+    /// schema's section 8), in the order read.
+    /// </summary>
+    /// <remarks>
+    /// <b>A status vector is skipped</b>, as the corpus's SCHEMA.md section 4 has an engine-level runner do: a
+    /// vector whose <c>out</c> is a library-level status (<c>status: exhausted</c>, which the regular-expression
+    /// area's budget vectors expect of Broiler.Regex at a step budget) is never evaluated and gets no report
+    /// line, and the run names it among <see cref="VectorsRun.Skipped"/>, which the summary line counts and names,
+    /// so none is dropped silently. <i>(Added 2026-11-01, at SJL-11.3, before this root's pin
+    /// moves past corpus revision 30; until then every vector read was evaluated, and a status vector would be a
+    /// difference nothing classifies.)</i>
+    /// </remarks>
+    internal static VectorsRun RunVectors(IReadOnlyList<Vector> vectors, Func<string, string> evaluate, bool verbose)
+    {
         var counts = new Dictionary<string, int>(StringComparer.Ordinal);
         var lines = new List<string>();
+        var skipped = new List<string>();
 
         foreach (var vector in vectors)
         {
-            var rendered = Evaluate(compiled.Artifact, prelude, vector.Script, fuel, wallClock);
+            if (IsStatus(vector.Out))
+            {
+                skipped.Add(vector.Id);
+                continue;
+            }
+
+            var rendered = evaluate(vector.Script);
             var expected = vector.Class == "impl-defined" && vector.PerEngine is { } own ? own : vector.Out;
             var verdict = Compare(vector, expected, rendered);
             var noLongerHolds = verdict == "match" && vector.Divergence is not null;
@@ -194,38 +239,55 @@ internal static class VectorsCommand
             }
         }
 
+        return new VectorsRun(lines, counts, lines.Count, skipped);
+    }
+
+    /// <summary>
+    /// Whether an outcome is a library-level status (SCHEMA.md section 4): one of its alternatives is
+    /// <c>status: </c> and a word.
+    /// </summary>
+    internal static bool IsStatus(string outcome) =>
+        Alternatives(outcome).Any(static alternative => alternative.StartsWith("status: ", StringComparison.Ordinal));
+
+    /// <summary>The run's report: the header and one line per vector evaluated. A skipped vector has no line.</summary>
+    private static string Report(VectorsRun run, RetainedSuitePin pin)
+    {
+        var report = new StringBuilder();
         report.Append(CultureInfo.InvariantCulture, $"# engine: {Engine}\n");
         report.Append(CultureInfo.InvariantCulture, $"# corpus: {pin.Upstream}@{pin.Revision} content sha256 {pin.ContentDigest}\n");
-        report.Append(CultureInfo.InvariantCulture, $"# vectors: {vectors.Count}\n");
+        report.Append(CultureInfo.InvariantCulture, $"# vectors: {run.Evaluated}\n");
 
         foreach (var name in (string[])["match", "classified-divergence", "difference", "divergence no longer holds"])
         {
-            report.Append(CultureInfo.InvariantCulture, $"# {name}: {counts.GetValueOrDefault(name)}\n");
+            report.Append(CultureInfo.InvariantCulture, $"# {name}: {run.Counts.GetValueOrDefault(name)}\n");
         }
 
         report.Append("id\tclass\texpected\trendered\tverdict\n");
 
-        foreach (var line in lines)
+        foreach (var line in run.Lines)
         {
             report.Append(line).Append('\n');
         }
 
-        if (Argument(args, "--report") is { } output)
-        {
-            File.WriteAllText(output, report.ToString(), new UTF8Encoding(false));
-        }
+        return report.ToString();
+    }
 
-        var differences = counts.GetValueOrDefault("difference");
+    /// <summary>The run's summary line: the vectors evaluated by verdict, and the status vectors skipped, counted and named.</summary>
+    internal static string Summary(VectorsRun run)
+    {
+        var line =
+            $"broiler-js-conformance: {run.Evaluated} vectors: {run.Counts.GetValueOrDefault("match")} match, " +
+            $"{run.Counts.GetValueOrDefault("classified-divergence")} classified divergences, " +
+            $"{run.Counts.GetValueOrDefault("difference")} unclassified differences";
 
-        Console.WriteLine(
-            $"broiler-js-conformance: {vectors.Count} vectors: {counts.GetValueOrDefault("match")} match, " +
-            $"{counts.GetValueOrDefault("classified-divergence")} classified divergences, {differences} unclassified differences");
-
-        return differences == 0 ? ExitCodes.Ok : ExitCodes.Failed;
+        return run.Skipped.Count == 0
+            ? line
+            : line + $"; {run.Skipped.Count} vectors whose out is a status skipped, library-level (SCHEMA.md section 4): " +
+              string.Join(", ", run.Skipped);
     }
 
     /// <summary>One vector, as much of it as an engine-level run reads.</summary>
-    private sealed record Vector(string Id, string Class, string Out, string? PerEngine, string? Divergence, string Script);
+    internal sealed record Vector(string Id, string Class, string Out, string? PerEngine, string? Divergence, string Script);
 
     /// <summary>
     /// The archive's regular files, by their path below the corpus's home, as <c>git archive</c> of a
@@ -268,7 +330,7 @@ internal static class VectorsCommand
     }
 
     /// <summary>Reads one vector file under SCHEMA.md section 1. The home's validator checks the rest.</summary>
-    private static bool Read(string text, string name, List<Vector> vectors, out string failure)
+    internal static bool Read(string text, string name, List<Vector> vectors, out string failure)
     {
         var lines = text.Split('\n');
         var schema = false;
