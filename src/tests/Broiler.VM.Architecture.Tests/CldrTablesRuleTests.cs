@@ -24,7 +24,7 @@ namespace Broiler.VM.Architecture.Tests;
 /// <b>The generator is the home's since SJL-9.2c</b> (JSD-0082, decisions D10 to D12): the test-only
 /// package <c>Broiler.ECMAScript.Generation</c>'s <c>CldrTableGenerator</c> and <c>IntlTableSource</c>, with
 /// this family's locale list and source options, as <see cref="CldrTableEmbedding"/> states them, and the
-/// file did not change by a byte. Until then the rule read "what <c>CldrTableGenerator</c> writes", this
+/// file did not change by a byte. Until then the rule read "what <c>&lt;see cref="CldrTableGenerator"/&gt;</c> writes", this
 /// project's own generator, which read the UCD through this project's <c>UnicodeDatabase</c>; both are
 /// deleted, with this project's <c>CldrPin</c>.
 /// </para>
