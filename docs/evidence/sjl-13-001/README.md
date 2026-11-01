@@ -48,10 +48,14 @@ The rule's own inputs are [`inputs/fuzz-seeds.txt`](inputs/fuzz-seeds.txt), part
 
 **Owner and reviewer:** one person holds every role (EX-30), and nobody independent has read this bundle.
 
-**State:** rules only, 2026-10-26, at SJL-13.1. **Rules only. Nothing here is a verdict, and nothing has been taken.**
+**State:** rules, 2026-10-26, at SJL-13.1, and this family's engine-level run of the vectors on its pin at corpus
+revision 30, 2026-11-01, at SJL-13.2's `syntax` vectors (section 3). **Nothing here is a verdict, and no run of the
+rule has been taken.** *(Revised 2026-11-01, when the pin moved to revision 30. It read "rules only, 2026-10-26, at
+SJL-13.1. **Rules only. Nothing here is a verdict, and nothing has been taken.**")*
 - Every run of the rule is taken at a commit the rule defines before it exists: the tools commit, the base commit, the
   registry commit and the after commit (JSD-0083 decisions D27 and D35).
-- A collector joins this bundle when there is a run to take.
+- A collector joins this bundle when there is a run of the rule to take. Section 3's run is no run of the rule, and
+  was taken without one. *(Revised 2026-11-01. It read "A collector joins this bundle when there is a run to take.")*
 
 The home's clauses 1 to 3 are judged in Broiler.JS's bundle of the same name, under its own rule, which this bundle
 does not read.
@@ -76,12 +80,27 @@ review, rules still come before runs, and SJL-13 may not meet its gate before SJ
 
 **The commits the rule names.**
 - **The rule commit** carries [`decision-rule-area.md`](decision-rule-area.md). It is named in this section, by all
-  forty digits, when the change that carries it has merged.
-- **The tools commit**, **the base commit**, **the registry commit** and **the after commit** do not exist yet. The
-  rule states the conditions each must meet, and this README names each, by all forty digits, when it lands. The base
-  commit descends from the rule commit, from the tools commit and from the commit bundle `sjl-12-001` names as its
-  after commit here, `1de3af6`; the registry commit is the first commit of the branch step 1's merge lands, directly on
-  the base.
+  forty digits, when the change that carries it has merged. *(Note of 2026-11-01: that change, the SJL-13.1 records,
+  merged in Broiler-Platform/Broiler.VM#172 as `faa8af78cddc32d460a7299f088b18b9e4407d7a`, the rule commit; this
+  section did not name it then, as it should have.)*
+- **The tools commit** is `58b0c84edb20ccbfc386a40e2566ee29b2a55695`, the default-branch merge of
+  Broiler-Platform/Broiler.VM#174, which adds the two wide-path rows, `--fuzz-wide`, `--measure-compile`,
+  sub-population B5, rule N19's widened pattern and the mapping checker's revision-19 checks. Of the rule's three
+  conditions, read here and not judged: it descends from the rule commit; `git diff --name-only` between its first
+  parent, `b95a86a`, and it names only `.github/workflows/broiler-vm-lane.yml`, `eng/check-frontend-mapping.py` and its
+  control files under `eng/check-frontend-mapping-controls/`, six files under
+  `src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/`, `CompilationStackRuleTests.cs`,
+  `rules.register.json` and N19's witness file; and whether it is an ancestor of the base commit is read when the base
+  exists. *(Added 2026-11-01. It merged on 2026-10-27, and this section did not name it then, as it should have.)*
+- **The correspondence's revision of 2026-10-27**, row P16b and the answer of rows T24b and T24f before a semicolon,
+  with JSD-0083's records of decisions D-asi and D-t24, merged in Broiler-Platform/Broiler.VM#175 as
+  `9813d7ca83e0ef43238652984294ae6e1d6e4028`. It is none of the commits the rule names. *(Added 2026-11-01.)*
+- **The base commit**, **the registry commit** and **the after commit** do not exist yet. The rule states the
+  conditions each must meet, and this README names each, by all forty digits, when it lands. *(Revised 2026-11-01. It
+  began "**The tools commit**, **the base commit**, **the registry commit** and **the after commit** do not exist
+  yet.")* The base commit descends from the rule commit, from the tools commit and from the commit bundle `sjl-12-001`
+  names as its after commit here, `1de3af6`; the registry commit is the first commit of the branch step 1's merge
+  lands, directly on the base.
 
 **The rule has ten parts**, each deciding alone.
 - **Part A**: test262 in both forms with the hosted workflow, at the base commit and at the after commit (template
@@ -124,11 +143,87 @@ registry commit mints revision 19 (JSD-0083 decision D12).
   to K4, part D's I5 controls and the pristine consumer without the frontend on its feed, part E's three copies, part
   F's shifted kind, part G's planted throws and part H's changed vector.
 - **`measurement/`**: part J's sub-bundle, with its own README and manifest.
+- **`vectors/`**: this family's run of the `syntax` vectors at the corpus revision its pin names, outside the rule
+  (section 3). *(Added 2026-11-01.)*
 - **`inputs/`** and **`correspondence-runs/`** stay as committed with the rule.
 
 **No figure is quoted in this README until its bundle retains the log it comes from**, and then only in the
 section that reads that log (rule H5). A test262 suite total is never quoted: part A is decided per variant, and
 totals decide nothing.
+
+## 3. Engine-level vectors on the `syntax` area (SJL-13.2's vectors)
+
+Broiler.JS's corpus revision 29 adds the `syntax` area, six files under `conformance/vectors/syntax/`, in schema 1
+with no new key (JSD-0083 decision D25). Revision 30 classifies both engines' first runs on it, corrects the vectors
+those runs and review showed to be defective, and adds the delimiting vectors review found missing. Both revisions are
+on Broiler.JS's default branch since Broiler-Platform/Broiler.JS#1082 merged as `ed494b2e`, whose corpus is that of
+`dc9e09e5`, revision 30 as completed before the merge; nothing on that branch since, to `b22e7d6a`
+(Broiler-Platform/Broiler.JS#1083), touches `conformance/`.
+- **Where the expected values come from.** ECMA-262 ES2026 at `0248456c`, each vector citing the clause that decides
+  it, and, for the explicit-resource-management vectors, ECMA-262 main at `4feb0272`; where a test262 test at
+  `ccaac100` asserts the outcome, the vector names its path. Each source is written from the grammar. The
+  `impl-defined` vectors are Annex B's, each engine's `per-engine` expectation the extension's outcome, since both
+  engines' requests turn Annex B on for scripts (JSD-0083 decision D17).
+- **This family's `divergence.broiler-vm` fields of the area are its corrections that step 1 makes** (JSD-0083,
+  "The corrections step 1 makes"): rows T6, T7, T8, T13, T16, T24d to T24f, D32, P15b and P31. No field is a refusal
+  of the wide manifest. Broiler.JS's fields are its own, the corrections SJL-14 answers and row T18's engine policy,
+  and among them row P16b's, which the owner's decision D-asi of 2026-10-27 added to the correspondence (JSD-0083,
+  "The owner's decisions of 2026-10-27").
+
+**Where the first runs are.** This family's first runs on revisions 29 and 30 were taken for Broiler.JS's
+classification, at `faa8af7`, the rule commit, from scratch archives and scratch pins, and Broiler.JS's bundle
+`sjl-13-001` keeps them in its `engine/` as the basis of those fields. This section's run is on the committed pin, at
+revision 30 as Broiler.JS's default branch carries it.
+
+**The pin** is at revision 30 since `6c6d9bf`, and was at revision 28 from `da4c07c` (SJL-9.2). Its archive was taken
+twice, byte-identical, and its files hashed from an extracted copy; the same method, applied to revision 28's commit,
+`ff54e1d8`, gives that pin's two digests and its count exactly. Against revision 28 the archive adds the `syntax`
+area's six files and changes the corpus's README and revision log; every other file is revision 28's byte for byte.
+
+**The run.** The conformance root was built in Release with `--disable-build-servers` in the clean tree of `6c6d9bf`
+([`vectors/build-conformance.log`](vectors/build-conformance.log)). Its product code is `faa8af7`'s: between the two,
+only the slice compiler's root, the architecture tests, the tools and the lane workflow, the documents, the pin's
+folder and the notices change, and the conformance root references neither of the first two. It was run there on the
+committed pin under `TZ=UTC`, with no `LANG` and no `LANGUAGE`, by a script that wrote each log whole: a header naming
+the commit, the build, the pin and its archive with their SHA-256, the host and the command; then the runner's output;
+then the exit code and the end time. The report was written outside the tree, which stayed clean, and is kept here
+gzip-compressed. A first run and its control were taken before these and set aside, because this README and the ledger
+were edited in the tree while they ran, so their logs could not say the tree stayed clean; this bundle keeps neither
+their logs nor their reports, and nothing here rests on them. The build's outputs were removed, and the build and both
+runs taken again on the clean tree, whose logs say so before and after each run.
+[`vectors/hashes.txt`](vectors/hashes.txt) holds every file's SHA-256, which `sha256sum -c` verifies.
+
+| Run | Taken | Result | Files |
+|---|---|---|---|
+| Revision 30 | At `6c6d9bf`, clean, on the committed pin, from 13:34Z on 2026-11-01 | 107,357 vectors: 107,294 match, 63 classified divergences and 0 unclassified differences, and no divergence that no longer holds | [`run-revision-30.log`](vectors/run-revision-30.log), [`run-revision-30.tsv.gz`](vectors/run-revision-30.tsv.gz) |
+| Its negative control | The same, with `--mutate syntax/scripts/ex0008/0001` | 107,293 match, the same 63 classified divergences, and 1 unclassified difference, the mutated vector | [`run-negative-control-revision-30.log`](vectors/run-negative-control-revision-30.log), [`run-negative-control-revision-30.tsv.gz`](vectors/run-negative-control-revision-30.tsv.gz) |
+
+**This family matches every vector of revision 30 or differs exactly as its `divergence.broiler-vm` field says.** The
+63 classified divergences are the 63 vectors that carry such a field, and no other: 22 of the `syntax` area, rows T13
+(4), T16 (3), T6, T8, D32, P15b, P31 and T24e (2 each), and T7, T24d and T24f (1 each), 21 `divergence` and one
+`impl-defined`; and the Intl area's 41 of rows Z8, L9 and L18, as at revision 28 (bundle `sjl-9-001`, section 3). Each
+is reported as a classified divergence, so none is unclassified and none no longer holds. So the vectors find no
+difference of this family's that the correspondence does not classify: each field names the correspondence row that
+holds its difference, as decision D25 of JSD-0083 has the `syntax` vectors carry each correction step 1 makes with that
+row in its provenance.
+
+**The run agrees with the one Broiler.JS's bundle retains** of this family on revision 30 at `faa8af7`, on the corpus
+at `dc9e09e5` (its `engine/broiler-vm-run-revision-30.tsv.gz`), row for row and byte for byte:
+[`vectors/comparison-revision-30.txt`](vectors/comparison-revision-30.txt) holds the comparison.
+- Every row is the same whole, its id, class, expected value, rendering and verdict, the `syntax` area's and every
+  other.
+- The two reports' summary lines differ in the corpus commit alone, `dc9e09e5` there and `ed494b2e` here, with the
+  same content digest, since the merge changes nothing under `conformance/vectors/`.
+- The negative controls agree the same way: each reports the mutated vector, `syntax/scripts/ex0008/0001`, as its one
+  unclassified difference, and every other row is the run's.
+- The logs' host lines differ, and the retained one is wrong for its build: it says that .NET's globalization loads the
+  host's ICU, but the conformance root's project file sets `InvariantGlobalization` at `faa8af7` as it does at `6c6d9bf`
+  (the same line of `Broiler.VM.Composition.JavaScript.Conformance.csproj` at both), so that root, like this one, does
+  not load it and reads its own CLDR 48.2.0 tables, as this log and bundle `sjl-9-001`'s logs say. The misdescription is
+  the retained log's host line only, and Broiler.JS's bundle is that repository's to correct; no report row differs.
+
+This section is no part of the rule's parts A to J, and nothing in it is a verdict. Part H reads the same area at the
+base commit, at the revision the pin names there.
 
 ## 9. Exclusions
 
