@@ -15,9 +15,10 @@
 #            [--out F] [--differing-keys F]
 #       Part B. Joined on the key, it compares the outcome; for a compilation accepted on both sides,
 #       the artifact's hash and length; for one refused on both sides, the ordered diagnostic list;
-#       for one not compiled on both sides, the note. It holds both reports to the manifest, which
-#       is required: its digest, and every compilation the four sub-populations owe it, no more and
-#       no fewer. Each --census pair is two `--census` outputs, compared byte for byte (a .gz file is
+#       for one not compiled on both sides, the note; in B5, for one accepted on both sides, the
+#       ordered specifiers, its note, with its hash and length. It holds both reports to the manifest,
+#       which is required: its digest, and every compilation the sub-populations they cover owe it,
+#       no more and no fewer. Each --census pair is two `--census` outputs, compared byte for byte (a .gz file is
 #       read decompressed, as a report is); one pair per `--census` call the run procedure makes.
 #       The census is required too, because part B compares it between the corpus commit and the
 #       after commit; --no-census says, explicitly, that this comparison is not that one (the base
@@ -35,12 +36,58 @@
 #       question, not part C's: each part decides alone, so a compilation it refused, did not
 #       compile or crashed is outside the population, and is counted in the header, not refused.
 #
-#   control BASE OUT
+#   control BASE OUT [--specifier with-hash|note-only] [--column]
 #       Part B's control: a copy of BASE with one artifact hash changed and one outcome flipped. It
 #       changes the first accepted B1 bytecode compilation's hash (its last hex digit) and turns the
 #       second accepted B1 bytecode compilation into a refusal with no diagnostic, and says which in
 #       a comment line. `identity BASE OUT --manifest M --no-census` must then report exactly those
-#       two, both unclassified.
+#       two, both unclassified. With --specifier (BASE a run of B1 to B5), it also changes one
+#       specifier of a B5 input: the last character of the first specifier of the first accepted B5
+#       compilation whose first specifier ends in an ASCII letter, replaced by another ASCII letter,
+#       so one code unit of the note changes and its length does not. `with-hash` writes the note's
+#       SHA-256 and length again from the changed note, as the mode would have written them, and
+#       identity must then report three differences, the third a `specifiers` one; `note-only` leaves
+#       them as they were, and identity must then refuse OUT as a report this mode did not write.
+#       (Revised 2026-11-01, the day it was added. It read "the last code unit of the first specifier
+#       of the first accepted B5 compilation whose first specifier is not empty", which a specifier
+#       ending in a character the mode writes escaped, as a \u escape or as a surrogate pair, did not
+#       meet: the note's length changed, and more than one code unit with it.)
+#       With --column, the outcome is not flipped: the first diagnostic of the first refused B1
+#       bytecode compilation that has one gets its column moved by one, and identity must report a
+#       `diagnostics` difference in its place. --column with --specifier with-hash is bundle
+#       sjl-13-002's part B control as filed: one artifact hash, one diagnostic's column and one
+#       specifier of a B5 input changed, three differences. (--column added 2026-11-01: until then
+#       the outcome was always flipped, so that control could not be made by this mode.)
+#
+# B5, ADDED 2026-11-01 BEFORE SJL-13'S STEP 1 (bundle sjl-13-001's part B and bundle sjl-13-002's,
+# JSD-0083 decision D27). The slice compiler's tools commit (58b0c84) added sub-population B5 to the
+# mode: each module-goal input through JsCompiler.Requests under the module options, keyed by
+# (input, B5, module, requests), whose accepted row's note holds the ordered specifiers as one JSON
+# array in ASCII and whose sha256 and length are the note's UTF-8 bytes'. Both rules compare it
+# through this script "as the base commit holds it", which until this date read only B1 to B4, so
+# the change lands before step 1's base. What it adds:
+#   - A WHOLE RUN is one of B1 to B4 (the mode's default, and every earlier rule's) or one of B1 to
+#     B5 (`--populations B1,B2,B3,B4,B5`), which is how both SJL-13 rules run part B: one report per
+#     commit holding every sub-population. A report of B5 alone, or of any other subset, is not a
+#     whole run and is refused, as a selected run is; `identity` also refuses two reports that do not
+#     cover the same sub-populations.
+#   - THE MANIFEST OWES B5 one compilation per module-goal input, (id, B5, module, requests), when
+#     the report covers B5, and nothing when it does not.
+#   - AN ACCEPTED B5 ROW IS READ ON ITS NOTE. Every accepted B5 row of every report read must carry a
+#     note that is a JSON array of strings in ASCII whose UTF-8 bytes have the row's sha256 and
+#     length; a row whose note does not is refused, and the report with it, as one this mode did not
+#     write. Two accepted B5 rows differ when their notes, hashes or lengths do, and the difference is
+#     reported as `specifiers`, the two notes beside it, which no class of either SJL-13 rule admits.
+#   - PART C IS UNCHANGED: `determinism` takes its population from part B's after run's accepted B1
+#     and B3 compilations, as both SJL-13 rules' part C names it, and reads a B1 to B5 report as it
+#     reads one of B1 to B4; B5 is outside part C's population.
+# A B1 to B4 report is read, compared and written about exactly as before, byte for byte.
+# (Added 2026-11-01. Until then identity's paragraph read "for one not compiled on both sides, the
+# note. It holds both reports to the manifest, which is required: its digest, and every compilation
+# the four sub-populations owe it, no more and no fewer."; the control's usage line read "control
+# BASE OUT", and its paragraph ended at "both unclassified."; and the paragraph on refused reports
+# read "when either was a selected run, or when either lacks a compilation the manifest owes or holds
+# one it does not.")
 #
 # THE OUTCOMES. The rule's are accepted and refused. The mode also writes `not-compiled`, in the two
 # cases its reading 2 names (every report's header repeats the readings): B2's test262 `_FIXTURE`
@@ -64,8 +111,10 @@
 #
 # A REPORT IS REFUSED, NOT COMPARED, when it is not format 1, when a key repeats, when an outcome is
 # not one of the four, when the two do not name the manifest's digest, when either was a selected
-# run, or when either lacks a compilation the manifest owes or holds one it does not. A comparison
-# over less than the whole corpus would read as a clean one.
+# run or covers neither B1 to B4 nor B1 to B5, when the two cover different sub-populations, when an
+# accepted B5 row's note is not the JSON array its sha256 and length are of, or when either lacks a
+# compilation the manifest owes or holds one it does not. A comparison over less than the whole
+# corpus would read as a clean one.
 #
 # EXIT CODES: 0 when nothing differs, 1 when anything does, 2 when the input could not be read or was
 # refused, or a run is not complete (argparse's own code for a bad command line).
@@ -74,12 +123,16 @@ import argparse
 import collections
 import gzip
 import hashlib
+import json
 import pathlib
 import sys
 
 REPORT_FORMAT = "broiler-vm-parse-corpus-report\t1"
 MANIFEST_FORMAT = "broiler-parse-corpus\t1"
 POPULATIONS = ("B1", "B2", "B3", "B4")
+# THE WHOLE RUNS (2026-11-01): bundle sjl-12-001's four sub-populations, and those four with B5.
+WHOLE = (POPULATIONS, POPULATIONS + ("B5",))
+REQUESTS = "B5"
 COLUMNS = ("id", "population", "variant", "form", "outcome", "diagnostics", "sha256", "length", "note")
 SECOND = ("outcome-2", "diagnostics-2", "sha256-2", "length-2", "note-2")
 OUTCOMES = ("accepted", "refused", "not-compiled", "crashed")
@@ -146,6 +199,11 @@ class Report:
                 if result.outcome not in OUTCOMES:
                     refuse(f"{path}: line {number} has the outcome {result.outcome!r}, not one of "
                            f"{', '.join(OUTCOMES)}")
+                if key[1] == REQUESTS and result.outcome == "accepted":
+                    why = specifier_note_fault(result)
+                    if why:
+                        refuse(f"{path}: line {number}, the B5 compilation {' '.join(key)}, {why}, so this is "
+                               f"not a report the mode wrote")
             self.order.append(key)
         declared = self.header.get("compilations")
         if declared != str(len(self.rows)):
@@ -159,30 +217,92 @@ class Report:
     def workers(self):
         return self.header.get("workers", "")
 
+    @property
+    def covered(self):
+        """
+        The sub-populations the header names, in its order, when they are among B1 to B5 and the
+        population header is there; otherwise bundle sjl-12-001's four, as this script read every
+        report until B5 (2026-11-01).
+        """
+        named = tuple(self.header.get("populations", "").split(","))
+        return named if all(population in WHOLE[1] for population in named) else POPULATIONS
+
     def outcomes(self):
         """Per sub-population, how many compilations had each outcome (both answers of a twice run)."""
-        counts = {population: collections.Counter() for population in POPULATIONS}
+        counts = {population: collections.Counter() for population in self.covered}
         for key, result in self.rows.items():
-            counts[key[1]][result.outcome] += 1
+            counts.setdefault(key[1], collections.Counter())[result.outcome] += 1
             if self.twice:
                 counts[key[1]][self.second[key].outcome] += 1
         return "; ".join(
             population + " " + (", ".join(f"{outcome} {counts[population][outcome]}" for outcome in OUTCOMES
                                           if counts[population][outcome]) or "none")
-            for population in POPULATIONS)
+            for population in counts)
 
     def whole(self):
-        """Refuses a report that is not a complete, unselected run of all four sub-populations."""
+        """
+        Refuses a report that is not a complete, unselected run of bundle sjl-12-001's four
+        sub-populations, or of those four and B5 (2026-11-01: until then, of the four alone).
+        """
         if self.header.get("selection") != "all":
             refuse(f"{self.path}: a selected run (--select) is not a whole run")
-        if self.header.get("populations") != ",".join(POPULATIONS):
+        if self.header.get("populations") not in (",".join(run) for run in WHOLE):
             refuse(f"{self.path}: covers {self.header.get('populations')}, not every sub-population")
 
 
-def owed(manifest_path):
+def specifier_list(note):
+    """The specifiers an accepted B5 row's note holds, or None when it is not the mode's JSON array."""
+    if not note.isascii():
+        return None
+    try:
+        value = json.loads(note)
+    except ValueError:
+        return None
+    if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
+        return None
+    return value
+
+
+def write_specifiers(specifiers):
     """
-    The manifest's digest, and every compilation the four sub-populations owe it, each mapped to the
-    note under which reading 2 admits it not compiled, or None where it must have an outcome.
+    The note the mode writes for these specifiers (ParseCorpus.SpecifierList, restated): per UTF-16
+    code unit, a quotation mark and a backslash escaped, every unit below a space or above a tilde a
+    lowercase four-digit \\u escape, and every other unit itself.
+    """
+    out = []
+    for specifier in specifiers:
+        text = []
+        data = specifier.encode("utf-16-le", "surrogatepass")
+        for at in range(0, len(data), 2):
+            code = int.from_bytes(data[at:at + 2], "little")
+            unit = chr(code)
+            if unit in ('"', "\\"):
+                text.append("\\" + unit)
+            elif code < 0x20 or code > 0x7E:
+                text.append(f"\\u{code:04x}")
+            else:
+                text.append(unit)
+        out.append('"' + "".join(text) + '"')
+    return "[" + ",".join(out) + "]"
+
+
+def specifier_note_fault(result):
+    """Why an accepted B5 result's note is not the one its sha256 and length are of, or None."""
+    if specifier_list(result.note) is None:
+        return "has a note that is not a JSON array of strings in ASCII"
+    data = result.note.encode("ascii")
+    if (result.sha256, result.length) != (hashlib.sha256(data).hexdigest(), str(len(data))):
+        return (f"has a note whose UTF-8 bytes have the SHA-256 {hashlib.sha256(data).hexdigest()} and the "
+                f"length {len(data)}, not the row's {result.sha256} and {result.length}")
+    return None
+
+
+def owed(manifest_path, populations=POPULATIONS):
+    """
+    The manifest's digest, and every compilation the sub-populations named owe it, each mapped to the
+    note under which reading 2 admits it not compiled, or None where it must have an outcome. B5 owes
+    one compilation per module-goal input when it is named (2026-11-01: until then the four
+    sub-populations' compilations were owed whatever a report covered, and B5 none).
     """
     data = pathlib.Path(manifest_path).read_bytes()
     lines = data.decode("utf-8").rstrip("\n").split("\n")
@@ -214,6 +334,9 @@ def owed(manifest_path):
                 every[(row_id, "B3", name, "bytecode")] = None
         # B4 IS ONE COMPILATION PER INPUT, UNDER ITS GOAL: the rule's B4 names no variant.
         every[(row_id, "B4", goal, "slice")] = "no-json-goal" if goal == "json" else None
+        # B5 IS ONE REQUEST PER MODULE-GOAL INPUT, keyed like B4 (ParseCorpus.Plan).
+        if REQUESTS in populations and goal == "module":
+            every[(row_id, REQUESTS, goal, "requests")] = None
     return hashlib.sha256(data).hexdigest(), every
 
 
@@ -269,7 +392,9 @@ def diagnostic_shape(base, after):
     return "+".join(sorted(set(shapes), key=shapes.index)) or "-"
 
 
-def first_entry(result):
+def first_entry(result, population=None):
+    if result.outcome == "accepted" and population == REQUESTS:
+        return "accepted " + result.sha256 + " " + result.length + " " + result.note
     if result.outcome == "accepted":
         return "accepted " + result.sha256 + " " + result.length
     if result.outcome == "refused":
@@ -286,7 +411,13 @@ def compare(key, base, after):
             codes = {entry.split(":")[0] for entry in entries(after.diagnostics)}
             if codes and codes <= {"2101", "2103"}:
                 shape = "T?"
-        found = ("outcome", first_entry(base), first_entry(after), shape)
+        found = ("outcome", first_entry(base, population), first_entry(after, population), shape)
+    elif base.outcome == "accepted" and population == REQUESTS:
+        # B5: THE ORDERED SPECIFIERS ARE THE ANSWER (2026-11-01), the note with its hash and length,
+        # which each report's reading has already held to one another.
+        if (base.note, base.sha256, base.length) == (after.note, after.sha256, after.length):
+            return None
+        found = ("specifiers", base.note, after.note, "specifiers")
     elif base.outcome == "accepted":
         if (base.sha256, base.length) == (after.sha256, after.length):
             return None
@@ -325,7 +456,10 @@ def identity(args):
     after.whole()
     if base.manifest_sha256 != after.manifest_sha256:
         refuse(f"the two reports name two manifests ({base.manifest_sha256} and {after.manifest_sha256})")
-    digest, every = owed(args.manifest)
+    if base.covered != after.covered:
+        refuse(f"the two reports cover different sub-populations ({','.join(base.covered)} and "
+               f"{','.join(after.covered)})")
+    digest, every = owed(args.manifest, base.covered)
     for report in (base, after):
         held_to(report, args.manifest, digest, every)
 
@@ -368,9 +502,10 @@ def identity(args):
         f"# incomplete {len(unfinished)} (crashed, or not compiled outside reading 2, on either side)"
         + ("; THE RUNS ARE NOT COMPLETE, and each such row is listed below as incomplete" if unfinished else ""),
         f"# differences {len(differences)}, every one unclassified until the bundle lists it with a class",
-        "# by sub-population " + (", ".join(f"{p} {by_population[p]}" for p in POPULATIONS)),
+        "# by sub-population " + (", ".join(f"{p} {by_population[p]}" for p in base.covered)),
         "# by what differs " + (", ".join(f"{w} {by_what[w]}" for w in
-                                           ("outcome", "artifact", "diagnostics", "note"))),
+                                           ("outcome", "artifact", "diagnostics", "note")
+                                           + (("specifiers",) if REQUESTS in base.covered else ()))),
         f"# B4 differences {by_population['B4']} (no class admits one)",
         *censuses,
         "id\tpopulation\tvariant\tform\twhat\tbase\tafter\tstatus\tshape",
@@ -378,14 +513,14 @@ def identity(args):
     for key, (what, left, right, shape) in differences:
         lines.append("\t".join(key + (what, left, right, "unclassified", shape)))
     for key in unfinished:
-        lines.append("\t".join(key + ("incomplete", first_entry(base.rows[key]), first_entry(after.rows[key]),
-                                       "incomplete", "-")))
+        lines.append("\t".join(key + ("incomplete", first_entry(base.rows[key], key[1]),
+                                       first_entry(after.rows[key], key[1]), "incomplete", "-")))
     emit(args.out, lines)
 
     if args.differing_keys:
         keys = [key for key, found in differences
-                if found[0] == "artifact" or (found[0] == "outcome" and "accepted" in
-                                              (base.rows[key].outcome, after.rows[key].outcome))]
+                if found[0] in ("artifact", "specifiers") or (found[0] == "outcome" and "accepted" in
+                                                              (base.rows[key].outcome, after.rows[key].outcome))]
         pathlib.Path(args.differing_keys).write_text(
             "".join("\t".join(key) + "\n" for key in keys), encoding="utf-8", newline="\n")
 
@@ -400,7 +535,7 @@ def determinism(args):
     runs = [Report(path) for path in (args.run1, args.run2, args.run3)]
     population_report = Report(args.population)
     population_report.whole()
-    digest, every = owed(args.manifest)
+    digest, every = owed(args.manifest, population_report.covered)
     held_to(population_report, args.manifest, digest, every)
     # PART C'S POPULATION IS WHAT PART B'S AFTER RUN ACCEPTED in B1 and B3, and nothing else (the
     # rule's part C). A compilation that run refused, did not compile or crashed is outside it, and
@@ -459,15 +594,47 @@ def determinism(args):
     return 1 if differing else 0
 
 
+def ends_in_letter(specifier):
+    """Whether a specifier's last character is an ASCII letter, which the mode writes as itself."""
+    return specifier[-1:].isascii() and specifier[-1:].isalpha()
+
+
 def control(args):
     data = read_bytes(args.base).decode("utf-8")
     report = Report(args.base)
     report.whole()
     accepted = [key for key in report.order
                 if key[1] == "B1" and key[3] == "bytecode" and report.rows[key].outcome == "accepted"]
-    if len(accepted) < 2:
-        refuse(f"{args.base}: fewer than two accepted B1 bytecode compilations to change")
-    changed, flipped = accepted[0], accepted[1]
+    if len(accepted) < (1 if args.column else 2):
+        refuse(f"{args.base}: fewer than "
+               + ("one accepted B1 bytecode compilation" if args.column else "two accepted B1 bytecode compilations")
+               + " to change")
+    changed, flipped = accepted[0], (None if args.column else accepted[1])
+    # ONE DIAGNOSTIC'S COLUMN (2026-11-01; bundle sjl-13-002's part B control), in place of the flip:
+    # the first entry of the first refused B1 bytecode compilation that has one, its column plus one.
+    moved = None
+    if args.column:
+        moved = next((key for key in report.order
+                      if key[1] == "B1" and key[3] == "bytecode" and report.rows[key].outcome == "refused"
+                      and report.rows[key].diagnostics != "-"), None)
+        if moved is None:
+            refuse(f"{args.base}: no refused B1 bytecode compilation with a diagnostic to change")
+    # ONE SPECIFIER OF A B5 INPUT (2026-11-01; bundle sjl-13-002's part B control): the last character
+    # of the first specifier of the first accepted B5 compilation whose first specifier ends in an
+    # ASCII letter, replaced by another ASCII letter. The mode writes an ASCII letter as itself, so the
+    # note stays its JSON array, one code unit of it changes and its length does not; a specifier
+    # ending in anything else is passed over, because the mode writes a quotation mark or a backslash
+    # escaped, and a unit outside the printable ASCII range as a \u escape.
+    specified = None
+    if args.specifier:
+        if REQUESTS not in report.covered:
+            refuse(f"{args.base}: --specifier needs a run of B1 to B5, and this one covers "
+                   f"{','.join(report.covered)}")
+        specified = next((key for key in report.order
+                          if key[1] == REQUESTS and report.rows[key].outcome == "accepted"
+                          and ends_in_letter((specifier_list(report.rows[key].note) or [""])[0])), None)
+        if specified is None:
+            refuse(f"{args.base}: no accepted B5 compilation whose first specifier ends in an ASCII letter")
     lines = data[:-1].split("\n")
     out = []
     for line in lines:
@@ -478,10 +645,37 @@ def control(args):
             cells[6] = digest[:-1] + format(int(digest[-1], 16) ^ 1, "x")
         elif not line.startswith("#") and key == flipped:
             cells[4], cells[5], cells[6], cells[7], cells[8] = "refused", "-", "-", "-", "-"
+        elif not line.startswith("#") and key == moved:
+            first, _, rest = cells[5].partition(";")
+            code, line_number, column = first.split(":")
+            cells[5] = f"{code}:{line_number}:{int(column) + 1}" + (";" + rest if rest else "")
+        elif not line.startswith("#") and key == specified:
+            specifiers = specifier_list(cells[8])
+            last = specifiers[0][-1]
+            specifiers[0] = specifiers[0][:-1] + ("y" if last == "x" else "x")
+            cells[8] = write_specifiers(specifiers)
+            if args.specifier == "with-hash":
+                cells[6] = hashlib.sha256(cells[8].encode("ascii")).hexdigest()
+                cells[7] = str(len(cells[8].encode("ascii")))
         out.append("\t".join(cells))
     note = (f"# control (bundle sjl-12-001 part B): {' '.join(changed)} has its hash changed and "
             f"{' '.join(flipped)} is flipped from accepted to refused; nothing else differs from "
-            f"{pathlib.Path(args.base).name}")
+            f"{pathlib.Path(args.base).name}") if flipped is not None else None
+    if moved is not None:
+        note = (f"# control (bundle sjl-13-002 part B): {' '.join(changed)} has its hash changed, "
+                f"{' '.join(moved)} has the column of its first diagnostic moved by one"
+                + (f", and {' '.join(specified)} has the last code unit of its first specifier changed, "
+                   + ("its note with its sha256 and length" if args.specifier == "with-hash"
+                      else "its note alone, its sha256 and length as they were")
+                   if specified is not None else "")
+                + f"; nothing else differs from {pathlib.Path(args.base).name}")
+    elif specified is not None:
+        note = (f"# control (bundle sjl-12-001 part B, and bundle sjl-13-002's B5 specifier): {' '.join(changed)} "
+                f"has its hash changed, {' '.join(flipped)} is flipped from accepted to refused, and "
+                f"{' '.join(specified)} has the last code unit of its first specifier changed, "
+                + ("its note with its sha256 and length" if args.specifier == "with-hash"
+                   else "its note alone, its sha256 and length as they were")
+                + f"; nothing else differs from {pathlib.Path(args.base).name}")
     column = next(index for index, line in enumerate(out) if not line.startswith("#"))
     out.insert(column, note)
     text = ("\n".join(out) + "\n").encode("utf-8")
@@ -517,9 +711,16 @@ def main():
     two.add_argument("--out")
     two.set_defaults(run=determinism)
 
-    three = commands.add_parser("control", help="part B's control: one hash changed, one outcome flipped")
+    three = commands.add_parser("control", help="part B's control: one hash changed, one outcome flipped "
+                                                "(or, with --column, one diagnostic's column moved)")
     three.add_argument("base")
     three.add_argument("out")
+    three.add_argument("--specifier", choices=("with-hash", "note-only"),
+                       help="also change one specifier of a B5 input, its note with its hash and length "
+                            "(with-hash) or alone (note-only)")
+    three.add_argument("--column", action="store_true",
+                       help="move one refused compilation's first diagnostic column by one in place of the "
+                            "outcome flip (with --specifier with-hash, bundle sjl-13-002's part B control)")
     three.set_defaults(run=control)
 
     args = parser.parse_args()

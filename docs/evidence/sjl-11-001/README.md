@@ -79,6 +79,20 @@ SJL-3 meets SJL-3's.
     answer, or the reverse, is a changed verdict.
   - Class C3 holds row M4's empty match alone, by decision D41.
   - A wall-clock race is admitted under C4's (c') and (e). There is no class C5.
+  - *(Noted 2026-11-01.)* Its configuration holds `.github/workflows/test262-evidence.yml` and
+    `eng/test262-evidence.py` at the dispatched ref byte-identical to the rule's commit. The owner changed the
+    workflow on 2026-10-30, in `9d0f80e`, by a decision of the owner's own, which
+    [JSD-0083](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md)'s
+    note under its decision D37 records: each of its three jobs' `runs-on: ubuntu-latest` reads
+    `runs-on: ubuntu-24.04`, and the driver did not change. So the workflow at the default branch is no longer
+    byte-identical to the rule's commit, and part A cannot be taken as the rule states. The rule file is unchanged, as
+    its "Revisions" requires; no run of part A is taken, and a new dated rule file here, written before any of them,
+    is what can admit the change. The admission commit's parent is the default branch's head when SJL-11.4's
+    branch is made, so it descends from `9d0f80e`; a rule holding the workflow byte-identical to that commit's
+    would have both runs use the `ubuntu-24.04` workflow. That the base and after runs are dispatched together
+    after SJL-11.4's merge is the programme plan's practice, which no rule fixes, and neither fixes one image
+    release: the runners of one dispatch have run two releases of one image (bundle
+    [`sjl-6-001`](../sjl-6-001/README.md)).
 - **Part B** holds the compiler's literal refusals over bundle `sjl-12-001`'s parse corpus, admitting only row S1's
   duplicate names and rows S5's and S10's literals (template T6's reading).
 - **Part C** holds the wide twins to their base figures, with no class: no twin reaches a regular expression

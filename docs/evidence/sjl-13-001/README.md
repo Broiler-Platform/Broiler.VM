@@ -95,6 +95,26 @@ review, rules still come before runs, and SJL-13 may not meet its gate before SJ
 - **The correspondence's revision of 2026-10-27**, row P16b and the answer of rows T24b and T24f before a semicolon,
   with JSD-0083's records of decisions D-asi and D-t24, merged in Broiler-Platform/Broiler.VM#175 as
   `9813d7ca83e0ef43238652984294ae6e1d6e4028`. It is none of the commits the rule names. *(Added 2026-11-01.)*
+- **The change of 2026-11-01 before step 1's base**, on the branch `sjl-13-pre1`, named here by its merge when it
+  lands. It is none of the commits the rule names, and the base commit descends from it:
+  - `eng/compare-parse-corpus.py` reads sub-population B5, which part B compares through that script "as the base
+    commit holds it": a whole run is one of B1 to B4 or one of B1 to B5; the manifest owes B5 one compilation per
+    module-goal input; an accepted B5 row is compared on its ordered specifiers, its note, with its hash and length;
+    a report whose B5 note does not have the hash and length its row states is refused as one the mode did not write;
+    and part C's determinism mode reads a B1 to B5 report with B5 outside its population, as part C names it. A B1 to
+    B4 report is read and compared exactly as before, byte for byte. The script's `control` mode gains
+    `--specifier`, which also changes one specifier of a B5 input, with its hash and length or alone, and
+    `--column`, which moves one diagnostic's column in place of the outcome flip; with both it makes the control
+    bundle `sjl-13-002`'s part B names as filed. This part's own control the mode makes only in part: without
+    options it makes the hash and the outcome flip, and the third change, a diagnostic code revision 19 does not
+    give that input's rule, is a reading of the registry, made by hand. Until this change the script refused every report holding B5, so part B could not have
+    been run as the rule states.
+  - The construct census, `SliceConstructCensus.Take`, which part B compares between the base and the after commit
+    byte for byte, runs on the stack `CompilationStack` declares, as `JsCompiler`'s entry points do; rule N19's test
+    names it as a gap no more, and its register row says so by a dated note. Its output over the parse corpus's
+    inputs and over the suite's `test/` is byte-identical before and after the change.
+  - `ParseCorpus.cs` changes in one remark only, which named the script's refusal of B5.
+  *(Added 2026-11-01.)*
 - **The base commit**, **the registry commit** and **the after commit** do not exist yet. The rule states the
   conditions each must meet, and this README names each, by all forty digits, when it lands. *(Revised 2026-11-01. It
   began "**The tools commit**, **the base commit**, **the registry commit** and **the after commit** do not exist
@@ -107,6 +127,14 @@ review, rules still come before runs, and SJL-13 may not meet its gate before SJ
   T1). Its C1 kinds are named before any run: (R) the regrade of the three language rules coded 2104, (G) the
   decorator's stage, (B) the admission walk and (F) the corrections step 1 makes, by row; C3 for the left-operand
   charge, in the four shapes row R14 names; no C2 and no C5.
+  *(Noted 2026-11-01.)* The owner changed `.github/workflows/test262-evidence.yml` on 2026-10-30, in `9d0f80e`, by a
+  decision of the owner's own, which JSD-0083's note under its decision D37 records: each of its three jobs'
+  `runs-on: ubuntu-latest` reads `runs-on: ubuntu-24.04`, and `eng/test262-evidence.py` did not change. Part A holds
+  the workflow and the driver at the dispatched ref byte-identical to the base commit's, which descends from the
+  change, so both its runs use the `ubuntu-24.04` workflow, and no run before the change is compared with one after
+  it. That its base and after runs are dispatched together after step 1 merges is the programme plan's practice, not
+  a rule, and neither fixes one image release: GitHub may serve `ubuntu-24.04` from different releases, and the
+  runners of one dispatch have run two (bundle [`sjl-6-001`](../sjl-6-001/README.md)).
 - **Part B**: artifact identity over the parse corpus, sub-populations B1 to B5, at the base, the registry commit and
   the after commit (template T6), with classes R, R2, S (S1 and S3 to S8), F and L, each named before any run.
 - **Part C**: determinism, and the source front end's checks rows, the two the tools commit adds and the one step 1

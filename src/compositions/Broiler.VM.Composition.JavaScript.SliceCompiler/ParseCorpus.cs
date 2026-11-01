@@ -59,9 +59,15 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// control that changes a specifier in a copy of a report changes the hash and the length with it, or
 /// the comparison reads the note or checks it against its hash.
 /// <b>B5 is asked for, never assumed</b>: a run without <c>--populations</c> runs B1 to B4 and writes
-/// the bytes it wrote before B5 existed, because <c>eng/compare-parse-corpus.py</c>, which the parse
-/// corpus parts of the earlier rules read as their commits hold it, refuses a report that holds any
-/// sub-population beyond B1 to B4.
+/// the bytes it wrote before B5 existed, because the parse corpus parts of the earlier rules read
+/// <c>eng/compare-parse-corpus.py</c> as their commits hold it, and those copies refuse a report that
+/// holds any sub-population beyond B1 to B4. Since 2026-11-01, before SJL-13's step 1, the script reads
+/// a report of B1 to B5 as well as one of B1 to B4, compares an accepted B5 row on its note with its
+/// hash and length, and refuses a report whose note does not have the hash and length its row states.
+/// <i>(Revised 2026-11-01. The sentence read: "a run without <c>--populations</c> runs B1 to B4 and
+/// writes the bytes it wrote before B5 existed, because <c>eng/compare-parse-corpus.py</c>, which the
+/// parse corpus parts of the earlier rules read as their commits hold it, refuses a report that holds
+/// any sub-population beyond B1 to B4.")</i>
 /// </para>
 /// <para>
 /// <b>Three readings of the rule, fixed here before any run and repeated in every report's header.</b>

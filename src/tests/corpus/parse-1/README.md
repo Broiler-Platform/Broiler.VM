@@ -65,9 +65,18 @@ other things:
 - the archive's SHA-256 is not the manifest's pin;
 - any input's bytes differ from its row's SHA-256.
 
-It writes one report line per compilation of sub-populations B1 to B4. `eng/compare-parse-corpus.py` joins two
-reports and holds each to this manifest's digest and population. The bundle's procedure, not this file, fixes
-each run's arguments.
+It writes one report line per compilation of sub-populations B1 to B4, and, when `--populations B1,B2,B3,B4,B5`
+asks for it, of sub-population B5 too: each module-goal input through `JsCompiler.Requests`, whose accepted row's note
+holds the ordered specifiers and whose SHA-256 and length are the note's. `eng/compare-parse-corpus.py` joins two
+reports of the same sub-populations, B1 to B4 or B1 to B5, and holds each to this manifest's digest and population;
+in B5 it compares an accepted row's ordered specifiers, its note, with its hash and length, and refuses a report
+whose note does not have the hash and length its row states. The bundle's procedure, not this file, fixes each
+run's arguments.
+
+*(Revised 2026-11-01, when the comparison learned to read B5 before SJL-13's step 1. The paragraph read: "It writes
+one report line per compilation of sub-populations B1 to B4. `eng/compare-parse-corpus.py` joins two reports and
+holds each to this manifest's digest and population. The bundle's procedure, not this file, fixes each run's
+arguments." It did not name B5, which the slice compiler's tools commit added to the mode on 2026-10-27.)*
 
 ## How the copy is checked
 

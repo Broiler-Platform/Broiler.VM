@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 6711 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 6712 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 330 |
-| Code units | 11753 |
-| Relevant | 6711 |
+| Code units | 11754 |
+| Relevant | 6712 |
 | Exempt | 5042 |
-| Assessed | 6711 of 6711 (100%) |
-| Human reviewed | 0 of 6711 (0%) |
-| Unverified | 6711 |
+| Assessed | 6712 of 6712 (100%) |
+| Human reviewed | 0 of 6712 (0%) |
+| Unverified | 6712 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,7 +96,7 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6711 |
+| HUMAN_PENDING | 6712 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -184,7 +184,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64BaselineEmitter.cs` | 4 | 4 | 0 | 4 | None | Critical | 3/3 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64ValueEmitter.cs` | 9 | 9 | 0 | 9 | Low | Critical | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Walk.cs` | 28 | 16 | 12 | 16 | Low | High | 5/5 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs` | 7 | 7 | 0 | 7 | None | High | 3/3 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs` | 8 | 8 | 0 | 8 | None | High | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructs.cs` | 61 | 6 | 55 | 6 | None | High | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceControlFlow.cs` | 8 | 8 | 0 | 8 | None | Medium | 4/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceLowering.cs` | 22 | 22 | 0 | 22 | None | Medium | 0/0 |
@@ -838,8 +838,10 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this walk's height for an instruction differs from the format's own stack-effect table
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceConstructCensus` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs` - Security=High, Spec=none cited, `C0354E`, PENDING
   - Falsified if: a construct present in a source is not counted, or a count includes a construct the source does not contain
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceConstructCensus.Take(System.Collections.Generic.IEnumerable<string>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs` - Security=High, Spec=none cited, `B3C49F`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceConstructCensus.Take(System.Collections.Generic.IEnumerable<string>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs` - Security=High, Spec=none cited, `D6A3DE`, PENDING
   - Falsified if: a source that parses contributes no counts, or a source that does not parse is counted as containing nothing
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceConstructCensus.TakeOnTheDeclaredStack(System.Collections.Generic.IEnumerable<string>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs` - Security=High, Spec=none cited, `56CB7D`, PENDING
+  - Falsified if: a source is tokenized, parsed or walked on the caller's stack rather than the declared one
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceConstructCensus.Walk(SliceNode, System.Collections.Generic.Dictionary<SliceConstructKind, int>, System.Collections.Generic.HashSet<SliceConstructKind>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs` - Security=High, Spec=none cited, `3B0990`, PENDING
   - Falsified if: a node reachable in the tree is not visited
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceConstructExpression` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructs.cs` - Security=High, Spec=none cited, `53E46E`, PENDING
@@ -4274,7 +4276,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 6572 of the 6711 assessed units declare
+That is not a figure of speech. 6573 of the 6712 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

@@ -933,6 +933,30 @@ and voids them if any merge lands between the branch's creation and its merge, s
 re-runs. The reason: SJL-11's rules hold both workflows and the driver byte-identical to their rule commits until their
 after runs.
 
+*(Noted 2026-11-01: the owner's decision of 2026-10-30.)* The owner changed this family's
+`.github/workflows/test262-evidence.yml` on 2026-10-30, in `9d0f80e` ("Set workflow/runner to static ubuntu version
+(24.04) update dependencies"), and this record reads the change as the owner's dated decision, which is the owner's own
+and not one taken under the direction of 2026-10-18. Each of the workflow's three jobs read `runs-on: ubuntu-latest`
+and reads `runs-on: ubuntu-24.04`; nothing else in it changed, and `eng/test262-evidence.py` did not change. No change
+of SJL-13 made it, and this decision is unchanged by it for SJL-13's own changes.
+- **What it means for hosted runs.** A run dispatched since 2026-10-30 runs on the image GitHub serves for
+  `ubuntu-24.04`, where the runs retained before it ran on whatever `ubuntu-latest` named that day: the runners'
+  images bundle `sjl-12-001` records are `ubuntu24` at its base and `ubuntu26` at its after commit, and every earlier
+  bundle's are `ubuntu24`. A pair taken across the change may differ in image, and the bundles record images, not
+  judge them.
+- **No rule of this family compares a hosted run taken before the change with one taken after it.** Bundles
+  `sjl-13-001`'s and `sjl-13-002`'s part A, and bundle `sjl-9-001`'s, hold the workflow at the dispatched ref
+  byte-identical to the base commit's, and each base commit is the first parent of a merge not yet made, so it
+  descends from the change: both runs of each pair use the `ubuntu-24.04` workflow. That each pair is dispatched
+  together after its merge is the programme plan's practice, which no rule fixes; neither fixes one image release,
+  since the runners of one dispatch have run two releases of one image (bundle `sjl-6-001`). Every bundle whose part
+  A was taken before the change is judged.
+- **Bundle `sjl-11-001`'s part A** holds the workflow and the driver at the dispatched ref "byte-identical to this
+  file's commit's", its rule commit's, and its runs are not yet taken: from the default branch that condition no longer
+  holds of the workflow. Its rule file stays unchanged, as its "Revisions" requires; a new dated rule file there,
+  written before any of its runs, is what can admit the change, and this note does not.
+- **The reason above** now holds of the driver and of the workflow's other lines, and not of its runners.
+
 **Decision D38 - UBC-3.** A dated note on UBC-3.1: from step 2 the lowering reads the shared tree; no UBC-3 lowering
 merge inside an SJL-13 or SJL-15 window. The reason: governance P10; risk A7; one product merge per engine per window
 (JSD-0082's decision D3). UBC-3 is `Not started` and waits on UBC-6a.
