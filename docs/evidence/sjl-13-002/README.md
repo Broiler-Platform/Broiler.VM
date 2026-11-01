@@ -42,6 +42,14 @@ both sessions (layer L9).
 
 **The pins** are bundle `sjl-13-001`'s.
 
+**Part B's comparison reads B5 since 2026-11-01.** `eng/compare-parse-corpus.py`, which part B runs as the base commit
+holds it, refused every report holding sub-population B5 until the change of 2026-11-01 before step 1's base (bundle
+`sjl-13-001`'s README, section 1, names it). Since that change it compares an accepted B5 row on its ordered
+specifiers, its note, with its hash and length, and refuses a report whose B5 note does not have the hash and length
+its row states; its `control` mode's `--specifier` makes this part's control's third change, one specifier of a B5
+input, with its hash and length (reported as a `specifiers` difference) or alone (the report refused). *(Added
+2026-11-01.)*
+
 ## 2. What this bundle will hold
 
 - **`base/`** and **`after/`**: part A's dispatches, imported unchanged with the digest of each zip; parts B to E and
