@@ -46,9 +46,11 @@ both sessions (layer L9).
 holds it, refused every report holding sub-population B5 until the change of 2026-11-01 before step 1's base (bundle
 `sjl-13-001`'s README, section 1, names it). Since that change it compares an accepted B5 row on its ordered
 specifiers, its note, with its hash and length, and refuses a report whose B5 note does not have the hash and length
-its row states; its `control` mode's `--specifier` makes this part's control's third change, one specifier of a B5
-input, with its hash and length (reported as a `specifiers` difference) or alone (the report refused). *(Added
-2026-11-01.)*
+its row states. Its `control` mode makes this part's control as filed with `--column --specifier with-hash`: one
+artifact hash changed, one diagnostic's column moved, in place of the outcome flip bundle `sjl-12-001`'s control makes,
+and one specifier of a B5 input changed with its hash and length, which the comparison reports as three differences,
+the third a `specifiers` one. With `--specifier note-only` the specifier changes alone and the report is refused.
+*(Added 2026-11-01.)*
 
 ## 2. What this bundle will hold
 

@@ -36,7 +36,7 @@
 #       question, not part C's: each part decides alone, so a compilation it refused, did not
 #       compile or crashed is outside the population, and is counted in the header, not refused.
 #
-#   control BASE OUT [--specifier with-hash|note-only]
+#   control BASE OUT [--specifier with-hash|note-only] [--column]
 #       Part B's control: a copy of BASE with one artifact hash changed and one outcome flipped. It
 #       changes the first accepted B1 bytecode compilation's hash (its last hex digit) and turns the
 #       second accepted B1 bytecode compilation into a refusal with no diagnostic, and says which in
@@ -52,6 +52,12 @@
 #       of the first accepted B5 compilation whose first specifier is not empty", which a specifier
 #       ending in a character the mode writes escaped, as a \u escape or as a surrogate pair, did not
 #       meet: the note's length changed, and more than one code unit with it.)
+#       With --column, the outcome is not flipped: the first diagnostic of the first refused B1
+#       bytecode compilation that has one gets its column moved by one, and identity must report a
+#       `diagnostics` difference in its place. --column with --specifier with-hash is bundle
+#       sjl-13-002's part B control as filed: one artifact hash, one diagnostic's column and one
+#       specifier of a B5 input changed, three differences. (--column added 2026-11-01: until then
+#       the outcome was always flipped, so that control could not be made by this mode.)
 #
 # B5, ADDED 2026-11-01 BEFORE SJL-13'S STEP 1 (bundle sjl-13-001's part B and bundle sjl-13-002's,
 # JSD-0083 decision D27). The slice compiler's tools commit (58b0c84) added sub-population B5 to the
@@ -599,9 +605,20 @@ def control(args):
     report.whole()
     accepted = [key for key in report.order
                 if key[1] == "B1" and key[3] == "bytecode" and report.rows[key].outcome == "accepted"]
-    if len(accepted) < 2:
-        refuse(f"{args.base}: fewer than two accepted B1 bytecode compilations to change")
-    changed, flipped = accepted[0], accepted[1]
+    if len(accepted) < (1 if args.column else 2):
+        refuse(f"{args.base}: fewer than "
+               + ("one accepted B1 bytecode compilation" if args.column else "two accepted B1 bytecode compilations")
+               + " to change")
+    changed, flipped = accepted[0], (None if args.column else accepted[1])
+    # ONE DIAGNOSTIC'S COLUMN (2026-11-01; bundle sjl-13-002's part B control), in place of the flip:
+    # the first entry of the first refused B1 bytecode compilation that has one, its column plus one.
+    moved = None
+    if args.column:
+        moved = next((key for key in report.order
+                      if key[1] == "B1" and key[3] == "bytecode" and report.rows[key].outcome == "refused"
+                      and report.rows[key].diagnostics != "-"), None)
+        if moved is None:
+            refuse(f"{args.base}: no refused B1 bytecode compilation with a diagnostic to change")
     # ONE SPECIFIER OF A B5 INPUT (2026-11-01; bundle sjl-13-002's part B control): the last character
     # of the first specifier of the first accepted B5 compilation whose first specifier ends in an
     # ASCII letter, replaced by another ASCII letter. The mode writes an ASCII letter as itself, so the
@@ -628,6 +645,10 @@ def control(args):
             cells[6] = digest[:-1] + format(int(digest[-1], 16) ^ 1, "x")
         elif not line.startswith("#") and key == flipped:
             cells[4], cells[5], cells[6], cells[7], cells[8] = "refused", "-", "-", "-", "-"
+        elif not line.startswith("#") and key == moved:
+            first, _, rest = cells[5].partition(";")
+            code, line_number, column = first.split(":")
+            cells[5] = f"{code}:{line_number}:{int(column) + 1}" + (";" + rest if rest else "")
         elif not line.startswith("#") and key == specified:
             specifiers = specifier_list(cells[8])
             last = specifiers[0][-1]
@@ -639,8 +660,16 @@ def control(args):
         out.append("\t".join(cells))
     note = (f"# control (bundle sjl-12-001 part B): {' '.join(changed)} has its hash changed and "
             f"{' '.join(flipped)} is flipped from accepted to refused; nothing else differs from "
-            f"{pathlib.Path(args.base).name}")
-    if specified is not None:
+            f"{pathlib.Path(args.base).name}") if flipped is not None else None
+    if moved is not None:
+        note = (f"# control (bundle sjl-13-002 part B): {' '.join(changed)} has its hash changed, "
+                f"{' '.join(moved)} has the column of its first diagnostic moved by one"
+                + (f", and {' '.join(specified)} has the last code unit of its first specifier changed, "
+                   + ("its note with its sha256 and length" if args.specifier == "with-hash"
+                      else "its note alone, its sha256 and length as they were")
+                   if specified is not None else "")
+                + f"; nothing else differs from {pathlib.Path(args.base).name}")
+    elif specified is not None:
         note = (f"# control (bundle sjl-12-001 part B, and bundle sjl-13-002's B5 specifier): {' '.join(changed)} "
                 f"has its hash changed, {' '.join(flipped)} is flipped from accepted to refused, and "
                 f"{' '.join(specified)} has the last code unit of its first specifier changed, "
@@ -682,12 +711,16 @@ def main():
     two.add_argument("--out")
     two.set_defaults(run=determinism)
 
-    three = commands.add_parser("control", help="part B's control: one hash changed, one outcome flipped")
+    three = commands.add_parser("control", help="part B's control: one hash changed, one outcome flipped "
+                                                "(or, with --column, one diagnostic's column moved)")
     three.add_argument("base")
     three.add_argument("out")
     three.add_argument("--specifier", choices=("with-hash", "note-only"),
                        help="also change one specifier of a B5 input, its note with its hash and length "
                             "(with-hash) or alone (note-only)")
+    three.add_argument("--column", action="store_true",
+                       help="move one refused compilation's first diagnostic column by one in place of the "
+                            "outcome flip (with --specifier with-hash, bundle sjl-13-002's part B control)")
     three.set_defaults(run=control)
 
     args = parser.parse_args()

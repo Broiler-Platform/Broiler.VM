@@ -2308,8 +2308,8 @@ made, and SJL-11.4's span opens only when its landing branch is cut), and step 1
   or one of B1 to B5; the manifest owes B5 one compilation per module-goal input; an accepted B5 row is compared on
   its ordered specifiers with their hash and length, and a report whose B5 note does not match them is refused; part
   C's determinism mode reads B5 as both rules' part C names it, outside its population. A B1 to B4 report is read and
-  compared as before, byte for byte. Its control mode makes bundle `sjl-13-002`'s part B control's B5 specifier
-  change.
+  compared as before, byte for byte. Its control mode makes bundle `sjl-13-002`'s part B control as filed: one
+  artifact hash, one diagnostic's column and one B5 specifier changed.
 - **The construct census, `SliceConstructCensus.Take`, runs on the stack `CompilationStack` declares**, as
   `JsCompiler`'s entry points do. Rule N19's test names it as a gap no more, and N19's register row says so by a dated
   note. The census output is byte-identical before and after.

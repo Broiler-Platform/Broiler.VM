@@ -103,9 +103,12 @@ review, rules still come before runs, and SJL-13 may not meet its gate before SJ
     a report whose B5 note does not have the hash and length its row states is refused as one the mode did not write;
     and part C's determinism mode reads a B1 to B5 report with B5 outside its population, as part C names it. A B1 to
     B4 report is read and compared exactly as before, byte for byte. The script's `control` mode gains
-    `--specifier`, which also changes one specifier of a B5 input, with its hash and length or alone, the control
-    bundle `sjl-13-002`'s part B names. Until this change the script refused every report holding B5, so part B
-    could not have been run as the rule states.
+    `--specifier`, which also changes one specifier of a B5 input, with its hash and length or alone, and
+    `--column`, which moves one diagnostic's column in place of the outcome flip; with both it makes the control
+    bundle `sjl-13-002`'s part B names as filed. This part's own control the mode makes only in part: without
+    options it makes the hash and the outcome flip, and the third change, a diagnostic code revision 19 does not
+    give that input's rule, is a reading of the registry, made by hand. Until this change the script refused every report holding B5, so part B could not have
+    been run as the rule states.
   - The construct census, `SliceConstructCensus.Take`, which part B compares between the base and the after commit
     byte for byte, runs on the stack `CompilationStack` declares, as `JsCompiler`'s entry points do; rule N19's test
     names it as a gap no more, and its register row says so by a dated note. Its output over the parse corpus's
