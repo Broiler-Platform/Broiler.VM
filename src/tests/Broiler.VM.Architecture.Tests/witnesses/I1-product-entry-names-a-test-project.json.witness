@@ -1,8 +1,10 @@
 {
   "$comment": [
     "Violates I1 (revised 2026-10-16, at SJL-7.4): a product entry naming a test project. Only a test-only entry may",
-    "name a test project; the entry is otherwise the real one for the generator's dependency, so its pin, hash and",
-    "feed copy agree and the refusal is for the project it names alone."
+    "name a test project; the entry is otherwise the real one for the generator's dependency, so its archive pin and",
+    "content hash agree with the package as restored and the refusal is for the project it names alone. (Revised",
+    "2026-11-01, when the committed feed's packages and pin files had left the tree: it read \"so its pin, hash and",
+    "feed copy agree\".)"
   ],
   "packages": [
     {

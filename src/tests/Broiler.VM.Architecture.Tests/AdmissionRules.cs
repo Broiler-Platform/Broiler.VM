@@ -17,12 +17,26 @@ internal sealed record AdmittedPackage(
 {
     internal bool IsTestOnly => string.Equals(Use, "test-only", StringComparison.Ordinal);
 
-    /// <summary>The committed feed's copy of the package, beside its pin.</summary>
+    /// <summary>
+    /// A committed feed's copy of the package, beside its pin, which the rules read only where one is
+    /// present: since 2026-10-30 the feed holds none, and the packages restore from nuget.org.
+    /// </summary>
     internal string FeedPath => Path.Combine(
         Path.GetDirectoryName(Path.Combine(ComponentGraph.Root, Pin))!, Id + "." + Version + ".nupkg");
+
+    /// <summary>
+    /// The package's directory in the NuGet global packages folder the restore wrote it to: NuGet keeps
+    /// the archive exactly as the source served it there, beside the files it extracted.
+    /// </summary>
+    internal string RestoredDirectory => Path.Combine(
+        AdmissionRules.RestoredPackagesFolder, Id.ToLowerInvariant(), Version.ToLowerInvariant());
+
+    /// <summary>The archive as restored, which rule I1 holds to <see cref="ArchiveHash"/> and rules I2, I4 and I6 read.</summary>
+    internal string RestoredPath => Path.Combine(
+        RestoredDirectory, Id.ToLowerInvariant() + "." + Version.ToLowerInvariant() + ".nupkg");
 }
 
-/// <summary>A lock file's resolution of one package: what restored and the content hash it recorded.</summary>
+/// <summary>Restore's resolution of one package, from a project's obj/project.assets.json: what restored and its content hash.</summary>
 internal sealed record RestoredPackage(string Id, string Resolved, string ContentHash);
 
 /// <summary>
@@ -39,12 +53,57 @@ internal sealed record RestoredPackage(string Id, string Resolved, string Conten
 /// the tree: a project that references an admitted package uses NuGet assets metadata, and the lock
 /// metadata content hash is held to the list.
 /// </para>
+/// <para>
+/// <b>Since 2026-11-01 the packages are read as restored.</b> The owner's change of 2026-10-30 and
+/// 2026-10-31 restores the admitted packages from nuget.org, removes the committed feed's packages and
+/// pin files and the lock files, and records in each allow-list entry both NuGet's content hash
+/// (<c>contentHash</c>, which leaves a signed package's signature out) and the SHA-512 of the archive
+/// as published (<c>archiveHash</c>). So the pin is the entry, the archive the rules read is the one
+/// restore wrote into the NuGet global packages folder, and I1 holds that archive to the entry's
+/// archive hash before I2, I4 and I6 read it. Until then I1 held each entry to a pin file under
+/// eng/packages/ and to the copy of the package beside it, and I2, I4 and I6 read that copy.
+/// </para>
 /// </remarks>
 internal static class AdmissionRules
 {
     /// <summary>The allow-list, read once.</summary>
     internal static IReadOnlyList<AdmittedPackage> AllowList { get; } = LoadAllowList(
         Path.Combine(ComponentGraph.Root, "src", "tests", "Broiler.VM.Architecture.Tests", "admitted-packages.json"));
+
+    /// <summary>
+    /// The NuGet global packages folder the restore wrote the admitted packages to, as this project's
+    /// own obj/project.assets.json records it (<c>packageFolders</c>): the folder of the restore that
+    /// built these tests, wherever <c>NUGET_PACKAGES</c> or the platform put it.
+    /// </summary>
+    internal static string RestoredPackagesFolder { get; } = ReadPackagesFolder(
+        Path.Combine(ComponentGraph.Root, "src", "tests", "Broiler.VM.Architecture.Tests", "obj", "project.assets.json"));
+
+    private static string ReadPackagesFolder(string assetsPath)
+    {
+        if (!File.Exists(assetsPath))
+        {
+            throw new InvalidOperationException($"{assetsPath} does not exist: restore the solution before the admission rules read what it restored.");
+        }
+
+        using var document = JsonDocument.Parse(File.ReadAllText(assetsPath));
+        return document.RootElement.GetProperty("packageFolders").EnumerateObject().First().Name;
+    }
+
+    /// <summary>
+    /// NuGet's content hash of a restored package, as restore recorded it in the <c>.nupkg.metadata</c>
+    /// beside the archive, or null when there is none.
+    /// </summary>
+    internal static string? RestoredContentHash(AdmittedPackage package)
+    {
+        var path = Path.Combine(package.RestoredDirectory, ".nupkg.metadata");
+        if (!File.Exists(path))
+        {
+            return null;
+        }
+
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+        return document.RootElement.TryGetProperty("contentHash", out var hash) ? hash.GetString() : null;
+    }
 
     /// <summary>
     /// The JavaScript family, the only projects that may hold an admitted reference: the profile
@@ -78,20 +137,6 @@ internal static class AdmissionRules
                 entry.GetProperty("sources").EnumerateArray().Select(static s => s.GetString()!).ToArray(),
                 entry.GetProperty("pin").GetString()!,
                 entry.TryGetProperty("archiveHash", out var archiveHash) ? archiveHash.GetString() : null))
-            .ToArray();
-    }
-
-    /// <summary>The packages a lock file resolved for net10.0, direct and transitive.</summary>
-    internal static IReadOnlyList<RestoredPackage> ReadLockFile(string text)
-    {
-        using var document = JsonDocument.Parse(text);
-        return document.RootElement.GetProperty("dependencies").EnumerateObject()
-            .SelectMany(static framework => framework.Value.EnumerateObject())
-            .Where(static package => package.Value.TryGetProperty("contentHash", out _))
-            .Select(static package => new RestoredPackage(
-                package.Name,
-                package.Value.GetProperty("resolved").GetString()!,
-                package.Value.GetProperty("contentHash").GetString()!))
             .ToArray();
     }
 
@@ -187,16 +232,28 @@ internal static class AdmissionRules
     }
 
     /// <summary>
-    /// I1's other half: every allow-list entry agrees with its pin, its package is on the committed
-    /// feed hashing to the pin when that is a source, and every project it names is in the
+    /// I1's other half: every allow-list entry carries its archive pin, the package as restored into
+    /// the NuGet global packages folder is there at the entry's version with its archive hashing to
+    /// that pin and NuGet's recorded content hash equal to the entry's, a pin file or committed-feed
+    /// copy agrees with the entry where either is present, and every project it names is in the
     /// JavaScript family - or, for a test-only entry, a test project, and never a shipping one.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// <b>Revised 2026-10-16, at SJL-7.4</b>, beside <see cref="I1"/>: a test-only entry may name a
     /// test project of the graph, which is what admits the owner's generator to the architecture
     /// tests. A product entry naming a test project, and a test-only entry naming a project that ships
     /// or composes, are each refused. Until then every named project had to be in the JavaScript
     /// family, whatever the entry's use.
+    /// </para>
+    /// <para>
+    /// <b>Revised 2026-11-01</b>, completing the owner's change of 2026-10-30 and 2026-10-31, which
+    /// restores the admitted packages from nuget.org and deleted every package and pin file of the
+    /// committed feed. The summary read: "every allow-list entry agrees with its pin, its package is on
+    /// the committed feed hashing to the pin when that is a source, and every project it names is in
+    /// the JavaScript family - or, for a test-only entry, a test project, and never a shipping one".
+    /// The entry is the pin now, and what restored is held to it whichever source supplied it.
+    /// </para>
     /// </remarks>
     internal static IEnumerable<string> I1Entries(IReadOnlyList<AdmittedPackage> list)
     {
@@ -221,41 +278,68 @@ internal static class AdmissionRules
                 }
             }
 
+            // The archive pin: the SHA-512 of the package archive as published. NuGet's content hash
+            // leaves a signed package's signature out, so it is not the archive's hash, and the entry
+            // records both (the owner's change of 2026-10-30).
+            if (package.ArchiveHash is null)
+            {
+                yield return $"{package.Id}: the allow-list records no archive hash, and an admitted package is pinned by the SHA-512 of its archive";
+            }
+
+            // What restored: the archive NuGet kept in the global packages folder, whichever source
+            // supplied it, and the content hash restore recorded beside it.
+            if (!File.Exists(package.RestoredPath))
+            {
+                yield return $"{package.Id}: {package.Version} is not in the NuGet global packages folder {RestoredPackagesFolder}, so what restored cannot be held to the pin";
+            }
+            else
+            {
+                var archive = ContentHash(File.ReadAllBytes(package.RestoredPath));
+
+                if (package.ArchiveHash is not null && !string.Equals(archive, package.ArchiveHash, StringComparison.Ordinal))
+                {
+                    yield return $"{package.Id}: the restored archive hashes to {archive}, and the allow-list's archive pin is {package.ArchiveHash}";
+                }
+
+                var recorded = RestoredContentHash(package);
+
+                if (!string.Equals(recorded, package.ContentHash, StringComparison.Ordinal))
+                {
+                    yield return $"{package.Id}: restore recorded the content hash {recorded ?? "(none)"} for the restored package, and the allow-list pins {package.ContentHash}";
+                }
+            }
+
+            // A pin file and a committed-feed copy, where either is present: the feed stays a source
+            // NuGet.config maps for a package in development, and what it holds agrees with the entry.
             var pinPath = Path.Combine(ComponentGraph.Root, package.Pin);
 
-            if (!File.Exists(pinPath))
+            if (File.Exists(pinPath))
             {
-                yield return $"{package.Id}: its pin {package.Pin} does not exist";
-                continue;
+                var pin = File.ReadLines(pinPath)
+                    .Where(static line => line.Length > 0 && !line.StartsWith('#'))
+                    .Select(static line => line.Split(' ', 2))
+                    .ToDictionary(static parts => parts[0], static parts => parts[1], StringComparer.Ordinal);
+
+                if (pin.GetValueOrDefault("id") != package.Id || pin.GetValueOrDefault("version") != package.Version
+                    || pin.GetValueOrDefault("content-hash") != package.ContentHash
+                    || pin.GetValueOrDefault("archive-hash") != package.ArchiveHash)
+                {
+                    yield return $"{package.Id}: the allow-list and {package.Pin} disagree on identity or content hash";
+                }
             }
 
-            var pin = File.ReadLines(pinPath)
-                .Where(static line => line.Length > 0 && !line.StartsWith('#'))
-                .Select(static line => line.Split(' ', 2))
-                .ToDictionary(static parts => parts[0], static parts => parts[1], StringComparer.Ordinal);
-
-            if (pin.GetValueOrDefault("id") != package.Id || pin.GetValueOrDefault("version") != package.Version
-                || pin.GetValueOrDefault("content-hash") != package.ContentHash
-                || pin.GetValueOrDefault("archive-hash") != package.ArchiveHash)
+            if (File.Exists(package.FeedPath)
+                && ContentHash(File.ReadAllBytes(package.FeedPath)) != (package.ArchiveHash ?? package.ContentHash))
             {
-                yield return $"{package.Id}: the allow-list and {package.Pin} disagree on identity or content hash";
-            }
-
-            if (package.Sources.Contains("committed-feed", StringComparer.Ordinal))
-            {
-                if (!File.Exists(package.FeedPath))
-                {
-                    yield return $"{package.Id}: {package.Version} is not on the committed feed";
-                }
-                else if (ContentHash(File.ReadAllBytes(package.FeedPath)) != (package.ArchiveHash ?? package.ContentHash))
-                {
-                    yield return $"{package.Id}: the committed feed's copy does not hash to the pin";
-                }
+                yield return $"{package.Id}: the committed feed's copy does not hash to the pin";
             }
         }
     }
 
-    /// <summary>NuGet's content hash: the base64 SHA-512 of the .nupkg's bytes, which a lock file records.</summary>
+    /// <summary>
+    /// The base64 SHA-512 of a package archive's bytes: the allow-list's archive hash. For an unsigned
+    /// package it is NuGet's content hash too; for a signed one NuGet leaves the signature out.
+    /// </summary>
     internal static string ContentHash(byte[] package) => Convert.ToBase64String(SHA512.HashData(package));
 
     /// <summary>The assemblies a package carries for net10.0, as (file name, bytes).</summary>
@@ -535,10 +619,14 @@ internal static class AdmissionRules
         return found;
     }
 
-    /// <summary>Every Unicode version every admitted assembly declares, read from the committed feed's packages.</summary>
+    /// <summary>
+    /// Every Unicode version every admitted assembly declares, read from the packages as restored, whose
+    /// archives rule I1 holds to their archive pins. (Revised 2026-11-01: it read "read from the committed
+    /// feed's packages", which hold none since 2026-10-30.)
+    /// </summary>
     internal static IReadOnlyList<(string Assembly, string Field, string Value)> AdmittedUnicodeVersions() => AllowList
-        .Where(static package => File.Exists(package.FeedPath))
-        .SelectMany(static package => PackageAssemblies(package.FeedPath))
+        .Where(static package => File.Exists(package.RestoredPath))
+        .SelectMany(static package => PackageAssemblies(package.RestoredPath))
         .SelectMany(static assembly => DeclaredUnicodeVersions(assembly.Name, assembly.Image))
         .ToArray();
 
@@ -644,10 +732,14 @@ internal static class AdmissionRules
             type.EndsWith(".TimeDataVersions", StringComparison.Ordinal) ||
             (name == "PinnedVersion" && TimePinTypes.Contains(type, StringComparer.Ordinal)));
 
-    /// <summary>Every time data version every admitted assembly declares, read from the committed feed's packages.</summary>
+    /// <summary>
+    /// Every time data version every admitted assembly declares, read from the packages as restored, whose
+    /// archives rule I1 holds to their archive pins. (Revised 2026-11-01: it read "read from the committed
+    /// feed's packages", which hold none since 2026-10-30.)
+    /// </summary>
     internal static IReadOnlyList<(string Assembly, string Field, string Value)> AdmittedTimeVersions() => AllowList
-        .Where(static package => File.Exists(package.FeedPath))
-        .SelectMany(static package => PackageAssemblies(package.FeedPath))
+        .Where(static package => File.Exists(package.RestoredPath))
+        .SelectMany(static package => PackageAssemblies(package.RestoredPath))
         .SelectMany(static assembly => DeclaredTimeVersions(assembly.Name, assembly.Image))
         .ToArray();
 
@@ -704,32 +796,37 @@ internal static class AdmissionRules
         }
     }
 
-    /// <summary>Every public type of every admitted assembly, read from the committed feed's packages.</summary>
+    /// <summary>
+    /// Every public type of every admitted assembly, read from the packages as restored, whose archives
+    /// rule I1 holds to their archive pins. (Revised 2026-11-01: it read "read from the committed feed's
+    /// packages", which hold none since 2026-10-30.)
+    /// </summary>
     internal static IReadOnlyList<string> AdmittedPublicTypes() => AllowList
-        .Where(static package => File.Exists(package.FeedPath))
-        .SelectMany(static package => PackageAssemblies(package.FeedPath))
+        .Where(static package => File.Exists(package.RestoredPath))
+        .SelectMany(static package => PackageAssemblies(package.RestoredPath))
         .SelectMany(static assembly => AssemblyFacts.ReadImage(assembly.Name, assembly.Image).PublicTypeNames)
         .Distinct(StringComparer.Ordinal)
         .Order(StringComparer.Ordinal)
         .ToArray();
 
     /// <summary>
-    /// The admitted assemblies as files, extracted from the committed feed into a directory keyed by
+    /// The admitted assemblies as files, extracted from the restored archives into a directory keyed by
     /// content hash, so that a metadata-only reflection context can resolve a public signature that
     /// names one - which is what lets I6 see such a signature rather than the baseline run failing
-    /// on it.
+    /// on it. (Revised 2026-11-01: they were extracted "from the committed feed", which holds no
+    /// package since 2026-10-30; the archive read is the one rule I1 holds to its archive pin.)
     /// </summary>
     internal static IReadOnlyList<string> AdmittedAssemblyPaths()
     {
         var paths = new List<string>();
 
-        foreach (var package in AllowList.Where(static package => File.Exists(package.FeedPath)))
+        foreach (var package in AllowList.Where(static package => File.Exists(package.RestoredPath)))
         {
             var key = Convert.ToHexString(SHA256.HashData(System.Text.Encoding.ASCII.GetBytes(package.ContentHash)))[..16];
             var directory = Path.Combine(Path.GetTempPath(), "broiler-vm-admitted", package.Id + "." + package.Version + "-" + key);
             Directory.CreateDirectory(directory);
 
-            foreach (var (name, image) in PackageAssemblies(package.FeedPath))
+            foreach (var (name, image) in PackageAssemblies(package.RestoredPath))
             {
                 var path = Path.Combine(directory, name + ".dll");
                 if (!File.Exists(path) || !File.ReadAllBytes(path).AsSpan().SequenceEqual(image))

@@ -24,7 +24,9 @@ namespace Broiler.VM.Architecture.Tests;
 /// <b>What it reads.</b> The owner's pin is the one its generator package carries, read through the
 /// package's own <c>UnicodePin.Owner()</c>, so the comparison is with the release this repository
 /// admits rather than with a checkout. The versions are read from the metadata of every admitted
-/// assembly on the committed feed, without loading it. The CLDR, tzdb and calendar pins are their
+/// assembly as restored into the NuGet global packages folder, from the archive rule I1 holds to its
+/// archive pin, without loading it. (Revised 2026-11-01: it read "of every admitted assembly on the
+/// committed feed", which holds no package since the owner's change of 2026-10-30.) The CLDR, tzdb and calendar pins are their
 /// areas' (SJL-8, SJL-9): their homes hold no pin yet, and the rule gains a clause for each when its
 /// area moves.
 /// </para>
@@ -36,7 +38,7 @@ namespace Broiler.VM.Architecture.Tests;
 /// copies of this repository's and are held by length and SHA-256, and the home's CLDR pin names one of
 /// this repository's 114 CLDR files, which is held by its entry. The versions are the four data
 /// versions the generator declares in <c>TimeDataVersions</c> and the two its pin readers declare, read
-/// from the admitted package's metadata and held to the release this repository's tzdb pin states, the
+/// from the admitted package's metadata as restored and held to the release this repository's tzdb pin states, the
 /// CLDR release its CLDR pin states, and the crate versions its pinned crates' <c>Cargo.toml</c> state.
 /// The CLDR pin's other 113 files are rule N27's, and remain this repository's alone until SJL-9.
 /// </para>

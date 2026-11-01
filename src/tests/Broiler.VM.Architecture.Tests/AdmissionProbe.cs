@@ -12,10 +12,13 @@ namespace Broiler.VM.Architecture.Tests;
 /// <remarks>
 /// <para>
 /// It exists so that the admission path is exercised end to end before any product project takes a
-/// shared package: the source mapping sends the shared prefix to the committed feed, the lock file
-/// records the content hash, rules I1, I2 and I6 read what restored, and each negative control is a
-/// change to one of those that a rule must refuse. <b>No product project references the probe
-/// package</b>; this project is written to a temporary directory and deleted.
+/// shared package: the source mapping sends the shared prefix to the committed feed and nuget.org,
+/// restore's obj/project.assets.json records the content hash, rules I1, I2 and I6 read what restored,
+/// and each negative control is a change to one of those that a rule must refuse. <b>No product
+/// project references the probe package</b>; this project is written to a temporary directory and
+/// deleted. (Revised 2026-11-01, after the owner's change of 2026-10-30 removed the lock files and the
+/// committed feed's packages: it read "the source mapping sends the shared prefix to the committed
+/// feed, the lock file records the content hash".)
 /// </para>
 /// <para>
 /// The NuGet.config written beside it is the repository's, with the committed feed's relative path
