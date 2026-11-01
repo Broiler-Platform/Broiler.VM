@@ -116,7 +116,20 @@ public sealed class I4DataAgreementRuleTests
         Assert.Empty(AdmissionRules.I4TimeVersions(pinned, declared));
 
         // The two pin readers' PinnedVersion are time versions, and the Unicode clause does not read them.
-        Assert.DoesNotContain(AdmissionRules.AdmittedUnicodeVersions(), static d => d.Assembly == "Broiler.ECMAScript.Generation");
+        // (Revised 2026-11-01, at SJL-9.2c, when the admitted generator gained the Intl data home's, which
+        // declares the Unicode version it reads the UCD as, and the Unicode clause reads that: the assertion
+        // read "Assert.DoesNotContain(AdmissionRules.AdmittedUnicodeVersions(), static d => d.Assembly ==
+        // "Broiler.ECMAScript.Generation")". What the Unicode clause reads of the generator is held below.)
+        Assert.DoesNotContain(AdmissionRules.AdmittedUnicodeVersions(), static d =>
+            d.Field is "Broiler.ECMAScript.Generation.Time.TzdbPin.PinnedVersion" or "Broiler.ECMAScript.Generation.Time.CldrPin.PinnedVersion");
+
+        // The Intl data home's CLDR pin reader's PinnedVersion is a CLDR release, and the Unicode clause does
+        // not read it; it reads the Unicode version the generator declares and its UCD pin reader's.
+        var unicode = AdmissionRules.AdmittedUnicodeVersions().Where(static d => d.Assembly == "Broiler.ECMAScript.Generation").ToArray();
+        Assert.Equal(
+            ["Broiler.ECMAScript.Generation.Intl.IntlDataVersions.UnicodeVersion", "Broiler.ECMAScript.Generation.Intl.IntlUcdPin.PinnedVersion"],
+            unicode.Select(static d => d.Field).Order(StringComparer.Ordinal));
+        Assert.All(unicode, static d => Assert.Equal("17.0.0", d.Value));
     }
 
     [Fact]

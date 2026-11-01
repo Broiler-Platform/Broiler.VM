@@ -24,8 +24,10 @@
 
     <!-- The time data home's generator (JSD-0076; milestone SJL-8.5), from the same committed feed and under
          the same rule, admitted test-only, for the architecture tests alone; no package carries the time
-         zone or calendar tables (decision SJL-D-6 (c)). -->
-    <PackageVersion Include="Broiler.ECMAScript.Generation" Version="0.1.0-preview.7" />
+         zone or calendar tables (decision SJL-D-6 (c)). Since SJL-9.2c (JSD-0082) it is also the Intl data
+         home's generator, at the shared stream's 0.1.0-preview.8, which carries it, and no package carries
+         the Intl tables either; the algorithms package stays at the version above until the cut-over. -->
+    <PackageVersion Include="Broiler.ECMAScript.Generation" Version="0.1.0-preview.8" />
 
     <!-- The Unicode area's owner packages (JSD-0074; milestone SJL-7.4), from the same committed feed and
          under the same rule. Broiler.Unicode.Generation is admitted test-only, for the architecture

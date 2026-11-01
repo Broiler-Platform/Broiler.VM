@@ -448,6 +448,18 @@ internal static class AdmissionRules
     ];
 
     /// <summary>
+    /// The Intl data home's CLDR pin reader (JSD-0082), whose <c>PinnedVersion</c> is a CLDR release,
+    /// <c>48.2.0</c>, and not a Unicode version; I4's CLDR clause reads it instead.
+    /// </summary>
+    /// <remarks>
+    /// Added 2026-11-01, at SJL-9.2c, when <c>Broiler.ECMAScript.Generation</c> <c>0.1.0-preview.8</c>,
+    /// which carries the Intl data home's generator, was admitted. Its UCD pin reader's
+    /// <c>PinnedVersion</c> and its <c>IntlDataVersions.UnicodeVersion</c> are Unicode versions, and the
+    /// Unicode clause reads them.
+    /// </remarks>
+    internal const string IntlCldrPinType = "Broiler.ECMAScript.Generation.Intl.IntlCldrPin";
+
+    /// <summary>
     /// I4's pin clause: the pin this repository's embedded tables are generated from equals its home
     /// repository's, file by file, by length and SHA-256, and by version (SJL-D-6 (c): the owner holds
     /// the pin, and each engine generates from its own). The comparison is the owner's own
@@ -463,8 +475,13 @@ internal static class AdmissionRules
     /// <summary>
     /// I4's version clause: every Unicode data version an admitted assembly declares - a literal
     /// string field named as <see cref="UnicodeVersionFields"/> lists, public or not, but a
-    /// <c>PinnedVersion</c> of one of the <see cref="TimePinTypes"/> - equals the pin's version.
+    /// <c>PinnedVersion</c> of one of the <see cref="TimePinTypes"/> or of <see cref="IntlCldrPinType"/> -
+    /// equals the pin's version.
     /// </summary>
+    /// <remarks>
+    /// Revised 2026-11-01, at SJL-9.2c, when the admitted generator gained the Intl data home's CLDR pin
+    /// reader. The exception read "but a <c>PinnedVersion</c> of one of the <see cref="TimePinTypes"/>".
+    /// </remarks>
     /// <param name="pinVersion">The version the pin names.</param>
     /// <param name="declared">Each declaration: its assembly, its field and its value.</param>
     internal static IEnumerable<string> I4Versions(string pinVersion, IEnumerable<(string Assembly, string Field, string Value)> declared) =>
@@ -476,12 +493,13 @@ internal static class AdmissionRules
     /// <summary>
     /// Every literal string field of an assembly image whose name <see cref="UnicodeVersionFields"/>
     /// lists, read from its metadata tables without loading it, but a <c>PinnedVersion</c> of one of the
-    /// <see cref="TimePinTypes"/>.
+    /// <see cref="TimePinTypes"/> or of <see cref="IntlCldrPinType"/>.
     /// </summary>
     internal static IReadOnlyList<(string Assembly, string Field, string Value)> DeclaredUnicodeVersions(string assemblyName, byte[] image) =>
         DeclaredStrings(assemblyName, image, static (type, name) =>
             UnicodeVersionFields.Contains(name, StringComparer.Ordinal) &&
-            !(name == "PinnedVersion" && TimePinTypes.Contains(type, StringComparer.Ordinal)));
+            !(name == "PinnedVersion" && (TimePinTypes.Contains(type, StringComparer.Ordinal)
+                || string.Equals(type, IntlCldrPinType, StringComparison.Ordinal))));
 
     /// <summary>
     /// Every literal string field of an assembly image that <paramref name="select"/> chooses by its
