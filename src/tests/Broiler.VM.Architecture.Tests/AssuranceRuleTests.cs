@@ -1623,14 +1623,17 @@ public sealed class AssuranceRuleTests
         //
         // (Revised 2026-10-17, at SJL-8.5: the two generators are the time data home's since then,
         // JSD-0076, and TimeTableEmbedding names the files and the reasons they state, unchanged.)
+        //
+        // (Revised 2026-11-01, at SJL-9.2c: the CLDR generator is the Intl data home's since then,
+        // JSD-0082, and CldrTableEmbedding names the file and the reason it states, unchanged.)
         var declared = AssuranceScanner.DeclaredExemptions(ProductUnits);
 
         Assert.NotEmpty(declared);
         Assert.All(declared, static unit =>
         {
-            if (string.Equals(unit.File.RelativePath, CldrTableGenerator.OutputPath, StringComparison.Ordinal))
+            if (string.Equals(unit.File.RelativePath, CldrTableEmbedding.OutputPath, StringComparison.Ordinal))
             {
-                Assert.Equal(CldrTableGenerator.ExemptReason, unit.Annotation!.ExemptReason);
+                Assert.Equal(CldrTableEmbedding.ExemptReason, unit.Annotation!.ExemptReason);
                 return;
             }
 

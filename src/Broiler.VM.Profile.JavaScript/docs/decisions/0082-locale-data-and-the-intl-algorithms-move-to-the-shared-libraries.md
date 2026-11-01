@@ -1161,6 +1161,29 @@ own. These carry dated notes beside the text they correct, each quoting it, in t
 file, `areas/locale-data-and-intl.md`, SJL-17's milestone file, decisions SJL-D-19, SJL-D-22 and SJL-D-24 in
 `decisions.md`, and JSD-0046 §5.
 
+*(Dated note, 2026-11-01, at SJL-9.2c: SJL-9.2's data home, read against this record. The sentence "SJL-9.2c takes
+the next free JSC" is met: SJL-9.2c took [JSC-321](../roadmap.corrections.md#jsc-321). Nothing above is edited, and
+no decision is revised.*
+- *Decisions D10 and D11. Broiler.JS's `Broiler.ECMAScript/data/intl/cldr/cldr.pin` at `ff54e1d8`
+  (Broiler-Platform/Broiler.JS#1080) holds this family's pin's lines from `data` to its last `file` line unchanged,
+  and rule I4's CLDR clause holds each of this family's header lines and entries to those lines, recorded in the rule
+  with that commit, and the CLDR release, major version and UCA version the generator declares to this family's pin,
+  48.2.0 among them. With this family's list and source options, the home's generator writes `JsCldrTables.g.cs`
+  byte for byte, and rules N27 and N28 read and regenerate through it. So the falsifier "The home's generator, from
+  this family's pins, does not write `JsCldrTables.g.cs` byte for byte" is not met.*
+- *Decision D12. This family hands the home's `CldrUcd` its own pinned UCD files, verified against its own pin, and
+  `UnicodeDatabase.cs` is deleted; the fallback was not needed. The deleted reader's cross-checks of the string-property
+  table against the emoji sequence files, and of derived UCD files against each other, ran as part of rule N28 and
+  are not ported, since the generator does not read those files.*
+- *Decision D24. The test side of this family's deletion list, `CldrTableGenerator.cs`, `UnicodeDatabase.cs` and
+  `CldrPin.cs`, is absent from the architecture tests.*
+- *Decision D29. The generator reached nuget.org before the library: the shared stream's `0.1.0-preview.8`, published
+  on 2026-10-29 from Broiler.JS `3b4b6860`, carries the generator and not `Broiler.ECMAScript.Intl`; this repository's main
+  admitted it test-only on 2026-10-29 (`9d0f80e`), and this family's architecture tests use its Intl generator since
+  SJL-9.2c. The decision's "one stream version carrying the complete library and the
+  generator" still describes the version SJL-9.4 takes; the generator then moves with the stream's version, as it did
+  at SJL-10.4, and its Intl code is held by rules N28 and I4 at each move.)*
+
 ## What this record does not decide
 
 - **The cut-overs.** SJL-9.4 and SJL-9.5 apply this record, and SJL-9.4 files the second record.

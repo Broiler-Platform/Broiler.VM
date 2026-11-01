@@ -1,3 +1,4 @@
+using Broiler.ECMAScript.Generation.Intl;
 using HomeCalendarPin = Broiler.ECMAScript.Generation.Time.CalendarPin;
 using OwnerPin = Broiler.Unicode.Generation.UnicodePin;
 
@@ -41,6 +42,20 @@ namespace Broiler.VM.Architecture.Tests;
 /// from the admitted package's metadata as restored and held to the release this repository's tzdb pin states, the
 /// CLDR release its CLDR pin states, and the crate versions its pinned crates' <c>Cargo.toml</c> state.
 /// The CLDR pin's other 113 files are rule N27's, and remain this repository's alone until SJL-9.
+/// </para>
+/// <para>
+/// <b>The CLDR clause (added 2026-11-01, at SJL-9.2c, JSD-0082 decisions D10 and D12).</b> The Intl data
+/// home's CLDR pin, in the same repository as the time data home, is a superset of this repository's: its
+/// first lines are this repository's pin's lines from <c>data</c> to its last <c>file</c> line, unchanged,
+/// and Broiler.JS's extra files follow. Its generator package carries no pin file either, so the home's
+/// lines are a constant of the rule with the commit they were read at
+/// (<see cref="AdmissionRules.IntlHomeCommit"/>), and the clause is entry-wise: each header line of this
+/// repository's pin, <c>version</c>, <c>uca-version</c> and every <c>json-integrity</c> line among them, and
+/// each file it names, equals the home's. The versions are the CLDR release, the CLDR major version and the
+/// UCA version the home's generator declares in <c>IntlDataVersions</c> and its CLDR pin reader declares,
+/// held to this repository's pin's lines; the generator's own release is 48.2.0. The time clauses are
+/// unchanged. The sentences above that say the CLDR pin's other files "remain this repository's alone until
+/// SJL-9" and that the homes "hold no pin yet" describe the rule before this clause.
 /// </para>
 /// </remarks>
 public sealed class I4DataAgreementRuleTests
@@ -94,7 +109,7 @@ public sealed class I4DataAgreementRuleTests
     {
         var tzdb = File.ReadAllBytes(Path.Combine(ComponentGraph.Root, TimeTableEmbedding.TzdbPinPath));
         var calendars = File.ReadAllBytes(Path.Combine(ComponentGraph.Root, TimeTableEmbedding.CalendarPinPath));
-        var cldr = CldrPin.Load();
+        var cldr = CldrTableEmbedding.LoadPin();
 
         // Not vacuous: the two pins are read whole, and the CLDR pin names the time zone keys among its
         // 114 files.
@@ -118,12 +133,87 @@ public sealed class I4DataAgreementRuleTests
         Assert.Empty(AdmissionRules.I4TimeVersions(pinned, declared));
 
         // The two pin readers' PinnedVersion are time versions, and the Unicode clause does not read them.
+        // (Revised 2026-11-01, at SJL-9.2c, when the admitted generator gained the Intl data home's, which
+        // declares the Unicode version it reads the UCD as, and the Unicode clause reads that: the assertion
+        // read "Assert.DoesNotContain(AdmissionRules.AdmittedUnicodeVersions(), static d => d.Assembly ==
+        // "Broiler.ECMAScript.Generation")". What the Unicode clause reads of the generator is held below.)
         Assert.DoesNotContain(AdmissionRules.AdmittedUnicodeVersions(), static d =>
-            d.Field == "Broiler.ECMAScript.Generation.Time.CldrPin.PinnedVersion"
-            || d.Field == "Broiler.ECMAScript.Generation.Time.TzdbPin.PinnedVersion"
-            || d.Field == "Broiler.ECMAScript.Generation.Intl.IntlCldrPin.PinnedVersion");
-        Assert.Contains(AdmissionRules.AdmittedUnicodeVersions(), static d =>
-            d.Field == "Broiler.ECMAScript.Generation.Intl.IntlUcdPin.PinnedVersion" && d.Value == "17.0.0");
+            d.Field is "Broiler.ECMAScript.Generation.Time.TzdbPin.PinnedVersion" or "Broiler.ECMAScript.Generation.Time.CldrPin.PinnedVersion");
+
+        // The Intl data home's CLDR pin reader's PinnedVersion is a CLDR release, and the Unicode clause does
+        // not read it; it reads the Unicode version the generator declares and its UCD pin reader's.
+        var unicode = AdmissionRules.AdmittedUnicodeVersions().Where(static d => d.Assembly == "Broiler.ECMAScript.Generation").ToArray();
+        Assert.Equal(
+            ["Broiler.ECMAScript.Generation.Intl.IntlDataVersions.UnicodeVersion", "Broiler.ECMAScript.Generation.Intl.IntlUcdPin.PinnedVersion"],
+            unicode.Select(static d => d.Field).Order(StringComparer.Ordinal));
+        Assert.All(unicode, static d => Assert.Equal("17.0.0", d.Value));
+    }
+
+    [Fact]
+    public void I4_The_Cldr_Pin_Equals_The_Homes_And_Every_Declared_Intl_Version_The_Pins()
+    {
+        var family = CldrTableEmbedding.LoadPin();
+        var home = AdmissionRules.IntlHomeCldrPin();
+
+        // The home's lines are the ones recorded at the commit, and both pins are read whole: every file,
+        // every header line and every integrity line.
+        Assert.Equal(AdmissionRules.IntlHomeCldrPinLinesSha256, AdmissionRules.IntlHomeCldrPinLinesDigest());
+        Assert.Equal(home.Entries.Count, family.Entries.Count);
+        Assert.True(family.Entries.Count > 100, $"the pin names {family.Entries.Count} files");
+        Assert.Equal(home.Integrities, family.Integrities);
+        Assert.Equal("48.2.0", family.Version);
+        Assert.Equal("17.0.0", family.Values["uca-version"]);
+        Assert.Contains(home.Entries, static entry => entry.Name == AdmissionRules.TimeHomeCldrTimeZoneKeys.Name);
+        Assert.Empty(AdmissionRules.I4CldrPin(family, home));
+
+        // The versions: the generator's IntlDataVersions constants and its CLDR pin reader's, and nothing
+        // else of an admitted package, each held to the line of this repository's pin that governs it; the
+        // generator's CLDR release is 48.2.0.
+        var declared = AdmissionRules.AdmittedIntlVersions();
+        Assert.Equal(
+            AdmissionRules.IntlVersionFields.Keys.Order(StringComparer.Ordinal),
+            declared.Select(static d => d.Field).Order(StringComparer.Ordinal));
+        Assert.All(declared, static d => Assert.Equal("Broiler.ECMAScript.Generation", d.Assembly));
+        Assert.Contains(declared, static d => d.Field == AdmissionRules.IntlDataVersionsType + ".CldrVersion" && d.Value == "48.2.0");
+        Assert.Empty(AdmissionRules.I4IntlVersions(family.Values, declared));
+
+        // The CLDR pin reader's PinnedVersion is a CLDR release, and the Unicode clause does not read it
+        // (the time clause's test holds what the Unicode clause reads of the generator).
+        Assert.DoesNotContain(AdmissionRules.AdmittedUnicodeVersions(), static d => d.Field == AdmissionRules.IntlCldrPinType + ".PinnedVersion");
+    }
+
+    [Fact]
+    public void I4_A_Cldr_Pin_Differing_From_The_Homes_And_A_Generator_Declaring_Another_Cldr_Release_Are_Reported()
+    {
+        var home = AdmissionRules.IntlHomeCldrPin();
+        var family = CldrTableEmbedding.LoadPin();
+
+        // This repository's pin with one digit of one file's hash changed: that file alone is reported.
+        var differing = IntlCldrPin.Parse(File.ReadAllText(Witness("I4-a-cldr-pin-differing-from-the-home-by-one-hash.pin.witness")));
+        var single = Assert.Single(AdmissionRules.I4CldrPin(differing, home));
+        Assert.StartsWith("src/tests/cldr/pins/cldr.pin names cldr-48.2.0/json/cldr-core/supplemental/plurals.json as ", single, StringComparison.Ordinal);
+        Assert.Contains($"and the Intl data home's cldr.pin at Broiler.JS {AdmissionRules.IntlHomeCommit[..8]} as ", single, StringComparison.Ordinal);
+
+        // A header line and an integrity line changed in memory from the real pin: each alone.
+        var text = File.ReadAllText(Path.Combine(ComponentGraph.Root, CldrTableEmbedding.PinPath));
+        var release = IntlCldrPin.Parse(text.Replace("\nversion 48.2.0\n", "\nversion 48.1.0\n", StringComparison.Ordinal));
+        Assert.Contains("states `version 48.1.0`", Assert.Single(AdmissionRules.I4CldrPin(release, home)), StringComparison.Ordinal);
+
+        var integrity = family.Integrities[0];
+        var package = IntlCldrPin.Parse(text.Replace(integrity, integrity[..^4] + "AAA=", StringComparison.Ordinal));
+        Assert.Contains("states `json-integrity ", Assert.Single(AdmissionRules.I4CldrPin(package, home)), StringComparison.Ordinal);
+
+        // A generator declaring the CLDR release as 48.1.0: that declaration alone is reported, not the
+        // versions that agree, nor a field of another type holding the same text.
+        var library = WitnessAssemblies.Compile(
+            "Broiler.ECMAScript.Generation",
+            File.ReadAllText(Witness("I4-a-generator-declaring-another-cldr-release.cs.witness")));
+        var declared = AdmissionRules.DeclaredIntlVersions("Broiler.ECMAScript.Generation", library);
+
+        Assert.Equal(AdmissionRules.IntlVersionFields.Count, declared.Count);
+        Assert.Equal(
+            ["Broiler.ECMAScript.Generation declares Broiler.ECMAScript.Generation.Intl.IntlDataVersions.CldrVersion = \"48.1.0\", and this repository's CLDR pin states `version 48.2.0` (rule I4)"],
+            AdmissionRules.I4IntlVersions(family.Values, declared));
     }
 
     [Fact]
@@ -131,7 +221,7 @@ public sealed class I4DataAgreementRuleTests
     {
         var tzdb = File.ReadAllBytes(Path.Combine(ComponentGraph.Root, TimeTableEmbedding.TzdbPinPath));
         var calendars = File.ReadAllBytes(Path.Combine(ComponentGraph.Root, TimeTableEmbedding.CalendarPinPath));
-        var cldr = CldrEntries(CldrPin.Load()).ToArray();
+        var cldr = CldrEntries(CldrTableEmbedding.LoadPin()).ToArray();
 
         // The tzdb pin with one digit of one member's hash changed: that pin alone is reported.
         var differing = File.ReadAllBytes(Witness("I4-a-tzdb-pin-differing-from-the-home-by-one-hash.pin.witness"));
@@ -163,7 +253,7 @@ public sealed class I4DataAgreementRuleTests
     }
 
     /// <summary>The files this repository's CLDR pin names, as I4's CLDR clause reads them.</summary>
-    private static IEnumerable<(string Name, long Bytes, string Sha256)> CldrEntries(CldrPin pin) =>
+    private static IEnumerable<(string Name, long Bytes, string Sha256)> CldrEntries(IntlCldrPin pin) =>
         pin.Entries.Select(static entry => (entry.Name, entry.Bytes, entry.Sha256));
 
     /// <summary>
@@ -178,7 +268,7 @@ public sealed class I4DataAgreementRuleTests
         var versions = new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["tzdb"] = TimeTableEmbedding.LoadTzdbPin().Version,
-            ["cldr"] = CldrPin.Load().Version,
+            ["cldr"] = CldrTableEmbedding.LoadPin().Version,
         };
 
         foreach (var manifest in members.Keys.Where(static name => name.EndsWith("/Cargo.toml", StringComparison.Ordinal)))

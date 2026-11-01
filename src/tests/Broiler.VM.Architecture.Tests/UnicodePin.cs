@@ -303,8 +303,11 @@ internal static class UnicodeSpecTables
     /// <para>
     /// The string-property table is checked here for one fact: none of its names is admitted as a
     /// code point property, because only the <c>v</c> flag admits them, and only through
-    /// <c>JsUnicodeStringProperties</c>. Its rows are read again by <c>UnicodeDatabase</c>, which holds
-    /// them to the two emoji sequence files (phase F2).
+    /// <c>JsUnicodeStringProperties</c>. Its rows were read again by <c>UnicodeDatabase</c>, which held
+    /// them to the two emoji sequence files (phase F2), whenever rule N28 generated the CLDR tables, until
+    /// SJL-9.2c deleted it with this project's CLDR table generator (JSD-0082, decision D12); the home's
+    /// generator reads only the UCD files its collation tables need. The sentence read "Its rows are read
+    /// again by <c>UnicodeDatabase</c>, which holds them to the two emoji sequence files (phase F2)."
     /// </para>
     /// </remarks>
     internal static IEnumerable<string> Disagreements(
@@ -376,5 +379,36 @@ internal static class UnicodeSpecTables
         }
 
         return byLongName;
+    }
+}
+
+/// <summary>Reading the UCD's semicolon-separated files.</summary>
+/// <remarks>
+/// Moved here on 2026-11-01, at SJL-9.2c, from <c>UnicodeDatabase.cs</c>, which was deleted with this
+/// project's CLDR table generator (JSD-0082, decisions D12 and D24): the two members this project still
+/// reads, for <see cref="UnicodeSpecTables.PropertyAliases"/> and the normalization probes. The members
+/// only the deleted reader used left with it.
+/// </remarks>
+internal static class UnicodeDataFile
+{
+    /// <summary>The highest code point.</summary>
+    internal const int MaxCodePoint = 0x10FFFF;
+
+    /// <summary>
+    /// Every data line of a UCD file as trimmed fields, with the <c>#</c> comment removed and
+    /// blank lines skipped.
+    /// </summary>
+    internal static IEnumerable<string[]> Records(string text)
+    {
+        foreach (var raw in text.Split('\n'))
+        {
+            var hash = raw.IndexOf('#', StringComparison.Ordinal);
+            var line = (hash >= 0 ? raw[..hash] : raw).Trim();
+
+            if (line.Length > 0)
+            {
+                yield return line.Split(';').Select(static field => field.Trim()).ToArray();
+            }
+        }
     }
 }

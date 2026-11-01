@@ -98,3 +98,11 @@ For signed preview.8 packages, `content-hash` is NuGet's restored content identi
 recorded in the admission list and checked by I1; they need not be equal.
 
 *(Revised 2026-11-01. The three `Broiler.Unicode.*` rows ended "Downloaded from nuget.org on 2026-10-31; see its pin for archive hash and source commit.": no pin file was committed for them, so their archive hashes are the allow-list's `archiveHash`, and the source commit is the one each restored package's nuspec records.)*
+
+*(Added 2026-11-01, at SJL-9.2c (JSC-321).)* `Broiler.ECMAScript.Generation` `0.1.0-preview.8`, admitted above on
+2026-10-29, carries the Intl data home's generator (JSD-0082, decisions D10 to D12) beside the time data home's, and
+the architecture tests run it for rules N27, N28 and I4 since SJL-9.2c, as restored from nuget.org into the NuGet global
+packages folder, the archive rule `I1` holds to the allow-list's `archiveHash`. Its admission, version, hashes and
+test-only scope are unchanged by that: its allow-list entry keeps its version, `contentHash`, `archiveHash`, use and
+projects, its `admittedBy` gaining a sentence that says so; no entry joined or left the allow-list; and no `.nupkg` or
+`.pin` was placed in this directory.
