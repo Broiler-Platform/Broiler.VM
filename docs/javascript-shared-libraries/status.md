@@ -2333,7 +2333,9 @@ made, and SJL-11.4's span opens only when its landing branch is cut), and step 1
   `.github/workflows/test262-evidence.yml` runs on `ubuntu-24.04`, where it ran on `ubuntu-latest`; the driver did not
   change. [JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md)'s
   decision D37 records it as the owner's decision by a dated note. No rule of this family compares a hosted run taken
-  before the change with one taken after it: the pending pairs are dispatched together after their merges. Bundle
+  before the change with one taken after it: the pending pairs' rules hold the workflow byte-identical to their base
+  commits', which descend from the change, so both runs of each use the `ubuntu-24.04` workflow; that each pair is
+  dispatched together after its merge is the plan's practice, not a rule, and no rule fixes one image release. Bundle
   `sjl-11-001`'s part A, whose runs are not taken, holds the workflow byte-identical to its rule commit, which no
   longer holds; its README says so, and its rule file is unchanged.
 - **The package sources' comments** in `NuGet.config` and `Directory.Packages.props` describe the restored-package

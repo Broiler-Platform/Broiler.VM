@@ -945,9 +945,12 @@ of SJL-13 made it, and this decision is unchanged by it for SJL-13's own changes
   bundle's are `ubuntu24`. A pair taken across the change may differ in image, and the bundles record images, not
   judge them.
 - **No rule of this family compares a hosted run taken before the change with one taken after it.** Bundles
-  `sjl-13-001`'s and `sjl-13-002`'s part A, and bundle `sjl-9-001`'s, dispatch their base and after runs together
-  after their merge, and hold the workflow at the dispatched ref byte-identical to the base commit's, which descends
-  from the change. Every bundle whose part A was taken before it is judged.
+  `sjl-13-001`'s and `sjl-13-002`'s part A, and bundle `sjl-9-001`'s, hold the workflow at the dispatched ref
+  byte-identical to the base commit's, and each base commit is the first parent of a merge not yet made, so it
+  descends from the change: both runs of each pair use the `ubuntu-24.04` workflow. That each pair is dispatched
+  together after its merge is the programme plan's practice, which no rule fixes; neither fixes one image release,
+  since the runners of one dispatch have run two releases of one image (bundle `sjl-6-001`). Every bundle whose part
+  A was taken before the change is judged.
 - **Bundle `sjl-11-001`'s part A** holds the workflow and the driver at the dispatched ref "byte-identical to this
   file's commit's", its rule commit's, and its runs are not yet taken: from the default branch that condition no longer
   holds of the workflow. Its rule file stays unchanged, as its "Revisions" requires; a new dated rule file there,
