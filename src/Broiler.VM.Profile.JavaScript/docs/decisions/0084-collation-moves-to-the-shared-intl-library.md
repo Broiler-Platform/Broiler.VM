@@ -125,7 +125,8 @@ every probe and each engine's answers, names every member by file and line and e
   applied (`Broiler.JS/Broiler.JavaScript.BuiltIns/Intl/JSIntl.cs:6204-6251`).
 
 **X2 - met.**
-- **Same:** O4, O6, O9, O13.
+- **Same:** O4, O6, O9, O13, and O19, where Broiler.JS reaches this family's answer by its tie-break, which input
+  reaches through the host's Thai collation and which decision E11 deletes.
 - **Corrections of Broiler.JS:** O5a, O5b, O7, O8, O10, O12, O14, O18.
 - **Corrections of this family:** none.
 - **Implementation-defined:** O11a, the `co` values of the search locale data, which the shared collator takes from
@@ -133,7 +134,7 @@ every probe and each engine's answers, names every member by file and line and e
 - **Data policy (C5):** O1, O2, O3, O5c, O11b, O16: CLDR 48.2.0's root and the tailorings of each embedding's list
   replace the host's ICU for the covered locales.
 - **Engine policy, a parameter:** O15, the default-locale provider; O17, the charges (decision E7).
-- **Code no input reaches:** O19, Broiler.JS's tie-break, which exists only for the host's Thai.
+- **Code no input reaches:** none.
 
 **X3 - neutral contract.** `UcaCollator` takes the resolved options as a record (strength, the case level, the case
 order, the shifted alternate, numeric collation, the tailoring by name), never an options object; the strings; and the
@@ -243,7 +244,7 @@ SJL-9's windows. The reason: as JSD-0082's decision D4.
 
 | Same | Correction of Broiler.JS | Correction of Broiler.VM | Implementation-defined | Data policy (C5) | Engine policy | Code no input reaches |
 |---|---|---|---|---|---|---|
-| O4, O6, O9, O13 | O5a, O5b, O7, O8, O10, O12, O14, O18 | | O11a | O1, O2, O3, O5c, O11b, O16 | O15, O17 | O19 |
+| O4, O6, O9, O13, O19 | O5a, O5b, O7, O8, O10, O12, O14, O18 | | O11a | O1, O2, O3, O5c, O11b, O16 | O15, O17 | |
 
 **Broiler.JS's corrections**, each a fix under decision SJL-D-16 (a), are listed in its changelog at SJL-17.5 with
 their rows: `ignorePunctuation` ignoring punctuation and not symbols (O5a); `base` folding width and compatibility

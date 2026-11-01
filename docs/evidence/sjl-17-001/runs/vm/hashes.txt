@@ -1,3 +1,5 @@
+c7a38e6f824504ebda9765e2c5da3a467240b3c9deb23b7678542485f367479d  o-collator.t262-vm-native.raw.txt
+28d0f592c403fa7022c242e3047b3d1b9effaa86da67ae8c6f1072c614df7ebe  o-collator.t262-vm.raw.txt
 071e3c4196d393c45cc0bba9fe87055684df8bbf05359cfc87dfaf0c3aa2b320  o1-root.vm-native.raw.txt
 123582c7492ab901258eebde71390909bdce9828976217f21e374ed8a359983f  o1-root.vm-native.txt
 cd232d7e2058c165b0eaf84de138665b5e652c4c7fcb90aeacb614fbd0c432b8  o1-root.vm.raw.txt

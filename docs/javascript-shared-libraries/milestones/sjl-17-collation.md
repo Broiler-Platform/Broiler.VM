@@ -120,10 +120,12 @@ covers" is read **per component** (decision E3): root, and CLDR 48.2.0's tailori
 covered locale (`eor` for `de`, a collation for `en` that `getCollations` lists), CJK and every other locale stay on
 the optional host provider. The deletion list is read by decision E11: `ResolveCompareInfo` for the covered locales,
 `StripIgnorablePunctuation`'s tie-break, the `CompareOptions` mapping and the hard-coded Thai default go;
-`NetCollationSuffix` moves into the host provider. The corrections listed above are two of JSD-0084's rows; the
-others are listed by row in its column "Correction of Broiler.JS": `ignorePunctuation` ignoring symbols (O5a), `base`
-keeping width differences (O5b), the constructor's reads (O10), the bound `compare`'s identity (O12, decision E8), and
-code-unit comparison under invariant globalization (O14, decision E4). The text above is left as written.
+`NetCollationSuffix` moves into the host provider. Of the corrections listed above, the first is JSD-0084's rows O7
+and O8, with the `orderings` lines they move (O18), in its column "Correction of Broiler.JS"; the second is its data
+policy (C5), rows O1, O2, O3 and O16 under decision E3. The column's other rows are `ignorePunctuation` ignoring
+symbols (O5a), `base` keeping width differences (O5b), the constructor's reads (O10), the bound `compare`'s identity
+(O12, decision E8), and code-unit comparison under invariant globalization (O14, decision E4). The text above is left
+as written.
 
 ### SJL-17.6 — Evidence
 

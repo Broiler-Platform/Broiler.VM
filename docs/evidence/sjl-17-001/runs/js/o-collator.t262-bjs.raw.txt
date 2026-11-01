@@ -1,0 +1,108 @@
+# command (from JS_ROOT=/home/user/js-s17p): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC  TMPDIR=<tmp> timeout 1800 python3 scripts/compliance/run_test262.py --suite-root /home/user/tc39/test262 --broiler-dll /home/user/js-s17p/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --include-negative --output <json> --no-summary-stdout <each path of the listing>
+# revision: Broiler.JS 61cb15b5472955079f3b0bf98c600f4128094614; test262 ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+[test262] Starting test262 run for suite ref ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e using local suite root /home/user/tc39/test262
+[test262] Selected 93 runnable test(s) for shard 1/1 from 93 selected file(s) and 93 candidate path(s) using mode requested.
+[test262] Using Broiler script host at /home/user/js-s17p/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll
+[test262] Running 93 test(s) for shard 1/1.
+[test262] Per-test timeout is 30s; POSIX memory cap is disabled.
+[test262] Failure 1 at test/intl402/Collator/proto-from-ctor-realm.js [original]
+[test262] Completed 25/93 path(s), 25 variant case(s) (passed=24, failed=1, skipped=0, timedOut=0).
+[test262] Completed 50/93 path(s), 50 variant case(s) (passed=49, failed=1, skipped=0, timedOut=0).
+[test262] Completed 75/93 path(s), 75 variant case(s) (passed=74, failed=1, skipped=0, timedOut=0).
+[test262] Completed 93/93 path(s), 93 variant case(s) (passed=92, failed=1, skipped=0, timedOut=0).
+[test262] Wrote machine-readable summary to <tmp>/o-collator.json
+[test262] Finished test262 run: variantCases=93, executed=93, passed=92, failed=1, skipped=0, timedOut=0
+exit=1
+{"features": [], "flags": [], "path": "test/built-ins/String/prototype/localeCompare/15.5.4.9_3.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/built-ins/String/prototype/localeCompare/15.5.4.9_CE.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/built-ins/String/prototype/localeCompare/S15.5.4.9_A10.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/built-ins/String/prototype/localeCompare/S15.5.4.9_A11.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/built-ins/String/prototype/localeCompare/S15.5.4.9_A1_T1.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/built-ins/String/prototype/localeCompare/S15.5.4.9_A1_T2.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/built-ins/String/prototype/localeCompare/S15.5.4.9_A6.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/built-ins/String/prototype/localeCompare/S15.5.4.9_A7.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/built-ins/String/prototype/localeCompare/S15.5.4.9_A8.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/built-ins/String/prototype/localeCompare/S15.5.4.9_A9.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/built-ins/String/prototype/localeCompare/name.js", "status": "passed", "variant": "original"}
+{"features": ["Reflect.construct", "arrow-function"], "flags": [], "path": "test/built-ins/String/prototype/localeCompare/not-a-constructor.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/built-ins/String/prototype/localeCompare/this-value-not-obj-coercible.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/builtin.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/constructor-options-throwing-getters.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/default-options-object-prototype.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/ignore-invalid-unicode-ext-values.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/instance-proto-and-extensible.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/legacy-regexp-statics-not-modified.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/length.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/missing-unicode-ext-value-defaults-to-true.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/name.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/numeric-and-caseFirst.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prop-desc.js", "status": "passed", "variant": "original"}
+{"features": ["cross-realm", "Reflect", "Symbol"], "flags": [], "path": "test/intl402/Collator/proto-from-ctor-realm.js", "status": "failed", "stderr": "Uncaught Test262Error: newTarget.prototype is undefined Expected SameValue(\u00ab[object Intl.Collator]\u00bb, \u00ab[object Intl.Collator]\u00bb) to be true\nat Throw in /home/user/js-s17p/Broiler.JS/Broiler.JavaScript.Runtime/JSException.cs:line 203\n\n", "stdout": "", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/builtin.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/compare/bound-to-collator-instance.js", "status": "passed", "variant": "original"}
+{"features": ["Reflect.construct"], "flags": [], "path": "test/intl402/Collator/prototype/compare/builtin.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/compare/canonically-equivalent-strings.js", "status": "passed", "variant": "original"}
+{"features": ["Reflect.construct"], "flags": [], "path": "test/intl402/Collator/prototype/compare/compare-function-builtin.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/compare/compare-function-length.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/compare/compare-function-name.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/compare/compare-function-property-order.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/compare/ignorePunctuation.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/compare/length.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/compare/name.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/compare/non-normative-basic.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/compare/non-normative-phonebook.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/compare/non-normative-sensitivity.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/compare/prop-desc.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/constructor/prop-desc.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/constructor/value.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/prop-desc.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/resolvedOptions/basic.js", "status": "passed", "variant": "original"}
+{"features": ["Reflect.construct"], "flags": [], "path": "test/intl402/Collator/prototype/resolvedOptions/builtin.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/resolvedOptions/ignorePunctuation-default.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/resolvedOptions/ignorePunctuation-not-default.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/resolvedOptions/length.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/resolvedOptions/name.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/resolvedOptions/order.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/resolvedOptions/prop-desc.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/resolvedOptions/resolved-case-first-unicode-extensions-and-options.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/resolvedOptions/resolved-collation-unicode-extensions-and-options.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/resolvedOptions/resolved-numeric-unicode-extensions-and-options.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/this-value-collator-prototype.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/prototype/this-value-not-collator.js", "status": "passed", "variant": "original"}
+{"features": ["Symbol.toStringTag"], "flags": [], "path": "test/intl402/Collator/prototype/toStringTag/toString-changed-tag.js", "status": "passed", "variant": "original"}
+{"features": ["Symbol.toStringTag"], "flags": [], "path": "test/intl402/Collator/prototype/toStringTag/toString-removed-tag.js", "status": "passed", "variant": "original"}
+{"features": ["Symbol.toStringTag"], "flags": [], "path": "test/intl402/Collator/prototype/toStringTag/toString.js", "status": "passed", "variant": "original"}
+{"features": ["Symbol.toStringTag"], "flags": [], "path": "test/intl402/Collator/prototype/toStringTag/toStringTag.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/subclassing.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/supportedLocalesOf/basic.js", "status": "passed", "variant": "original"}
+{"features": ["Reflect.construct"], "flags": [], "path": "test/intl402/Collator/supportedLocalesOf/builtin.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/supportedLocalesOf/length.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/supportedLocalesOf/name.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/supportedLocalesOf/prop-desc.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/supportedLocalesOf/taint-Object-prototype.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/taint-Object-prototype.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/test-option-ignorePunctuation.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/test-option-localeMatcher.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/test-option-numeric-and-caseFirst.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/test-option-sensitivity.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/test-option-usage.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/this-value-ignored.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/unicode-ext-seq-in-private-tag.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/unicode-ext-seq-with-attribute.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/unicode-ext-value-collation.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/Collator/usage-de.js", "status": "passed", "variant": "original"}
+{"features": ["Intl.Locale", "Intl.Locale-info"], "flags": [], "path": "test/intl402/Locale/prototype/getCollations/branding.js", "status": "passed", "variant": "original"}
+{"features": ["Intl.Locale", "Intl.Locale-info"], "flags": [], "path": "test/intl402/Locale/prototype/getCollations/name.js", "status": "passed", "variant": "original"}
+{"features": ["Intl.Locale", "Intl.Locale-info", "Array.prototype.includes"], "flags": [], "path": "test/intl402/Locale/prototype/getCollations/output-array-values.js", "status": "passed", "variant": "original"}
+{"features": ["Intl.Locale", "Intl.Locale-info"], "flags": [], "path": "test/intl402/Locale/prototype/getCollations/output-array.js", "status": "passed", "variant": "original"}
+{"features": ["Intl.Locale", "Intl.Locale-info"], "flags": [], "path": "test/intl402/Locale/prototype/getCollations/prop-desc.js", "status": "passed", "variant": "original"}
+{"features": ["Reflect.construct"], "flags": [], "path": "test/intl402/String/prototype/localeCompare/builtin.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/String/prototype/localeCompare/default-options-object-prototype.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/String/prototype/localeCompare/length.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/String/prototype/localeCompare/missing-arguments-coerced-to-undefined.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/String/prototype/localeCompare/return-abrupt-this-value.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/String/prototype/localeCompare/returns-same-results-as-Collator.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/String/prototype/localeCompare/taint-Intl-Collator.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/String/prototype/localeCompare/that-arg-coerced-to-string.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/String/prototype/localeCompare/this-value-coerced-to-string.js", "status": "passed", "variant": "original"}
+{"features": [], "flags": [], "path": "test/intl402/String/prototype/localeCompare/throws-same-exceptions-as-Collator.js", "status": "passed", "variant": "original"}

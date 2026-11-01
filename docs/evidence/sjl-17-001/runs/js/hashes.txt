@@ -1,4 +1,6 @@
 6c59262f1929fd9baded9fa1070d90d77897cbb28723423748950c3abdb8ddbf  invariant-probe.bjs.invariant.txt
+17e429050732e0f6497edc05d779f146f3e3717d2748ddc255ab67d032a7430e  o-collator.t262-bjs.invariant.raw.txt
+3121ae5cf5c572f9b1ee9e53303a3e7d4159f94dedd8425a5a30f3c077f89504  o-collator.t262-bjs.raw.txt
 9185c5b7d21514199b4ccffad7c78404aa64cb3e586d1efaf64bf7812ecdf4a5  o1-root.bjs.invariant.txt
 e61e1de90836a47e4ffc882ec69072bfa801f7cf5a841f255417dd30bf1b6dd6  o1-root.bjs.txt
 cedd06cd4fa04d4ea0271919a5480708ef99c40e77be0e9566418c4cef5ef73f  o14-invariant.bjs.de_DE.txt
