@@ -155,6 +155,9 @@ are this family's. Broiler.RegEx adopts them as owner conditions by the dated re
 `docs/roadmap.md` section 6, which numbers them R1 to R11 (filed at `fca7a6d`,
 merged into Broiler.RegEx's default branch at `e568b88` by Broiler-Platform/Broiler.Regex#6). It meets them at SJL-11.2, and its bundle `sjl-11-001`'s rule judges them at the
 candidate reading, the commit `0.2.0-preview.1` is packed from:
+*(Noted 2026-11-01, by the owner's version decision of that day, recorded under decision D12 below: the package
+the candidate reading's commit is packed as is the next version of the `0.1.0-preview.N` stream, `0.1.0-preview.6`,
+and not `0.2.0-preview.1`. The sentence above stands as written.)*
 
 | | Requirement | Where Broiler.Regex stands at `c1422f4d` (correspondence) |
 |---|---|---|
@@ -491,6 +494,17 @@ R8 allows; no shim survives for a member R11 makes impossible. SJL-D-3's "inside
 merge**, and Broiler.JS moves its pin only at SJL-11.5. The reason: a table-less constructor cannot survive R11, and
 minimum version ranges cannot protect a process that hosts both engines, so the release train does.
 
+*(Revised 2026-11-01, by the owner's decision of that day, which is the owner's own and not one taken under the
+direction of 2026-10-18. The owner wrote, of Broiler.Regex's version: "Please keep using version 0.1.0-x scheme!" **The SJL-11 surface ships in
+the `0.1.0-preview.N` stream**, not as `0.2.0-preview.1`. The owner published Broiler.Regex `0.1.0-preview.5` to
+nuget.org on 2026-10-29, from Broiler.Regex `24344b3`, so the version that carries the SJL-11 surface is the next one,
+`0.1.0-preview.6`, or a later one of the same stream. What else the decision reads, until a later record says
+otherwise: the surface's breaks are unchanged, still validated against `0.1.0-preview.4` with every break suppressed
+and listed with its R item, and they now ship inside the `0.1` stream, so SJL-D-3's reading above no longer separates
+them by version; and the decision's bold sentence reads "No release of either engine depends on the version that
+carries the SJL-11 surface before both cut-overs merge". The decision read, in the sentence this replaces: "The SJL-11
+surface ships as **`0.2.0-preview.1`**".)*
+
 **The consumer check of SJL-D-25 (c)**, on which decision D21's removals rest, is recorded here. A GitHub code
 search over the default branches of the `Broiler-Platform` organisation, run on 2026-10-19, found:
 - no use of `CreateRegex`, `RegexTiering`, `RegexTieringDiagnostics`, `RegExpUnicodeValidator`, `JSRegExp`,
@@ -504,7 +518,9 @@ Broiler.JS's area record states the same search for the members decision D21 rem
 `docs/public-api.md`.
 
 **Decision D13 - publication.** `0.2.0-preview.1` is published to nuget.org only with the owner's approval, as
-the earlier previews were. This family may admit a locally packed candidate on a branch for development, and re-pins
+the earlier previews were. *(Noted 2026-11-01, by the owner's version decision of that day under decision D12:
+"`0.2.0-preview.1`" reads the version of the `0.1.0-preview.N` stream that carries the SJL-11 surface,
+`0.1.0-preview.6` next.)* This family may admit a locally packed candidate on a branch for development, and re-pins
 to the published package before it merges. The reason: the precedent of SJL-4.4 and SJL-10.4.
 
 **Decision D14 - test262 in the component's CI.** A host job runs Broiler.JS's shell at a retained commit named by a
