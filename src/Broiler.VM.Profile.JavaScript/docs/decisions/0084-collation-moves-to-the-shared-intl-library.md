@@ -21,6 +21,9 @@
   it quotes.
 - Nothing in this profile changes with this record. The cut-overs are SJL-17.4's and SJL-17.5's own changes, and this
   record is what they apply.
+- *(Added 2026-11-02.)* **The owner's decisions E-han, E-o5b and E-o3j of 2026-11-02 are recorded**, in section "The
+  owner's decisions of 2026-11-02", each taken as recommended under the same direction. SJL-17.2's first runs of the
+  collation vectors stopped on them. None changes a row's class or a rule, and row O3's reading stays open.
 
 **Date:** 2026-11-01.
 
@@ -239,6 +242,48 @@ collation size stated in its bundle.
 
 **Decision E14 - windows.** One merge per engine; the bases after SJL-9's after commits; the library merges outside
 SJL-9's windows. The reason: as JSD-0082's decision D4.
+
+## The owner's decisions of 2026-11-02
+
+*(Added 2026-11-02.)* SJL-17.2's first engine-level runs of the collation vectors met two answers no row recorded as
+written, and one choice the vectors had to make, on row O3's open reading. The vectors are Broiler.JS's corpus revision
+33, whose expected values are the reference's, ICU 78.3 with CLDR 48.0. Broiler.JS's first run was taken at its
+`d85da200` under `TZ=UTC`, on the machine the correspondence names, with ICU 74.2. This family's was taken at `b43d0bb`
+from a scratch archive of revision 33, and it has no difference on the area. Each item was decided on 2026-11-02 as
+recommended, under the owner's direction of 2026-10-18 quoted above: "Please do all recommended decisions and skip
+waiting for review." Each is recorded here as the owner's decision of 2026-11-02. Broiler.JS's corpus revision 34
+classifies Broiler.JS's run by them. The decision numbers E1 to E14 are the plan's, so these three carry names:
+**E-han**, **E-o5b** and **E-o3j**. The correspondence carries a dated note for each, beside the text it reads.
+
+**Decision E-han - Han across blocks is each engine's own data's.** ECMA-402 leaves the collation order to the
+implementation and does not mandate CLDR's root. UTS #35 Part 5 (CLDR 48) lets an implementation order Han characters
+by the UCA's implicit weights or by radical and stroke. The order of unified ideographs across blocks is where the
+engines' data differ: this family's tables take the implicit weights by block, and the reference and Broiler.JS's host
+take radical and stroke. So the 34 Han vectors whose answer moves with the order are `impl-defined`. Their `out` is the
+reference's answer, and each engine's expectation is its own data's answer: this family's from its tables at
+`4e6a41e9` (it meets every one), and Broiler.JS's from its host, the radical-stroke order. They are not a correction
+of either engine. Finding F1, row O3's reading, stays open. SJL-17.3 decides it, with the radical-stroke data sized
+against rule N28 and the data home, and row O3's class stays data policy (C5). This record's "One reading is open: Han
+across blocks (O3, F1)" stands as written.
+
+**Decision E-o5b - row O5b holds every sensitivity below the tertiary.** Row O5b read "NBSP against space at `base`";
+its Broiler.JS cell reads "the host's `IgnoreCase | IgnoreNonSpace` keeps the width and compatibility difference".
+Broiler.JS's run found the same answer at `accent` and `case`: a fullwidth letter, `Ａ` against `A`, and U+3300
+against its katakana, each `<` or `>` where the reference and this family answer `=`. Row O6's probes held no width
+form, so no row recorded it. The host's ICU 74.2 answers `=` at the secondary and primary strengths. So the difference
+is Broiler.JS's `CompareOptions` mapping, which passes no `IgnoreWidth`, and row O5b holds it at `base`, `accent` and
+`case`: the same correction of Broiler.JS, listed among its corrections above, which SJL-17.5 makes.
+
+**Decision E-o3j - Extension J on Broiler.JS's host is data policy.** Row O3's Broiler.JS column reads "𠀀 < 中, as the
+host's ICU orders unified ideographs (radical and stroke)". Broiler.JS's run found that the host's ICU 74.2, which
+carries Unicode 15.1, does not know CJK Extension J (U+323B0 to U+33479, Unicode 17.0). It weighs those code points as
+unassigned and puts them after every ideograph it knows, so 中 < U+323B0 where the reference has U+323B0 < 中. The
+difference is the host's data, and row O3's class, data policy (C5), holds it. A host whose ICU carries Unicode 17
+answers as the reference, and SJL-17.5 takes Broiler.JS's root from the shared data.
+
+**What did not move.** No row changes class, no rule changes, and this record's list of Broiler.JS's corrections names
+the same rows. Every other difference of Broiler.JS's run is under a row as written: O2 (the host's UCA 15.1 weights
+on the conformance files' pairs), O5a, O7 and O8.
 
 ## Every row, classified
 
