@@ -1770,6 +1770,20 @@ public sealed class FuelChargeExactnessTests
     /// read and the decision, so the poll counts work the renewal already moved into the counter, or
     /// records a count from a block that no longer exists, and some poll is refused.
     /// </para>
+    /// <para>
+    /// <b>How long the sample takes is the scheduler's business, and the verdict must not read
+    /// it.</b> The charging thread may run only sixteen units ahead of a completed poll, so the run
+    /// needs at least 31,250 hand-overs between the two threads. On an idle machine that takes well
+    /// under a second. On a contended one - a CI runner with the other test assembly beside this
+    /// one - the two threads stop running at the same time, and a hand-over then waits for a
+    /// scheduler time slice; on Windows a <see cref="SpinWait"/> that has spun for long enough
+    /// also sleeps for a whole 15.6 ms timer tick. The run then outlasts the profile's default
+    /// wall-clock allowance of thirty seconds, the meter refuses every later poll as it should for
+    /// an exhausted allowance, and the test counted those refusals as the poll-bound failures it
+    /// exists to find. So the step runs under the profile's maximum wall-clock allowance, which
+    /// stays a hang guard and stops being a deadline on the sample, and the charging thread waits
+    /// without the timer sleep.
+    /// </para>
     /// </remarks>
     [Fact]
     public void A_Meter_Charged_From_Two_Threads_Is_Polled_On_Exactly_The_Work_Between_Polls()
@@ -1812,7 +1826,9 @@ public sealed class FuelChargeExactnessTests
 
                     if (quota == 0)
                     {
-                        spin.SpinOnce();
+                        // Spin and yield, never Thread.Sleep(1): on Windows that is a 15.6 ms
+                        // timer tick for a wait the polling loop ends in microseconds.
+                        spin.SpinOnce(sleep1Threshold: -1);
                         continue;
                     }
 
@@ -1852,9 +1868,13 @@ public sealed class FuelChargeExactnessTests
             return VmHostCallOutcome.Completed;
         }
 
+        // The profile's maximum, not its thirty-second default: see the remarks.
         using var runtime = FixtureComposition.Runtime(
             Observing(FixtureVmProfileVariant.WindowedPolling, environment => captured = environment),
-            FixtureComposition.Options(capabilities: FixtureComposition.CapabilitiesWithDouble(Handler)));
+            FixtureComposition.Options(
+                ceilings: FixtureComposition.CeilingsWith(
+                    VmBudgetDimension.WallClock, FixtureDescriptorFactory.Maxima()[VmBudgetDimension.WallClock]),
+                capabilities: FixtureComposition.CapabilitiesWithDouble(Handler)));
 
         var artifact = FixtureComposition.Verify(
             runtime, FixtureArtifactWriter.NopsAroundHostCall(100, FixtureHostCapabilities.DoubleBinding, 100));
