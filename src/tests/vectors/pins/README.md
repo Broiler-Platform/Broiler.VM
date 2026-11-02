@@ -21,7 +21,7 @@ repository holds it the way it holds test262: as the archive of one named revisi
 
 ```bash
 dotnet run --project src/compositions/Broiler.VM.Composition.JavaScript.Conformance -c Release -- \
-  --vectors src/tests/vectors/pins/broiler-js-vectors-ed494b2e3953b03eae305dc736b8be23dcff3cf9.tar.gz \
+  --vectors src/tests/vectors/pins/broiler-js-vectors-b2c2e2243a086285d806866a64b83297791a8ec5.tar.gz \
   --expect src/tests/vectors/pins/vectors.pin --report vectors-report.tsv
 ```
 
@@ -73,5 +73,18 @@ test262 at `ccaac100`, it names the test's path and copies none of its text. Its
 vectors take their expected values from ECMA-262 main at `4feb0272`, which merged those rules after the pinned
 edition, and cite their test262 tests alone. The corpus holds those outcomes and none of the specification's or
 test262's text, as it holds the other areas'. *(Added 2026-11-01, at SJL-13, when the pin moved to revision 30.)*
+The regular-expression area, from revision 31, names clauses of ECMA-262 ES2026 at `tc39/ecma262` `0248456c`, 22.2
+and Annex B's B.1.2, by identifier, and the UCD 17.0.0 files its property and case-folding vectors read, and quotes
+none of them. Every expected value but those of 24 vectors is the answer of the corpus's own reference, `regexpref`
+(`ref:regexpref@1`, decision D25 of JSD-0081), the text's pattern grammar, early errors and matcher transliterated in
+Broiler.JS's `scripts/conformance/regexpref.py`, over the pinned UCD read through `unicoderef.py`; no expected value
+is read from an engine. The 24 are object-model vectors and the eval-code literals of row S9b, each cited to the
+clauses that decide it, and row M4's empty match, for which the text has no answer and decision D41 records each
+engine's. No vector of the area cites test262 in its provenance or is derived from a test262 test: 34 notes name a
+test262 test at `ccaac100` by its path, 28 of them the test whose pattern the vector also tries, and the vector's
+script is the corpus's own, with none of test262's text. Its 18 `status: exhausted` vectors are library-level, and the
+conformance root skips each and names it in its summary line. The corpus holds the reference's answers and none of
+the specification's or test262's text, as it holds the other areas'. *(Added 2026-11-02, at SJL-11.3, when the pin
+moved to revision 32.)*
 [`THIRD_PARTY_NOTICES.md`](../../../../THIRD_PARTY_NOTICES.md) lists it with the other material this
 repository ingests.
