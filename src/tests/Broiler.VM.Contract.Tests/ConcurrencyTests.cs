@@ -32,6 +32,26 @@ public sealed class ConcurrencyTests
     private static readonly TimeSpan Patience = TimeSpan.FromSeconds(10);
 
     /// <summary>
+    /// The drain budget the two disposal tests run under: longer than a gate can hold a step.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Disposal waits for a step only up to its drain budget, and then returns by design. Under the
+    /// runtime's default budget of five seconds, "disposal is still waiting 250 ms after it began"
+    /// holds only if the test reaches that check within five seconds of starting disposal. A CI
+    /// runner that stalls the test thread, or the whole machine, for longer - CPU starvation, a
+    /// hypervisor pause - lets the budget expire first, and the test then reported a disposal that
+    /// was right to return as one that did not wait.
+    /// </para>
+    /// <para>
+    /// With a budget longer than <see cref="FixtureExecutionGate.SelfRelease"/>, disposal can return
+    /// only once the held step has left the profile, so the check reads the drain and not the
+    /// scheduler. The budget is still finite: a step the gate releases on its own ends the wait.
+    /// </para>
+    /// </remarks>
+    private static readonly TimeSpan DrainOutlastingTheGate = FixtureExecutionGate.SelfRelease * 2;
+
+    /// <summary>
     /// A capability running on one thread does not refuse an unrelated call on another.
     /// </summary>
     /// <remarks>
@@ -269,7 +289,8 @@ public sealed class ConcurrencyTests
     {
         var gate = new FixtureExecutionGate { HoldAt = FixtureGatePoint.Invoke };
         using var runtime = FixtureComposition.Runtime(
-            FixtureComposition.Catalog(FixtureVmProfile.DescriptorFor(FixtureVmProfileVariant.Conforming, gate)));
+            FixtureComposition.Catalog(FixtureVmProfile.DescriptorFor(FixtureVmProfileVariant.Conforming, gate)),
+            FixtureComposition.Options(disposeDrainBudget: DrainOutlastingTheGate));
 
         var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(42));
         var instance = FixtureComposition.Instantiate(runtime, artifact);
@@ -301,7 +322,8 @@ public sealed class ConcurrencyTests
     {
         var gate = new FixtureExecutionGate { HoldAt = FixtureGatePoint.Invoke };
         var runtime = FixtureComposition.Runtime(
-            FixtureComposition.Catalog(FixtureVmProfile.DescriptorFor(FixtureVmProfileVariant.Conforming, gate)));
+            FixtureComposition.Catalog(FixtureVmProfile.DescriptorFor(FixtureVmProfileVariant.Conforming, gate)),
+            FixtureComposition.Options(disposeDrainBudget: DrainOutlastingTheGate));
 
         var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(42));
         var instance = FixtureComposition.Instantiate(runtime, artifact);

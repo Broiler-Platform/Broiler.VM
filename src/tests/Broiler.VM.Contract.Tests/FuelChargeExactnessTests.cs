@@ -1770,6 +1770,21 @@ public sealed class FuelChargeExactnessTests
     /// read and the decision, so the poll counts work the renewal already moved into the counter, or
     /// records a count from a block that no longer exists, and some poll is refused.
     /// </para>
+    /// <para>
+    /// <b>How long the sample takes is the scheduler's business, and the verdict must not read
+    /// it.</b> The charging thread may run only sixteen units ahead of a completed poll, so the run
+    /// needs at least 31,250 hand-overs between the two threads. On an idle machine that takes well
+    /// under a second. On a contended one - a CI runner with the other test assembly beside this
+    /// one - the two threads stop running at the same time, and a hand-over then waits for a
+    /// scheduler time slice; on Windows a <see cref="SpinWait"/> that has spun for long enough
+    /// also sleeps for a whole 15.6 ms timer tick. The run then outlasts the profile's default
+    /// wall-clock allowance of thirty seconds, the meter refuses every later poll as it should for
+    /// an exhausted allowance, and the test counted those refusals as the poll-bound failures it
+    /// exists to find. So the step runs under the profile's maximum wall-clock allowance, which
+    /// stays a hang guard and stops being a deadline on the sample, and the charging thread waits
+    /// without the timer sleep. A run that outlasts even that fails on its own assertion, which
+    /// names the wall clock, before the refused polls are counted.
+    /// </para>
     /// </remarks>
     [Fact]
     public void A_Meter_Charged_From_Two_Threads_Is_Polled_On_Exactly_The_Work_Between_Polls()
@@ -1812,7 +1827,9 @@ public sealed class FuelChargeExactnessTests
 
                     if (quota == 0)
                     {
-                        spin.SpinOnce();
+                        // Spin and yield, never Thread.Sleep(1): on Windows that is a 15.6 ms
+                        // timer tick for a wait the polling loop ends in microseconds.
+                        spin.SpinOnce(sleep1Threshold: -1);
                         continue;
                     }
 
@@ -1852,16 +1869,37 @@ public sealed class FuelChargeExactnessTests
             return VmHostCallOutcome.Completed;
         }
 
+        // The profile's maximum, not its thirty-second default: see the remarks.
+        var allowance = FixtureDescriptorFactory.Maxima()[VmBudgetDimension.WallClock];
+
         using var runtime = FixtureComposition.Runtime(
             Observing(FixtureVmProfileVariant.WindowedPolling, environment => captured = environment),
-            FixtureComposition.Options(capabilities: FixtureComposition.CapabilitiesWithDouble(Handler)));
+            FixtureComposition.Options(
+                ceilings: FixtureComposition.CeilingsWith(VmBudgetDimension.WallClock, allowance),
+                capabilities: FixtureComposition.CapabilitiesWithDouble(Handler)));
 
         var artifact = FixtureComposition.Verify(
             runtime, FixtureArtifactWriter.NopsAroundHostCall(100, FixtureHostCapabilities.DoubleBinding, 100));
 
         using var instance = FixtureComposition.Instantiate(runtime, artifact);
 
+        var elapsed = System.Diagnostics.Stopwatch.StartNew();
         var result = FixtureComposition.Invoke(instance);
+
+        // A run that outlasts even the maximum allowance is a scheduler that never gave the two
+        // threads their turns, not a poll counting work it should not. Once the allowance is spent
+        // the meter refuses every later poll that keeps the bound, for the allowance, so the
+        // refused polls no longer say anything about the bound and the failure is named as what it
+        // is, before they are counted. In the meter as written a poll that breaks the bound is
+        // refused before the allowance is looked at, and the count it broke only grows until a
+        // poll passes, so a run whose first refusal was the bound's ends as a profile fault and
+        // fails on the count below, not here.
+        Assert.False(
+            result.Outcome is VmOutcome.ResourceExhaustion
+                && result.Diagnostics.ExhaustedDimension is VmBudgetDimension.WallClock,
+            $"the step outlasted its wall-clock allowance of {allowance} ms ({elapsed.ElapsedMilliseconds} ms, "
+                + $"{charged} of {Units} units charged); every poll after that is refused for the allowance, "
+                + $"so its {refusedPolls} refused polls decide nothing about the poll bound");
 
         Assert.Equal(0, refusedCharges);
         Assert.Equal(0, refusedPolls);
