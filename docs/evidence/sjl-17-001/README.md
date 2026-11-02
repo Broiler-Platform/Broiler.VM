@@ -131,6 +131,11 @@ since their hashes are recorded.
 **The same runs are retained in Broiler.JS's bundle `sjl-17-001`**, in its `engine/`, as the basis of its fields, with
 Broiler.JS's own runs on both revisions.
 
+*(2026-11-02, at the change's review: after these runs, Broiler.JS corrected the texts of two of its reasons in revision
+34 (`f3bb5588`, observed on its branch). That rewrote 19 `divergence.broiler-js` fields and nothing else. No field of
+this family changed, so the revision 34 run above stands for revision 34 as it now is. The scratch pin's archive is of
+`60fc3a5b`, as the table says.)*
+
 ## 9. Exclusions
 
 Sections 3 to 8 are added as the bundle's runs are taken (section 3 since 2026-11-02). The exclusions keep this section's number, where rule H2

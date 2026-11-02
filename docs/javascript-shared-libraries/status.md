@@ -2494,7 +2494,9 @@ recorded.** One change in this repository, on the branch `sjl-17-2-vm`, named by
     expectation its own data's; neither engine's answer is a correction, and row O3's reading (F1) stays open for
     SJL-17.3;
   - E-o5b: row O5b holds Broiler.JS's width and compatibility differences at `accent` and `case` as well as at `base`,
-    the same correction of Broiler.JS;
+    the same correction of Broiler.JS *(note of 2026-11-02, at the change's review: the differences are width and the
+    squared katakana word U+3300; the other compatibility forms answer as the reference, as JSD-0084's note on E-o5b
+    says)*;
   - E-o3j: row O3's Broiler.JS column holds its host's ICU, which does not know CJK Extension J, as data policy (C5).
 - **What did not move.** No row changes class and no rule changes. This family's vectors pin stays where SJL-11's task
   3.5 leaves it; moving it to revision 34 is a later task, after Broiler.JS merges that revision (rule N13).

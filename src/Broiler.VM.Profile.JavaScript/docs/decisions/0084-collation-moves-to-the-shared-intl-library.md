@@ -274,6 +274,25 @@ form, so no row recorded it. The host's ICU 74.2 answers `=` at the secondary an
 is Broiler.JS's `CompareOptions` mapping, which passes no `IgnoreWidth`, and row O5b holds it at `base`, `accent` and
 `case`: the same correction of Broiler.JS, listed among its corrections above, which SJL-17.5 makes.
 
+*(Note of 2026-11-02, at the review of SJL-17.2's change. Recorded under the owner's direction of 2026-10-18, as the
+decision was. It corrects what the decision says the run showed, and changes no row, class or rule.)* The decision
+above reads "Broiler.JS's run found the same answer at `accent` and `case`: a fullwidth letter, `Ａ` against `A`, and
+U+3300 against its katakana". With the correspondence's first note on row O5b, it says that row O5b holds Broiler.JS's
+"width and compatibility differences" at every sensitivity below the tertiary. That is more than the run showed:
+- The run compared `Ａ` against `A`, and U+3300 against its katakana, at `base` and `accent` only. Broiler.JS answered
+  `>` and `<` there.
+- It compared `a` against fullwidth `ａ` at `base`, `accent` and `case`. Broiler.JS answered `<` at each.
+- What Broiler.JS keeps apart below the tertiary strength is width (a fullwidth letter, and NBSP against a space) and
+  the squared katakana word U+3300.
+- The other compatibility forms the vectors hold, Broiler.JS answers as the reference and this family do: `ﬁ`, `ǆ`,
+  `①`, `½`, `Ⅳ` and `²` at `base` and `accent`, and `ª` and `ⓐ` at `base`, `accent` and `case`.
+
+The decision stands as to its row, its class and its reach. Row O5b holds these differences at `base`, `accent` and
+`case`, and they are a correction of Broiler.JS that SJL-17.5 makes. The list of Broiler.JS's corrections below, "`base`
+folding width and compatibility differences (O5b)", says what the shared collator does, and it stands. The correspondence
+carries a second dated note on row O5b. Broiler.JS's corpus revision 34 words its reason `js-o5b` the same way (on its
+branch `sjl-17-2-vectors`, observed).
+
 **Decision E-o3j - Extension J on Broiler.JS's host is data policy.** Row O3's Broiler.JS column reads "𠀀 < 中, as the
 host's ICU orders unified ideographs (radical and stroke)". Broiler.JS's run found that the host's ICU 74.2, which
 carries Unicode 15.1, does not know CJK Extension J (U+323B0 to U+33479, Unicode 17.0). It weighs those code points as
