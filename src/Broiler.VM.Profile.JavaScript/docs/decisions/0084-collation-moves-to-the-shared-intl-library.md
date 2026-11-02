@@ -322,8 +322,10 @@ data policy (C5), hold that answer as written. One vector names row O6 alone: `a
 "search"` at `base`, which the reference, this family and German search answer `<`, and Broiler.JS on that host `=`.
 Row O6's Broiler.JS column reads "**the same orders** (`:6221-6227`); the same defaults", and its class "Same in
 both". That holds on the correspondence's machine, but on that host the run showed an answer the row does not record,
-which this record's "Falsified if" names. The difference is the host's data, German search's tailoring, which row O16
-places with each engine's locale list. So Broiler.JS's answer to row O6's German search pairs, on a host whose
+which this record's "Falsified if" names. The difference is the host's answer: the collator it gives Broiler.JS's
+`CompareInfo` for `de` with `usage: "search"`, whether from its `icu.dll`'s data or from how the runtime builds the
+culture there, which the run does not establish (under `und` with `usage: "search"` that host applies root search).
+German search's tailoring is row O16's, which places it with each engine's locale list. So Broiler.JS's answer to row O6's German search pairs, on a host whose
 collator applies no German search tailoring, is data policy (C5), as row O16 is. SJL-17.5's cut-over to the shared
 collator answers it, since German search is in decision E3's covered list. Row O6's class stays "Same in both" for the
 engines' code: on a host that applies the tailoring, Broiler.JS answers as the reference and this family do. The table

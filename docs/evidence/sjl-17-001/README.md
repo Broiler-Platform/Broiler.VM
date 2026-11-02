@@ -148,8 +148,10 @@ under rows O16 and O6, row O6 read for that host by the owner's decision E-o6w o
 records with a dated note on row O6 in the [correspondence](correspondence.md) (observed on Broiler.JS's branch
 `sjl-17-2-win`). That adds `divergence.broiler-js` fields, and those vectors' `class` reads `divergence` where it read
 `normative`. This family's verdict on a vector reads only its own fields (`VectorsCommand.cs`), and its answers there
-are its tables', which read no host, so the revision 34 runs above give its verdicts on revision 34 as it now is; a
-run taken again would differ from them only in that `class` column.)*
+are its tables', which read no host, so the revision 34 runs above give its verdicts on revision 34 as it now is. A
+run taken again would give the same verdicts; its report would differ from theirs in that `class` column, and in the
+corpus commit and content hash its header names, since it would be run from another scratch archive and pin than the
+`60fc3a5b` ones the table names.)*
 
 ## 9. Exclusions
 
