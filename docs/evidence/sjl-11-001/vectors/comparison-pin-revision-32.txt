@@ -1,0 +1,63 @@
+Comparison of this family's run on corpus revision 32, on the committed pin, and of its negative control, with the
+runs of this family on revision 32 retained before the merge, made 2026-11-02.
+
+this run:  run-pin-revision-32.tsv.gz here (decompressed e92e487779733ddf35d192040ce97e4d3fe5394e39b84376aa9835459a741abb),
+           and run-negative-control-pin-revision-32.tsv.gz here (decompressed 27979a4d850dca25f026bbfe5c315c9be4890d03df7e46b50ef92461b0aa1251),
+           corpus Broiler-Platform/broiler.js@b2c2e2243a086285d806866a64b83297791a8ec5 content sha256 fd4240bb87a24508661ba41b7d6f730a282aa7e0ac03484c444d73d8e8a6a347
+retained:  run-revision-32.tsv.gz here, sha256 595ae06f68ef447cb8c047a81f5816a353436b8daf1fd91c2ddf8f7d206fb0bb (decompressed 27af368e28563a79964ee6155c2849cbfbcdd78d7ca20280402bf98925a0dae5),
+           and run-negative-control-revision-32.tsv.gz here, sha256 f6a212e71ecc06d32b7e0f4838b9172ba4e883c4ebaa66688edad63f8f357579 (decompressed d57015fa170e1161b78897957bd901b81f9c74079d6e16d1dcea197139de4f51),
+           taken at Broiler.VM 897603890da4aa6d1421c01d23c87009da495d6f from a scratch archive,
+           corpus Broiler-Platform/broiler.js@cfe32852eb801a72603e2b6d868dc72c0b432d66 content sha256 e0db0f5e7cfcafef7aad9f99fdbd3b8464cff44a4e5962e890d58c1905a33a77;
+           Broiler.JS's bundle sjl-11-001 retains the same two files byte for byte at b2c2e2243a086285d806866a64b83297791a8ec5,
+           as docs/evidence/sjl-11-001/engine/broiler-vm-run-revision-32.tsv.gz and broiler-vm-negative-control-revision-32.tsv.gz
+           (sha256 595ae06f68ef447cb8c047a81f5816a353436b8daf1fd91c2ddf8f7d206fb0bb
+            and f6a212e71ecc06d32b7e0f4838b9172ba4e883c4ebaa66688edad63f8f357579)
+           (cfe32852's corpus differs from b2c2e224's only in the reasons of divergence.broiler-js fields, SCHEMA.md section 4's
+            dated note and REVISIONS.md row 32: git diff -U0 cfe32852 b2c2e224 -- conformance/vectors/regexp/ changes
+             74 +divergence.broiler-js, 74 -divergence.broiler-js lines, and no other kind of line)
+
+######## the run
+== the summary lines (# ...): diff of retained against this run
+2c2
+< # corpus: Broiler-Platform/broiler.js@cfe32852eb801a72603e2b6d868dc72c0b432d66 content sha256 e0db0f5e7cfcafef7aad9f99fdbd3b8464cff44a4e5962e890d58c1905a33a77
+---
+> # corpus: Broiler-Platform/broiler.js@b2c2e2243a086285d806866a64b83297791a8ec5 content sha256 fd4240bb87a24508661ba41b7d6f730a282aa7e0ac03484c444d73d8e8a6a347
+(diff exit code 1)
+== every row by id, expected value, rendering and verdict (columns 1, 3, 4 and 5): diff of retained against this run
+(no difference)
+== every row whole: diff of retained against this run
+(no difference)
+== rows (the column header line excluded): retained 108759, this run 108759
+
+######## the negative control
+== the summary lines (# ...): diff of retained against this run
+2c2
+< # corpus: Broiler-Platform/broiler.js@cfe32852eb801a72603e2b6d868dc72c0b432d66 content sha256 e0db0f5e7cfcafef7aad9f99fdbd3b8464cff44a4e5962e890d58c1905a33a77
+---
+> # corpus: Broiler-Platform/broiler.js@b2c2e2243a086285d806866a64b83297791a8ec5 content sha256 fd4240bb87a24508661ba41b7d6f730a282aa7e0ac03484c444d73d8e8a6a347
+(diff exit code 1)
+== every row by id, expected value, rendering and verdict (columns 1, 3, 4 and 5): diff of retained against this run
+(no difference)
+== every row whole: diff of retained against this run
+(no difference)
+== rows (the column header line excluded): retained 108759, this run 108759
+
+######## this run against its negative control: every row whole
+35238c35238
+< regexp/text/t5-escape/0001	normative	value: str:"\\x61bc"	value: str:"\\x61bc"	match
+---
+> regexp/text/t5-escape/0001	normative	value: str:"\\x61bc0"	value: str:"\\x61bc"	difference
+(diff exit code 1)
+
+######## this run's rows of verdict classified-divergence, against the vectors that carry a divergence.broiler-vm field in the pinned archive
+classified divergences: 126; by area and class:
+     36   intl divergence
+      5   intl impl-defined
+     63   regexp divergence
+     21   syntax divergence
+      1   syntax impl-defined
+== ids that carry a divergence.broiler-vm field in broiler-js-vectors-b2c2e2243a086285d806866a64b83297791a8ec5.tar.gz, against this run's ids of verdict classified-divergence: diff
+(no difference: the same ids)
+== ids whose out is a status in the pinned archive, against the ids this run's summary line names as skipped: diff
+(no difference: the same ids)
+== status-vector ids among this run's report rows: 0
