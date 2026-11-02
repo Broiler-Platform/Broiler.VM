@@ -23,6 +23,16 @@
   decision is recorded as corrected, and the text it replaces is quoted.
 - **This family's corrections are listed before any run**: row S1 (kind D), and rows S5, S10, M4 (a non-empty
   match), M7 and T3 (kind R). **Broiler.JS's are listed by row** (decision D23), revised before evidence.
+  *(Note of 2026-11-01, decision D-s5: S5 leaves this family's list. `regexpref` refutes the reading it rested on,
+  and this family's acceptance of `\k` in a class beside a named group is the text's answer. This family's
+  corrections are row S1 (kind D) and rows S10, M4 (a non-empty match), M7 and T3 (kind R).)*
+- *(Added 2026-11-01.)* **The owner's decisions D-s5, D-p5, D-widen and D-partd of 2026-11-01 are recorded**, under
+  the same direction, in section "The owner's decisions of 2026-11-01". SJL-11.3's first runs of the
+  regular-expression vectors found them, on Broiler.JS's corpus revision 31. They are classified at revision 32.
+  Row S5's class case is reread as `regexpref` reads it. Rows M4, S3b and B8 record Broiler.JS's answers through
+  Broiler.Regex `0.1.0-preview.5`. Rows M2, S7, S8 and F3 are widened to the inputs the vectors reach. Broiler.JS's
+  part D population leaves out the status vectors. No sub-area's verdict changes. Every vector difference is now
+  classified by a row, and no clause of "Falsified if" stands.
 - Nothing in this profile changes with this record. The cut-overs are SJL-11.4's and SJL-11.5's own changes, and
   this record is what they apply.
 
@@ -116,7 +126,8 @@ record does not classify falsifies it.
 
 **What the correspondence found:**
 - **This family's matcher is the reference for resource behaviour, and has defects of its own.** It refuses
-  every duplicate group name (row S1), accepts `\k` in a class beside a named group (S5), refuses a lone lead escape
+  every duplicate group name (row S1), accepts `\k` in a class beside a named group (S5; *the text's answer, by
+  decision D-s5 of 2026-11-01*), refuses a lone lead escape
   before a braced escape under `u` (S10), reports the pair's start as `"index"` when `lastIndex` is inside a
   surrogate pair (M4), compares a back-reference by code units under `u` (M7), and copies a raw line terminator
   into `source` (T3). Rows S10, M7 and T3 each have a test262 file that fails at this family's `sjl-12-001` base.
@@ -195,8 +206,13 @@ risk D10's stop.** Nothing here weakens either.
   translator, and parses every pattern with Broiler.Regex's parser first.
 
 **X2 - met.** Every row is classified:
-- **Corrections of this family:** S1 (kind D); S5's class case and S10 (kind R).
+- **Corrections of this family:** S1 (kind D); S5's class case and S10 (kind R). *(Note of 2026-11-01, decision
+  D-s5: S1 (kind D) and S10 (kind R). S5's class case is the text's answer in this family, and a correction of
+  Broiler.JS.)*
 - **Corrections of Broiler.JS:** S2a, S2b, S7, S8, S10's class case and S11; S3b's process abort, with the library.
+  *(Note of 2026-11-01: and S5's class case, by decision D-s5. S7 and S8 are read with the inputs decision D-widen
+  adds. S3b's 200,000 is accepted since Broiler.JS's `a58d31d1`, by decision D-p5, and so reads as engine policy
+  under D7, as 20,000 does.)*
 - **Corrections of Broiler.Regex's preview.4**, where Broiler.JS's fallback masks them: S1's refusal of valid
   duplicates, S2, S2a, S4, S5's parse-only acceptance, S6 and S10's refusal.
 - **Engine policy that becomes a parameter:** S3, the nesting limit, and S3b's deep but finite nesting, which
@@ -272,7 +288,9 @@ risk D10's stop.** Nothing here weakens either.
 `RegexFlagsParser`.
 
 **X2 - met.** F1 and F2 are the same in both. F3 is the same in both for the valid modifiers and for the
-constructor; the literal's late refusals are row S11's.
+constructor; the literal's late refusals are row S11's. *(Note of 2026-11-01, decision D-widen: but `(?x:a)`, which
+Broiler.JS's constructor accepts, passing `x` through as .NET's inline option. It is a correction of Broiler.JS that
+SJL-11.5 answers.)*
 
 **X6.** This family's `RegExpNormalizeFlags` and the binder's flag checks onto the shared flag parser; Broiler.JS's
 `ParseFlags` and `BuildFlagsString` likewise.
@@ -664,6 +682,10 @@ clause 1, and Broiler.JS's SJL-12 record of decision D23, whose note Broiler.JS'
     D22's re-pointing, and S7's and S8's constructor path, where the library's refusal is caught and .NET admits
     the translation, by the translator's retirement at SJL-11.5;
   - an escaped duplicate name in one alternative: S2a;
+  - *(added 2026-11-01, decisions D-s5 and D-widen)* `\k` in a class beside a named group, refused: S5's class
+    case; and the invalid modifier `(?x:a)` accepted by the constructor: F3. Rows M2, S7 and S8 are read with the
+    inputs D-widen adds: the Ohm sign and Kelvin by `(?i:)`; the quantified `^`, `$` and `\b`; and five more `v`-mode
+    classes. No test262 file at `ccaac100` tries any of these, so none names a part A row;
   - a class that joins a lead escape to a braced trail escape: S10's class case;
   - with Broiler.Regex's preview.4: the budget no-match, the shortened match, the wrong index and the look-around
     flip (B1 to B3); the stack-guard fallback, to .NET and to no match (B5, two rows); the process aborts of a flat
@@ -673,7 +695,9 @@ clause 1, and Broiler.JS's SJL-12 record of decision D23, whose note Broiler.JS'
   - **Removed from the plan's list:** `\0` before a non-ASCII digit, which the correspondence shows is
     Broiler.Regex's alone and not observable in Broiler.JS (row S4); it is a library fix (decision D36). An invalid
     literal read as division stays SJL-14's (row S9).
-- **This family's (SJL-11.4).** The milestone lists duplicate named groups only (row S1, kind D). The correspondence
+- **This family's (SJL-11.4).** *(Note of 2026-11-01, decision D-s5: S5's `\k` in a class beside a named group
+  leaves this list. It is the text's answer, and the kind R rows are S10, M4, M7 and T3.)* The milestone lists
+  duplicate named groups only (row S1, kind D). The correspondence
   adds, each kind R: S5's `\k` in a class beside a named group, S10's lone lead escape before a braced escape, M4's
   `"index"` and substring for a non-empty match, M7's back-reference across a surrogate pair, and T3's raw line
   terminator in `source`. Its rule's part A lists each with its row, and the test262 files that fail at its base
@@ -737,6 +761,8 @@ invariant culture, `tr-TR` and `lt-LT` at the after commit. The reason: case-ins
 reads the host culture, and both `tr-TR` and `lt-LT` move its answers (row M2a), which no test262 run shows. The
 plan's reason read "F2 reads the host culture; no test262 run shows it". That is false: row M2, which is bundle
 `sjl-7-001`'s F2, answers alike in every culture the correspondence ran, and the row the culture moves is M2a.
+*(Note of 2026-11-01, decision D-partd: the part's population is the vectors of `regexp/` an engine-level run gives
+a line to. That leaves out the 18 `status: exhausted` vectors, which Broiler.Regex's part D judges at library level.)*
 
 **Decision D34 - Broiler.JS's deletion part.** Its rule's part E: a search and a scoped metadata check, with a
 control; `JSIntl`'s, `DateParser`'s and the compiler's .NET `Regex` listed for their owners. The reason: it makes
@@ -807,6 +833,97 @@ from the text, has no answer to give for an ill-formed record, so without this d
 a defect of Broiler.Regex no change can fix; the non-empty matches beside it are determinate and stay corrections
 (row M4).
 
+*(Note of 2026-11-01, decision D-p5.)* Broiler.JS's answer recorded above, `"index"` 1 and `lastIndex` 1, is
+Broiler.JS's at `1f91b8f1`, with Broiler.Regex `0.1.0-preview.4` on its `u` path. Since `a58d31d1` (2026-10-29)
+Broiler.JS hands every `u` and `v` pattern to `0.1.0-preview.5`. Its run on corpus revision 31 answers `"index"` 0
+and `lastIndex` 0, this family's answer. This decision records that answer as Broiler.JS's. The vector's
+`per-engine.broiler-js` field holds it from revision 32, and its `out` still lists both answers this decision has
+recorded. The class, implementation-defined by this decision, and its lapse do not change.
+
+### The owner's decisions of 2026-11-01
+
+*(Added 2026-11-01.)* SJL-11.3's first engine-level runs of the regular-expression vectors stopped on items this
+record did not hold as the runs showed them. The vectors are Broiler.JS's corpus revision 31, which `regexpref` states.
+Broiler.JS's first run was taken at its `d8cb8406`, whose engine is `66973a29`'s, under the invariant culture,
+`tr-TR` and `lt-LT`. This family's was taken at `89760389`, on branch `sjl-11-3-vm`, from a scratch archive of
+revision 31. Each item was decided on 2026-11-01 as recommended, under the owner's direction of 2026-10-18 quoted
+above: "Please do all recommended decisions and skip waiting for review." Each is recorded here as the owner's
+decision of 2026-11-01. Broiler.JS's corpus revision 32 classifies both runs by them. The decision numbers D1 to D41
+are all assigned, so these four carry names: **D-s5**, **D-p5**, **D-widen** and **D-partd**. None changes a sub-area's
+verdict or a rule.
+
+**Decision D-s5 - row S5's class case is the text's answer in this family.** The correspondence's row S5 read
+"`IdentityEscape[+NamedCaptureGroups]` excludes `k`, in a class too (B.1.2)". On that reading this family's acceptance
+of `[\k<a>](?<a>x)` was a correction of kind R, "on this reading; `regexpref` checks it". `regexpref` refutes the
+reading:
+- **No production passes [NamedCaptureGroups] into a CharacterClass.** B.1.2's ExtendedAtom has
+  `CharacterClass[~UnicodeMode, ~UnicodeSetsMode]`, and ClassContents, NonemptyClassRanges and ClassAtom pass only
+  ?UnicodeMode on. So B.1.2's ClassEscape reads ~NamedCaptureGroups, and `SourceCharacterIdentityEscape`, "SourceCharacter
+  but not c", admits `k`. Without `u` and `v`, `[\k<a>](?<a>x)` and `[\k](?<a>x)` are accepted.
+- **This family's acceptance is the text's answer**, on all three paths. S5's class case is therefore no correction
+  of this family:
+  - this record's lists drop it (the dated notes above);
+  - the kind R corrections are S10, M4 (a non-empty match), M7 and T3.
+- **Broiler.JS's refusal is a correction of Broiler.JS.** Its `RegExpGroupNames` refuses a `\k` in a class whenever
+  the pattern holds a group name, "invalid named reference". SJL-11.5 deletes that precheck (decision D20), and
+  decision D23's list gains the row.
+- **The other halves stand.** S5's parse-only acceptance of `\k<b>(?<a>x)` stays a correction of Broiler.Regex's
+  preview.4 (decision D36).
+- **No test262 file at `ccaac100` puts `\k` in a class beside a named group**, so no part A row of either engine
+  moves for it.
+- **Bundle `sjl-11-001`'s area rule still names S5 as a C1 (R) correction** of this family, in part A and in part B.
+  That rule is unchanged, as its "Revisions" requires. Read with this decision, a move of the class case from
+  acceptance to refusal at SJL-11.4 is away from the text. The bundle's README records the disagreement for the
+  owner, and a new dated rule file before any base run is what can remove it.
+- The reason: decision D25 has `regexpref` check the correspondence's readings, and a reading it refutes is
+  reclassified by a revision of this record.
+
+**Decision D-p5 - Broiler.JS's `u` and `v` path is Broiler.Regex `0.1.0-preview.5` since `a58d31d1`.** The
+correspondence read Broiler.JS at `1f91b8f1`, whose `u` and `v` patterns went to `0.1.0-preview.4`. On 2026-10-29
+`a58d31d1` ("Update dependencies") moved Broiler.JS to `0.1.0-preview.5`, built from Broiler.Regex's `24344b3`, which
+holds SJL-11.2's tasks 2.1 to 2.7 and 2.11. It also re-pointed the routing's library calls. The runs show three
+cells moved:
+- **Row M4's empty match.** Broiler.JS answers `"index"` 0 and `lastIndex` 0, this family's answer. Decision D41's
+  dated note records it, and the vector's `per-engine.broiler-js` field holds it from revision 32.
+- **Row S3b's 200,000.** 200,000 nested `(?:` under `u` is accepted, where the process aborted. It reads as engine
+  policy under D7, as 20,000 does.
+- **Row B8's flat sequence.** It completes with the whole input in about 4 s evaluated alone on the runs' host, where
+  the process aborted. The four first runs, taken beside each other, each rendered the runner's 5 s abort, and the
+  field classifies that abort.
+- **The classes do not change.** Each row records the new answer beside the one it holds.
+- **The runs no longer show some preview.4 answers on the same inputs:** M4's half-pair matches, M7's look-behind and
+  S10's class case. Their corrections are what JSD-0081 lists, and for Broiler.JS the package already made them. The
+  correspondence's "rows by class" says so.
+- **This record, both engines' rules and Broiler.JS's bundle still name `0.1.0-preview.4` as Broiler.JS's restored
+  package.** The disagreement is recorded for the owner and changes no rule.
+- The reason: each difference is classified by the row that holds it (decision D25), and a row's recorded answer
+  that the engine no longer gives cannot hold it.
+
+**Decision D-widen - rows M2, S7, S8 and F3 hold the inputs the vectors reach beyond their probes.** The vectors reach
+inputs the rows' probes did not run. Broiler.JS answers each by the mechanism its row names, and each row is widened
+by a dated note:
+- **M2:** the Ohm sign U+2126 against `[\u03C9]` and `[\u03A9]` under `i` without `u`, and Kelvin against `k`
+  through `(?i:\u212a)` without `u`: .NET's casing. Row M2c, same in both, is narrowed to the rest.
+- **S7:** every quantified look-behind the vectors hold, and a quantified `^`, `$` and `\b` without `u`. The
+  library's refusal is caught, and .NET accepts.
+- **S8:** `[&&a]`, `[--a]`, `[a-]`, `[-a]` and `[\q{(}]` under `v`, by the same path.
+- **F3:** the invalid modifier `(?x:a)`, which the constructor passes through as .NET's inline option. F3 gains a
+  correction of Broiler.JS for it.
+
+The classes of M2, S7 and S8 do not change, and decision D23's list reads them with these inputs. No test262 file at
+`ccaac100` tries any of them. This family answers every one as the specification does. The reason: as decision D-asi
+of JSD-0083 had it, a row read from probes that never reached an input cannot be stretched to hold it. But the
+mechanism a row names can be recorded as reaching it, and the runs show it does.
+
+**Decision D-partd - Broiler.JS's part D population is the regular-expression vectors an engine-level run gives a
+line to.** Broiler.JS's bundle `sjl-11-001` rule's part D takes "every vector of conformance/vectors/regexp/" and holds
+each to the outcome its class expects. Its 18 `status: exhausted` vectors are library-level (decision D25), and the
+corpus's SCHEMA.md section 4 has an engine-level runner skip them. They are judged at library level only, by
+Broiler.Regex's part D. Broiler.JS's engine-level part D population is the non-status vectors. The decision is a dated
+note on Broiler.JS's filed rule, not a rewrite, and decision D33 carries a note of it. The reason: an engine-level run
+can never give a status's outcome. The plan's recommendation, taken under the direction, keeps the rule's three-culture
+identity and its class expectations over every vector that run can give.
+
 ## What this rejects, and why
 
 - **Porting this family's matcher into the package** (SJL-D-14 (b)): the owner chose (a), and `areas/regexp.md`
@@ -848,4 +965,6 @@ decision D23 and the SJL-12 milestone's reading of its clause 1 carry dated note
 - This family's exhaustion verdicts moving outside its rule's class C2 population.
 - The library's nesting maximum not completing on a declared thread under Native AOT.
 - A reading of the specification's text in the correspondence that `regexpref` refutes, until the row is
-  reclassified here.
+  reclassified here. *(Note of 2026-11-01: `regexpref` refuted row S5's reading of `\k` in a class, and decision
+  D-s5 reclassifies the row. The runs of revision 31 found no other refuted reading, and every vector difference is
+  under a row, by decisions D-s5, D-p5 and D-widen.)*

@@ -1,0 +1,79 @@
+ok   sharding-is-stable-and-normalizes-the-path: three spellings of one path answer shard 2 of 4
+ok   sharding-does-not-move-when-the-selection-grows: 0 of 20 paths changed shard after five were added
+ok   sharding-partitions-rather-than-samples: seven shards covered 200 of 200 paths, each exactly once
+ok   sharding-refuses-a-shard-index-its-count-does-not-have: zero shards, an index equal to the count and an index below -1 are all refused
+ok   the-selection-pipeline-is-a-partition: 4 candidates split into 1 selected and 3 excluded, and the stages add back up
+ok   an-exclusion-is-counted-at-the-first-stage-that-removes-it: knownIncorrect=1, outOfScope=0
+ok   an-empty-scope-runs-everything-and-a-stated-one-does-not: no pattern matches all; a bare prefix, a directory prefix and a star all match; a miss does not
+ok   negative-metadata-tests-are-opt-in: without the opt-in 1 of 2 are selected, with it 2
+ok   a-known-incorrect-entry-without-a-reason-is-refused: 1 entry admitted, 1 refused for naming no reason
+ok   the-completion-protocol-tells-the-four-kinds-apart: 6 recorded sequences classified, and a reported failure carries its own text
+ok   an-exception-escaping-the-engine-is-a-failed-case-and-not-a-dead-run: answer `escaped InvalidOperationException`, which groups by type rather than by message
+ok   a-file-that-declares-no-verdict-is-refused-rather-than-defaulted: a missing block, a missing expectation and a missing description are each named
+ok   the-raw-flag-is-required-exactly-where-bytes-exist: a source file declaring raw and an artifact not declaring it are both refused
+ok   every-expectation-kind-round-trips-and-a-fifth-is-refused: 4 kinds render and parse back; an unknown kind names the four that exist
+ok   a-report-renders-and-reads-back-to-the-same-report: 2 results and 0 findings survived the trip
+ok   a-report-names-the-edition-it-was-scored-against: edition|ECMA-262|ES2026|tc39/ecma262|0248456c758431e4bb8e5d26333ff1865123c9cd|spec.html|ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0|archived
+ok   a-report-scored-against-another-edition-is-refused: /tmp/broiler-js-conformance-other-edition.txt was scored against ECMA-262 ES2026 at 0000000000000000000000000000000000000000 and this build is pinned to ECMA-262 ES2026 at 0248456c758431e4bb8e5d26333ff1865123c9cd
+ok   a-retained-pin-reads-back-what-it-declares: a-suite someone/a-suite@abc123 content sha256 def456 over 7 files - archived at somewhere/a-suite.tar.gz
+ok   a-retained-pin-missing-anything-is-refused-rather-than-defaulted: 6 of 6 malformed pins were refused: a missing key, an unknown key, no header, an archived field that is neither yes nor no, an archive with no path, and a path with no archive
+ok   a-suite-that-is-not-the-pinned-one-is-refused-on-every-count-it-can-be: the pinned content raises 0 complaints, different content raises 2 - digest and file count - and different bytes at the same count raise 1; a run under the pin reports it as the revision
+ok   a-detail-carrying-a-separator-cannot-write-a-row-nobody-wrote: one result written from one result, with the separator removed rather than escaped
+ok   a-mode-total-accounts-for-every-case-it-selected: selected 4, executed 3, skipped 1
+ok   removing-a-shard-report-produces-incomplete-coverage: two shards merge clean; one alone reports 2 finding(s) rather than a total of one
+ok   shards-that-read-different-revisions-are-not-one-run: a merge of two revisions is refused rather than added
+ok   a-test-two-shards-both-scored-is-refused: one path scored by two shards is a configuration failure, not two results
+ok   a-merged-report-handed-to-a-merge-is-refused-as-a-shard: a report covering every shard is named as what it is rather than counted as one
+ok   every-named-configuration-failure-can-actually-be-produced: all 6 members reached by an input
+ok   a-floor-holds-on-the-run-that-set-it-and-refuses-one-pass-fewer: two passes set the floor; one pass is reported as a regression naming the figure
+ok   a-suite-revision-change-re-bases-the-floor-and-retains-the-old-one: a run on a new revision re-bases rather than regressing, and the old floor stays in the file
+ok   a-floor-may-not-be-set-from-a-run-that-covered-less-than-it-claimed: a run with a finding and a single shard's run are both inadmissible
+ok   every-source-refusal-has-a-declared-language-class: 30 codes, each with a class
+ok   only-an-early-error-may-score-and-every-class-is-populated: EarlyError=22, OutsideManifest=1, Divergence=3, ImplementationLimit=4
+ok   a-refusal-the-manifest-made-is-not-a-pass-on-a-negative-test: declared a SyntaxError, was refused as ConstructOutsideManifest, scored Skipped
+ok   the-same-refusal-scores-for-a-native-fixture-and-not-for-an-ingested-one: native fixture Passed, ingested test Skipped
+ok   an-unearned-refusal-is-unscorable-and-an-earned-one-passes: positive=Skipped, divergence=Skipped, limit=Skipped, early error=Passed
+ok   a-refusal-that-names-no-code-is-reported-as-a-failure: an unnamed refusal scored Failed
+ok   a-nested-negative-and-a-folded-description-are-read-and-a-block-scalar-is-not-metadata: description `A description folded over two lines.`, flags 0
+ok   the-two-list-spellings-read-to-the-same-list: [onlyStrict, module] both ways
+ok   the-dialect-reader-refuses-metadata-it-cannot-honour: 8 malformed blocks, each refused
+ok   a-key-this-harness-has-no-use-for-is-skipped-and-a-flag-is-not: read past 4 unknown keys to `a file carrying keys this harness has no use for`
+ok   the-dialect-reader-reads-lf-crlf-and-a-lone-carriage-return-alike: three line-terminator spellings read to one frontmatter
+ok   a-block-indented-as-a-unit-reads-the-same-as-one-at-the-margin: both read `folded over two lines` and 1 flag(s)
+ok   the-suites-raw-flag-is-source-and-not-artifact-bytes: 1 case in Script mode carrying source
+ok   a-file-declaring-no-strictness-becomes-two-cases-and-only-one-carries-the-prologue: 2 cases: a.js#strict, a.js#sloppy
+ok   a-file-declaring-its-strictness-or-its-goal-becomes-one-case: onlyStrict, noStrict, module and raw each give one case
+ok   a-parse-negative-naming-harness-files-is-selectable-and-a-positive-one-is-not: 2 selectable negative case(s), 1 declined positive
+ok   a-file-this-harness-cannot-run-is-counted-and-named-rather-than-dropped: 6 declines, each a counted candidate carrying a reason
+ok   a-suite-file-carrying-no-metadata-block-is-declined-and-not-refused: declined: a source file carrying no metadata block, which is a harness or fixture file rather than a test
+ok   the-two-ingested-expectation-spellings-parse-back-to-themselves: `refused-as-early-error SyntaxError`, `completes`
+ok   a-comment-written-with-two-hashes-does-not-end-a-section: 3 of 3 proposals survived two `##` comments; 1 standard, 1 test-harness, 0 complaint(s)
+ok   a-feature-list-that-cannot-be-read-is-refused-rather-than-emptied: 4 of 4 malformed lists were refused - a missing heading, an empty section, one name under two headings, a name under none - and the refused one handed back 0 proposals rather than the one it had already read
+ok   a-trailing-comment-is-not-part-of-a-feature-name: `a-proposal  # …` declares `a-proposal`
+ok   a-test-claiming-a-proposal-is-not-scored-and-one-claiming-the-language-is: excluded 2 of 4 - a test claiming a proposal alongside a published construct is still about the proposal - and kept [about-the-language.js, about-nothing.js]
+ok   an-empty-exclusion-set-excludes-nothing: with nothing declared a proposal, 2 of 2 tests are selected and 0 excluded
+ok   the-feature-filter-cannot-opt-back-into-an-excluded-test: asking for `a-proposal` by name selected 0 tests, and a test the scope filter would also have removed is counted at the exclusion (1) rather than at the filter (0)
+ok   the-test262-partition-is-exhaustive-and-disjoint: 500 files, each in exactly one shard at 1, 2, 3, 4, 7, 16 and 64 shards
+ok   a-shard-argument-is-read-or-refused-and-never-defaulted: `3/8` reads; no --shard is the whole selection; `3`, `a/b`, `4/4` and `-1/4` are refused
+ok   a-merge-of-every-shard-equals-an-unsharded-run-over-the-same-list: four shards of 120 files merge to test262 120 files, 240 variants: pass 160, fail 13, unsupported 34, exhausted 22, skipped 11, with 3 families and 2 dimensions identical to the unsharded run
+ok   removing-a-test262-shard-report-produces-incomplete-coverage: three of four shards report incomplete coverage and a coverage field that says partial, not a whole run of a smaller suite
+ok   shards-taken-under-two-manifests-or-two-admitted-sets-are-not-one-run: a merge of two manifests and a merge of two declined sets are both refused rather than added
+ok   the-family-table-names-a-family-the-run-met-and-omits-one-it-did-not: 3 families, most-met first: a class declaration, a call with more than 255 arguments, a generator function
+ok   an-exhaustion-is-counted-apart-from-a-failure-and-names-its-dimension: one failure and one exhaustion, and the exhausted variant is named with `WallClock`
+ok   a-sharded-limited-or-narrowed-run-says-so-where-a-rule-can-see-it: 3 of 3 partial runs render `coverage|partial`, and the whole one renders `coverage|whole`
+ok   a-test262-report-round-trips-and-a-forged-coverage-claim-is-refused: 6 results survived the trip; a report edited to claim it was whole is refused rather than believed
+ok   a-test262-report-of-an-earlier-format-is-recognised-as-one-and-then-refused: a version-1 report is recognised as this kind and refused by version: /tmp/broiler-js-conformance-test262-earlier.txt was written by `# broiler-js-conformance test262 report 1` and this build reads `# broiler-js-conformance test262 report 2`; a report of an earlier version is refused rather than read under the current one
+ok   the-failure-classification-files-every-failing-variant-exactly-once: 4 kind and 4 area taggings over 4 failures, 2 areas, and a verdict naming no kind is filed under `(no kind was named)` rather than dropped
+ok   a-declared-feature-is-a-tag-and-not-a-partition-of-the-failures: three failures declare three taggings over two of them, so the feature column does not sum to the failed total and the report states how many variants it covers
+ok   the-json-report-parses-and-its-members-are-the-schema-s-in-order: 18 members rendered, 18 promised by the schema, and 2 failure record(s) against a failed total of 2
+ok   a-whole-run-floor-holds-and-catches-a-fall-in-passes-and-a-rise-in-failures: the run that set the floor holds it; fewer passes and more failures each regress
+ok   a-whole-run-floor-re-bases-across-a-revision-or-a-manifest-and-retains-the-old-rows: a moved revision and a changed manifest both re-base rather than compare, the retired rows stay in the file, and the file round-trips
+ok   a-run-taken-without-a-retained-pin-may-not-be-retained-and-may-not-set-a-floor: an unpinned run and a single shard are both refused a floor, and the JSON document says `retainable: false` with the reason
+ok   a-native-run-naming-no-manifest-is-taken-under-the-wide-manifest-with-the-harness-loaded: --form native with no --manifest reads as: manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.bigint, broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.intl, broiler.javascript.modules, broiler.javascript.native, broiler.javascript.shadowrealm, broiler.javascript.shared, broiler.javascript.temporal; declined (none); form native (x86-64-sysv)
+ok   a-native-run-naming-the-slice-manifest-is-refused-before-it-scores-anything: refused: the native output form is admitted by broiler.javascript.wide and broiler.javascript.numeric, and this run names `broiler.javascript.slice`
+ok   a-test262-report-of-the-native-form-round-trips-its-form-row: a native report writes and reads back `form|native|x86-64-sysv`, and a bytecode report writes no form row
+ok   a-whole-run-floor-re-bases-across-an-output-form-and-holds-within-one: a bytecode floor re-bases onto a native run and back, a native floor re-bases onto another backend and holds its own run, and the form line round-trips
+ok   test262/the-host-timer-waits-without-spending-live-bytes-as-the-clock-passes: the host timer answered `fired` and the spinning stand-in `exhausted LiveBytes` under a 1048576-byte live-byte ceiling
+FAIL a vector whose out is a status is skipped, gets no report line, and the summary counts and names it: asked [first, second, third, fourth]; skipped []; 4 evaluated, 4 lines; summary: broiler-js-conformance: 4 vectors: 4 match, 0 classified divergences, 0 unclassified differences
+ok   an outcome is a status when one of its alternatives is, and a string holding the word is not: 6 outcomes read
+broiler-js-conformance: 1 of 78 harness checks FAILED
