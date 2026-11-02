@@ -26,6 +26,8 @@ writes again byte for byte. A run file's commands name the machine's worktrees a
 has been taken.** *(2026-11-02, at SJL-17.2: the engine-level vector runs of section 3 are retained, and the
 correspondence carries dated notes on rows O3 and O5b; neither is a run of the rule.)* *(2026-11-02, later, before
 the merge of Broiler.JS's change: and on row O6, by the owner's decision E-o6w, section 3's last note.)*
+*(2026-11-02, later, at SJL-17.3: row O3's reading (F1), which section 3 says "stays open for SJL-17.3", is settled by
+the owner's decision E-o3h, which JSD-0084 records. It is not a run of the rule.)*
 - Every run of the rule is taken at the base commit or the after commit, which the rule defines before either exists
   (JSD-0084's decision E14): the after commit is the default-branch merge that lands SJL-17.4's cut-over, and the base
   commit is its first parent.
@@ -101,7 +103,8 @@ Revision 34 classifies both engines' first runs, on Broiler.JS's branch `sjl-17-
   [JSD-0084](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0084-collation-moves-to-the-shared-intl-library.md)
   records. The vectors under `es`, `sv` and `th` expect of it the `en-US` answer that its locale list resolves (rule
   N28), and it gives that too. So revision 34 writes no `divergence.broiler-vm` field, and row O3's reading (F1) stays
-  open for SJL-17.3.
+  open for SJL-17.3. *(Note of 2026-11-02, later, at SJL-17.3: it is settled by the owner's decision E-o3h of that
+  day. The implicit weights by block stay, and this family's expectations in revision 34 do not move.)*
 - **Broiler.JS's differences** are its own, each under a row of the [correspondence](correspondence.md): O2, O3,
   O5a, O5b, O7 and O8. Two rows carry dated notes for answers the run showed, by the owner's decisions E-o5b and E-o3j
   of 2026-11-02. Broiler.JS's bundle of the same name reads them, and this bundle does not.
