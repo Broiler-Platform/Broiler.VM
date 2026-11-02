@@ -24,7 +24,8 @@ writes again byte for byte. A run file's commands name the machine's worktrees a
 
 **State:** rule and correspondence only, 2026-11-01, at SJL-17.1. **Nothing here is a verdict, and no run of the rule
 has been taken.** *(2026-11-02, at SJL-17.2: the engine-level vector runs of section 3 are retained, and the
-correspondence carries dated notes on rows O3 and O5b; neither is a run of the rule.)*
+correspondence carries dated notes on rows O3 and O5b; neither is a run of the rule.)* *(2026-11-02, later, before
+the merge of Broiler.JS's change: and on row O6, by the owner's decision E-o6w, section 3's last note.)*
 - Every run of the rule is taken at the base commit or the after commit, which the rule defines before either exists
   (JSD-0084's decision E14): the after commit is the default-branch merge that lands SJL-17.4's cut-over, and the base
   commit is its first parent.
@@ -135,6 +136,20 @@ Broiler.JS's own runs on both revisions.
 34 (`f3bb5588`, observed on its branch). That rewrote 19 `divergence.broiler-js` fields and nothing else. No field of
 this family changed, so the revision 34 run above stands for revision 34 as it now is. The scratch pin's archive is of
 `60fc3a5b`, as the table says.)*
+
+*(2026-11-02, before the merge of Broiler.JS's change. Broiler.JS's CI run 41418502645
+(Broiler-Platform/Broiler.JS#1091) ran its corpus revision 34 on `engine vectors (windows-latest)`, job 125188274552:
+Windows Server 2025, image `windows-2025-vs2026` 20261021.278.1, where .NET's globalization is the operating system's
+`icu.dll`, of a version neither the job's log nor the image's software list states. The job failed on differences of
+Broiler.JS that the host above did not show: that host's collator applies none of German phonebook, German search and
+root search under `en`. Broiler.JS's revision 34, corrected in place before its merge, classifies them for Broiler.JS
+under rows O16 and O6, row O6 read for that host by the owner's decision E-o6w of 2026-11-02, which
+[JSD-0084](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0084-collation-moves-to-the-shared-intl-library.md)
+records with a dated note on row O6 in the [correspondence](correspondence.md) (observed on Broiler.JS's branch
+`sjl-17-2-win`). That adds `divergence.broiler-js` fields, and those vectors' `class` reads `divergence` where it read
+`normative`. This family's verdict on a vector reads only its own fields (`VectorsCommand.cs`), and its answers there
+are its tables', which read no host, so the revision 34 runs above give its verdicts on revision 34 as it now is; a
+run taken again would differ from them only in that `class` column.)*
 
 ## 9. Exclusions
 

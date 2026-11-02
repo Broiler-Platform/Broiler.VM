@@ -24,6 +24,10 @@
 - *(Added 2026-11-02.)* **The owner's decisions E-han, E-o5b and E-o3j of 2026-11-02 are recorded**, in section "The
   owner's decisions of 2026-11-02", each taken as recommended under the same direction. SJL-17.2's first runs of the
   collation vectors stopped on them. None changes a row's class or a rule, and row O3's reading stays open.
+- *(Added 2026-11-02, later, before the merge of SJL-17.2's change.)* **The owner's decision E-o6w of 2026-11-02 is
+  recorded** in the same section. On CI's `windows-latest` host, whose collator applies no German search tailoring,
+  Broiler.JS's answer to row O6's German search pair at `base` is data policy (C5), as row O16 is. It changes no row's
+  class and no rule.
 
 **Date:** 2026-11-01.
 
@@ -303,6 +307,30 @@ answers as the reference, and SJL-17.5 takes Broiler.JS's root from the shared d
 **What did not move.** No row changes class, no rule changes, and this record's list of Broiler.JS's corrections names
 the same rows. Every other difference of Broiler.JS's run is under a row as written: O2 (the host's UCA 15.1 weights
 on the conformance files' pairs), O5a, O7 and O8.
+
+*(Added 2026-11-02, later, before the merge of SJL-17.2's change. Decided on 2026-11-02 as recommended, under the
+owner's direction of 2026-10-18 quoted above, and recorded here as the owner's decision of that day.)*
+
+**Decision E-o6w - row O6's German search pair on a host that applies no German search tailoring is data policy.**
+Broiler.JS's CI run 41418502645 (Broiler-Platform/Broiler.JS#1091) ran its corpus revision 34 on `engine vectors
+(windows-latest)`, job 125188274552: Windows Server 2025, image `windows-2025-vs2026` 20261021.278.1, where .NET's
+globalization is the operating system's `icu.dll`, of a version neither the job's log nor the image's software list
+states. On that host the collator Broiler.JS's `CompareInfo` gives applies none of German phonebook, German search and
+root search under `en`: it orders as `de` and `en` do without them, as the reference does with the tailoring dropped.
+Where a vector's note names row O16, its Broiler.JS column, "the host's ICU tailoring of each locale", and its class,
+data policy (C5), hold that answer as written. One vector names row O6 alone: `a` against `ä` under `de` with `usage:
+"search"` at `base`, which the reference, this family and German search answer `<`, and Broiler.JS on that host `=`.
+Row O6's Broiler.JS column reads "**the same orders** (`:6221-6227`); the same defaults", and its class "Same in
+both". That holds on the correspondence's machine, but on that host the run showed an answer the row does not record,
+which this record's "Falsified if" names. The difference is the host's data, German search's tailoring, which row O16
+places with each engine's locale list. So Broiler.JS's answer to row O6's German search pairs, on a host whose
+collator applies no German search tailoring, is data policy (C5), as row O16 is. SJL-17.5's cut-over to the shared
+collator answers it, since German search is in decision E3's covered list. Row O6's class stays "Same in both" for the
+engines' code: on a host that applies the tailoring, Broiler.JS answers as the reference and this family do. The table
+below is unchanged, and the correspondence carries a dated note on row O6. Broiler.JS's corpus revision 34, corrected
+before its merge as its revision 28 was for that host's Intl differences, classifies that vector under row O6 and the
+tailoring vectors that host showed under row O16 (on its branch `sjl-17-2-win`, observed, not merged). No rule
+changes, and this record's list of Broiler.JS's corrections is unchanged.
 
 ## Every row, classified
 

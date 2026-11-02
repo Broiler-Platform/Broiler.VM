@@ -2550,6 +2550,13 @@ recorded.** One change in this repository, on the branch `sjl-17-2-vm`, named by
     squared katakana word U+3300; the other compatibility forms answer as the reference, as JSD-0084's note on E-o5b
     says)*;
   - E-o3j: row O3's Broiler.JS column holds its host's ICU, which does not know CJK Extension J, as data policy (C5).
+  - E-o6w *(added 2026-11-02, later, before the merge of Broiler.JS's change)*: on CI's `windows-latest` host,
+    whose collator applies no German search tailoring (Broiler.JS's CI run 41418502645, job 125188274552),
+    Broiler.JS's answer to row O6's German search pair at `base` is data policy (C5), as row O16 is, with a dated
+    note on row O6; Broiler.JS's revision 34, corrected in place before its merge, classifies that host's collation
+    differences under rows O16 and O6 (observed in Broiler.JS, on its branch `sjl-17-2-win`, not merged). This
+    family's runs on revision 34 stand, since its verdicts read only its own fields. Recorded on this repository's
+    branch `sjl-17-2-vm-win`, `docs/` only.
 - **What did not move.** No row changes class and no rule changes. This family's vectors pin stays at revision 32, where
   SJL-11's task 3.5 left it; moving it to revision 34 is a later task, after Broiler.JS merges that revision (rule N13).
 
