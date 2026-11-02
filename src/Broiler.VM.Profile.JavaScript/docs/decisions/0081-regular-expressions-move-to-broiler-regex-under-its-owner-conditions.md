@@ -126,12 +126,14 @@ record does not classify falsifies it.
 
 **What the correspondence found:**
 - **This family's matcher is the reference for resource behaviour, and has defects of its own.** It refuses
-  every duplicate group name (row S1), accepts `\k` in a class beside a named group (S5; *the text's answer, by
-  decision D-s5 of 2026-11-01*), refuses a lone lead escape
+  every duplicate group name (row S1), accepts `\k` in a class beside a named group (S5), refuses a lone lead escape
   before a braced escape under `u` (S10), reports the pair's start as `"index"` when `lastIndex` is inside a
   surrogate pair (M4), compares a back-reference by code units under `u` (M7), and copies a raw line terminator
   into `source` (T3). Rows S10, M7 and T3 each have a test262 file that fails at this family's `sjl-12-001` base.
   Its scanner faults on a literal ending in a backslash (S9b), which is the front end's, not this area's.
+  *(Note of 2026-11-01, decision D-s5: the clause "accepts `\k` in a class beside a named group (S5)" leaves this
+  list of defects. That acceptance is the text's answer, as `regexpref` reads B.1.2, and so no defect of this
+  family. The defects this paragraph lists are rows S1, S10, M4, M7 and T3, and S9b's, which is the front end's.)*
 - **Its own remark is refuted.** The matcher says neither ceiling "is reachable by a pattern that was going to
   answer". A greedy `a*` over a long enough subject stops at the frame ceiling, and a loop of captures at the trail
   ceiling (rows B1 and B6): a greedy quantifier is one `Run` instruction over a class only.
@@ -889,7 +891,12 @@ cells moved:
   policy under D7, as 20,000 does.
 - **Row B8's flat sequence.** It completes with the whole input in about 4 s evaluated alone on the runs' host, where
   the process aborted. The four first runs, taken beside each other, each rendered the runner's 5 s abort, and the
-  field classifies that abort.
+  field classifies that abort. What it classifies is the runner's time limit, not the row's class: R4, no CLR
+  recursion in the matcher, preview.5 already meets, since the process no longer aborts. The time, which grows about
+  as the square of the length, is not attributed to the library or to the adapter, and nothing yet shows that
+  SJL-11.5 removes it. Its classification stays open for the owner. The vector so breaks the premise of SCHEMA.md
+  section 7 of Broiler.JS's corpus, that a runner's limit is far above the time any vector takes, and a later corpus
+  revision may restore it by a smaller input.
 - **The classes do not change.** Each row records the new answer beside the one it holds.
 - **The runs no longer show some preview.4 answers on the same inputs:** M4's half-pair matches, M7's look-behind and
   S10's class case. Their corrections are what JSD-0081 lists, and for Broiler.JS the package already made them. The

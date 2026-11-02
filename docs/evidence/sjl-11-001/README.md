@@ -176,7 +176,11 @@ root was built in Release with `--disable-build-servers` and `-warnaserror`
 `LANGUAGE`, and a script that wrote each log whole: a header naming the commit, the build, the archive and its pin,
 the host and the command; then the runner's output; then the exit code and the end time. Each run's negative control
 is a second run with `--mutate regexp/text/t5-escape/0001`, a row T5 vector both engines match.
-[`vectors/hashes.txt`](vectors/hashes.txt) holds every file's SHA-256.
+[`vectors/hashes.txt`](vectors/hashes.txt) holds every file's SHA-256. The logs' headers name the pin and the archive
+as the run's scratch folder named them, the names Broiler.JS's bundle `engine/` keeps: `broiler-vm-revision-31.pin`
+and `broiler-vm-revision-32.pin` are this bundle's `scratch-pin-revision-31.pin` and `scratch-pin-revision-32.pin`,
+byte for byte, and `archive-2.tar.gz` is the second of the two scratch archives written of each run's corpus commit,
+the one extracted and hashed. The logs are kept as written, since their hashes are recorded.
 
 | Run | Corpus | Result | Files |
 |---|---|---|---|
