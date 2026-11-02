@@ -1,0 +1,19 @@
+# command (from <rows>/, JS_ROOT=/home/user/js-s17p): env -u LANGUAGE LANG=de_DE.UTF-8 LC_ALL=de_DE.UTF-8 TZ=UTC timeout 900 dotnet /home/user/js-s17p/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/o14-invariant.js
+# revision: Broiler.JS 61cb15b5472955079f3b0bf98c600f4128094614; Broiler.Unicode.Algorithms 0.1.0-preview.6
+# probe: built/o14-invariant.js sha256 12457dd87490f11c2ca73c1cd6125ca41ca26526ad39da34aa0ce5550c6ed6b2
+o14 en {} => en: " " < "-" < "1" < "10" < "2" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" < "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 de {} => de: " " < "-" < "1" < "10" < "2" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" < "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 de-u-co-phonebk {} => de-u-co-phonebk: " " < "-" < "1" < "10" < "2" < "a" < "A" < "a-b" < "ab" < "ae" < "\u00e4" < "\u00c4" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 sv {} => sv: " " < "-" < "1" < "10" < "2" < "a" < "A" < "a-b" < "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z" < "\u00e4" < "\u00c4"
+o14 es {} => es: " " < "-" < "1" < "10" < "2" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" < "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 th {} => th: " " = "-" < "1" < "10" < "2" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" = "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 ja {} => ja: " " < "-" < "1" < "10" < "2" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" < "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 xx {} => de-DE: " " < "-" < "1" < "10" < "2" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" < "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 undefined {} => de-DE: " " < "-" < "1" < "10" < "2" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" < "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 en {sensitivity: "base"} => en: " " < "-" < "1" < "10" < "2" < "a" = "A" = "\u00e4" = "\u00c4" < "a-b" < "ab" < "ae" < "b" = "B" < "\u00e9" = "e" = "E" < "\u00f1" = "n" < "z"
+o14 en {numeric: true} => en: " " < "-" < "1" < "10" < "2" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" < "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 en {caseFirst: "upper"} => en: " " < "-" < "1" < "10" < "2" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" < "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 en {ignorePunctuation: true} => en: " " = "-" < "1" < "10" < "2" < "a" < "A" < "\u00e4" < "\u00c4" < "a-b" = "ab" < "ae" < "b" < "B" < "e" < "E" < "\u00e9" < "n" < "\u00f1" < "z"
+o14 localeCompare a B => < < <
+o14 supportedLocalesOf => ["de", "en", "en-US", "sv", "th", "ja"]
+exit=0

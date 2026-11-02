@@ -1,6 +1,6 @@
 # The shared JavaScript libraries programme — status ledger
 
-**Last updated:** 2026-11-01, at SJL-11.3's classification of both engines' first runs on the regular-expression vectors (SJL-11 `In progress`: the conformance root's vectors run skips a status vector and names it; row S5's class case reread as `regexpref` reads it, rows M4, S3b and B8 recording Broiler.JS's answers through Broiler.Regex `0.1.0-preview.5`, rows M2, S7, S8 and F3 widened, and Broiler.JS's part D population read without the status vectors, each the owner's decision of 2026-11-01, in JSD-0081; this family's runs on Broiler.JS's corpus revisions 31 and 32 retained from scratch archives, its vectors pin unmoved; every clause unmet; nothing accepted). Before that: 2026-11-01, at the change before SJL-13's step 1 in this repository (SJL-13 `In progress`: the
+**Last updated:** 2026-11-01, at SJL-11.3's classification of both engines' first runs on the regular-expression vectors (SJL-11 `In progress`: the conformance root's vectors run skips a status vector and names it; row S5's class case reread as `regexpref` reads it, rows M4, S3b and B8 recording Broiler.JS's answers through Broiler.Regex `0.1.0-preview.5`, rows M2, S7, S8 and F3 widened, and Broiler.JS's part D population read without the status vectors, each the owner's decision of 2026-11-01, in JSD-0081; this family's runs on Broiler.JS's corpus revisions 31 and 32 retained from scratch archives, its vectors pin unmoved; every clause unmet; nothing accepted). Before that: 2026-11-01, at SJL-17.0 and SJL-17.1 in this repository (SJL-17 `In progress`: started at the owner's words of 2026-10-19 once SJL-9.3a merged; collation accepted as an adoption in JSD-0084, the owner's decisions E1 to E14 recorded, the correspondence retained and the rule committed in bundle `sjl-17-001`; every clause unmet; nothing accepted). Before that: 2026-11-01, at the change before SJL-13's step 1 in this repository (SJL-13 `In progress`: the
 parse-corpus comparison reads sub-population B5, the construct census runs on the declared compilation stack, and
 rule I7's identity reads a restored package's source commit; the owner's decisions of 2026-10-30, on the evidence
 workflow's runners, and of 2026-11-01, on Broiler.Regex's version stream, recorded; every clause unmet; nothing
@@ -191,7 +191,7 @@ milestone `Not started`; every decision open).
 [the programme roadmap](roadmap.md). The roadmap and the [milestone files](milestones/) define the
 planned work and the objective exit gates. This ledger records whether those gates have evidence.
 
-**Today SJL-0 to SJL-13 are `In progress` and every other milestone is `Not started`**
+**Today SJL-0 to SJL-13 and SJL-17 are `In progress` and every other milestone is `Not started`**
 *(2026-10-13; read "**Today SJL-0 to SJL-3 are `In progress` and every other milestone is `Not started`:**"; then,
 until 2026-10-14, "SJL-0 to SJL-4"; then, until 2026-10-15, at SJL-6.1, "SJL-0 to SJL-5", which SJL-6.0's
 record should have moved; then, until 2026-10-16, at SJL-7's start, "SJL-0 to SJL-6"; then, until 2026-10-17,
@@ -199,7 +199,7 @@ at SJL-8's start, "SJL-0 to SJL-7"; then, until 2026-10-18, at SJL-10's start, "
 2026-10-19, at SJL-12's start, "SJL-0 to SJL-8 and SJL-10"; then, until 2026-10-26, at SJL-12's after evidence,
 "SJL-0 to SJL-8, SJL-10 and SJL-12", which SJL-11's start on 2026-10-25 should have moved; then, until
 2026-10-26, at SJL-9's start, "SJL-0 to SJL-8 and SJL-10 to SJL-12"; then, until 2026-10-26, at SJL-13's start,
-"SJL-0 to SJL-12")*:
+"SJL-0 to SJL-12"; then, until 2026-11-01, at SJL-17's start, "SJL-0 to SJL-13")*:
 
 - the shared folder exists in Broiler.JS, `Broiler.ECMAScript/`, with its conventions, rules SL1 to
   SL10, its version stream and its Native AOT probe. It holds the areas of number conversion, numerics,
@@ -221,7 +221,8 @@ at SJL-8's start, "SJL-0 to SJL-7"; then, until 2026-10-18, at SJL-10's start, "
   [`sjl-7-001`](../evidence/sjl-7-001/README.md), [`sjl-8-001`](../evidence/sjl-8-001/README.md),
   [`sjl-9-001`](../evidence/sjl-9-001/README.md), [`sjl-10-001`](../evidence/sjl-10-001/README.md),
   [`sjl-11-001`](../evidence/sjl-11-001/README.md), [`sjl-12-001`](../evidence/sjl-12-001/README.md),
-  [`sjl-13-001`](../evidence/sjl-13-001/README.md) and [`sjl-13-002`](../evidence/sjl-13-002/README.md);
+  [`sjl-13-001`](../evidence/sjl-13-001/README.md), [`sjl-13-002`](../evidence/sjl-13-002/README.md) and
+  [`sjl-17-001`](../evidence/sjl-17-001/README.md);
   Broiler.JS's `docs/evidence/sjl-0-001/` to `docs/evidence/sjl-13-001/`; Broiler.Unicode's
   `docs/evidence/sjl-7-001/`; and Broiler.RegEx's `docs/evidence/sjl-11-001/`. **`sjl-10-001` holds its after arm in
   both repositories**, each part of each rule met as written, and nothing in either is accepted. **`sjl-12-001` holds
@@ -234,7 +235,12 @@ at SJL-8's start, "SJL-0 to SJL-7"; then, until 2026-10-18, at SJL-10's start, "
   correspondence, its rule's inputs and its vectors run at corpus revision 30 on its pin, and `sjl-13-002` its rule
   only; Broiler.JS's `sjl-13-001` (observed) holds the home's rule, the stage table's classification and its inputs,
   merged in Broiler-Platform/Broiler.JS#1081 as `238069ab`, and both engines' runs on the `syntax` vectors, merged in
-  #1082 as `ed494b2e`; nothing in either is a verdict, and no base of any of their rules is taken.
+  #1082 as `ed494b2e`; nothing in either is a verdict, and no base of any of their rules is taken. This family's
+  `sjl-17-001` holds its rule and its correspondence only, and Broiler.JS's is observed when its SJL-17.1 change
+  merges.
+
+*(Revised 2026-11-01, at SJL-17.1. Its last item named Broiler.VM's bundles to `sjl-13-001` and `sjl-13-002`, with
+no `sjl-17-001`, and ended "nothing in either is a verdict, and no base of any of their rules is taken.")*
 
 *(Revised 2026-11-01, when this family's pin moved to corpus revision 30. Its last item named Broiler.JS's bundles as
 "`docs/evidence/sjl-0-001/` to `docs/evidence/sjl-12-001/`" and ended "This family's `sjl-13-001` holds its rules, its
@@ -2347,7 +2353,96 @@ unmet. Nothing is accepted. Next:
 - for SJL-11, a dated rule file in bundle `sjl-11-001` that admits the owner's change to the evidence workflow, before
   any of its part A's runs.
 
-**2026-11-01, later: SJL-11.3's first runs of the regular-expression vectors are classified, and this family's vectors
+**2026-11-01, later again: SJL-17 starts before SJL-9, which it waits on, and SJL-7, SJL-8 and SJL-3 meet their gates,
+at the owner's words (SJL-17.0).** SJL-17 waits on SJL-9 for the Intl library's provider interface, its locale core and
+the data home, and through SJL-9 on SJL-7 for normalization. SJL-9 has every clause unmet, as its row says, and waits
+on SJL-7 and SJL-8, which have every clause met on their bundles and none accepted; none may meet its gate before
+SJL-3 meets SJL-3's. SJL-3 is still not met: clauses 7 and 13 are unmet, as its row says.
+
+On 2026-10-19 the owner wrote "Also continue with the other remaining SJL milestones". This ledger reads it, as it did
+at SJL-11's and SJL-9's starts, as the choice to start SJL-17, with SJL-9 and SJL-11, before the milestones they wait on
+meet their gates. **Each milestone files its own start entry** (JSD-0081 decision D2): this one is SJL-17's. SJL-9.0's
+entry said that SJL-17 starts with its own record once SJL-9's library has its provider and its locale core, and that
+its row stays `Not started` until then; SJL-9.3a merged both in Broiler.JS as `b22e7d6a`
+(Broiler-Platform/Broiler.JS#1083, observed), so SJL-17 starts now, with SJL-17.1's records (JSD-0084's decision E1).
+It is SJL-17's first record in this repository, filed with SJL-17.1's records in the change that lands them (update
+rule 1). The owner's standing direction of 2026-10-18, "Please do all recommended decisions and skip waiting for
+review.", governs the decisions SJL-17 takes, and changes no rule.
+
+The choice moves no gate:
+- **SJL-17 may not meet its gate before SJL-9 meets SJL-9's**, and so not before SJL-7, SJL-8 and SJL-3 meet theirs.
+  Update rule 10 still holds SJL-17's row to the milestone it waits on.
+- No other row moves with it.
+
+SJL-17's row moves to `In progress` under update rule 4, because this record is SJL-17's first; every clause is unmet.
+
+**2026-11-01, later again: SJL-17.1 is filed in this repository.** The area verdict is
+[JSD-0084](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0084-collation-moves-to-the-shared-intl-library.md),
+decided on 2026-11-01: **collation is accepted**, the Unicode Collation Algorithm over CLDR's root collation and each
+embedding's tailorings, with `sensitivity`, `ignorePunctuation`, `numeric` and `caseFirst`, moving to
+`Broiler.ECMAScript.Intl` as `UcaCollator`, over the collation tables the data home's generator writes. **It is an
+adoption** (X1): Broiler.JS implements no collation algorithm and hands its strings to the host, so the shared
+collator is this family's, which Broiler.JS adopts for the locales and collations its covered list names. Each engine
+keeps its `Intl.Collator` objects, its option reads in specification order, `localeCompare`'s coercion, its errors and
+its locale providers. This family's tables stay byte for byte under rule N28, and its locale list does not change.
+
+**The owner's direction.** On 2026-10-18 the owner wrote: "Please do all recommended decisions and skip waiting for
+review." Under it, on 2026-11-01, each decision SJL-17's plan left open was taken as the plan recommends, E1 to E14, and
+JSD-0084 records each as the owner's decision. None was decided again; where the correspondence found a drifted
+citation or a reading the plan's text leaves open, the decision says so beside it. **It changes no rule of the
+programme.** `Accepted` still needs review (update rule 7), rules still come before runs, and no gate moves. Among the
+decisions:
+- E2: X1 is an adoption;
+- E3: Broiler.JS's shared collator covers root and the tailorings for `de` (phonebook, search), root `search`, `en`,
+  `es`, `sv` and `th`, per locale and collation; CJK and the rest stay on its host provider;
+- E4: under invariant globalization no locale collates by code unit;
+- E6 and E7: normalization through Broiler.Unicode, and the caller's meter at this family's points and in its units, so
+  there is no class C2;
+- E8: Broiler.JS's bound `compare` is cached;
+- E10: no part in a zone with daylight-saving time, and no measurement;
+- E11: both engines' deletion lists;
+- E14: one merge per engine, the bases after SJL-9's after commits.
+
+The stream version that carries the collator is published only with the owner's approval, and by the owner's
+direction of 2026-11-01, "Please keep using version 0.1.0-x scheme!", it is a `0.1.0-preview.N` of the shared stream.
+
+**The correspondence** is retained in bundle [`sjl-17-001`](../evidence/sjl-17-001/correspondence.md), with every
+probe, each engine's answers and the reference Node.js release's as a witness. It was read from code at this family's
+`83290f9` and Broiler.JS's `61cb15b5`, and every behavioural cell was run: this family's in both forms, Broiler.JS's
+again under invariant globalization and under a German and a Turkish host culture.
+- **Every row is classified**, and no class is unknown.
+- **This family has no correction in this area.** One reading, Han across blocks, waits for SJL-17.2's vectors.
+- **Broiler.JS's corrections** include `numeric` and `caseFirst` applied, the option reads, `ignorePunctuation`'s
+  reach, the bound `compare`'s identity and the code-unit comparison under invariant globalization.
+- **Its findings against the plan and the records**, F1 to F7, are each answered in JSD-0084.
+
+**The comparison rule is committed before any code.** This family's rule,
+[`decision-rule-area.md`](../evidence/sjl-17-001/decision-rule-area.md), has three parts:
+- part A: test262 in both forms on hosted runners, at the base and after commits, with no named correction and no
+  class C2, C3 or C5;
+- part B: `src/tests/cldr/orderings/`, the archived CollationTest files and the collation checks, with every other
+  Intl, tzdb and Temporal check as a guard, unchanged, with no class;
+- part C: the wide twins, with no class.
+
+The base commit is the first parent of the merge that lands SJL-17.4, and the after commit is that merge. Its README
+says that it holds the rule and the correspondence only, and that nothing in it is a verdict.
+
+**Dated notes**, each quoting the text it reads:
+- JSD-0043 §5, §6 and §7, where the collator, its validation and what was not done move;
+- SJL-17's milestone: SJL-17.4's deletion list, SJL-17.5's covered locales, deletion list and corrections, and exit
+  clause 3, read against decisions E3 and E11; SJL-17.5's normalization item keeps JSD-0082's note of 2026-10-26;
+- `areas/locale-data-and-intl.md`, section 3.4's table, read per component.
+
+**Broiler.JS's half is filed in its own change**: its area entry "Collation (SJL-17.1)", its status row, and its
+bundle `sjl-17-001`'s rule with its divergence groups and its invariant probe. This ledger observes it when it merges.
+
+**Nothing is accepted, and no base is taken.** Review is deferred (update rule 7). SJL-17 stays `In progress`, every
+clause unmet, and may not meet its gate before SJL-9 meets SJL-9's. Next:
+- Broiler.JS's SJL-17.1 change merges; its merge commit then stands in JSD-0084 and in this ledger's SJL-17 row, in
+  place of its branch;
+- SJL-17.2: the collation vectors and the `orderings` copy, after SJL-17.1.
+
+**2026-11-01, later still: SJL-11.3's first runs of the regular-expression vectors are classified, and this family's vectors
 run skips a status vector.** One change in this repository, on the branch `sjl-11-3-vm`, named by its merge when it
 lands; it changes the conformance root's vectors run and `docs/` only, and moves no pin.
 - **The vectors run skips a status vector** (`VectorsCommand`, with harness checks that a status vector is not
@@ -2449,7 +2544,7 @@ Rows are in delivery order (roadmap section 4), not numeric order.
 | SJL-11 | Regular expressions | `In progress` | **Every clause is unmet, and none is accepted.** Unmet: all, the component's clauses 1 to 3, Broiler.JS's clauses 4 to 7 and this family's clauses 8 to 13. Started on 2026-10-19 at the owner's words, before SJL-7, which it waits on, and SJL-3 meet their gates, recorded above; SJL-11 waits on SJL-7, and may not meet its gate before SJL-7 meets SJL-7's, and so not before SJL-3 meets SJL-3's. SJL-11.1 is filed in this repository: the six sub-areas accepted and placed with Broiler.RegEx under R1 to R11 as owner conditions, and decision SJL-D-14 recorded ([JSD-0081](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0081-regular-expressions-move-to-broiler-regex-under-its-owner-conditions.md)), the owner's decisions of 2026-10-20 and 2026-10-21 recorded under the owner's direction of 2026-10-18, which changes no rule of this ledger, the correspondence retained, and the comparison rule committed with its inputs before any code; Broiler.JS's and Broiler.RegEx's halves are observed when they merge *(2026-10-25; read "`Not started` \| All \| None")*. The SJL-11 surface ships in Broiler.Regex's `0.1.0-preview.N` stream by the owner's decision of 2026-11-01, which revises JSD-0081's decision D12; and bundle `sjl-11-001`'s part A cannot be taken as its rule states since the owner's change of 2026-10-30 to the evidence workflow, until a dated rule file there admits the change *(2026-11-01, before SJL-13's step 1; until then without this sentence)*. SJL-11.3's first runs of the regular-expression vectors are classified, every difference under a row by the owner's decisions of 2026-11-01 in JSD-0081, and this family's vectors run skips a status vector; its pin is unmoved *(2026-11-01, at SJL-11.3; until then without this sentence)* | Broiler.VM [`sjl-11-001`](../evidence/sjl-11-001/README.md) (rules and correspondence only) *(2026-10-25; read "None")* | 2026-11-01 (SJL-11.3's classification of both engines' first vector runs, and the owner's decisions of that day) *(read "2026-11-01 (the owner's version decision for Broiler.Regex and the owner's change to the evidence workflow, recorded before SJL-13's step 1)", and before that "2026-10-25 (SJL-11's start and SJL-11.1)")* |
 | SJL-10 | Temporal core | `In progress` | **Every clause is met on its bundles, and none is accepted**: this family's on its own, and Broiler.JS's and the home's on Broiler.JS's *(2026-10-19, at SJL-10.6 for Broiler.JS; began "**This family's clauses are met on its bundle, and none is accepted**; Broiler.JS's and the home's are judged in Broiler.JS's bundle")* *(2026-10-19, at SJL-10.6; began "All.")*. Started on 2026-10-18 at the owner's direction, before SJL-6 and SJL-8, which it waits on, meet their gates, recorded above; SJL-10 may not meet its gate before they meet theirs, and so not before SJL-3 meets SJL-3's. SJL-10.1 is filed: the seven sub-areas accepted (JSD-0078), `tc39/proposal-temporal@e8cc03fc` recorded for both engines and test262 `ccaac100` for the area's rules, the owner's decisions of 2026-10-18 recorded under the owner's direction of that day, which changes no rule of this ledger, and the comparison rules committed in both repositories before any code. SJL-10.2 is done: the bases of both repositories' rules taken at their rule commits, and the Temporal vectors at corpus revisions 24 and 25, their expected values from the proposal's polyfill at the pinned revision (decision D10), which this family matches but for row R6. SJL-10.3 is done in Broiler.JS: the seven sub-areas in `Broiler.ECMAScript.Algorithms`, held by the correspondence's answers, both datasets, the vectors and a differential check against this family's code; row D12's day window, which a zone's skipped day reaches, answers a `RangeError` by the owner's decision D11. SJL-10.4 is done: this family's Temporal core is the shared library's from the committed feed, on `0.1.0-preview.7` since 2026-10-19, published to nuget.org that day from Broiler.JS `5ddee404` (JSC-317), and before that on `0.1.0-preview.6`, published on 2026-10-18 from Broiler.JS `fc829f8a` (JSD-0079, JSC-315; until the publication this read "packed from Broiler.JS `bf81d1b7` and not yet published (JSD-0079)"; until this family's move to `0.1.0-preview.7` it read "on `0.1.0-preview.6` from the committed feed, published to nuget.org on 2026-10-18 from Broiler.JS `fc829f8a`"); its 147 deleted types and members are registered in rule I5; rows R6 and D12's day window are corrected, and row R6's six vector divergences no longer hold. SJL-10.5 is done in Broiler.JS, observed, merged as `00b65dd0` (Broiler-Platform/Broiler.JS#1054): its Temporal core is the shared library's, every correction JSD-0078 lists for it is made and listed in its changelog, and corpus revision 26 retires the area's divergences, which this family matches in full on its pin; the owner's decision D12 of 2026-10-19 answers a `RangeError` where NudgeToZonedTime's day span has another sign than the duration's, which the library carries from `0.1.0-preview.7`, with which this family takes it, a policy change made here (JSD-0078, JSC-317) *(2026-10-19, at this family's move to `0.1.0-preview.7`; read "which the library carries after `0.1.0-preview.6` and this family takes with the shared stream's next version, a policy change pending here (JSD-0078)")* *(2026-10-19, when Broiler-Platform/Broiler.JS#1054 merged and this family's pin moved to corpus revision 26; read "SJL-10.5 is observed in Broiler.JS and not yet merged, in Broiler-Platform/Broiler.JS#1054 at its head `c33933f9`" and "corpus revision 26 retires the area's divergences;")*. SJL-10.6 is done for this family: its after arm at `96876432`, on `0.1.0-preview.6`, meets parts A to C of its area rule as written, every changed test262 verdict a race between allowances that class C4 admits, the reference datasets unchanged and every twin at its base figure *(2026-10-19, at this family's move to `0.1.0-preview.7`; read "its after arm at `96876432` meets", and ended "; decision D12 stays a policy change pending here")*. SJL-10.6 is done for Broiler.JS, observed, merged as `24510b0e` (Broiler-Platform/Broiler.JS#1056): its after arm at `00b65dd0`, the merge that lands its cut-over, meets parts A to C of its rule as written, no test262 row changed in either zone and every line of this family's reference datasets equal to its expected answer, and the home's clauses hold by their own tests *(2026-10-18; read "`Not started` \| All \| None"; then, until SJL-10.1, without its last seven sentences; then, until SJL-10.2, without its last six; then, until SJL-10.3, without its last five; then, until SJL-10.4, without its last four; then, until SJL-10.5 was observed in Broiler.JS on 2026-10-19, without its last three; then, until SJL-10.6, without its last two; then, until SJL-10.6 for Broiler.JS, without its last)* | Broiler.VM [`sjl-10-001`](../evidence/sjl-10-001/README.md) (rules, correspondence, the base of all three parts, the vectors at corpus revisions 25 and 26 on this family's pin, the cut-over's checks, and the after arm at `96876432`); Broiler.JS `docs/evidence/sjl-10-001/` (observed: its rule, the base of all three parts, the vectors with both engines' runs, the library's checks, the cut-over's checks, merged in `00b65dd0`, and the after arm at `00b65dd0`, merged in `24510b0e`) *(2026-10-19, at SJL-10.6 for Broiler.JS; Broiler.JS's ended "and the cut-over's checks, merged in `00b65dd0`)")* *(2026-10-19, at SJL-10.6; this bundle's read "the vectors at corpus revisions 25 and 26 on this family's pin, and the cut-over's checks)")* *(2026-10-19, when Broiler-Platform/Broiler.JS#1054 merged and this family's pin moved to corpus revision 26; this bundle's read "the vectors at corpus revision 25 on this family's pin", and Broiler.JS's ended "the cut-over's checks in Broiler-Platform/Broiler.JS#1054, not yet merged)")* *(2026-10-19, at SJL-10.5; Broiler.JS's ended "and the library's checks)")* *(2026-10-18, at SJL-10.3; Broiler.JS's ended "and the vectors with both engines' runs)")* *(2026-10-18, at SJL-10.1; read "None"; then, until SJL-10.2, "(rules and correspondence only)" and "(observed: its rule)"; then, until this family's pin moved to revision 25, "(rules, correspondence and the base of all three parts)"; then, until SJL-10.4, without "and the cut-over's checks")* | 2026-10-19 (SJL-10.6, both repositories; this family on `0.1.0-preview.7`) |
 | SJL-9 | Locale data and Intl algorithms | `In progress` | **Every clause is unmet, and none is accepted.** Unmet: all, Broiler.JS's clauses 1 to 10 (the data home's 1 to 3, the Intl library's 4 to 6 and its engine's 7 to 10) and this family's clauses 11 to 15. Started at the owner's words of 2026-10-19, recorded above on 2026-10-26, before SJL-7 and SJL-8, which it waits on, and SJL-3 meet their gates; SJL-9 waits on SJL-7 and SJL-8, and takes SJL-4's rounding, and may not meet its gate before SJL-7 and SJL-8 meet theirs, and so not before SJL-3 meets SJL-3's. SJL-9.1 is filed in this repository: the five sub-areas accepted, plural ranges and display-name naming as adoptions, and decisions SJL-D-22 and SJL-D-24 recorded ([JSD-0082](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)), the owner's decisions of 2026-10-26 recorded under the owner's direction of 2026-10-18, which changes no rule of this ledger, the correspondence retained, and the comparison rule committed before any code, naming this family's corrections Z8, L18 and L9; Broiler.JS's half is merged (observed, `50978882`, Broiler-Platform/Broiler.JS#1077) *(2026-11-01; read "Broiler.JS's half is observed when it merges", which did not move when it merged, as it should have)* *(2026-10-26; read "`Not started` \| All \| None"; then, until SJL-9.1, without its last sentence)*. SJL-9.2's Intl vectors are merged in Broiler.JS (observed, `ff54e1d8`), and this family's pin is at their corpus revision 28, where the conformance root matches every vector but those of its corrections Z8, L9 and L18, which revision 28 classifies, and leaves none unclassified *(2026-10-27, when this family's pin moved to corpus revision 28; until then without this sentence)*. SJL-9.2c is done in this repository: its rules N27 and N28 read and regenerate `JsCldrTables.g.cs` with the Intl data home's generator, test-only, the file unchanged, and rule I4 holds its CLDR pin to the home's entry by entry ([JSC-321](../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-321)); it bears on clauses 11 and 12, which are judged with the rest at SJL-9.6 *(2026-11-01, at SJL-9.2c; until then without this sentence)* | Broiler.VM [`sjl-9-001`](../evidence/sjl-9-001/README.md) (rules, correspondence, and the vectors at corpus revision 28 on this family's pin) *(2026-10-27, when Broiler-Platform/Broiler.JS#1080 merged and this family's pin moved to corpus revision 28; read "(rules and correspondence only)")* *(2026-10-26; read "None")* | 2026-11-01 (SJL-9.2c: N27, N28 and I4 on the Intl data home's generator) *(read "2026-10-27 (SJL-9.2: this family's vectors pin at corpus revision 28)")* |
-| SJL-17 | Collation, shared after SJL-9 | `Not started` | All | None | 2026-10-11 (created, by decision `SJL-D-24`) |
+| SJL-17 | Collation, shared after SJL-9 | `In progress` | **Every clause is unmet, and none is accepted.** Unmet: all, the home's clauses 1 and 2, Broiler.JS's clauses 3 to 5 and this family's clauses 6 to 9. Started at the owner's words of 2026-10-19, recorded above on 2026-11-01, before SJL-9, which it waits on, and SJL-7, SJL-8 and SJL-3 meet their gates; SJL-17 waits on SJL-9, and through it on SJL-7, and may not meet its gate before SJL-9 meets SJL-9's. SJL-17.1 is filed in this repository: collation accepted as an adoption ([JSD-0084](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0084-collation-moves-to-the-shared-intl-library.md)), the owner's decisions of 2026-11-01 recorded under the owner's direction of 2026-10-18, which changes no rule of this ledger, the correspondence retained, and the comparison rule committed before any code, naming no correction of this family; Broiler.JS's half is observed when it merges *(2026-11-01; read "`Not started` \| All \| None"; then, until SJL-17.1, without its last sentence)* | Broiler.VM [`sjl-17-001`](../evidence/sjl-17-001/README.md) (rule and correspondence only) *(2026-11-01, at SJL-17.1; read "None")* | 2026-11-01 (SJL-17.1: the area verdict and the rule) *(read "2026-11-01 (SJL-17.0: started)"; before that "2026-10-11 (created, by decision `SJL-D-24`)")* |
 | SJL-13 | The shared syntax library and Broiler.VM's wide path | `In progress` | **Every clause is unmet, and none is accepted.** Unmet: all, the home's clauses 1 to 3 (Broiler.JS) and this family's clauses 4 to 10. Started at the owner's words of 2026-10-25, recorded above on 2026-10-26 as a reading of them, before SJL-12, SJL-3 and SJL-7, which it waits on, meet their gates; SJL-13 may not meet its gate before SJL-12, SJL-3 and SJL-7 meet theirs. SJL-13.1 is filed in this repository: the five sub-areas accepted for both engines' front ends ([JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md)), the owner's decisions of 2026-10-26 recorded under the owner's direction of 2026-10-18, which changes no rule of this ledger, the correspondence retained, and the comparison rules of both steps committed with their inputs before any code, naming this family's corrections by row; Broiler.JS's half is merged (observed, `238069ab`, Broiler-Platform/Broiler.JS#1081) *(2026-11-01; read "Broiler.JS's half is observed when it merges", which did not move when it merged, as it should have)* *(2026-10-26; read "`Not started` \| All \| None"; then, until SJL-13.1, without its last sentence)*. The owner's decisions D-asi and D-t24 of 2026-10-27 add row P16b to the correspondence and the answer of rows T24b and T24f before a semicolon, merged as `9813d7c` (Broiler-Platform/Broiler.VM#175), and the tools commit is merged as `58b0c84` (Broiler-Platform/Broiler.VM#174). SJL-13's `syntax` vectors are merged in Broiler.JS (observed, `ed494b2e`), and this family's pin is at their corpus revision 30, where the conformance root matches every vector but those of its corrections, which revision 30 classifies, the `syntax` area's those step 1 makes and the Intl area's those of SJL-9.4, and leaves none unclassified *(2026-11-01, when this family's pin moved to corpus revision 30; until then without its last two sentences)* | Broiler.VM [`sjl-13-001`](../evidence/sjl-13-001/README.md) (rules, correspondence, the rule's inputs, and the vectors at corpus revision 30 on this family's pin) and [`sjl-13-002`](../evidence/sjl-13-002/README.md) (rule only) *(2026-11-01, when Broiler-Platform/Broiler.JS#1082 merged and this family's pin moved to corpus revision 30; read "(rules, correspondence and the rule's inputs only)")* *(2026-10-26; read "None")* | 2026-11-01 (SJL-13.2's `syntax` vectors: this family's vectors pin at corpus revision 30) |
 | SJL-14 | Broiler.JS on the shared syntax library | `Not started` | All | None | 2026-10-11 (created) |
 | SJL-15 | Shared static semantics | `Not started` | All | None | 2026-10-11 (created) |

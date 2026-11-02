@@ -1,0 +1,30 @@
+# command (from <rows>/, JS_ROOT=/home/user/js-s17p): env -u LANG -u LC_ALL -u LANGUAGE TZ=UTC timeout 900 dotnet /home/user/js-s17p/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/o2-collationtest-shifted.js
+# revision: Broiler.JS 61cb15b5472955079f3b0bf98c600f4128094614; Broiler.Unicode.Algorithms 0.1.0-preview.6
+# probe: built/o2-collationtest-shifted.js sha256 7535a9a5d16bd1dfbe5b867e164e11ac0cf47e77a91c2ff6d718251e2a3aa97d
+o2 pairs 227808 out-of-order 7810
+o2 line 93: "\ud803\udd6e\u0334" > "\ud803\udd6e!"
+o2 line 95: "\ud803\udd6e?" > "\u2010!"
+o2 line 629: "\ud803\udefb!" > "\ud803\udefd!"
+o2 line 648: "\ud804\udfe2!" > "\ud80d\udc30!"
+o2 line 1616: "\ud803\udefb?" > "\ud803\udefd?"
+o2 line 1635: "\ud804\udfe2?" > "\ud80d\udc30?"
+o2 line 2414: "\u1b4e?" > "\u1b5f!"
+o2 line 2418: "\u1b4f?" > "\ua9c8!"
+o2 line 2469: "\ud804\udfd4\u0334" > "\ud804\udfd4!"
+o2 line 2472: "\ud804\udfd5\u0334" > "\ud804\udfd5!"
+o2 line 2474: "\ud804\udfd5?" > "\ud805\udc4b\u0334"
+o2 line 2520: "\ud81b\udd6e\u0334" > "\ud81b\udd6e!"
+o2 line 2523: "\ud81b\udd6f\u0334" > "\ud81b\udd6f!"
+o2 line 2525: "\ud81b\udd6f?" > "\u1c7e!"
+o2 line 2532: "\ud803\uded0\u0334" > "\ud803\uded0!"
+o2 line 2534: "\ud803\uded0?" > "\u0700!"
+o2 line 2552: "\u1b7f?" > "\u1b5b!"
+o2 line 3755: "\ud804\udfd7\u0334" > "\ud804\udfd7!"
+o2 line 3758: "\ud804\udfd8\u0334" > "\ud804\udfd8!"
+o2 line 3760: "\ud804\udfd8?" > "\ud805\udc4d\u0334"
+o2 line 3860: "\ud806\udfe1\u0334" > "\ud806\udfe1!"
+o2 line 3862: "\ud806\udfe1?" > "\ud807\udfff\u0334"
+o2 line 3884: "\ud81b\udd6d\u0334" > "\ud81b\udd6d!"
+o2 line 3886: "\ud81b\udd6d?" > "\ud81b\ude99\u0334"
+o2 line 3908: "\ud839\uddff\u0334" > "\ud839\uddff!"
+exit=0

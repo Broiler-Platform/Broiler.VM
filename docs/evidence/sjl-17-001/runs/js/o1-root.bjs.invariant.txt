@@ -1,0 +1,31 @@
+# command (from <rows>/, JS_ROOT=/home/user/js-s17p): env -u LANG -u LC_ALL -u LANGUAGE DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 TZ=UTC timeout 900 dotnet /home/user/js-s17p/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/o1-root.js
+# revision: Broiler.JS 61cb15b5472955079f3b0bf98c600f4128094614; Broiler.Unicode.Algorithms 0.1.0-preview.6
+# probe: built/o1-root.js sha256 01e1b4fb0fe37e6842ab112502db2856696e89b3bbb45635051df1d09dc2b65d
+o1 scripts => "1" < "a" < "ae" < "ss" < "z" < "\u00bd" < "\u00df" < "\u00e6" < "\u00f0" < "\u00f8" < "\u00fe" < "\u0131" < "\u0153" < "\u03b1" < "\u03c9" < "\u0430" < "\u044f" < "\u0561" < "\u05d0" < "\u05ea" < "\u0627" < "\u064a" < "\u0661" < "\u0905" < "\u0939" < "\u0967" < "\u0e01" < "\u0e2e" < "\u0f40" < "\u10d0" < "\uac00" < "\ud7a3" < "\u1200" < "\u13a0" < "\u1820" < "\u2460" < "\u3042" < "\u3093" < "\u30a2" < "\u4e00" < "\u4e01" < "\u4e2d" < "\ua000" < "\ud83d\ude00" < "\ud840\udc00"
+o1 punctuation and symbols => " " < "!" < "\u0022" < "#" < "$" < "%" < "&" < "'" < "(" < ")" < "*" < "+" < "," < "-" < "." < "/" < "0" < ":" < ";" < "<" < "=" < "?" < "@" < "[" < "\u005c" < "^" < "_" < "`" < "a" < "|" < "~" < "\u20ac"
+o2 "\u00e5" vs "a\u030a" => =
+o2 "\u212b" vs "\u00c5" => =
+o2 "\u2126" vs "\u03a9" => =
+o2 "q\u0307\u0323" vs "q\u0323\u0307" => =
+o2 "\u1e0b\u0323" vs "d\u0323\u0307" => =
+o2 "\u00e4" vs "a\u0308" => =
+o2 "ab" vs "a\u00adb" => <
+o2 "ab" vs "a\u200bb" => <
+o2 "ab" vs "a\u0000b" => >
+o2 "ab" vs "a\ufeffb" => <
+o2 "a" vs "a\u0301" => <
+o2 "\ufb01" vs "fi" => >
+o2 "\u01c6" vs "d\u017e" => >
+o2 "\u2460" vs "1" => >
+o2 "\uff21" vs "A" => >
+o2 "\u00aa" vs "a" => >
+o2 "\u0e40\u0e01" vs "\u0e01\u0e40" => >
+o2 "\u1100\u1161" vs "\uac00" => =
+o2 "" vs " " => <
+o2 "" vs "\u00ad" => <
+o2 "a b" vs "ab" => <
+o2 "a-b" vs "ab" => <
+o2 "a\u0315\u0300\u05ae\u0300b" vs "a\u0300\u0315\u0300\u05aeb" => =
+o1 und resolves => "en-US"
+o1 root order und = en => true
+exit=0

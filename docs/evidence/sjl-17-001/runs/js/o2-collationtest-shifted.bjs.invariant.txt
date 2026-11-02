@@ -1,0 +1,30 @@
+# command (from <rows>/, JS_ROOT=/home/user/js-s17p): env -u LANG -u LC_ALL -u LANGUAGE DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 TZ=UTC timeout 900 dotnet /home/user/js-s17p/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/o2-collationtest-shifted.js
+# revision: Broiler.JS 61cb15b5472955079f3b0bf98c600f4128094614; Broiler.Unicode.Algorithms 0.1.0-preview.6
+# probe: built/o2-collationtest-shifted.js sha256 7535a9a5d16bd1dfbe5b867e164e11ac0cf47e77a91c2ff6d718251e2a3aa97d
+o2 pairs 227808 out-of-order 66778
+o2 line 16: "\u2029?" > " !"
+o2 line 33: "\u3000!" > " ?"
+o2 line 50: "\u3000?" > "\u203e!"
+o2 line 55: "\ufe4c!" > "\u203e?"
+o2 line 60: "\ufe4c?" > "_!"
+o2 line 67: "\uff3f!" > "_?"
+o2 line 74: "\uff3f?" > "\u2017!"
+o2 line 76: "\u2017?" > "-!"
+o2 line 79: "\uff0d!" > "-?"
+o2 line 82: "\uff0d?" > "\u058a!"
+o2 line 88: "\u1b60?" > "\u1806!"
+o2 line 93: "\ud803\udd6e\u0334" > "\ud803\udd6e!"
+o2 line 95: "\ud803\udd6e?" > "\u2010!"
+o2 line 97: "\u2011!" > "\u2010?"
+o2 line 103: "\ufe32!" > "\u2013?"
+o2 line 105: "\ufe32?" > "\u2014!"
+o2 line 108: "\ufe58!" > "\u2014?"
+o2 line 111: "\ufe58?" > "\u2015!"
+o2 line 117: "\u2e3b?" > "\u2053!"
+o2 line 121: "\u2e43?" > "\u2e17!"
+o2 line 135: "\uff65!" > "\u30fb?"
+o2 line 137: "\uff65?" > "\ud803\udead\u0334"
+o2 line 138: "\ud803\udead\u0334" > "\ud803\udead!"
+o2 line 140: "\ud803\udead?" > ",!"
+o2 line 144: "\uff0c!" > ",?"
+exit=0

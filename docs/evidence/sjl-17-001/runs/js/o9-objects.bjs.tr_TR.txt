@@ -1,0 +1,36 @@
+# command (from <rows>/, JS_ROOT=/home/user/js-s17p): env -u LANGUAGE LANG=tr_TR.UTF-8 LC_ALL=tr_TR.UTF-8 TZ=UTC timeout 900 dotnet /home/user/js-s17p/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.dll --script-host built/o9-objects.js
+# revision: Broiler.JS 61cb15b5472955079f3b0bf98c600f4128094614; Broiler.Unicode.Algorithms 0.1.0-preview.6
+# probe: built/o9-objects.js sha256 3a74bd04f6d4a7c0ecb12388f90e0ae2a7d29b44d342ee78dee8df1a04bf6ee5
+o9 read order => "localeMatcher,usage,sensitivity,ignorePunctuation,numeric,caseFirst,caseFirst,collation"
+o9 read order localeCompare => "localeMatcher,usage,sensitivity,ignorePunctuation,numeric,caseFirst,caseFirst,collation"
+o9 collation not a type => "{locale: \u0022en\u0022, usage: \u0022sort\u0022, sensitivity: \u0022variant\u0022, ignorePunctuation: false, collation: \u0022default\u0022, numeric: false, caseFirst: \u0022false\u0022}"
+o9 collation not a type 2 => "{locale: \u0022en\u0022, usage: \u0022sort\u0022, sensitivity: \u0022variant\u0022, ignorePunctuation: false, collation: \u0022default\u0022, numeric: false, caseFirst: \u0022false\u0022}"
+o9 sensitivity bad => THROWS RangeError: Invalid sensitivity option
+o9 usage bad => THROWS RangeError: Invalid usage option
+o9 caseFirst bad => THROWS RangeError: Invalid caseFirst option
+o9 localeMatcher bad => THROWS RangeError: Invalid localeMatcher option
+o9 numeric string => "{locale: \u0022en\u0022, usage: \u0022sort\u0022, sensitivity: \u0022variant\u0022, ignorePunctuation: false, collation: \u0022default\u0022, numeric: true, caseFirst: \u0022false\u0022}"
+o10 resolved de-u-co-phonebk-kn-kf-upper => "{locale: \u0022de-u-co-phonebk-kf-upper-kn\u0022, usage: \u0022sort\u0022, sensitivity: \u0022variant\u0022, ignorePunctuation: false, collation: \u0022phonebk\u0022, numeric: true, caseFirst: \u0022upper\u0022}"
+o10 resolved en-u-co-phonebk => "{locale: \u0022en\u0022, usage: \u0022sort\u0022, sensitivity: \u0022variant\u0022, ignorePunctuation: false, collation: \u0022default\u0022, numeric: false, caseFirst: \u0022false\u0022}"
+o10 resolved en emoji => "{locale: \u0022en\u0022, usage: \u0022sort\u0022, sensitivity: \u0022variant\u0022, ignorePunctuation: false, collation: \u0022emoji\u0022, numeric: false, caseFirst: \u0022false\u0022}"
+o10 resolved en eor => "{locale: \u0022en-u-co-eor\u0022, usage: \u0022sort\u0022, sensitivity: \u0022variant\u0022, ignorePunctuation: false, collation: \u0022eor\u0022, numeric: false, caseFirst: \u0022false\u0022}"
+o10 resolved de search co => "{locale: \u0022de\u0022, usage: \u0022sort\u0022, sensitivity: \u0022variant\u0022, ignorePunctuation: false, collation: \u0022default\u0022, numeric: false, caseFirst: \u0022false\u0022}"
+o10 resolved de-u-co-standard => "{locale: \u0022de\u0022, usage: \u0022sort\u0022, sensitivity: \u0022variant\u0022, ignorePunctuation: false, collation: \u0022default\u0022, numeric: false, caseFirst: \u0022false\u0022}"
+o10 resolved zh pinyin => "{locale: \u0022zh-u-co-pinyin\u0022, usage: \u0022sort\u0022, sensitivity: \u0022variant\u0022, ignorePunctuation: false, collation: \u0022pinyin\u0022, numeric: false, caseFirst: \u0022false\u0022}"
+o10 resolved de phonebk usage search => "{locale: \u0022de-u-co-phonebk\u0022, usage: \u0022search\u0022, sensitivity: \u0022variant\u0022, ignorePunctuation: false, collation: \u0022phonebk\u0022, numeric: false, caseFirst: \u0022false\u0022}"
+o10 resolved xx => "{locale: \u0022tr-TR\u0022, usage: \u0022sort\u0022, sensitivity: \u0022variant\u0022, ignorePunctuation: false, collation: \u0022default\u0022, numeric: false, caseFirst: \u0022false\u0022}"
+o10 resolved default => "{locale: \u0022tr-TR\u0022, usage: \u0022sort\u0022, sensitivity: \u0022variant\u0022, ignorePunctuation: false, collation: \u0022default\u0022, numeric: false, caseFirst: \u0022false\u0022}"
+o10 supportedValuesOf collation => ["emoji", "eor", "phonebk", "phonetic", "pinyin", "stroke", "trad", "unihan", "zhuyin"]
+o10 getCollations en de und zh => ["en:default", "de:default", "und:default", "zh:default", "sv:default"]
+o11 bound compare identity => false
+o11 bound compare name length => "\u0022\u0022 2 Function false"
+o11 compare detached => < abc
+o11 compare coerces => < = =
+o11 compare getter on non-collator => THROWS TypeError: Intl.Collator.prototype.compare called on incompatible receiver
+o12 localeCompare after Intl.Collator replaced => < <
+o12 localeCompare refusals => THROWS RangeError: Invalid sensitivity option
+o12 localeCompare bad tag => THROWS RangeError: Invalid language tag
+o12 localeCompare a B => < > <
+o12 Collator call without new => true de
+o13 default locale and its collation => tr-TR < > <
+exit=0
