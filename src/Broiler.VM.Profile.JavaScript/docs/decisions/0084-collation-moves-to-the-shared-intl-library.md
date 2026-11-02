@@ -355,8 +355,8 @@ as this family's tables and the shared collator take them, and (b) the radical-s
 Option (b) needs Unihan as a new pinned input of the data home, and a table this family's tables cannot carry under
 rule N28. Recommended and decided: (a). ECMA-402 leaves the order to the implementation, and UTS #35 Part 5 allows
 either. A shared collator with two Han orders would answer by embedding. No test262 file or `orderings` line orders
-Han across blocks (finding F1). Row O3's class stays data policy (C5). The shared collator (on Broiler.JS's branch
-`sjl-17-3-collator`, observed, not merged) orders Han across blocks by the implicit weights, and so will Broiler.JS
+Han across blocks (finding F1). Row O3's class stays data policy (C5). The shared collator (merged in
+Broiler-Platform/Broiler.JS#1094 as `c884f87b`, observed) orders Han across blocks by the implicit weights, and so will Broiler.JS
 from its cut-over, SJL-17.5. The `impl-defined` Han vectors keep this family's expectation, which the library
 meets, and Broiler.JS's expectation moves to it at SJL-17.5. Finding F1 is answered, and so is this record's "One
 reading is open: Han across blocks (O3, F1)". No rule changes, and no row changes class.
