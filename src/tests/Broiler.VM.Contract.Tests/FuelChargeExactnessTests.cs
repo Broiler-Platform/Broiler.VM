@@ -1782,7 +1782,8 @@ public sealed class FuelChargeExactnessTests
     /// an exhausted allowance, and the test counted those refusals as the poll-bound failures it
     /// exists to find. So the step runs under the profile's maximum wall-clock allowance, which
     /// stays a hang guard and stops being a deadline on the sample, and the charging thread waits
-    /// without the timer sleep.
+    /// without the timer sleep. A run that outlasts even that fails on its own assertion, which
+    /// names the wall clock, before the refused polls are counted.
     /// </para>
     /// </remarks>
     [Fact]
@@ -1869,11 +1870,12 @@ public sealed class FuelChargeExactnessTests
         }
 
         // The profile's maximum, not its thirty-second default: see the remarks.
+        var allowance = FixtureDescriptorFactory.Maxima()[VmBudgetDimension.WallClock];
+
         using var runtime = FixtureComposition.Runtime(
             Observing(FixtureVmProfileVariant.WindowedPolling, environment => captured = environment),
             FixtureComposition.Options(
-                ceilings: FixtureComposition.CeilingsWith(
-                    VmBudgetDimension.WallClock, FixtureDescriptorFactory.Maxima()[VmBudgetDimension.WallClock]),
+                ceilings: FixtureComposition.CeilingsWith(VmBudgetDimension.WallClock, allowance),
                 capabilities: FixtureComposition.CapabilitiesWithDouble(Handler)));
 
         var artifact = FixtureComposition.Verify(
@@ -1881,7 +1883,23 @@ public sealed class FuelChargeExactnessTests
 
         using var instance = FixtureComposition.Instantiate(runtime, artifact);
 
+        var elapsed = System.Diagnostics.Stopwatch.StartNew();
         var result = FixtureComposition.Invoke(instance);
+
+        // A run that outlasts even the maximum allowance is a scheduler that never gave the two
+        // threads their turns, not a poll counting work it should not. Once the allowance is spent
+        // the meter refuses every later poll that keeps the bound, for the allowance, so the
+        // refused polls no longer say anything about the bound and the failure is named as what it
+        // is, before they are counted. In the meter as written a poll that breaks the bound is
+        // refused before the allowance is looked at, and the count it broke only grows until a
+        // poll passes, so a run whose first refusal was the bound's ends as a profile fault and
+        // fails on the count below, not here.
+        Assert.False(
+            result.Outcome is VmOutcome.ResourceExhaustion
+                && result.Diagnostics.ExhaustedDimension is VmBudgetDimension.WallClock,
+            $"the step outlasted its wall-clock allowance of {allowance} ms ({elapsed.ElapsedMilliseconds} ms, "
+                + $"{charged} of {Units} units charged); every poll after that is refused for the allowance, "
+                + $"so its {refusedPolls} refused polls decide nothing about the poll bound");
 
         Assert.Equal(0, refusedCharges);
         Assert.Equal(0, refusedPolls);
