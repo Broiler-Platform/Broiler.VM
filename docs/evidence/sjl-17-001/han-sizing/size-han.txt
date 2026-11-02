@@ -1,0 +1,19 @@
+inputs
+  Unihan.zip sha256 f7a48b2b545acfaa77b2d607ae28747404ce02baefee16396c5d2d7a8ef34b5e
+  Unihan_IRGSources.txt sha256 d1c817dd7db84295dab0643c277d97c2fa742c245f8824e6736c2a0935095325
+  PropList.txt sha256 130dcddcaadaf071008bdfce1e7743e04fdfbc910886f017d9f9ac931d8c64dd
+  vectors options.vectors sha256 f103372310c5fcf1e4086487249394263af95d3d32c6d556b4ed53427271808c
+  vectors root.vectors sha256 aa4abf1b105388bc0637f6fd11205bc1aa97bff8229271fd42116b2618d45912
+  vectors surrogates.vectors sha256 174a0b142ccaf267fec0c2f9b28277fa78acd3344bba5e9729f7945d2c2e55f1
+  vectors tailorings.vectors sha256 bbfec8742b53b1f8fb71e0ab1a6949169a90d505a9854996a044a0ded7e83d19
+unified ideographs 101996 with kRSUnicode 101996 without 0
+runs of consecutive code points in radical-stroke order 20494 longest 158
+rule N28: budget 851968 used 840365 headroom 11603
+form, bytes, times the headroom
+  fixed (5 bytes a run, little-endian), 102470, 8.83
+  delta (zigzag and LEB128 varints), 73953, 6.37
+  xz of fixed, little-endian (preset 9 extreme), 42800, 3.69
+  rank (17 bits a code point, packed), 216742, 18.68
+  also: xz of fixed, big-endian (preset 9 extreme), 38908, 3.35
+ideographs the collation vectors reach 35 U+3400 U+3401 U+4DB5 U+4DBF U+4E00 U+4E01 U+4E02 U+4E2D U+4E3D U+4EBA U+5B50 U+6C34 U+8C48 U+9F9C U+9FA5 U+9FA6 U+9FCC U+9FEA U+9FFF U+FA0E U+FA0F U+FA11 U+FA1F U+FA29 U+20000 U+20001 U+2A6DF U+2A700 U+2B740 U+2B820 U+2CEB0 U+2EBF0 U+30000 U+31350 U+323B0
+  a table of those alone, 6 bytes each 210

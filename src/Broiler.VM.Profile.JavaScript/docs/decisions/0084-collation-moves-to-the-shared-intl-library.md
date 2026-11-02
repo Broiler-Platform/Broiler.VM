@@ -344,20 +344,20 @@ changes, and this record's list of Broiler.JS's corrections is unchanged.
 **Decision E-o3h - Han across blocks keeps the implicit weights by block.** Decision E-han left finding F1, row O3's
 reading, for SJL-17.3 to decide "with the radical-stroke data sized against rule N28 and the data home". SJL-17.3 sized
 it from Unihan's `kRSUnicode` (Unicode 17.0.0's `Unihan.zip`, sha256
-`f7a48b2b545acfaa77b2d607ae28747404ce02baefee16396c5d2d7a8ef34b5e`, retrieved twice, identical). Every one of the
-101,996 unified ideographs carries a value. In radical-stroke order they form 20,494 runs of consecutive code points,
-which take 102,470 bytes as a fixed-width run list, 73,953 bytes delta-coded and 42,800 bytes compressed with xz. A rank
-per code point takes 216,742 bytes packed. Rule N28's headroom is 11,603 bytes (840,365 of 851,968; bundle
-sjl-8-001's README and JSD-0075). So the radical-stroke order of every unified ideograph is several times that headroom
-in every form SJL-17.3 measured, about 3.7 times at the smallest. The 35 ideographs the vectors reach would take 210
-bytes, but a table of those alone orders no other ideograph. The options were (a) UCA 17's implicit weights by block,
+`f7a48b2b545acfaa77b2d607ae28747404ce02baefee16396c5d2d7a8ef34b5e`, retrieved twice, identical). Every unified
+ideograph carries a value. Their radical-stroke order, as runs of consecutive code points (a fixed-width run list,
+delta-coded or compressed with xz) or as a rank per code point, is several times rule N28's headroom (bundle
+sjl-8-001's README and JSD-0075) in every form measured; bundle sjl-17-001's
+[`han-sizing/`](../../../../docs/evidence/sjl-17-001/han-sizing/README.md) retains the measurement, and the bundle's
+README states its sizes. A table of only the ideographs the vectors reach would be small, but it orders no other
+ideograph. The options were (a) UCA 17's implicit weights by block,
 as this family's tables and the shared collator take them, and (b) the radical-stroke order CLDR's root and ICU build.
 Option (b) needs Unihan as a new pinned input of the data home, and a table this family's tables cannot carry under
 rule N28. Recommended and decided: (a). ECMA-402 leaves the order to the implementation, and UTS #35 Part 5 allows
 either. A shared collator with two Han orders would answer by embedding. No test262 file or `orderings` line orders
 Han across blocks (finding F1). Row O3's class stays data policy (C5). The shared collator (on Broiler.JS's branch
 `sjl-17-3-collator`, observed, not merged) orders Han across blocks by the implicit weights, and so will Broiler.JS
-from its cut-over, SJL-17.5. The 34 `impl-defined` Han vectors keep this family's expectation, which the library
+from its cut-over, SJL-17.5. The `impl-defined` Han vectors keep this family's expectation, which the library
 meets, and Broiler.JS's expectation moves to it at SJL-17.5. Finding F1 is answered, and so is this record's "One
 reading is open: Han across blocks (O3, F1)". No rule changes, and no row changes class.
 
