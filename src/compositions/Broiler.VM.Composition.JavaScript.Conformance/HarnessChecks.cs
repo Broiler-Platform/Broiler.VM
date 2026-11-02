@@ -67,6 +67,10 @@ internal static class HarnessChecks
         // subject, and the checks that decide whether a transcript can be read at all belong beside
         // each other rather than at the end of this list.
         .. Test262Checks.Run(),
+
+        // And the engine-level vectors run's: which vectors of the shared corpus it evaluates and what its summary
+        // says of those it skips, a fourth subject (SJL-11.3).
+        .. VectorsChecks.Run(),
     ];
 
     private static (string, bool, string) ShardingIsStableAcrossProcesses()

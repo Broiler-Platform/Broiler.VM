@@ -49,6 +49,10 @@ This bundle reads none of their runs.
 - **Every row is classified**, and JSD-0081 decided the classes. This family's corrections are row S1 (kind D,
   duplicate named groups) and rows S5, S10, M4 (a non-empty match), M7 and T3 (kind R). Row M4's empty match is a
   defect of the specification's text, implementation-defined by the owner's decision D41 until the text is corrected.
+  *(Note of 2026-11-01, the owner's decision D-s5, JSD-0081 "The owner's decisions of 2026-11-01": S5 leaves this
+  list. `regexpref` reads `\k` in a class without `u` and `v` as B.1.2's identity escape, so this family's acceptance
+  of `[\k<a>](?<a>x)` is the text's answer, and the kind R rows are S10, M4, M7 and T3. The correspondence's row S5
+  carries the dated note.)*
 - **A stop at one of this family's matcher ceilings names no dimension.** The conformance root reports it as a
   failure whose detail is `ProfileFault/AllowanceExhausted` with no payload, and the command-line root exits with its
   "host defect" code and writes the same detail to standard error, behind its prefix `broiler-js: <path>: ` (rows B1
@@ -73,6 +77,12 @@ SJL-3 meets SJL-3's.
     `regexp-duplicate-named-groups`, and kind R, a variant one of rows S5, S10, M4, M7 and T3 explains. The test262
     files the correspondence names for rows S10, M7 and T3 are listed in the rule. Any other correction is recorded as
     a finding that the correspondence missed.
+  - *(Noted 2026-11-01, decision D-s5.)* **The rule's part A and part B still name S5 as a C1 (R) correction**, the
+    class case "accepted at the base" (part A) and "accepted at the base and refused after" (part B). Read with
+    decision D-s5, the base's acceptance is the specification's answer, so a move from acceptance to refusal at SJL-11.4
+    would be away from the text, and no variant of test262 at `ccaac100` tries the case. The rule file is unchanged,
+    as its "Revisions" requires. The dated rule file this section already asks for, before any base run, is where the
+    owner can drop S5 from both lists.
   - A moved exhaustion verdict, a ceiling stop among them, is admitted under C2 only on a variant that reaches a
     regular expression, and only if the variant passes after, at ten times the allowance where it does not pass at
     the part's. A variant failing at both commits is read by its detail too, so a ceiling stop that becomes a wrong
@@ -121,7 +131,8 @@ nesting limit 512 (decision D7), and its frame and trail ceilings `1 << 20` and 
 - **`controls/`**: part B's control report, part D's patch K1 with its output and its revert, and its report copy K2
   with the comparison's output.
 - **`measurement/`**: part E's sub-bundle, with its own README and manifest.
-- **`vectors/`**: this family's runs of the regular-expression vectors SJL-11.3 adds.
+- **`vectors/`**: this family's runs of the regular-expression vectors SJL-11.3 adds. *(2026-11-01: its first runs,
+  on corpus revisions 31 and 32 from scratch archives, are there; section 3 reads them.)*
 
 The differential cross-check's report over `src/tests/differential/the-regexp-*.js` is retained beside the parts
 without a rule (JSD-0081 decision D38).
@@ -130,9 +141,60 @@ without a rule (JSD-0081 decision D38).
 section that reads that log (rule H5). A test262 suite total is never quoted: part A is decided per variant, and
 totals decide nothing.
 
+## 3. Engine-level vectors on the regular-expression area (SJL-11.3)
+
+*(Added 2026-11-01, at SJL-11.3; the runs ended after midnight UTC, on 2026-11-02, as their logs say.)*
+
+Broiler.JS's corpus revision 31 adds the regular-expression area, eight files under `conformance/vectors/regexp/`.
+Every expected value but those of a few object-model vectors is `regexpref`'s (`ref:regexpref@1`, JSD-0081 decision
+D25), ECMA-262 22.2 with B.1.2 at `0248456c`, transliterated. Revision 32 classifies both engines' first runs on it,
+on Broiler.JS's branch `sjl-11-3-regexp` (observed, not merged). Each difference is under a row of this bundle's
+[correspondence](correspondence.md), several by the owner's decisions of 2026-11-01. They are D-s5, D-p5 and D-widen,
+which [JSD-0081](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0081-regular-expressions-move-to-broiler-regex-under-its-owner-conditions.md)
+records in "The owner's decisions of 2026-11-01".
+- **This family's `divergence.broiler-vm` fields are its corrections** that SJL-11.4 makes: rows S1 (kind D), S10, M4
+  (a non-empty match), M7 and T3 (kind R). Row S9b's two are the exception, its scanner's, outside SJL-11. No
+  vector differs in both engines.
+- **Row S5's class case matches**, `[\k<a>](?<a>x)` and `[\k](?<a>x)` accepted. By decision D-s5 that is the text's
+  answer, and not a correction this family makes.
+- **The status vectors.** The area's `status: exhausted` vectors are library-level. The conformance root's
+  `VectorsCommand` skips each one, gives it no report line, and counts and names it in its summary line, as the corpus's
+  SCHEMA.md section 4 has an engine-level runner do. This change adds that skip, with harness checks run before every
+  shard (`VectorsChecks`). The skip's first check failed with the skip disabled
+  ([`vectors/harness-checks-skip-disabled.log`](vectors/harness-checks-skip-disabled.log)), and every check passes
+  with it.
+- **Broiler.JS's part D** is that engine's, and this bundle reads none of it. Its population leaves out the status
+  vectors by the owner's decision D-partd, which JSD-0081 records. This bundle's own part D is its adversarial corpus.
+- **The vectors pin does not move here.** It stays at corpus revision 30 until SJL-11's task 3.5 moves it, after
+  Broiler.JS merges revision 32 (rule N13), and `SharedVectorsPinTests` still pass on it.
+
+**The runs.** Each was taken at `89760389`, this change's runner commit, from a scratch archive of the Broiler.JS commit
+the run names. The archive was written twice by `git archive`, byte for byte the same, and the second was extracted and
+hashed for a scratch pin. Neither archive nor pin is committed; the pins are kept here for the reader. The conformance
+root was built in Release with `--disable-build-servers` and `-warnaserror`
+([`vectors/build-conformance.log`](vectors/build-conformance.log)). Each run used `TZ=UTC`, no `LANG`, `LC_ALL` or
+`LANGUAGE`, and a script that wrote each log whole: a header naming the commit, the build, the archive and its pin,
+the host and the command; then the runner's output; then the exit code and the end time. Each run's negative control
+is a second run with `--mutate regexp/text/t5-escape/0001`, a row T5 vector both engines match.
+[`vectors/hashes.txt`](vectors/hashes.txt) holds every file's SHA-256. The logs' headers name the pin and the archive
+as the run's scratch folder named them, the names Broiler.JS's bundle `engine/` keeps: `broiler-vm-revision-31.pin`
+and `broiler-vm-revision-32.pin` are this bundle's `scratch-pin-revision-31.pin` and `scratch-pin-revision-32.pin`,
+byte for byte, and `archive-2.tar.gz` is the second of the two scratch archives written of each run's corpus commit,
+the one extracted and hashed. The logs are kept as written, since their hashes are recorded.
+
+| Run | Corpus | Result | Files |
+|---|---|---|---|
+| Revision 31, the first run | `d8cb8406`, scratch pin [`scratch-pin-revision-31.pin`](vectors/scratch-pin-revision-31.pin) | 63 unclassified differences, all of the regular-expression area, rows S1 (33), S10 (14), M4 (7), M7 (5), T3 (2) and S9b (2); the other areas' classified divergences as at revision 30; the status vectors skipped and named | [`run-revision-31.log`](vectors/run-revision-31.log), [`run-revision-31.tsv.gz`](vectors/run-revision-31.tsv.gz) |
+| Its negative control | the same | the same, and the mutated vector one more unclassified difference | [`run-negative-control-revision-31.log`](vectors/run-negative-control-revision-31.log), [`run-negative-control-revision-31.tsv.gz`](vectors/run-negative-control-revision-31.tsv.gz) |
+| Revision 32 | `cfe32852`, scratch pin [`scratch-pin-revision-32.pin`](vectors/scratch-pin-revision-32.pin) | 0 unclassified differences: the 63 vectors above reported as classified divergences, beside the 63 of the syntax and Intl areas, and no divergence that no longer holds; the status vectors skipped and named | [`run-revision-32.log`](vectors/run-revision-32.log), [`run-revision-32.tsv.gz`](vectors/run-revision-32.tsv.gz) |
+| Its negative control | the same | the same, and the mutated vector the one unclassified difference | [`run-negative-control-revision-32.log`](vectors/run-negative-control-revision-32.log), [`run-negative-control-revision-32.tsv.gz`](vectors/run-negative-control-revision-32.tsv.gz) |
+
+**The same runs are retained in Broiler.JS's bundle `sjl-11-001`**, in its `engine/`, as the basis of its fields, with
+Broiler.JS's own runs on both revisions.
+
 ## 9. Exclusions
 
-Sections 3 to 8 are added as the bundle's runs are taken. The exclusions keep this section's number, where rule H2
+Sections 3 to 8 are added as the bundle's runs are taken (section 3 since 2026-11-01). The exclusions keep this section's number, where rule H2
 reads an exclusion's definition, as in bundles `sjl-3-001` to `sjl-12-001`.
 
 | ID | Status | Exclusion |
