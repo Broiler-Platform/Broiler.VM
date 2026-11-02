@@ -1,0 +1,6 @@
+unified ideographs 101996 with kRSUnicode 101996 missing 0
+runs over all 20494 bytes at 5 per run (cp24,len16): 102470
+per code point table, 3 bytes each: 305988 ; rank 17 bits packed: 216742
+ideographs the vectors reach 35 ['U+20000', 'U+20001', 'U+2A6DF', 'U+2A700', 'U+2B740', 'U+2B820', 'U+2CEB0', 'U+2EBF0', 'U+30000', 'U+31350', 'U+323B0', 'U+3400', 'U+3401', 'U+4DB5', 'U+4DBF', 'U+4E00', 'U+4E01', 'U+4E02', 'U+4E2D', 'U+4E3D', 'U+4EBA', 'U+5B50', 'U+6C34', 'U+8C48', 'U+9F9C', 'U+9FA5', 'U+9FA6', 'U+9FCC', 'U+9FEA', 'U+9FFF', 'U+FA0E', 'U+FA0F', 'U+FA11', 'U+FA1F', 'U+FA29']
+reach table at 6 bytes each (cp24 + rank24): 210
+by block {'A': 6592, 'URO': 20992, 'CJKCompat': 12, 'B': 42720, 'C': 4160, 'D': 222, 'E': 5774, 'F': 7473, 'I': 622, 'G': 4939, 'H': 4192, 'J': 4298}

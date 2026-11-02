@@ -28,6 +28,10 @@
   recorded** in the same section. On CI's `windows-latest` host, whose collator applies no German search tailoring,
   Broiler.JS's answer to row O6's German search pair at `base` is data policy (C5), as row O16 is. It changes no row's
   class and no rule.
+- *(Added 2026-11-02, later, at SJL-17.3.)* **The owner's decision E-o3h of 2026-11-02 is recorded** in section "The
+  owner's decisions of 2026-11-02". Han across blocks keeps UCA 17's implicit weights by block in the shared collator,
+  so row O3's reading is settled: the bullet above that reads "row O3's reading stays open" is answered, and so is
+  finding F1. It changes no row's class and no rule.
 
 **Date:** 2026-11-01.
 
@@ -333,6 +337,29 @@ below is unchanged, and the correspondence carries a dated note on row O6. Broil
 before its merge as its revision 28 was for that host's Intl differences, classifies that vector under row O6 and the
 tailoring vectors that host showed under row O16 (on its branch `sjl-17-2-win`, observed, not merged). No rule
 changes, and this record's list of Broiler.JS's corrections is unchanged.
+
+*(Added 2026-11-02, later, at SJL-17.3. Decided on 2026-11-02 as recommended, under the owner's direction of
+2026-10-18 quoted above, and recorded here as the owner's decision of that day.)*
+
+**Decision E-o3h - Han across blocks keeps the implicit weights by block.** Decision E-han left finding F1, row O3's
+reading, for SJL-17.3 to decide "with the radical-stroke data sized against rule N28 and the data home". SJL-17.3 sized
+it from Unihan's `kRSUnicode` (Unicode 17.0.0's `Unihan.zip`, sha256
+`f7a48b2b545acfaa77b2d607ae28747404ce02baefee16396c5d2d7a8ef34b5e`, retrieved twice, identical). Every unified
+ideograph carries a value. Their radical-stroke order, as runs of consecutive code points (a fixed-width run list,
+delta-coded or compressed with xz) or as a rank per code point, is several times rule N28's headroom (bundle
+sjl-8-001's README and JSD-0075) in every form measured; bundle sjl-17-001's
+[`han-sizing/`](../../../../docs/evidence/sjl-17-001/han-sizing/README.md) retains the measurement, and the bundle's
+README states its sizes. A table of only the ideographs the vectors reach would be small, but it orders no other
+ideograph. The options were (a) UCA 17's implicit weights by block,
+as this family's tables and the shared collator take them, and (b) the radical-stroke order CLDR's root and ICU build.
+Option (b) needs Unihan as a new pinned input of the data home, and a table this family's tables cannot carry under
+rule N28. Recommended and decided: (a). ECMA-402 leaves the order to the implementation, and UTS #35 Part 5 allows
+either. A shared collator with two Han orders would answer by embedding. No test262 file or `orderings` line orders
+Han across blocks (finding F1). Row O3's class stays data policy (C5). The shared collator (merged in
+Broiler-Platform/Broiler.JS#1094 as `c884f87b`, observed) orders Han across blocks by the implicit weights, and so will Broiler.JS
+from its cut-over, SJL-17.5. The `impl-defined` Han vectors keep this family's expectation, which the library
+meets, and Broiler.JS's expectation moves to it at SJL-17.5. Finding F1 is answered, and so is this record's "One
+reading is open: Han across blocks (O3, F1)". No rule changes, and no row changes class.
 
 ## Every row, classified
 

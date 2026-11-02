@@ -26,6 +26,8 @@ writes again byte for byte. A run file's commands name the machine's worktrees a
 has been taken.** *(2026-11-02, at SJL-17.2: the engine-level vector runs of section 3 are retained, and the
 correspondence carries dated notes on rows O3 and O5b; neither is a run of the rule.)* *(2026-11-02, later, before
 the merge of Broiler.JS's change: and on row O6, by the owner's decision E-o6w, section 3's last note.)*
+*(2026-11-02, later, at SJL-17.3: row O3's reading (F1), which section 3 says "stays open for SJL-17.3", is settled by
+the owner's decision E-o3h, which JSD-0084 records. It is not a run of the rule.)*
 - Every run of the rule is taken at the base commit or the after commit, which the rule defines before either exists
   (JSD-0084's decision E14): the after commit is the default-branch merge that lands SJL-17.4's cut-over, and the base
   commit is its first parent.
@@ -82,6 +84,10 @@ review, rules still come before runs, and SJL-17 may not meet its gate before SJ
 
 The correspondence's `probes/` and `runs/` stay as committed.
 
+*(2026-11-02, at SJL-17.3: [`han-sizing/`](han-sizing/README.md) retains the sizing of Han's radical-stroke order
+that the owner's decision E-o3h rests on, its scripts, inputs named and outputs; section 3 reads it. It is not a run of
+the rule.)*
+
 **No figure is quoted in this README until its bundle retains the log it comes from**, and then only in the section
 that reads that log (rule H5). A test262 suite total is never quoted: part A is decided per variant, and totals decide
 nothing.
@@ -101,7 +107,10 @@ Revision 34 classifies both engines' first runs, on Broiler.JS's branch `sjl-17-
   [JSD-0084](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0084-collation-moves-to-the-shared-intl-library.md)
   records. The vectors under `es`, `sv` and `th` expect of it the `en-US` answer that its locale list resolves (rule
   N28), and it gives that too. So revision 34 writes no `divergence.broiler-vm` field, and row O3's reading (F1) stays
-  open for SJL-17.3.
+  open for SJL-17.3. *(Note of 2026-11-02, later, at SJL-17.3: it is settled by the owner's decision E-o3h of that
+  day. The implicit weights by block stay, and this family's expectations in revision 34 do not move. The sizing the
+  decision rests on is retained in [`han-sizing/`](han-sizing/README.md), and this section's last paragraph states
+  its figures.)*
 - **Broiler.JS's differences** are its own, each under a row of the [correspondence](correspondence.md): O2, O3,
   O5a, O5b, O7 and O8. Two rows carry dated notes for answers the run showed, by the owner's decisions E-o5b and E-o3j
   of 2026-11-02. Broiler.JS's bundle of the same name reads them, and this bundle does not.
@@ -152,6 +161,20 @@ are its tables', which read no host, so the revision 34 runs above give its verd
 run taken again would give the same verdicts; its report would differ from theirs in that `class` column, and in the
 corpus commit and content hash its header names, since it would be run from another scratch archive and pin than the
 `60fc3a5b` ones the table names.)*
+
+**Han's radical-stroke order, sized (2026-11-02, at SJL-17.3).** The sizing that the owner's decision E-o3h in
+[JSD-0084](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0084-collation-moves-to-the-shared-intl-library.md)
+rests on is retained in [`han-sizing/`](han-sizing/README.md), whose README names its inputs and commands; every figure
+here is in [`han-sizing/size-han.txt`](han-sizing/size-han.txt), and those of the forms `size_rs.py` gives in
+[`han-sizing/size_rs.txt`](han-sizing/size_rs.txt) too. From Unicode 17.0.0's `Unihan.zip` (SHA-256
+`f7a48b2b545acfaa77b2d607ae28747404ce02baefee16396c5d2d7a8ef34b5e`), every one of the 101,996 unified ideographs
+carries a `kRSUnicode` value. In radical-stroke order they form 20,494 runs of consecutive code points, which take
+102,470 bytes as a fixed-width run list, 73,953 bytes delta-coded and 42,800 bytes compressed with xz. A rank per code
+point takes 216,742 bytes packed. Rule N28's headroom is 11,603 bytes (840,365 of 851,968; bundle
+[`sjl-8-001`](../sjl-8-001/README.md)'s section 12). So every form measured is several times that headroom, about 3.7
+times at the smallest; the same run list big-endian, which the decision did not weigh, compresses to 38,908 bytes,
+still more than three times it. The 35 ideographs the collation vectors of corpus revision 34 reach would take 210
+bytes, but a table of those alone orders no other ideograph.
 
 ## 9. Exclusions
 
