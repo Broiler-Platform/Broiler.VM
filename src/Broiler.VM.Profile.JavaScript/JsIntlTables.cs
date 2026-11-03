@@ -102,7 +102,13 @@ internal sealed class JsIntlTables
     {
         this.data = data;
         // THE SHARED DECODER (JSD-0082, decision D8): built here, decoding nothing until a question needs
-        // a table, each table group once per process under its own thread-safe lazy, as this type's are.
+        // a table, each of its table groups once per process under its own thread-safe lazy, as this
+        // type's are. Its number, date and locale-info groups are decoded a second time, apart from this
+        // type's own numbers, dates and localeInfo below: Intl.Locale's information methods and
+        // supportedValuesOf read them through LocaleData, while the formatters still read this type's.
+        // A script that uses both holds two decoded copies of those groups, which costs memory and a
+        // first call's time and changes no answer; it lasts until sub-areas (b) to (e) delete this
+        // type's decoders (decision D24).
         LocaleData = new TableLocaleData(new JsIntlDataSet(data));
         availableLocales = new(ReadAvailableLocales);
         collation = new(() => new JsCollationData(data.Table(JsIntlTable.CollationRoot), data.Table(JsIntlTable.CollationTailorings)));
