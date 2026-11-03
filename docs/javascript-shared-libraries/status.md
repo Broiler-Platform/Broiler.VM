@@ -2591,6 +2591,31 @@ is accepted. Next:
 - the stream version that carries the collator, published only with the owner's approval;
 - SJL-17.4: this family's cut-over onto the shared collator, after that publication.
 
+**2026-11-03: SJL-13.2f, the shared syntax library's last stage, is merged in Broiler.JS, and the owner's decision on
+decision D14's residual shapes revises bundle sjl-13-001's area rule before its runs.** One change in this
+repository, on the branch `sjl-13-2f-vm`, named by its merge when it lands; it changes `docs/` and the profile's
+`docs/decisions/` only and moves no pin.
+- **The library commit** of Broiler.JS's home rule is the merge of Broiler-Platform/Broiler.JS#1096,
+  `d4b330d8` (observed). Broiler.JS's bundle `sjl-13-001` takes that rule's parts there, in a change of its own
+  repository; that reading is Broiler.JS's and meets no clause here.
+- **The owner's decision of 2026-11-02 on decision D14's residual shapes**, taken as recommended under the owner's
+  direction of 2026-10-18, is recorded by a dated note on D14 in
+  [JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md):
+  the shared library charges every chain node its height against the tree depth, not the four left-operand shapes
+  D14 names, so at SJL-13's step 1 an input whose tree passes the bound in a shape this family's base does not charge
+  moves from accepted to refused (class L), and an input within the bound that the base refuses moves the other way.
+- **Bundle [`sjl-13-001`](../evidence/sjl-13-001/README.md)'s area rule is revised before any run it judges** by a
+  new dated file, [`decision-rule-area-revised-2026-11-02.md`](../evidence/sjl-13-001/decision-rule-area-revised-2026-11-02.md),
+  which widens part A's C3, part B's L and part C's fifth row with its control K4, adds part A's class C6 and part
+  B's class L2, and quotes `decision-rule-area.md` whole; that file is not edited. The bundle's README names the
+  revision.
+- **What did not move.** No pin moves, no code changes, and no run of the rule is taken.
+
+This change meets no clause, and no other ledger's row moves. SJL-13 stays `In progress`, every clause unmet. Nothing
+is accepted. Next:
+- the stream version that carries the shared syntax library, published only with the owner's approval;
+- SJL-13's step 1: this family's wide path onto the shared frontend, judged by the area rule as revised.
+
 ---
 
 ## 1. Reading this ledger

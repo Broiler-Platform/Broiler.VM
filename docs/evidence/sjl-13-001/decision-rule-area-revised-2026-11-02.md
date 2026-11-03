@@ -53,6 +53,12 @@ diagnostic the library gives there.
 6. **The "How it is read" paragraph of part C.** Its first sentence, "The fifth row's inputs at the base are part B's
    class L inputs where the parse corpus holds them;", now reads "The fifth row's inputs at the base are part B's
    class L and class L2 inputs where the parse corpus holds them;".
+7. **Part A's regressions and its "How it is read".** Among part A's regressions, "a variant Unsupported at the base
+   whose verdict moves outside (R), (G) and (B)" now reads "a variant Unsupported at the base whose verdict moves
+   outside (R), (G), (B) and C6", so a C6 variant that the base scored Unsupported is not also a regression. In the
+   paragraph "How it is read" of part A, "the table of every C1 and C3 row with its first diagnostics at both commits"
+   now reads "the table of every C1, C3 and C6 row with its first diagnostics at both commits, each C3 and C6 row with
+   the bundle's measure".
 
 **What does not change.** Every other part, class and control. The four shapes stay among the fifth row's sources.
 

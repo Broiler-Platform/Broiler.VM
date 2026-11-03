@@ -663,7 +663,7 @@ found two shapes besides the two bundle `sjl-12-001` records (finding F18).
 
 *(Noted 2026-11-03: the owner's decision of 2026-11-02 on the residual shapes, taken as recommended under the
 direction of 2026-10-18; Broiler.JS SJL-13.2f, merged in Broiler-Platform/Broiler.JS#1096 as
-`d4b330d8ed25aeee0e7d5fe1e4129f3dc480b318`, section 5 of its tree-depth derivation,
+`d4b330d8ed25aeee0e7d5fe1e4129f3dc480b318`, section 5 of its limits derivation,
 `Broiler.ECMAScript/docs/frontend/limits/derivation.md`.)* The library charges every shape of the tree, not the four
 this decision names where it reads "**The left-operand gap is closed in the library in all four shapes the base
 compiles past the bound**". It refuses a chain node (binary or logical, member, call, tagged template) whose height,
@@ -680,9 +680,9 @@ at the base and accepted after. The area rule `decision-rule-area.md` names the 
 B's L and part C's fifth row, and admits no move from refused to accepted. Before its runs, a new dated rule file,
 [`decision-rule-area-revised-2026-11-02.md`](../../../../docs/evidence/sjl-13-001/decision-rule-area-revised-2026-11-02.md),
 widens C3 and L (part B's L to "an input accepted at the base and refused after with the contract's tree-depth
-diagnostic, whose tree passes the bound by part A's measure"), and admits, as classes of their own (part A's C6 and
-part B's L2), "an input refused at the base with the tree-depth diagnostic and accepted after, whose tree as the after
-commit builds it is within the bound by part A's measure". In both, the tree's depth is a measure a script of the
+diagnostic, whose tree passes the bound by part A's measure"), and admits, as a class of its own, part B's L2, "an
+input refused at the base with the tree-depth diagnostic and accepted after, whose tree as the after commit builds it
+is within the bound by part A's measure", and its like for a test262 variant, part A's C6. In both, the tree's depth is a measure a script of the
 bundle takes of the tree an engine's own parser builds (the base's for an input refused after, the after commit's for
 one refused at the base), not the depth the library reports: the library's diagnostic always gives its bound, so a
 reported depth cannot show which side of the bound a tree lies on (Broiler.JS bundle `sjl-13-001` at that merge,
