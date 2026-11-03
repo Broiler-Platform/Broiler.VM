@@ -249,6 +249,15 @@ carries it by a dated note of the same day.
    measurement meets its rule on a controlled lane, or, until one exists, is taken under its rule
    and recorded void". Until the owner chooses, the clause stands as written, and Broiler.JS's
    rule's part I is void, neither MET nor NOT MET, on a lane that is not controlled.)*
+   *(Noted 2026-11-03, later, on the owner's answer to decision D48: still not revised. On
+   2026-11-03 the owner wrote: "Please defer the measurement". The note above said "Until the owner
+   chooses, the clause stands as written"; the owner's words choose alternative (i). The clause is
+   kept as written, unmet until a controlled lane exists, and decision SJL-D-23 gains a dated note of
+   the same date naming it among the clauses its trigger (b) lists, so that trigger (b) stays
+   reachable. Broiler.JS's rule's part I stays void, neither MET nor NOT MET, on a lane that is not
+   controlled, and its runs there are retained and recorded void. This is the owner's own dated
+   choice, as SJL-D-23's note of 2026-10-20 reserves it, and not one taken under the owner's
+   direction of 2026-10-18. Nothing is revised, so nothing is re-evaluated.)*
 
 ---
 
