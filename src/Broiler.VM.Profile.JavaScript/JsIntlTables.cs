@@ -54,8 +54,9 @@ namespace Broiler.VM.Profile.JavaScript;
 /// <b>The number formats read the same decoder since sub-areas (b) and (c)</b> (JSD-0082, decision
 /// D24): <see cref="FormatData"/> orders <see cref="LocaleData"/> as the library's formatters read it,
 /// and this type's own number decoder, with its <c>JsNumberData</c>, left it. The date, list,
-/// relative-time, display-name and zone-name decoders stay until sub-area (d) moves; the
-/// relative-time format no longer reads them, while the date, list and display-name formats still do.
+/// relative-time, display-name and zone-name decoders stay until sub-area (d) moves; the list,
+/// relative-time and display-name formats no longer read them, and the date format's zone names still
+/// read the display names.
 /// </para>
 /// <para>
 /// <i>Noted 2026-11-03, at SJL-9.4's sub-areas (b) and (c): the paragraph above, as stage (a) wrote
@@ -115,10 +116,10 @@ internal sealed class JsIntlTables
         // currency, unit and plural question, the formatters' among them, reads LocaleData, through
         // FormatData's parent walk. Its date and locale-info groups are still decoded a second time,
         // apart from this type's own dates and localeInfo below: Intl.Locale's information methods,
-        // supportedValuesOf and the relative-time format read them through LocaleData, while the date,
-        // list and display-name formats still read this type's. A script that uses both holds two
+        // supportedValuesOf and the list, relative-time and display-name formats read them through
+        // LocaleData, while the date format still reads this type's. A script that uses both holds two
         // decoded copies of those groups, which costs memory and a first call's time and changes no
-        // answer; it lasts until sub-areas (c) and (d) delete this type's decoders (decision D24).
+        // answer; it lasts until sub-area (d) deletes this type's decoders (decision D24).
         // (Revised 2026-11-03, at SJL-9.4's sub-areas (b) and (c). Stage (a) wrote: "Its number, date and
         // locale-info groups are decoded a second time, apart from this type's own numbers, dates and
         // localeInfo below: Intl.Locale's information methods and supportedValuesOf read them through

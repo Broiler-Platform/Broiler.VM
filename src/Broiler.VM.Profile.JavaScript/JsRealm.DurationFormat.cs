@@ -588,7 +588,7 @@ internal sealed partial class JsRealm
     /// ECMA-402's PartitionDurationFormatPattern (s13.5.15): each unit before the clock by a unit
     /// number format, the clock, and the whole joined by ListFormatParts (s13.5.14).
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=54ED5A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DAD05E
     // Broiler-Human:        PENDING
     private static List<(string Type, string Value, string? Unit)> PartitionDurationFormatPattern(
         JsEngine engine, JsDurationFormatObject format, double[] record)
@@ -684,7 +684,7 @@ internal sealed partial class JsRealm
         var result = new List<(string Type, string Value, string? Unit)>();
         var element = 0;
 
-        foreach (var (type, value) in CreatePartsFromList(engine, listFormat, strings))
+        foreach (var (type, value) in listFormat.Formatter.FormatToParts(strings, engine.WorkCharge))
         {
             if (type == "element")
             {
