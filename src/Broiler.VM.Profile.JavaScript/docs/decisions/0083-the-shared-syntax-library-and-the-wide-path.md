@@ -41,6 +41,10 @@
   T24f record Broiler.JS's answer where `;` or the end of input follows the regular-expression literal, with the same
   classes. No sub-area's verdict, no other row's class and no correction of this family changes, and no clause of
   "Falsified if" is met.
+- *(Added 2026-11-03.)* **X6's Broiler.JS half is completed** by a dated note under X6, at SJL-14.1 (SJL-13's plan's
+  decision D40), member by member from SJL-14's `dispositions.md` in Broiler.JS. SJL-14 files no verdict of its own:
+  this record's X1 covers Broiler.JS's front end. No sub-area's verdict, no row's class and no decision of this record
+  changes.
 
 **Date:** 2026-10-26.
 
@@ -370,6 +374,96 @@ and they stand unchanged for what they refuse. ADR 0011's table is not edited.
   disposition of every public type it empties (SJL-D-25), which exists only from SJL-14.1. **A dated note on this
   record at SJL-14.1 completes Broiler.JS's half member by member from SJL-14's `dispositions.md`** (SJL-13's plan's
   decision D40), so that the gate roadmap section 5 applies has its Broiler.JS half on record before SJL-14's code.
+
+*(Note of 2026-11-03, at SJL-14.1, decision D40.)* **Broiler.JS's half of X6, member by member.** It is taken from
+SJL-14's `docs/evidence/sjl-14-001/dispositions.md` in Broiler.JS, written at Broiler.JS's `33d3093b` from a
+PublicApiGenerator listing of `Broiler.JavaScript.Ast` and `Broiler.JavaScript.Parser`, with every public type and
+member of both assemblies in its `dispositions.tsv`. The file is filed in Broiler.JS's own change, on its branch
+`sjl-14-1-records`, and is observed until it merges; the programme ledger names its merge commit when it has.
+Decisions D40 to D56 are SJL-14's, the owner's of 2026-11-03 under the owner's direction of 2026-10-18, recorded in
+Broiler.JS's `docs/roadmap/SharedLibraries.md`, section "Broiler.JS on the shared syntax library (SJL-14)"; this
+note applies D50 and D51 and the revised D41 above. Lines are those at `33d3093b`, under `Broiler.JS/`.
+
+The deletion list, applied at SJL-14's cut-over, which SJL-14's clause 2, revised on 2026-11-03 before any evidence,
+judges ("The implementations on SJL-14.5's deletion list are absent; the public names SJL-D-12 (i)'s adapter keeps
+stay only as obsolete facades over the bridge."):
+- **`FastParser` and its partial files** (`Broiler.JavaScript.Parser/`): `FastParser.cs` and its partial files
+  `ArrayExpression`, `AssignmentLeftPattern`, `Block`, `Class`, `Decorator`, `DoWhile`, `Export`, `Expression`,
+  `ForStatement`, `Function`, `Identifier`, `IfStatement`, `Import`, `Literal`, `NextExpression`,
+  `NonDeclarativeStatement`, `ObjectLiteral`, `Parameters`, `Program`, `PropertyName`, `SingleExpression`,
+  `SingleMemberExpression`, `SinglePostfixPrefixExpression`, `Statement`, `Switch`, `Template`, `VariableDeclaration`,
+  `WhileStatement` and `WithStatement`: every member they declare. The public `FastParser` keeps its facade members
+  over the bridge: `ParseProgram`, `ParseModule`, the constructors, `Options`, `Location`, `PreviousToken`,
+  `BeginUndo`, `Combine`, `ExpectStringLiteral`, `Export`, `NonDeclarativeStatement`, `variableScope` and
+  `StreamLocation`.
+- **`FastScanner`'s scanning code** (`FastScanner.cs`): the cursor and its state (`position`, `line`, `column`,
+  `templateParts`, `templateBraceDepth`, `templateBraceDepthStack`, `templateCookedInvalid`, `nextToken`,
+  `lastToken`, `lastSignificantToken`, `parenIsStatementHead`, `lastCloseParenEndedStatementHead`, `SaveCursor` :265,
+  `RestoreCursor` :268, `Peek` :295 and :314, `Next` :304, `ConsumeAndNext` :324, `Consume` :337, `CanConsume` :370
+  and :394, `CanConsumeNext` :382); the readers (`ReadToken` :407, `_ReadToken` :415, `ScanEscaped` :776,
+  `ScanUnicodeCodePointEscape` :1002, `HexDigit` :1040, `HexDigitValue` :1067, `ReadTemplateString` :1147,
+  `ReadSymbol` :1216, `ReadCommentsOrRegExOrSymbol` :1222, `SkipMultilineComment` :1601, `SkipSingleLineComment`
+  :1660, `ReadString` :1679, `ReadIdentifier` :1723, `ReadIdentifierEscape` :1788, `ReadNumber` :1846); the
+  classifiers (`IsWhiteSpace` :206, `IsIdentifierStart` :210, `IsIdentifierPart` :214, `OpensStatementHead` :220,
+  `IsHtmlOpenCommentStart` :762, `IsHtmlCloseCommentStart` :768, `IsHashbangStart` :997); `Unterminated` :94,
+  `UnexpectedCharacter` :114, `NoBigIntWidth` :1844 and `State.CommitIdentifier` :2042. The public `FastScanner`
+  keeps `Text`, `YieldIsKeyword`, the constructors, `Location`, `Options`, `Token`, `ConsumeToken`, `Push`,
+  `Unexpected` and `State` with its members as facade members.
+- **`FastTokenStream`'s scanning code** (`FastTokenStream.cs`): the scanner it drives (`scanner` :16, `furthest`
+  :68) and the internal `Unexpected` :19, `UnexpectedStatement` :38 and `LineTerminator` :97. Its public members stay
+  as facade members over the bridge's token chain.
+- **`FastKeywordMap`'s table**: the switch table of `IsKeyword` (`FastKeywordMap.cs:14`, the table from `:44`).
+  **No remnant**: the `m` suffix arrives through the library's extension parameter (decision D17). `Instance` and
+  `IsKeyword` stay as facade members.
+- **`CharExtensions`' scanner members** (`CharExtensions.cs`): `FromCodePoint` :9, `HexValue` :17, `IsDigitPart`
+  :40 and `IsLineTerminator` :90, all internal; the public class, which has no public member, stays as an obsolete
+  facade.
+- **The parser's half of `FastScope`** (`FastScope.cs`, `FastScopeItem.cs`): `FastScope.Push` :12; `FastScopeItem`'s
+  `Variables` :9, `annexBFunctionNames` :17, `varDeclaredNames` :27, `MarkVarDeclaredName` :33, `HasVarDeclaredName`
+  :44, `AddAnnexBName` :51, `GetAnnexBNames` :66, `HasLexicalBinding` :82, `DeclaresVariable` :91, `AddVariable` :94
+  (with its refusals, the sites of EE0040, EE0062, EE0168, EE0169 and EG0004) and `GetVariables` :237. Nothing
+  outside the parser reads `FastScope`: the compiler reads `HoistingScope`, which the bridge synthesises from the
+  library's side tables (decision D44). Both public types stay as obsolete facades.
+- **`RegExpValidator`** (`RegExpValidator.cs`): the whole class, `IsValid` :18 and its helpers to
+  `NormalizeUnicodePropertyEscapes` :964. **`DecodeBracedUnicodeEscapes`** (`FastScanner.cs:1048`, called at `:1502`)
+  and **the parenthesis-balance patch** (`FastScanner.cs:1463-1492`). Each is deleted if SJL-11.5 has landed when the
+  cut-over merges, and otherwise relocated behind the request's regular-expression provider (decision D51).
+- **The division fallback** (`FastScanner.cs`, in `ReadCommentsOrRegExOrSymbol` :1222, the speculative
+  regular-expression scan that falls back to division, `:1230-1281` and `:1340-1356`): deleted (JSD-0081's decision
+  D22, row S9).
+- **The two token re-scans and the direct-eval prefix** (decision D41 as revised above): `SyntaxValidation`'s
+  `ContainsLegacyOctalLiteral` (`Broiler.JavaScript.Compiler/SyntaxValidation.cs:369`, called at `:35`);
+  `DirectEvalSupport`'s `ContainsStrictReservedWordUsage` (`DirectEvalSupport.cs:743`, called at `:704`); and the
+  `"use strict";` prefix (`DirectEvalSupport.cs:127-128`) with the two places that skip the prefixed statement,
+  `TryEvaluateInertProgram` :451 (its `injectedStrictDirective` parameter, called at `:147`) and
+  `TryGetSingleStatement` :561 (called at `:530`). `FastCompiler.EarlyErrors`' own `ContainsLegacyOctalLiteral`,
+  which reads the tree, is not a re-scan and stays until SJL-15.5.
+- **The test-only switch** of decision D43, an internal member of the compilation options and a hidden flag of the
+  shell, added with the bridge and removed at the cut-over.
+- **What remains of `NumberCoercion`**: nothing. It was deleted at SJL-3.5; at `33d3093b` only a comment in an
+  integration test names it.
+- **Not deleted at SJL-14**: the rest of `SyntaxValidation`, `FastCompiler.EarlyErrors`, `FastFunctionScope` and
+  `FreeNameScan`, which SJL-15.5 deletes when the compiler moves to the shared tree (decision D41), and the `Ast` and
+  `Parser` packages, which stay as obsolete adapter packages until their removal version.
+
+The dispositions of the public types it empties (SJL-D-25, applied by decision D50):
+- **`Parser`: every public type and member is an obsolete facade over the bridge**, removal version `1.0.0`,
+  `FastScope` and `FastScopeItem` among them, keeping every member SJL-12's parse-corpus tool and the downstream
+  consumers use and throwing today's exception types, `FastParseException` for a refusal. The one exception is
+  `FastTokenStream.UndoMark()`, which keeps its obsolete mark of SJL-12.5 with no removal version until a consumer
+  check is recorded (JSD-0080's decision D20; SJL-D-25 (c)).
+- **`Ast`: every tree type is obsolete**, removal version `1.0.0`, built by the bridge from the shared tree, and
+  `TokenTypesExtensions` with them.
+- **`Ast`'s non-tree types move to `Broiler.JavaScript.Expressions`** with their namespaces and a `[TypeForwardedTo]`
+  in `Ast`, unmarked (SJL-D-25 (a)): `StringSpan` with `StringSpan.CharEnumerator`, `StringSpanReader`, `ArraySpan<T>`
+  with its `Enumerator`, `IPropertyAccessor`, `IPropertyValue`, `UnaryOperator`, `TokenTypes`,
+  `CancellableDisposableAction`, `RegExpUnicodeValidator` and `FastParseException`. **`FastParseException` departs
+  from decision D50's list**, which does not name it: `Runtime` catches it (`Broiler.JavaScript.Runtime/CoreScript.cs:109`,
+  `JSException.cs:265`), so obsoleting it would mark a type the runtime uses, which D50's reason excludes. The internal
+  Unicode tables in `Ast` have no public surface and move with their readers, with no forwarder.
+- The marks carry one diagnostic identifier, suppressed by one `NoWarn` in Broiler.JS's root `Directory.Build.props`
+  until SJL-15.5. `docs/public-api.md` records the dispositions at the cut-over, which Broiler.JS's rule's part H
+  checks against `dispositions.md`, and its part K searches for every item of the deletion list.
 
 Each deleted member of this family is registered in rule I5 in the change that deletes it (bundle `sjl-13-001`'s
 rule, part D).

@@ -196,6 +196,23 @@ packages and are removed in a later major version (decision `SJL-D-12` (i)). See
 [governance.md](governance.md#5-release-versioning-and-compatibility) and the per-area deletion
 lists.
 
+*(Noted 2026-11-03, at SJL-14.1, by SJL-13's plan's decisions D41, D50 and D53, the owner's decisions of 2026-11-03,
+recorded in Broiler.JS's `docs/roadmap/SharedLibraries.md`, section "Broiler.JS on the shared syntax library
+(SJL-14)", D41 as [JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md)
+revised it.)* The table is a target, and its `Parser` row and its compilers' row are partly overtaken:
+- **`Parser` is not replaced but becomes an obsolete adapter package** at SJL-14's cut-over: its public types a
+  facade over the bridge, which builds the old tree from the frontend's, until the removal version `1.0.0`. Its
+  references today are Algorithms, `Ast` and `Expressions`; Unicode reaches it through `Ast`.
+- **Of what the row says `Parser` stops owning**, `NumberCoercion` was deleted at SJL-3.5, the identifier classes
+  moved to Broiler.Unicode at SJL-7.5, and the ambient `CoreScript` reads went at SJL-12.5. `RegExpValidator`,
+  `FastParser` and `FastScanner`'s scanning code go at SJL-14's cut-over, `RegExpValidator` relocated behind the
+  frontend's regular-expression provider instead if SJL-11.5 has not landed. **`SyntaxValidation` is the compiler's,
+  not `Parser`'s**: SJL-14 deletes only its token re-scan, and the rest goes at SJL-15.5.
+- **The compiler and `Engine` parse through the bridge from SJL-14**, and read the frontend's tree only from
+  SJL-15.5; `Portable.Compiler` and the module analysis read it directly from SJL-14. `Portable.Compiler` references
+  the frontend and `Portable` after SJL-14, and `Expressions` only if it uses a non-tree type that moves there
+  (decision D53), and no longer `Ast` or `Parser`.
+
 ### 3.3 What each engine keeps
 
 Each engine keeps everything that defines it as an engine:
@@ -420,6 +437,16 @@ reference them. `Portable.Compiler` changes most: it moves from `Parser`, whose 
 `Runtime`, `Storage`, `Ast` and `Expressions`, to the frontend, which has no runtime in its
 closure. That is the first time Broiler.JS's portable path can parse without pulling in the
 runtime.
+
+*(Noted 2026-11-03, at SJL-14.1, by SJL-13's plan's decision D53, the owner's decision of 2026-11-03, recorded in
+Broiler.JS's `docs/roadmap/SharedLibraries.md`, section "Broiler.JS on the shared syntax library (SJL-14)".)* The
+paragraph's "it moves from `Parser`, whose closure includes `Runtime`, `Storage`, `Ast` and `Expressions`" and "the
+first time Broiler.JS's portable path can parse without pulling in the runtime" no longer hold. **The portable
+compiler's closure holds no `Runtime` and no `Storage` since SJL-12.5** (Broiler.JS `792ff56e`, the merge of
+Broiler-Platform/Broiler.JS#1066): at Broiler.JS's `33d3093b`, `Portable.Compiler` references `Ast`, `Parser` and
+`Portable`, and their closure holds `Expressions` and Algorithms beside them. **After SJL-14's cut-over** it references
+the frontend and `Portable`, and `Expressions` only if it uses a non-tree type that moves there, and no longer `Ast`
+or `Parser`; Broiler.JS's SJL-14 rule takes a closure listing at the cut-over (its part E).
 
 **Native AOT.** `Portable.Compiler` runs offline under JIT. Broiler.JS's Native AOT image is its
 portable interpreter, published by `samples/Broiler.JavaScript.NativeAotSample`, which no shared

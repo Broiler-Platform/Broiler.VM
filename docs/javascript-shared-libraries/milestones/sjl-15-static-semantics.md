@@ -109,6 +109,16 @@ The following go:
 Broiler.JS's Modernization invariant 3 ("The semantic front end is shared … between IL and
 bytecode") is closed, extended to the Broiler.VM consumer.
 
+*(Revised 2026-11-03, at SJL-14.1, before any evidence of SJL-15 existed, by SJL-13's plan's decision D41 as
+[JSD-0083](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md)
+revised it, the owner's decision of 2026-11-03, recorded in Broiler.JS's `docs/roadmap/SharedLibraries.md`, section
+"Broiler.JS on the shared syntax library (SJL-14)". Until then the work package named only what goes.)* **The
+compiler also moves here from the bridged `AstNode` tree SJL-14 gives it to the shared tree**, reading the model.
+At SJL-14 the compiler parses through the bridge, which builds its old tree from the shared tree, and only
+`PortableCompiler` and `ModuleSourceAnalysis` read the shared tree directly (SJL-14.3 as revised the same day).
+After SJL-15.5 nothing in the engine reads the bridge, and the bridge remains only as the implementation of the
+obsolete `Ast` and `Parser` adapter packages, until their removal version. Clause 10 judges the move.
+
 ### SJL-15.6 — Evidence
 
 Both engines' full suites under the rules:
@@ -145,8 +155,16 @@ Both engines' full suites under the rules:
 
 **Broiler.JS clauses**
 
-10. Its scope analysis and its scattered early errors are gone.
+10. Its scope analysis and its scattered early errors are gone, and the compiler reads no bridged
+    tree.
 11. test262 per path meets the rule. Every correction is listed.
+
+*(Revised 2026-11-03, at SJL-14.1, before any evidence of SJL-15 existed, under the
+[ledger](../status.md)'s update rule 5, by SJL-13's plan's decision D41 as JSD-0083 revised it. Clause 10 read "Its
+scope analysis and its scattered early errors are gone." At SJL-14 the compiler parses through a bridge to its own
+tree, and SJL-15.5 moves it to the shared tree; without the added words, no exit clause would judge that move.
+Broiler.JS's rule for SJL-15, filed at SJL-15.1, judges it by its deletion search. No evidence of SJL-15 existed to
+re-evaluate.)*
 
 **Records**
 

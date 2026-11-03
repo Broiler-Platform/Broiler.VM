@@ -253,6 +253,18 @@ or tests use, an obsolete forwarder for the rest, and a break only after a recor
 The public `Ast` and `Parser` packages are the largest case. Decision `SJL-D-12` (i) makes them
 adapter packages, marked obsolete and removed in a later major version.
 
+*(Noted 2026-11-03, at SJL-14.1, by SJL-13's plan's decision D55, the owner's decision of 2026-11-03, recorded in
+Broiler.JS's `docs/roadmap/SharedLibraries.md`, section "Broiler.JS on the shared syntax library (SJL-14)".)* The
+first sentence, "Broiler.JS has no type forwarding anywhere, no API baseline, and a README that calls its API
+unstable.", no longer holds in its first two parts. **Broiler.JS forwards types**: since SJL-12.5 (Broiler.JS
+`792ff56e`, the merge of Broiler-Platform/Broiler.JS#1066) `Runtime` forwards `RegExpUnicodeValidator` and
+`CancellableDisposableAction` with `[TypeForwardedTo]` to `Ast`, where they moved (JSD-0080's decision D20), and
+SJL-14's cut-over forwards `Ast`'s non-tree types to `Broiler.JavaScript.Expressions` (decision D50). **Broiler.JS has
+an API baseline** since SJL-0 and SJL-2 ([validation.md](validation.md), layer L12). SJL-14's disposition of `Ast` and
+`Parser`, type by type and member by member, is Broiler.JS's bundle `sjl-14-001`'s `dispositions.md`: `Parser`'s
+public types a facade over the bridge and `Ast`'s tree types obsolete, both with the removal version `1.0.0`, but
+`UndoMark`, which keeps its obsolete mark of SJL-12.5 without a removal version until a consumer check is recorded.
+
 ### 5.4 Co-hosting
 
 Two rules hold:
