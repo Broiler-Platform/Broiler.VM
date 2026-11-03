@@ -113,6 +113,6 @@ projects, its `admittedBy` gaining a sentence that says so; no entry joined or l
 *(Revised 2026-11-03, at SJL-9.4, when `Broiler.ECMAScript.Intl` `0.1.0-preview.9` was admitted, product, for
 `Broiler.VM.Profile.JavaScript` alone, by the same procedure: downloaded from nuget.org, its archive hashing to the
 SHA-512 nuget.org's catalog publishes for it, which the allow-list's `archiveHash` holds, and its `contentHash` the
-one a restore into an empty package cache recorded. The table gained its row; the revision above read "`Broiler.ECMAScript.Intl` and `Broiler.ECMAScript.Frontend`, published at the same version, are not admitted:
+one a restore into an empty package cache recorded. The table gained its row; the revision above says "`Broiler.ECMAScript.Intl` and `Broiler.ECMAScript.Frontend`, published at the same version, are not admitted:
 they enter with their cut-overs", which now holds of `Broiler.ECMAScript.Frontend` alone. No `.nupkg` or `.pin` was
 placed in this directory.)*
