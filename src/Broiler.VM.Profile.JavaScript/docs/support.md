@@ -198,14 +198,15 @@ before review. What each has been shown to do:
 
 **The family's four packages are frozen** in the [package baseline](packages.md), each with its
 dependencies and files, and rule N37 holds it to the checkout and to the candidate pack of bundle
-[JS-10-014](evidence/js-10-014/README.md), where a pristine consumer restored and ran them, and the
-shared packages they depend on - the shared algorithms package and, since the Unicode cut-over, the
-Unicode area's code and segmentation packages - with upstream unreachable and rolled back to the
+[JS-10-015](evidence/js-10-015/README.md), where a pristine consumer restored and ran them, and the
+shared packages they depend on - the shared algorithms package, since the Unicode cut-over the
+Unicode area's code and segmentation packages, and since SJL-9.4 the shared Intl package - with upstream unreachable and rolled back to the
 published `0.1.0-preview.5` and forward again *(corrected: [JSC-300](roadmap.corrections.md#jsc-300),
 [JSC-302](roadmap.corrections.md#jsc-302), [JSC-308](roadmap.corrections.md#jsc-308),
 [JSC-311](roadmap.corrections.md#jsc-311), [JSC-312](roadmap.corrections.md#jsc-312),
 [JSC-314](roadmap.corrections.md#jsc-314), [JSC-318](roadmap.corrections.md#jsc-318),
-[JSC-323](roadmap.corrections.md#jsc-323); until JSC-323 it named bundle JS-10-011, which the baseline had left
+[JSC-323](roadmap.corrections.md#jsc-323); revised 2026-11-03, at SJL-9.4: it named bundle JS-10-014 and listed the
+shared packages without the Intl package; until JSC-323 it named bundle JS-10-011, which the baseline had left
 for JS-10-012 and JS-10-013 without this sentence following; before that it named bundle
 JS-10-010, before that JS-10-009, before that JS-10-008, before that JS-10-007, before that JS-10-006, before that JS-10-005, and before that
 JS-10-002)*.
