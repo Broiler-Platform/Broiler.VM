@@ -375,13 +375,20 @@ and they stand unchanged for what they refuse. ADR 0011's table is not edited.
   record at SJL-14.1 completes Broiler.JS's half member by member from SJL-14's `dispositions.md`** (SJL-13's plan's
   decision D40), so that the gate roadmap section 5 applies has its Broiler.JS half on record before SJL-14's code.
 
-*(Note of 2026-11-03, at SJL-14.1, decision D40.)* **Broiler.JS's half of X6, member by member.** It is taken from
+*(Note of 2026-11-03, at SJL-14.1, decision D40.)* **Broiler.JS's half of X6, member by member.** X6's Broiler.JS line
+above read "SJL-14.5's list as decision D41 reads it (`FastParser`, `FastScanner`, `FastTokenStream`'s scanning code,
+`FastKeywordMap`'s table, `CharExtensions`' scanner members, `RegExpValidator` and the parser's half of `FastScope`; the
+two token re-scans of `SyntaxValidation` and `DirectEvalSupport`)"; this note reads `FastScanner` as its scanning code,
+by D50 (the public type stays as an obsolete facade), and adds what D41, D50 and D51 also delete: the division
+fallback, the braced-escape decoding and the parenthesis-balance patch (each as D51 orders it), the direct-eval prefix
+with the two places that skip it, and the test-only switch. It is taken from
 SJL-14's `docs/evidence/sjl-14-001/dispositions.md` in Broiler.JS, written at Broiler.JS's `33d3093b` from a
 PublicApiGenerator listing of `Broiler.JavaScript.Ast` and `Broiler.JavaScript.Parser`, with every public type and
 member of both assemblies in its `dispositions.tsv`. The file is filed in Broiler.JS's own change, on its branch
 `sjl-14-1-records`, and is observed until it merges; the programme ledger names its merge commit when it has.
-Decisions D40 to D56 are SJL-14's, the owner's of 2026-11-03 under the owner's direction of 2026-10-18, recorded in
-Broiler.JS's `docs/roadmap/SharedLibraries.md`, section "Broiler.JS on the shared syntax library (SJL-14)"; this
+Decisions D40 to D56 and D64 are SJL-14's, the owner's under the owner's direction of 2026-10-18 (of 2026-11-03, but
+D41 and D44 to D47, of 2026-10-26 as revised in this record), recorded in Broiler.JS's
+`docs/roadmap/SharedLibraries.md`, section "Broiler.JS on the shared syntax library (SJL-14)"; this
 note applies D50 and D51 and the revised D41 above. Lines are those at `33d3093b`, under `Broiler.JS/`.
 
 The deletion list, applied at SJL-14's cut-over, which SJL-14's clause 2, revised on 2026-11-03 before any evidence,
@@ -1251,6 +1258,24 @@ SJL-3's, SJL-7's and SJL-12's bundles; the milestone's expected list, completed.
 every check this family's parser makes, many of which Broiler.JS makes only in its compiler, some lazily; K7 covers
 only rows Broiler.JS does not check. The plan's text read "**K10** rows task 1.1 adds." (finding F28) and "for an input
 P accepts and P or B refuses, K refusing on both sides;" (finding F8).
+
+*(Note of 2026-11-03, at SJL-14.1, Broiler.JS's finding S14-F1.)* **Class E is revised once more, on 2026-11-03**, under
+the owner's direction of 2026-10-18 and as this record revised it on its own findings, and SJL-14's rule
+(`docs/evidence/sjl-14-001/decision-rule.md` in Broiler.JS) admits it so. The stage table's `syntax` rows whose check
+Broiler.JS makes partly in its parser and partly in its compiler (`js_compiler_only` `partly`), and its parser rows
+whose check misses some inputs that its compiler then refuses, make the same move from the compiler to the parse that
+class E names, and the wording by row left such inputs unclassified. Class E now reads: an input P accepts and P or B
+refuses, K refusing on both sides, with a SyntaxError whose shared code is a `syntax` row of the stage table, where
+either the row's catalogue `js_stage` names only compiler sites (`SyntaxValidation`, `FastCompiler.EarlyErrors`,
+`Visit*`, `DirectEvalSupport`; `js_compiler_only` `yes`), or the row's `js_compiler_only` is `partly` or `no` and
+bundle `sjl-13-001`'s classification expects the input refused in configuration J with that row among the rows whose
+codes may come first; a row the stage table marks `not-checked` is never class E. The sentence it replaces read
+"**Class E (early-error stage)**: the `syntax` rows whose catalogue `js_stage` names only compiler sites
+(`SyntaxValidation`, `FastCompiler.EarlyErrors`, `Visit*`, `DirectEvalSupport`), for an input P accepts and P or B
+refuses, K refusing on both sides (among them `await using` in a script's block, which `SyntaxValidation` refuses as
+"Unexpected await" today)". Class E's rows by the first condition, class T and the rest of D45 are unchanged; the
+rows and the finding are in SJL-14's `corrections.md`, and Broiler.JS's `docs/roadmap/SharedLibraries.md` records the
+revision with SJL-14's decisions. Both are filed in Broiler.JS's own change and observed until it merges.
 
 *(Note of 2026-10-27, decision D-asi.)* K10's rows include **P16b**, automatic semicolon insertion in a for statement's
 head: Broiler.JS accepts a line break where the head's first `;` belongs after a `var`, `let` or `const` declaration,

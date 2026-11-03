@@ -15,10 +15,12 @@
 
 *(Read 2026-11-03, at SJL-14.1, before any evidence of SJL-14 existed, by decision D41 as
 [JSD-0083](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md)
-revised it.)* In this file "decision Dn" is SJL-13's plan's numbering, which JSD-0083 keeps: D40 to D56 are SJL-14's,
-the owner's decisions of 2026-11-03 under the owner's direction of 2026-10-18, recorded in Broiler.JS's
+revised it.)* In this file "decision Dn" is SJL-13's plan's numbering, which JSD-0083 keeps: D40 to D56 and D64 are
+SJL-14's, the owner's decisions under the owner's direction of 2026-10-18, recorded in Broiler.JS's
 `docs/roadmap/SharedLibraries.md`, section "Broiler.JS on the shared syntax library (SJL-14)", which is filed in
-Broiler.JS's own change and observed until it merges; D41 and D44 to D47 are taken as JSD-0083 revised them.
+Broiler.JS's own change and observed until it merges: D41 and D44 to D47 as JSD-0083 revised them on 2026-10-26, the
+owner's decisions of that day; the others of 2026-11-03, with D45 revised again that day (JSD-0083's note under
+D45).
 - **"the remains of `SyntaxValidation`"** is read as its compiler-stage checks, which SJL-15.5 deletes when the
   compiler moves to the shared tree, and its two token re-scans, `SyntaxValidation.ContainsLegacyOctalLiteral` and
   `DirectEvalSupport.ContainsStrictReservedWordUsage`, which SJL-14's cut-over deletes with the direct-eval
@@ -92,7 +94,8 @@ by row in Broiler.JS's bundle `sjl-14-001`'s `corrections.md` before any evidenc
   among them) and the rows SJL-14.1's inherited-context probes add.
 
 Besides the corrections, the rule admits **class E**, an early error the library reports at the parse that
-Broiler.JS checks only in its compiler, or partly there, **class T**, a `SyntaxError` raised before evaluation that
+Broiler.JS checks only in its compiler, or that its parser let pass for that input and its compiler refused (decision
+D45 as revised on 2026-11-03, JSD-0083's note under D45), **class T**, a `SyntaxError` raised before evaluation that
 Broiler.JS raised later or not at all (decision D64), and **class M**, a message text that changes, listed by a
 generated table, the texts hosts and tests read being kept (decision D46). JSD-0080's decision D27's listed refusals
 are an implementation limit (C3), not corrections. The bridge also passes the inherited context of eval code and the
@@ -242,7 +245,7 @@ carries it by a dated note of the same day.
    "That choice is the owner's own when it comes, not one taken under the owner's direction of
    2026-10-18." It is put to the owner with two alternatives, (i) keeping the clause, unmet until a
    controlled lane exists, and naming it by a dated note on SJL-D-23 among the clauses its trigger
-   (b) lists, or (ii) revising it before any evidence, under update rule 5, to "Broiler.JS's parse
+   (b) lists, so that trigger (b) stays reachable, or (ii) revising it before any evidence, under update rule 5, to "Broiler.JS's parse
    measurement meets its rule on a controlled lane, or, until one exists, is taken under its rule
    and recorded void". Until the owner chooses, the clause stands as written, and Broiler.JS's
    rule's part I is void, neither MET nor NOT MET, on a lane that is not controlled.)*

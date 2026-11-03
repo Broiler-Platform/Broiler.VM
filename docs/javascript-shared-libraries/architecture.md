@@ -199,7 +199,9 @@ lists.
 *(Noted 2026-11-03, at SJL-14.1, by SJL-13's plan's decisions D41, D50 and D53, the owner's decisions of 2026-11-03,
 recorded in Broiler.JS's `docs/roadmap/SharedLibraries.md`, section "Broiler.JS on the shared syntax library
 (SJL-14)", D41 as [JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md)
-revised it.)* The table is a target, and its `Parser` row and its compilers' row are partly overtaken:
+revised it.)* The table is a target, and its `Parser` row and its compilers' row are partly overtaken. The `Parser`
+row's references read "Replaced by the frontend (SJL-14); before that, Algorithms and Unicode", and the compilers' row
+(`Broiler.JavaScript.Compiler`, `Engine`, `Portable.Compiler`) "Frontend":
 - **`Parser` is not replaced but becomes an obsolete adapter package** at SJL-14's cut-over: its public types a
   facade over the bridge, which builds the old tree from the frontend's, until the removal version `1.0.0`. Its
   references today are Algorithms, `Ast` and `Expressions`; Unicode reaches it through `Ast`.
