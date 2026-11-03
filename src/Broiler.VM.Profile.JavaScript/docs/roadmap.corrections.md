@@ -168,10 +168,11 @@ rather than a decision record.
 | [JSC-320](#jsc-320) | delivery [JS-2](roadmap.delivery.md#js-2--the-general-front-end-is-the-shared-frontend)'s "Next action" | JS-2's next action still waited on SJL-12 fixing the frontend's contract, which SJL-12.1 did on 2026-10-19; SJL-13 has started, and its two bundles are JS-2's evidence | [JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md), decision D33 |
 | [JSC-321](#jsc-321) | the architecture tests' rules N27, N28 and I4, their register rows, and the records of what the test-only generator package is used for | N27 and N28 read and regenerate `JsCldrTables.g.cs` through the Intl data home's generator, which `Broiler.ECMAScript.Generation` `0.1.0-preview.8` carries, and the tests' own CLDR generator, UCD reader and CLDR pin reader are deleted; I4 holds the CLDR pin to the home's entry by entry | [JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md), decisions D2, D10 to D12, D24 |
 | [JSC-322](#jsc-322) | the records of the two admitted packages' version and identity: `Directory.Packages.props`, the allow-list, rule I1's witnesses, the feed's README and the notices rows | `Broiler.ECMAScript.Algorithms` and `Broiler.ECMAScript.Generation` move to `0.1.0-preview.9` as published on 2026-11-03, the algorithms package's code unchanged and the generator's gaining Broiler.JS's collation tailorings | the owner's publication of 2026-11-03; the admission procedure of `9d0f80e` |
+| [JSC-323](#jsc-323) | the package baseline's bundle and its account of the shared algorithms package's version; support section 9's bundle | The baseline is bundle JS-10-014's candidate pack, taken at the change that moved the shared packages to `0.1.0-preview.9`, and the two documents name it where they still named JS-10-011 or a version's commit wrongly | release gate 8 and rule N37 |
 
 *(Added 2026-10-25, with JSC-319's row.)* The index holds rows for JSC-01 to JSC-80 and for JSC-319. JSC-81 to
 JSC-318 are not indexed here, and each is found by its heading below. *(Added 2026-10-26, with JSC-320's row: the
-index holds JSC-320's row too.)* *(Added 2026-11-01, with JSC-321's row: the index holds JSC-321's row too.)* *(Added 2026-11-03, with JSC-322's row: the index holds JSC-322's row too.)*
+index holds JSC-320's row too.)* *(Added 2026-11-01, with JSC-321's row: the index holds JSC-321's row too.)* *(Added 2026-11-03, with JSC-322's row: the index holds JSC-322's row too.)* *(Added 2026-11-03, later, with JSC-323's row: the index holds JSC-323's row too.)*
 
 ### JSC-01
 
@@ -13919,8 +13920,35 @@ they enter with the cut-overs that reference them.
 
 Rule N37 holds the package baseline's candidate to declaring the version the allow-list pins or a later one, and
 bundle JS-10-013's declares `0.1.0-preview.8`, so the baseline moves in the next change, collected at this change's
-tree.
+tree ([JSC-323](#jsc-323)).
 
 **Authority and date.** The owner's publication of `0.1.0-preview.9` on 2026-11-03; the admission procedure this
 repository's main used for `0.1.0-preview.8` on 2026-10-29 (`9d0f80e`), as `eng/packages/README.md` states it since
 2026-11-01. 2026-11-03.
+
+### JSC-323
+
+**Where:** [`packages.md`](packages.md), the package baseline: the bundle it is the candidate pack of, the
+version its paragraph "No foreign dependency" says the runtime and the compiler declare the shared algorithms
+package at, and the bundle its section on the consumer names; and [`support.md`](support.md) section 9, the
+bundle it names.
+
+**What the plan said.** `packages.md` named bundle JS-10-013 as the baseline's pack, and said the runtime and the
+compiler "declare at `0.1.0-preview.8` since they took decision D12" of
+[JSD-0078](decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md), published "from Broiler.JS
+`5ddee40`", which was `0.1.0-preview.7`'s commit. Its section on the consumer and `support.md` section 9 named
+bundle JS-10-011, which the baseline had left for JS-10-012 on 2026-10-30 and for JS-10-013 on 2026-10-31.
+
+**What replaced it.** The baseline is bundle [JS-10-014](evidence/js-10-014/README.md)'s candidate pack, collected
+on 2026-11-03 at the change that moved both shared packages to `0.1.0-preview.9` ([JSC-322](#jsc-322)), as rule
+N37 asks of a candidate that declares the shared package: the runtime's and the compiler's `.nuspec` declare
+`Broiler.ECMAScript.Algorithms` `0.1.0-preview.9`, the version the allow-list pins, no package declares the
+test-only generator, and every package carries the files JS-10-013's did. Its pristine consumer restored and ran
+with upstream unreachable, rolled back and forward, refused the version only nuget.org holds and ran as Native
+AOT. As for JS-10-012 and JS-10-013, the admitted packages were placed in `eng/packages/` for the run as
+downloaded from nuget.org, untracked, and its manifest records the tree dirty by those files alone. The passage
+on the algorithms package names `0.1.0-preview.9`, `0.1.0-preview.8` and `0.1.0-preview.7` each with its own
+commit, and both documents' bundle sentences name JS-10-014, each quoting what it read.
+
+**Authority and date.** Release gate 8 and rule N37, as [JSC-318](#jsc-318) applied them at `0.1.0-preview.7`.
+2026-11-03.

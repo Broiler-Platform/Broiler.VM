@@ -7,7 +7,7 @@
 **whatever JS-10 makes packable be frozen in a baseline of its own, compared in both directions so an
 addition and a removal each fail**. This is that baseline: the JavaScript family's packable set, each
 package's dependencies and each package's files, as the candidate pack of
-**bundle [JS-10-013](evidence/js-10-013/README.md)** produced them *(recertified on 2026-10-31 for the already selected Unicode preview.6; previously JS-10-012. Recertified on 2026-10-30 for ECMAScript preview.8; previously JS-10-011. Earlier corrections: JSC-300, JSC-302,
+**bundle [JS-10-014](evidence/js-10-014/README.md)** produced them *(recertified on 2026-11-03 for ECMAScript preview.9, JSC-323; previously JS-10-013. Recertified on 2026-10-31 for the already selected Unicode preview.6; previously JS-10-012. Recertified on 2026-10-30 for ECMAScript preview.8; previously JS-10-011. Earlier corrections: JSC-300, JSC-302,
 JSC-308, JSC-311, JSC-312, JSC-314, JSC-318; it was bundle JS-10-010's pack, before the shared algorithms
 dependency moved to `0.1.0-preview.7`, before that bundle JS-10-009's pack, before it moved to `0.1.0-preview.6`, before that bundle JS-10-008's pack, before it moved to `0.1.0-preview.5`, before that bundle JS-10-007's pack, before the Unicode area's dependencies moved to
 `0.1.0-preview.5`, before that bundle JS-10-006's pack, before the Unicode cut-over gave the family's packages the
@@ -41,9 +41,16 @@ restores. `Broiler.VM.Profile.MachineCode` is packable and is its own family's, 
 package rule I1 admits for shipping, for the projects that declare it and no other:
 
 - `Broiler.ECMAScript.Algorithms`, the shared JavaScript libraries' algorithms package, which
-  `Broiler.VM.Profile.JavaScript` and `.Compiler` declare at `0.1.0-preview.8` since they took decision
-  D12 of [JSD-0078](decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md) on
-  2026-10-19, published to nuget.org from Broiler.JS `5ddee40`, as the baseline's candidate pack does; they
+  `Broiler.VM.Profile.JavaScript` and `.Compiler` declare at `0.1.0-preview.9` since 2026-11-03, published to
+  nuget.org from Broiler.JS `6f7284da` with `0.1.0-preview.8`'s code, as the baseline's candidate pack does; they
+  declared it at `0.1.0-preview.8`, published to nuget.org from Broiler.JS `3b4b6860`, from 2026-10-29, and at
+  `0.1.0-preview.7` from 2026-10-19, when they took decision D12 of
+  [JSD-0078](decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md), published to nuget.org
+  from Broiler.JS `5ddee40` *(revised 2026-11-03, JSC-323. It read "`Broiler.VM.Profile.JavaScript` and `.Compiler`
+  declare at `0.1.0-preview.8` since they took decision D12 of
+  [JSD-0078](decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md) on 2026-10-19, published to nuget.org from
+  Broiler.JS `5ddee40`, as the baseline's candidate pack does", main having moved the version on 2026-10-29 and
+  not the rest of the sentence)*; they
   declared it at `0.1.0-preview.6` from the Temporal core's cut-over (SJL-10.4, on JSD-0078), published to
   nuget.org from Broiler.JS `fc829f8`, whose library code is that of `bf81d1b`, until then; they declared it
   at `0.1.0-preview.5` from the time-zone and calendar cut-over (SJL-8.5, on
@@ -82,9 +89,9 @@ a later one *(corrected: JSC-296, JSC-300)*.
 The pristine consumer, `samples/Broiler.VM.Sample.JavaScriptConsumer`, references the three core
 packages and these four and nothing else (rule A14); it restores `Broiler.ECMAScript.Algorithms`
 through them, and the Unicode area's `Broiler.Unicode.Algorithms` and `Broiler.Unicode.Segmentation`
-with them. Bundle JS-10-011 records it restoring and running with upstream feeds unreachable, from
+with them. Bundle JS-10-014 records it restoring and running with upstream feeds unreachable, from
 a local feed that holds the shared packages beside the family's, rolling back to the published
 `0.1.0-preview.5` set and forward again, failing to restore a version only nuget.org holds, and
 running as Native AOT; rule N37 holds the bundle's transcript to having done each *(corrected:
-JSC-300, JSC-302, JSC-308, JSC-311, JSC-312, JSC-314, JSC-318; it named bundle JS-10-010, before that bundle JS-10-009, before that bundle JS-10-008, before that bundle JS-10-007, before that bundle JS-10-006, before that bundle JS-10-005, and before that
+JSC-300, JSC-302, JSC-308, JSC-311, JSC-312, JSC-314, JSC-318, JSC-323; until JSC-323 it named bundle JS-10-011, which the baseline had left for JS-10-012 and JS-10-013 without this sentence following; before that it named bundle JS-10-010, before that bundle JS-10-009, before that bundle JS-10-008, before that bundle JS-10-007, before that bundle JS-10-006, before that bundle JS-10-005, and before that
 bundle JS-10-002, whose consumer had no shared package to restore)*.
