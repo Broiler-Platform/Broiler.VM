@@ -498,7 +498,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's CreateDateTimeFormat (s11.1.2).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8D6709
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0F66C7
     // Broiler-Human:        PENDING
     internal static JsDateTimeFormatObject CreateDateTimeFormat(JsEngine engine, JsObject prototype, JsValue locales, JsValue optionsValue, string required, string defaults, string? toLocaleStringTimeZone = null)
     {
@@ -525,11 +525,13 @@ internal sealed partial class JsRealm
         var hourCycle = GetStringOption(engine, options, "hourCycle", ["h11", "h12", "h23", "h24"], null);
 
         var tables = engine.Intl!;
-        var numbers = tables.Numbers;
         var dates = tables.Dates;
         var systems = new List<string?> { "latn" };
 
-        foreach (var system in numbers.NumberingSystems.Keys)
+        // THE NUMBER TABLES ARE READ THROUGH THE SHARED INTL LIBRARY'S DECODER since SJL-9.4's sub-areas
+        // (b) and (c) (JSD-0082, decision D24): the numbering systems, the decimal symbol and the digits
+        // below, each the line this family's own decoder answered.
+        foreach (var system in tables.LocaleData.NumberingSystems)
         {
             if (system != "latn")
             {
@@ -619,7 +621,7 @@ internal sealed partial class JsRealm
         var timeStyle = GetStringOption(engine, options, "timeStyle", ["full", "long", "medium", "short"], null);
 
         var hcChar = hc switch { "h11" => 'K', "h12" => 'h', "h24" => 'k', _ => 'H' };
-        var decimalSymbol = numbers.Value(language, "symbols.decimal") ?? ".";
+        var decimalSymbol = tables.LocaleData.NumberValue(language, "symbols.decimal") ?? ".";
         var resolvedCalendar = resolved.Keys["ca"] ?? "gregory";
 
         // THE DEPRECATED HIJRI CALENDARS FALL BACK to the astronomical tabular one (the Intl era and
@@ -691,7 +693,7 @@ internal sealed partial class JsRealm
                 generator.BestPattern(SkeletonOfComponents(components, hcChar), JsDatePatternGenerator.MatchHourLength), hcChar);
         }
 
-        var digitsOfSystem = numbers.NumberingSystems.TryGetValue(resolved.Keys["nu"] ?? "latn", out var digitList) ? digitList : numbers.NumberingSystems["latn"];
+        string[] digitsOfSystem = [.. tables.LocaleData.NumberingSystemDigits(resolved.Keys["nu"] ?? "latn") ?? tables.LocaleData.NumberingSystemDigits("latn")!];
         var patternCycle = HourCycleOf(pattern);
         var intervalChar = patternCycle is null ? preferred : hcChar;
 

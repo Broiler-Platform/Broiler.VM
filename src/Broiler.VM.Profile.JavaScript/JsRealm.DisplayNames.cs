@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using Broiler.ECMAScript.Intl;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -161,7 +162,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's CanonicalCodeForDisplayNames (s12.5.1): a well-formed code of the type, case-regularized, or a <c>RangeError</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=93965B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=87502F
     // Broiler-Human:        PENDING
     private static string CanonicalCodeForDisplayNames(JsEngine engine, string type, string code)
     {
@@ -239,7 +240,7 @@ internal sealed partial class JsRealm
                 return code;
 
             default:
-                if (!IsWellFormedCurrencyCode(code))
+                if (!NumberFormatter.IsWellFormedCurrencyCode(code))
                 {
                     throw engine.Error("RangeError", "Intl.DisplayNames: invalid currency code: " + code);
                 }
@@ -249,7 +250,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The name [[Fields]] holds for a canonical code, or nothing.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=997FE9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E90BD2
     // Broiler-Human:        PENDING
     private static string? DisplayName(JsEngine engine, JsDisplayNamesObject names, string code)
     {
@@ -276,7 +277,9 @@ internal sealed partial class JsRealm
                 return data.TryGetValue(prefix + "field|" + code + "-" + names.Style, out var field) ? field : null;
 
             case "currency":
-                return engine.Intl!.Numbers.Currencies.TryGetValue(names.Language + "|" + code, out var currency) && currency.Name.Length != 0
+                // THE CURRENCY'S NAME, from the shared Intl library's decoder of the number tables
+                // (JSD-0082, sub-area (c)), at the language, as this family's own decoder answered it.
+                return engine.Intl!.LocaleData.Currency(names.Language, code) is { Name.Length: > 0 } currency
                     ? currency.Name
                     : null;
 

@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System.Globalization;
+using Broiler.ECMAScript.Intl;
 using Broiler.ECMAScript.Numbers;
 
 namespace Broiler.VM.Profile.JavaScript;
@@ -58,7 +59,7 @@ internal sealed partial class JsRealm
     private const double NumberEpsilonStep = 2.220446049250313E-16;
 
     /// <summary>Builds <c>Number</c> and <c>Number.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C68C64
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=022B9C
     // Broiler-Human:        PENDING
     private void SetupNumber()
     {
@@ -139,7 +140,7 @@ internal sealed partial class JsRealm
 
             return engine.Realm.NumberFormatConstructor is null
                 ? JsValue.String(JsNumberFormat.NumberToString(value))
-                : JsValue.String(ToLocaleNumberString(engine, JsDecimal.FromNumber(value), arguments));
+                : JsValue.String(ToLocaleNumberString(engine, IntlDecimal.FromNumber(value), arguments));
         });
 
         Method(prototype, "valueOf", 0, static (engine, thisValue, arguments) =>

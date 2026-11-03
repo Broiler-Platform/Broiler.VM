@@ -53,12 +53,16 @@ public sealed class I5RetiredDuplicatesRuleTests
         // (Revised 2026-10-18, at SJL-10.4: JsTemporalCore.cs and JsCalendars.cs, which the list named
         // since SJL-6.4 and SJL-8.5, are deleted whole, their types retired; the files the Temporal
         // adapters live in now are named instead. JsTemporalParser.cs stays, the grammar's thin wrapper.)
+        // (Revised 2026-11-03, at SJL-9.4's sub-areas (b) and (c): JsDecimal.cs, which the list named
+        // since SJL-4.4, is deleted whole, its types the shared Intl library's IntlDecimal and
+        // NumericFormat now; JsRealm.NumberFormat.cs, where the adapters that call them live, is named
+        // instead.)
         Assert.Equal(FamilyAssemblies.Order(StringComparer.Ordinal), covered.Select(static f => f.Assembly).Distinct().Order(StringComparer.Ordinal));
         foreach (var file in (string[])["src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs", "src/Broiler.VM.Profile.JavaScript/JsRealm.Number.cs",
                                          "src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs", "src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs",
                                          "src/Broiler.VM.Profile.JavaScript/JsValue.cs", "src/Broiler.VM.Profile.JavaScript/JsBinary.cs",
                                          "src/Broiler.VM.Profile.JavaScript/JsRealm.Math.cs", "src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs",
-                                         "src/Broiler.VM.Profile.JavaScript/JsDecimal.cs", "src/Broiler.VM.Profile.JavaScript/JsBigInt.cs",
+                                         "src/Broiler.VM.Profile.JavaScript/JsRealm.NumberFormat.cs", "src/Broiler.VM.Profile.JavaScript/JsBigInt.cs",
                                          "src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs", "src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs",
                                          "src/Broiler.VM.Profile.JavaScript/JsTemporal.Zones.cs", "src/Broiler.VM.Profile.JavaScript/JsTemporal.Calendar.cs",
                                          "src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs", "src/Broiler.VM.Profile.JavaScript/JsZoneNames.cs",

@@ -17,6 +17,7 @@
 
 using System.Collections.Generic;
 using System.Numerics;
+using Broiler.ECMAScript.Intl;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -174,7 +175,7 @@ internal sealed partial class JsRealm
         throw engine.Error("TypeError", "Intl.DurationFormat.prototype." + member + " requires that 'this' be an Intl.DurationFormat");
 
     /// <summary>ECMA-402's <c>Intl.DurationFormat</c> constructor (s13.1.1): the options read in its order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=944B1A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=871CC5
     // Broiler-Human:        PENDING
     internal static JsValue NewDurationFormat(JsEngine engine, JsValue newTarget, JsValue[] arguments)
     {
@@ -191,10 +192,13 @@ internal sealed partial class JsRealm
             return engine.ThrowRangeError("Intl.DurationFormat: the numberingSystem option is not a well-formed type: " + numberingSystem);
         }
 
-        var numbers = engine.Intl!.Numbers;
+        // THE NUMBER TABLES ARE READ THROUGH THE SHARED INTL LIBRARY'S DECODER since SJL-9.4's sub-areas
+        // (b) and (c) (JSD-0082, decision D24): the numbering systems, and [[DigitalFormat]]'s two values
+        // below, each the line this family's own decoder answered.
+        var numbers = engine.Intl!.LocaleData;
         var systems = new List<string?> { "latn" };
 
-        foreach (var name in numbers.NumberingSystems.Keys)
+        foreach (var name in numbers.NumberingSystems)
         {
             if (name != "latn")
             {
@@ -210,8 +214,8 @@ internal sealed partial class JsRealm
         // [[DIGITALFORMAT]]: CLDR's time separator, and whether its hours-minutes-seconds pattern
         // writes the hours with two digits.
         var language = LanguageOf(resolved.DataLocale) ?? "en";
-        var separator = numbers.Value(language, "symbols.timeSeparator") ?? ":";
-        var twoDigitHours = (numbers.Value(language, "duration.hms") ?? "h:mm:ss").StartsWith("hh", System.StringComparison.Ordinal);
+        var separator = numbers.NumberValue(language, "symbols.timeSeparator") ?? ":";
+        var twoDigitHours = (numbers.NumberValue(language, "duration.hms") ?? "h:mm:ss").StartsWith("hh", System.StringComparison.Ordinal);
 
         var style = GetStringOption(engine, options, "style", ["long", "short", "narrow", "digital"], "short")!;
         var units = new (string Style, string Display)[DurationUnits.Length];
@@ -449,9 +453,9 @@ internal sealed partial class JsRealm
     /// The value of unit <paramref name="index"/> with ComputeFractionalDigits (s13.5.7) added: the
     /// fractional units that follow it, each a thousandth of the one before, as an exact decimal.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F9B887
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=59761D
     // Broiler-Human:        PENDING
-    private static JsDecimal WithFractions(JsEngine engine, JsDurationFormatObject format, double[] record, int index)
+    private static IntlDecimal WithFractions(JsEngine engine, JsDurationFormatObject format, double[] record, int index)
     {
         var total = new BigInteger(record[index]);
         var digits = 0;
@@ -464,19 +468,19 @@ internal sealed partial class JsRealm
 
         if (digits == 0)
         {
-            return JsDecimal.FromNumber(record[index]);
+            return IntlDecimal.FromNumber(record[index]);
         }
 
         var negative = total.Sign < 0;
         var text = BigInteger.Abs(total).ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(digits + 1, '0');
         var decimalText = (negative ? "-" : string.Empty) + text[..^digits] + "." + text[^digits..];
-        return JsDecimal.FromString(decimalText, engine.WorkCharge);
+        return IntlDecimal.FromString(decimalText, JsBigInt.Policy, engine.WorkCharge);
     }
 
     /// <summary>A number format of the duration format's locale, built by the constructor from <paramref name="settings"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=270687
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2407CF
     // Broiler-Human:        PENDING
-    private static JsNumberFormatter DurationNumberFormat(JsEngine engine, JsDurationFormatObject format, List<(string Key, JsValue Value)> settings)
+    private static NumberFormatter DurationNumberFormat(JsEngine engine, JsDurationFormatObject format, List<(string Key, JsValue Value)> settings)
     {
         var options = new JsObject(null);
         options.DefineOrdinary("numberingSystem", JsValue.String(format.NumberingSystem));
@@ -505,9 +509,9 @@ internal sealed partial class JsRealm
     /// ECMA-402's FormatNumericHours, FormatNumericMinutes and FormatNumericSeconds (s13.5.9 to
     /// s13.5.11): one clock field, after its separator where a larger field precedes it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=948A54
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=ADC505
     // Broiler-Human:        PENDING
-    private static void FormatNumericField(JsEngine engine, JsDurationFormatObject format, int index, JsDecimal value,
+    private static void FormatNumericField(JsEngine engine, JsDurationFormatObject format, int index, IntlDecimal value,
         string? separator, bool signDisplayed, List<(string Type, string Value, string? Unit)> result)
     {
         if (separator is not null)
@@ -534,14 +538,14 @@ internal sealed partial class JsRealm
             FractionSettings(format, settings);
         }
 
-        foreach (var part in DurationNumberFormat(engine, format, settings).Parts(engine, value))
+        foreach (var part in DurationNumberFormat(engine, format, settings).FormatToParts(value, engine.WorkCharge))
         {
             result.Add((part.Type, part.Value, DurationUnits[index].Singular));
         }
     }
 
     /// <summary>ECMA-402's FormatNumericUnits (s13.5.12): the clock, from its first numeric field.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6E277B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CBC8CC
     // Broiler-Human:        PENDING
     private static List<(string Type, string Value, string? Unit)> FormatNumericUnits(
         JsEngine engine, JsDurationFormatObject format, double[] record, int first, bool signDisplayed)
@@ -551,7 +555,7 @@ internal sealed partial class JsRealm
         var minutes = record[5];
         var seconds = record[7] != 0 || record[8] != 0 || record[9] != 0
             ? WithFractions(engine, format, record, 6)
-            : JsDecimal.FromNumber(record[6]);
+            : IntlDecimal.FromNumber(record[6]);
 
         var hoursFormatted = first == 4 && (hours != 0 || format.Units[4].Display == "always");
         var secondsFormatted = !seconds.IsZero || format.Units[6].Display == "always";
@@ -561,14 +565,14 @@ internal sealed partial class JsRealm
         if (hoursFormatted)
         {
             var value = signDisplayed && hours == 0 && DurationSign(record) == -1 ? -0.0 : hours;
-            FormatNumericField(engine, format, 4, JsDecimal.FromNumber(value), null, signDisplayed, result);
+            FormatNumericField(engine, format, 4, IntlDecimal.FromNumber(value), null, signDisplayed, result);
             signDisplayed = false;
         }
 
         if (minutesFormatted)
         {
             var value = signDisplayed && minutes == 0 && DurationSign(record) == -1 ? -0.0 : minutes;
-            FormatNumericField(engine, format, 5, JsDecimal.FromNumber(value), hoursFormatted ? format.HourMinuteSeparator : null, signDisplayed, result);
+            FormatNumericField(engine, format, 5, IntlDecimal.FromNumber(value), hoursFormatted ? format.HourMinuteSeparator : null, signDisplayed, result);
             signDisplayed = false;
         }
 
@@ -584,7 +588,7 @@ internal sealed partial class JsRealm
     /// ECMA-402's PartitionDurationFormatPattern (s13.5.15): each unit before the clock by a unit
     /// number format, the clock, and the whole joined by ListFormatParts (s13.5.14).
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C3B603
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=54ED5A
     // Broiler-Human:        PENDING
     private static List<(string Type, string Value, string? Unit)> PartitionDurationFormatPattern(
         JsEngine engine, JsDurationFormatObject format, double[] record)
@@ -611,7 +615,7 @@ internal sealed partial class JsRealm
 
             var settings = new List<(string Key, JsValue Value)>();
             var nextFractional = i + 1 < DurationUnits.Length && i >= 6 && format.Units[i + 1].Style == "fractional";
-            var value = nextFractional ? WithFractions(engine, format, record, i) : JsDecimal.FromNumber(record[i]);
+            var value = nextFractional ? WithFractions(engine, format, record, i) : IntlDecimal.FromNumber(record[i]);
 
             if (nextFractional)
             {
@@ -626,7 +630,7 @@ internal sealed partial class JsRealm
 
                     if (value.IsZero && DurationSign(record) == -1)
                     {
-                        value = JsDecimal.FromNumber(-0.0);
+                        value = IntlDecimal.FromNumber(-0.0);
                     }
                 }
                 else
@@ -640,7 +644,7 @@ internal sealed partial class JsRealm
 
                 var list = new List<(string Type, string Value, string? Unit)>();
 
-                foreach (var part in DurationNumberFormat(engine, format, settings).Parts(engine, value))
+                foreach (var part in DurationNumberFormat(engine, format, settings).FormatToParts(value, engine.WorkCharge))
                 {
                     list.Add((part.Type, part.Value, DurationUnits[i].Singular));
                 }

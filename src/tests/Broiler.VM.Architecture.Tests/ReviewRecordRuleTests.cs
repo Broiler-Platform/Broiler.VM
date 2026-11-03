@@ -1348,7 +1348,14 @@ public sealed class ReviewRecordRuleTests
         // compiler's JsBinder.EarlyErrors.cs, the language early errors the binder reports before the
         // lowering runs. It is covered on the same terms as every other product file, and nothing in it
         // has been read by a human.
-        Assert.Equal(330, AssuranceSources.Files.Count);
+        //
+        // AND THE INTL AREA'S CUT-OVER, SUB-AREAS (B) AND (C) (SJL-9.4, JSD-0082 decision D24), TOOK FOUR
+        // AWAY: JsDecimal.cs, JsNumberData.cs, JsPluralRule.cs and JsNumberFormatter.cs, whose decimal,
+        // digit options, plural rules and number formatting the shared library's Broiler.ECMAScript.Intl
+        // implements; JsRealm.NumberFormat.cs, JsRealm.PluralRules.cs and the other realm files stay, and
+        // call it. (Sub-area (a) took JsLocaleTag.cs away and added JsIntlDataSet.cs, which left the count
+        // as it was.)
+        Assert.Equal(326, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(
