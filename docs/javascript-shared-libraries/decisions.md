@@ -576,6 +576,23 @@ taken under the owner's direction of 2026-10-18. This note records the owner's d
 2026-10-20, taken under that direction, "Please do all recommended decisions and skip waiting for
 review.", which changes no programme rule.)*
 
+*(Noted 2026-11-03, which reopens nothing. On 2026-11-03 the owner wrote: "Please defer the
+measurement". This answers decision D48 of SJL-13's plan, on SJL-14's clause 6, "Broiler.JS's parse
+measurement meets its rule.", which the note above reserves to the owner, and it chooses
+alternative (i) of the two SJL-14's milestone file puts to the owner: the clause is kept as written, unmet until a
+controlled lane exists, and is named here among the clauses trigger (b) lists, so that trigger (b)
+stays reachable. Trigger (b) of the note above read "SJL-3's clause 7, its clause 13 if still open,
+and SJL-4's clause 9 are the only unmet clauses of SJL-3 to SJL-15 and SJL-17, every other clause
+being met on its bundles"; it is now read as "SJL-3's clause 7, its clause 13 if still open, SJL-4's
+clause 9 and SJL-14's clause 6 are the only unmet clauses of SJL-3 to SJL-15 and SJL-17, every
+other clause being met on its bundles". Trigger (a), a controlled lane recorded as `Measurement.md`
+requires, is unchanged, and the choice either trigger brings covers clause 6 with the others:
+waiting for a lane, or a gate revision under alternative (b). Until then part I of Broiler.JS's
+bundle `sjl-14-001` rule stays void, neither MET nor NOT MET, on a lane that is not controlled, and
+its runs there are retained and recorded void. This is the owner's own dated choice, as the note
+above reserves it, and not one taken under the owner's direction of 2026-10-18. It revises no
+clause. Broiler.JS records it in `docs/roadmap/SharedLibraries.md`, its SJL-14 section.)*
+
 <a id="sjl-d-16"></a>
 ### SJL-D-16 — Observable corrections at cut-over
 
