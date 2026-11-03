@@ -661,6 +661,34 @@ bundle `sjl-12-001` carried the gap here, and keeping it would put a known hole 
 read: "**The left-operand gap is closed in the library** (class L; part C's fifth row)." The correspondence's row R14
 found two shapes besides the two bundle `sjl-12-001` records (finding F18).
 
+*(Noted 2026-11-03: the owner's decision of 2026-11-02 on the residual shapes, taken as recommended under the
+direction of 2026-10-18; Broiler.JS SJL-13.2f, merged in Broiler-Platform/Broiler.JS#1096 as
+`d4b330d8ed25aeee0e7d5fe1e4129f3dc480b318`, section 5 of its limits derivation,
+`Broiler.ECMAScript/docs/frontend/limits/derivation.md`.)* The library charges every shape of the tree, not the four
+this decision names where it reads "**The left-operand gap is closed in the library in all four shapes the base
+compiles past the bound**". It refuses a chain node (binary or logical, member, call, tagged template) whose height,
+one more than its highest child's, passes `ParseLimits.MaximumTreeDepth`, and charges nothing else. So every tree
+deeper than the bound is refused with EX0012's diagnostic wherever it is built, and every tree within it is accepted.
+Two kinds of input move at SJL-13's step 1. First, an input whose tree passes the bound in a shape this base does not
+charge (a right operand of a chain's early node, a prefix, `await`, `yield` or update operand, an array or object
+literal's element, value or key, a call's, `new`'s or `import()`'s argument, a computed key, a substitution, a
+decorator's expression, a parenthesised sequence, conditional or assignment, a function body, a class heritage or
+field initialiser, or `#x in`'s right operand) is accepted at the base and refused after: an implementation limit,
+class L, never a correction. Second, an input whose tree is within the bound, but which the base refuses because
+`Continue` reads a right operand through `ParseBinary` at the depth its chain has reached and sums the two, is refused
+at the base and accepted after. The area rule `decision-rule-area.md` names the four shapes alone in part A's C3, part
+B's L and part C's fifth row, and admits no move from refused to accepted. Before its runs, a new dated rule file,
+[`decision-rule-area-revised-2026-11-02.md`](../../../../docs/evidence/sjl-13-001/decision-rule-area-revised-2026-11-02.md),
+widens C3 and L (part B's L to "an input accepted at the base and refused after with the contract's tree-depth
+diagnostic, whose tree passes the bound by part A's measure"), and admits, as a class of its own, part B's L2, "an
+input refused at the base with the tree-depth diagnostic and accepted after, whose tree as the after commit builds it
+is within the bound by part A's measure", and its like for a test262 variant, part A's C6. In both, the tree's depth is a measure a script of the
+bundle takes of the tree an engine's own parser builds (the base's for an input refused after, the after commit's for
+one refused at the base), not the depth the library reports: the library's diagnostic always gives its bound, so a
+reported depth cannot show which side of the bound a tree lies on (Broiler.JS bundle `sjl-13-001` at that merge,
+decision (f') of `decision-rule-revised-2026-11-02-second.md`). No input of the parse corpus is known to have either
+tree.
+
 **Decision D15 - positions and anchors** *(revised 2026-10-26, findings F10, F11 and F12)*.
 - **Units.** Offsets are 0-based indices in UTF-16 code units; lines and columns are 1-based, columns in UTF-16 code
   units; every line terminator of the specification is a new line, and CR LF one; the request takes text, and a

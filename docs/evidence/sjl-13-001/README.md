@@ -10,6 +10,13 @@ the first of SJL-13.3's two cut-over steps. Bundle [`sjl-13-002`](../sjl-13-002/
 **Rule:** [`decision-rule-area.md`](decision-rule-area.md), written at SJL-13.1 before any change it judges existed: no
 shared library, no tools commit, no registry revision, no admission, no adapter and no deletion.
 
+*(Added 2026-11-03.)* The rule is revised, before any of its runs, by
+[`decision-rule-area-revised-2026-11-02.md`](decision-rule-area-revised-2026-11-02.md), on the owner's decision of
+2026-11-02 on decision D14's residual shapes, which JSD-0083's dated note on D14 records: part A's C3, part B's L,
+part C's fifth row and its control K4 read every shape whose tree passes the tree-depth bound by the bundle's measure,
+and part A's class C6 and part B's class L2 admit a tree within the bound that the base refuses. `decision-rule-area.md`
+is not edited, and section 1's summaries of parts A to C describe it as filed.
+
 **Records:** [JSD-0083](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md),
 the area verdict, which records the owner's decisions D2 to D39 of 2026-10-26, with D1 a reading of the owner's words
 of 2026-10-25, and *(added 2026-10-27)* the owner's decisions D-asi and D-t24 of 2026-10-27, which add row P16b to
