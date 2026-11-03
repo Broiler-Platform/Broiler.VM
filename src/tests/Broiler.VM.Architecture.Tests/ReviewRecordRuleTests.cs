@@ -1357,7 +1357,13 @@ public sealed class ReviewRecordRuleTests
         // Broiler.ECMAScript.Intl implements; JsRealm.NumberFormat.cs, JsRealm.PluralRules.cs and the
         // other realm files stay, and call it. The count read 330 before. (Sub-area (a) took
         // JsLocaleTag.cs away and added JsIntlDataSet.cs, which left the count as it was.)
-        Assert.Equal(326, AssuranceSources.Files.Count);
+        //
+        // AND ITS SUB-AREA (D) (SJL-9.4, 2026-11-03, JSD-0082 decision D24) TOOK SIX AWAY: JsDateData.cs,
+        // JsDatePatternGenerator.cs, JsDateIntervalFormat.cs, JsDateTimeFormatter.cs, JsZoneNames.cs and
+        // JsLocaleInfo.cs, whose date data, pattern generator, interval formats, formatter, zone names and
+        // display names the shared library's DateTimeFormat and DateTimeData implement;
+        // JsRealm.DateTimeFormat.cs and JsIntlTables.cs stay, and call it. The count read 326 before.
+        Assert.Equal(320, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

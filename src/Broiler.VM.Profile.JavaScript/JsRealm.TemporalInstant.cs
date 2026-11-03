@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using BigInteger = System.Numerics.BigInteger;
+using Broiler.ECMAScript.Intl;
 using Broiler.ECMAScript.Numbers;
 using Broiler.ECMAScript.Temporal;
 using Broiler.ECMAScript.Time;
@@ -27,7 +28,7 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=86A7F7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=615246
     // Broiler-Human:        PENDING
     private void SetupTemporalInstant(JsObject temporal)
     {
@@ -131,7 +132,7 @@ internal sealed partial class JsRealm
         Method(prototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
         {
             _ = TemporalThis<JsInstantObject>(engine, thisValue, "Instant", "toLocaleString");
-            return JsValue.String(TemporalToLocaleString(engine, thisValue, arguments, "any", "all"));
+            return JsValue.String(TemporalToLocaleString(engine, thisValue, arguments, DateTimeRequired.Any, DateTimeDefaults.All));
         });
 
         Method(prototype, "toJSON", 0, static (engine, thisValue, arguments) =>

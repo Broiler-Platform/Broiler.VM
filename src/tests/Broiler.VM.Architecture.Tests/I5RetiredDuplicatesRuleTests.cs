@@ -56,7 +56,10 @@ public sealed class I5RetiredDuplicatesRuleTests
         // (Revised 2026-11-03, at SJL-9.4's sub-areas (b) and (c): JsDecimal.cs, which the list named
         // since SJL-4.4, is deleted whole, its types the shared Intl library's IntlDecimal and
         // NumericFormat now; JsRealm.NumberFormat.cs, where the adapters that call them live, is named
-        // instead.)
+        // instead.) (Revised 2026-11-03, at SJL-9.4's sub-area (d): JsZoneNames.cs and
+        // JsDateTimeFormatter.cs, which the list named since SJL-8.5, are deleted whole, their types the
+        // shared Intl library's DateTimeFormat, DateTimeFormatter and ZoneNamer now; JsIntlTables.cs, which
+        // hands those the time zones and the calendars, is named instead.)
         Assert.Equal(FamilyAssemblies.Order(StringComparer.Ordinal), covered.Select(static f => f.Assembly).Distinct().Order(StringComparer.Ordinal));
         foreach (var file in (string[])["src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs", "src/Broiler.VM.Profile.JavaScript/JsRealm.Number.cs",
                                          "src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs", "src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs",
@@ -65,9 +68,8 @@ public sealed class I5RetiredDuplicatesRuleTests
                                          "src/Broiler.VM.Profile.JavaScript/JsRealm.NumberFormat.cs", "src/Broiler.VM.Profile.JavaScript/JsBigInt.cs",
                                          "src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs", "src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs",
                                          "src/Broiler.VM.Profile.JavaScript/JsTemporal.Zones.cs", "src/Broiler.VM.Profile.JavaScript/JsTemporal.Calendar.cs",
-                                         "src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs", "src/Broiler.VM.Profile.JavaScript/JsZoneNames.cs",
-                                         "src/Broiler.VM.Profile.JavaScript/JsTemporal.Durations.cs", "src/Broiler.VM.Profile.JavaScript/JsTemporal.Options.cs",
-                                         "src/Broiler.VM.Profile.JavaScript/JsDateTimeFormatter.cs"])
+                                         "src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs", "src/Broiler.VM.Profile.JavaScript/JsIntlTables.cs",
+                                         "src/Broiler.VM.Profile.JavaScript/JsTemporal.Durations.cs", "src/Broiler.VM.Profile.JavaScript/JsTemporal.Options.cs"])
         {
             Assert.Contains(covered, file2 => string.Equals(file2.RelativePath, file, StringComparison.Ordinal));
         }
