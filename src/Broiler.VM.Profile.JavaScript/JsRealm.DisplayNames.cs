@@ -60,7 +60,7 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     private static readonly string[] DisplayNamesTypeNames = ["language", "region", "script", "currency", "calendar", "dateTimeField"];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=42ABB1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1C2440
     // Broiler-Human:        PENDING
     private void SetupDisplayNames(JsObject intl)
     {
@@ -96,9 +96,15 @@ internal sealed partial class JsRealm
 
             // THE CODE'S CHECK AND CANONICAL FORM, THE NAME AND THE FALLBACK are the library's (JSD-0082,
             // sub-area (c)); display names charge nothing here, so neither does the code's parse (row L43).
+            // THE MESSAGE is the one the realm's own core threw before the cut-over: the type's option value,
+            // except that a date-time field's reads "date-time field", not "dateTimeField". (Revised
+            // 2026-11-03, at SJL-9.4's review of sub-areas (b) and (c): the cut-over commit wrote the option
+            // value for every type, "Intl.DisplayNames: invalid " + DisplayNamesTypeNames[(int)names.Type] +
+            // " code: ", which changed the date-time field's message.)
             if (names.Of(code, out var name) != IntlStatus.Completed)
             {
-                throw engine.Error("RangeError", "Intl.DisplayNames: invalid " + DisplayNamesTypeNames[(int)names.Type] + " code: " + code);
+                var kind = names.Type == DisplayNamesType.DateTimeField ? "date-time field" : DisplayNamesTypeNames[(int)names.Type];
+                throw engine.Error("RangeError", "Intl.DisplayNames: invalid " + kind + " code: " + code);
             }
 
             return name is not null ? JsValue.String(name) : JsValue.Undefined;

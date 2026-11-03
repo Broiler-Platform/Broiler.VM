@@ -59,6 +59,13 @@ namespace Broiler.VM.Profile.JavaScript;
 /// read the display names.
 /// </para>
 /// <para>
+/// <i>Noted 2026-11-03, at SJL-9.4's review of sub-areas (b) and (c): the list and relative-time
+/// decoders the paragraph above names as staying have gone after all, with <c>JsLocaleInfo</c>'s
+/// <c>ListPatterns</c> and <c>RelativeTimes</c>, whose only readers were the ListFormat and
+/// RelativeTimeFormat cores; the locale-information decoder now decodes the display names alone, which
+/// the date format's zone names read, and the paragraph is kept as written.</i>
+/// </para>
+/// <para>
 /// <i>Noted 2026-11-03, at SJL-9.4's sub-areas (b) and (c): the paragraph above, as stage (a) wrote
 /// it, still lists "the number" decoder among those that stay; since then it has gone, and the
 /// paragraph is kept as written.</i>
@@ -166,6 +173,17 @@ internal sealed class JsIntlTables
     /// lines, <c>en</c>'s, which are the lines this family's formatters read at the data locale's
     /// language.
     /// </summary>
+    /// <remarks>
+    /// <i>Noted 2026-11-03, at SJL-9.4's review of sub-areas (b) and (c):</i> the number, list,
+    /// relative-time and display-name formats read through this the data locale's whole chain (the
+    /// locale, its truncations, then <c>und</c>, stopping at the first locale the data holds), where
+    /// the realm's own decoders read the data locale's language alone and never read a region locale's
+    /// lines. The shipped tables carry those groups for <c>de</c> and <c>en</c> alone, so every shipped
+    /// answer is the one the language-only read gave; the two can differ only for data an embedder
+    /// hands in through <see cref="IJsIntlData"/> that holds lines for a region locale, such as
+    /// <c>en-GB</c>, which are read now and were ignored before. The plural rules still read by
+    /// language and are unaffected.
+    /// </remarks>
     // Broiler-AI:           Origin=AI; Spec=JSD-0082 D8; IP=Low; Security=Low; Resources=1; Fingerprint=92318E
     // Broiler-Human:        PENDING
     internal ILocaleData FormatData { get; }
@@ -211,7 +229,12 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     internal JsDateData Dates => dates.Value;
 
-    /// <summary>The list patterns, relative times and display names, decoded the first time a locale is asked for them.</summary>
+    /// <summary>
+    /// The display names the date format's zone names read, decoded the first time a zone is named.
+    /// (Revised 2026-11-03, at SJL-9.4's review of sub-areas (b) and (c), when the list patterns and
+    /// relative times left it. It read: "The list patterns, relative times and display names, decoded
+    /// the first time a locale is asked for them.")
+    /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F90F89
     // Broiler-Human:        PENDING
     internal JsLocaleInfo LocaleInfo => localeInfo.Value;
@@ -380,25 +403,18 @@ internal sealed class JsIntlTables
         return data;
     }
 
-    /// <summary>Decodes the list, relative-time and display-name tables.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AA9068
+    /// <summary>
+    /// Decodes the display-name table. (Revised 2026-11-03, at SJL-9.4's review of sub-areas (b) and
+    /// (c): it read "Decodes the list, relative-time and display-name tables.", and its loops over
+    /// <c>JsIntlTable.ListPatterns</c> and <c>JsIntlTable.RelativeTimes</c>, whose only readers were the
+    /// ListFormat and RelativeTimeFormat cores that sub-area (c) deleted, are gone; the library's
+    /// decoder reads those tables.)
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=70C07A
     // Broiler-Human:        PENDING
     private JsLocaleInfo ReadLocaleInfo()
     {
         var info = new JsLocaleInfo();
-
-        foreach (var line in Lines(JsIntlTable.ListPatterns))
-        {
-            var fields = line.Split('|');
-            info.ListPatterns[fields[0] + "|" + fields[1]] =
-                (Unescape(fields[2]), Unescape(fields[3]), Unescape(fields[4]), Unescape(fields[5]));
-        }
-
-        foreach (var line in Lines(JsIntlTable.RelativeTimes))
-        {
-            var fields = line.Split('|');
-            info.RelativeTimes[fields[0] + "|" + fields[1] + "|" + fields[2]] = Unescape(fields[3]);
-        }
 
         foreach (var line in Lines(JsIntlTable.DisplayNames))
         {

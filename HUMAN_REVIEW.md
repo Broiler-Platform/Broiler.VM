@@ -79,9 +79,9 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 326 |
-| Code units | 11527 |
+| Code units | 11525 |
 | Relevant | 6590 |
-| Exempt | 4937 |
+| Exempt | 4935 |
 | Assessed | 6590 of 6590 (100%) |
 | Human reviewed | 0 of 6590 (0%) |
 | Unverified | 6590 |
@@ -100,7 +100,7 @@ annotations and the current fingerprints; nothing stores them.
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4937 |
+| EXEMPT | 4935 |
 
 ## 5. Aliases In The Tree
 
@@ -281,7 +281,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsHostValue.cs` | 135 | 56 | 79 | 56 | Low | High | 9/9 |
 | `src/Broiler.VM.Profile.JavaScript/JsIntlDataSet.cs` | 5 | 2 | 3 | 2 | Low | Low | 1/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsIntlTables.cs` | 28 | 17 | 11 | 17 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsLocaleInfo.cs` | 4 | 1 | 3 | 1 | Low | Low | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsLocaleInfo.cs` | 2 | 1 | 1 | 1 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsModule.cs` | 51 | 15 | 36 | 15 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativeAbi.cs` | 4 | 4 | 0 | 4 | Low | Critical | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` | 38 | 9 | 29 | 9 | Low | Critical | 24/24 |

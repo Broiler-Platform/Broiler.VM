@@ -15,9 +15,9 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 326 |
 | Files carrying an annotation | 326 |
-| Code units | 11527 |
+| Code units | 11525 |
 | Relevant | 6590 |
-| Exempt by predicate | 4937 |
+| Exempt by predicate | 4935 |
 | Annotated | 6590 of 6590 (100%) |
 | Human reviewed | 0 of 6590 (0%) |
 | Unverified | 6590 |
@@ -32,14 +32,14 @@ figures below are the measurement of how far from that claim the component is.
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4937 |
+| EXEMPT | 4935 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 1780 |
-| Low | 6320 |
+| Low | 6318 |
 | Medium | 90 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,7 +50,7 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 1809 |
+| Low | 1807 |
 | Medium | 4479 |
 | High | 1640 |
 | Critical | 253 |
@@ -1992,7 +1992,7 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1605 |
+| TrivialPropertyOrAccessor | 1603 |
 | ParameterAssigningConstructor | 151 |
 | TrivialExpressionBodiedMember | 65 |
 | CompilerSuppliedRecordOrEnumMember | 30 |
@@ -2081,7 +2081,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-11527 of them, exempt and relevant alike - with the fingerprint of its declaration.
+11525 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

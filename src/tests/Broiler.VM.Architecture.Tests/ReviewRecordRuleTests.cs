@@ -1248,7 +1248,9 @@ public sealed class ReviewRecordRuleTests
         // its rounding; JsNumberData.cs, the decoded number data and the CLDR pattern reader;
         // JsPluralRule.cs, the plural rule evaluator; JsNumberFormatter.cs, the formatting itself; and
         // JsRealm.NumberFormat.cs, Intl.NumberFormat. All five are covered on the same terms as every
-        // other product file, and nothing in them has been read by a human.
+        // other product file, and nothing in them has been read by a human. (Noted 2026-11-03, at
+        // SJL-9.4: the first four of them are deleted; the paragraph on the Intl area's cut-over below
+        // records it, and this one is kept as written.)
         //
         // AND DATE FORMATTING (phase F7, 2026-10-04, JSD-0045): JsDateData.cs, the decoded calendar
         // data; JsDatePatternGenerator.cs, ICU's skeleton matching; JsDateIntervalFormat.cs, ICU's
@@ -1349,12 +1351,12 @@ public sealed class ReviewRecordRuleTests
         // lowering runs. It is covered on the same terms as every other product file, and nothing in it
         // has been read by a human.
         //
-        // AND THE INTL AREA'S CUT-OVER, SUB-AREAS (B) AND (C) (SJL-9.4, JSD-0082 decision D24), TOOK FOUR
-        // AWAY: JsDecimal.cs, JsNumberData.cs, JsPluralRule.cs and JsNumberFormatter.cs, whose decimal,
-        // digit options, plural rules and number formatting the shared library's Broiler.ECMAScript.Intl
-        // implements; JsRealm.NumberFormat.cs, JsRealm.PluralRules.cs and the other realm files stay, and
-        // call it. (Sub-area (a) took JsLocaleTag.cs away and added JsIntlDataSet.cs, which left the count
-        // as it was.)
+        // AND THE INTL AREA'S CUT-OVER, SUB-AREAS (B) AND (C) (SJL-9.4, 2026-11-03, JSD-0082 decision
+        // D24), TOOK FOUR AWAY: JsDecimal.cs, JsNumberData.cs, JsPluralRule.cs and JsNumberFormatter.cs,
+        // whose decimal, digit options, plural rules and number formatting the shared library's
+        // Broiler.ECMAScript.Intl implements; JsRealm.NumberFormat.cs, JsRealm.PluralRules.cs and the
+        // other realm files stay, and call it. The count read 330 before. (Sub-area (a) took
+        // JsLocaleTag.cs away and added JsIntlDataSet.cs, which left the count as it was.)
         Assert.Equal(326, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
