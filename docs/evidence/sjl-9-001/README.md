@@ -173,6 +173,13 @@ on the corpus at `2f240fec` (its `engine/broiler-vm-run-revision-28.tsv.gz`).
 
 This section is no part of the rule's parts A to C, and nothing in it is a verdict.
 
+## 4. The closures at SJL-9.4's first stage (`cutover/`)
+
+*(Added 2026-11-03, at SJL-9.4.)* [`cutover/`](cutover/README.md) holds the closures of every JavaScript root in three
+modes, collected at the branch commit that cuts sub-area (a) over, which the composition register's rows name as their
+evidence since the profile references `Broiler.ECMAScript.Intl` (rules K3, K4 and I7). It is no run of this bundle's
+rule: section 2's runs are still to be taken at the base and after commits.
+
 ## 9. Exclusions
 
 Sections 3 to 8 are added as the bundle's runs are taken. The exclusions keep this section's number, where rule H2

@@ -1,0 +1,7 @@
+bundle sjl-9-001, the closures at SJL-9.4's first stage (the Intl library admitted, sub-area (a) cut over)
+collected 2026-11-03T19:57:29Z
+commit 2b798a75765a6acd88697c00b8349b1c7500bd96
+tree clean
+product-sources sha256=37743fbc4488626bd36e68a2b4fa77bc31bca7316d900929bc107a3b677705b9 over 5431 entries of `git ls-tree -r`, every path outside docs/ and outside any docs/ directory
+sdk 10.0.401
+machine Linux-6.18.44-fc-v230-x86_64-with-glibc2.39 x86_64 cpus=4
