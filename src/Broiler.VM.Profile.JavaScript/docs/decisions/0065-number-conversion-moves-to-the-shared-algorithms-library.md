@@ -68,6 +68,16 @@ of the gate's admissible classes, and none is unknown:
 | **An engine policy that becomes a parameter** | The BigInt literal's maximum width (Broiler.VM's format ceiling; unbounded in Broiler.JS) is the caller's `LengthLimit`. Charging (Broiler.VM's callers charge; Broiler.JS charges nothing) is the caller's nullable `WorkCharge` (decision `SJL-D-10`). Broiler.VM's small-integer string cache stays in its adapter. |
 | **Not in the area** | Broiler.JS's non-standard extensions stay in Broiler.JS (decision `SJL-D-17`): the `m` literal suffix, `Number.prototype.clz`, and `toLocaleString`'s .NET format strings. |
 
+*(Note of 2026-11-03, at SJL-14.1.)* The second row's list, "Broiler.JS's `strict-non-octal-decimal`,
+`legacy-octal-fraction`, `empty-exponent` and `bigint-fraction`, and Broiler.VM's `vm-legacy-octal-fraction`", left
+"until SJL-13 and SJL-14", is now one item long. The cut-overs of SJL-3 corrected four of them: the vector corpus's
+revision 5 retired `legacy-octal-fraction`, `empty-exponent` and `bigint-fraction` at SJL-3.5 (Broiler.JS's bundle
+`sjl-3-001`, `engine/retired-divergences.tsv`), and its revision 6 retired `vm-legacy-octal-fraction` with every other
+divergence of this family at SJL-3.4 (Broiler.JS's bundle `sjl-4-001`, the same file). **Only `strict-non-octal-decimal` survives**, on the four vectors `numbers/literal/0082`,
+`0084`, `0088` and `0090` of Broiler.JS's `scripts/conformance/number-divergences.txt` at Broiler.JS's `33d3093b`, and
+it is SJL-14's: correction K1 of SJL-13's plan's decision D45, which Broiler.JS's bundle `sjl-14-001`'s
+`corrections.md` names by row. The row's class is unchanged, and so is the rest of this record.
+
 ### X3 - neutral contract
 
 **Met by the area's API**, which the library's baseline (rule SL6) states in full once SJL-3.3 lands.

@@ -273,6 +273,12 @@ SJL-9.0 entries quote them. SJL-14 and SJL-15 file their own notes when they sta
 so is what it gates: SJL-13 may not meet its gate before SJL-12, SJL-3 and SJL-7 meet theirs, SJL-11 not before SJL-7
 meets SJL-7's, SJL-9 not before SJL-7 and SJL-8 meet theirs, and none before SJL-3 meets SJL-3's.)*
 
+*(Added 2026-11-03, at SJL-14's start, as the note of 2026-10-26 asks: SJL-14 started before SJL-13, which it waits
+on, met its gate, at the owner's words of 2026-10-25, "Continue with the remaining SJL milestones", which the
+[ledger](status.md)'s SJL-14.0 entry quotes and reads the way the SJL-13.0 entry read them, the reading recorded as a
+reading (SJL-13's plan's decision D40). The order above is unchanged, and so is what it gates: SJL-14 may not meet
+its gate before SJL-13 meets SJL-13's, and so not before SJL-12, SJL-3 and SJL-7 meet theirs.)*
+
 **What can start today:**
 
 - SJL-0 in full;
@@ -341,6 +347,15 @@ is read as SJL-13.1's, JSD-0083 (SJL-13's plan's decision D40, which SJL-14.1 fi
 files no verdict of its own, and completes X6's Broiler.JS half by a dated note on JSD-0083 at SJL-14.1, from its
 dispositions, so that the gate this section applies at the start of every area milestone has its Broiler.JS half on
 record before SJL-14's code. Section 11's SJL-13 row names the verdict from this date.
+
+*(Added 2026-11-03, at SJL-14.1, by SJL-13's plan's decision D40, the owner's decision of 2026-11-03, recorded in
+Broiler.JS's `docs/roadmap/SharedLibraries.md`, section "Broiler.JS on the shared syntax library (SJL-14)".)* SJL-14
+files no verdict, as the note above reads, and X6's Broiler.JS half is on record before SJL-14's code: a dated note of
+2026-11-03 under X6 in
+[JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md)
+names, member by member, what SJL-14's cut-over deletes from Broiler.JS and the disposition of every public type of
+`Ast` and `Parser` it empties, from SJL-14's `dispositions.md` in Broiler.JS's bundle `sjl-14-001`, which is observed
+until Broiler.JS's change merges. Section 11's SJL-14 row names the note from this date.
 
 ---
 
@@ -536,7 +551,7 @@ Broiler.VM rules are in its register. `SL` rules are in the shared libraries' ow
 | SJL-11 | (none) | Area verdict JSD; the API-baseline change | Area verdict; `Component.md` §3 closed | Broiler.RegEx records |
 | SJL-12 | (none) | JSD on the frontend contract (cites JSD-0014 and JSD-0036) | MOD-M2-3, MOD-M2-4 and MOD-M2-5 closed or cross-referenced | (none) |
 | SJL-13 | `docs/compositions.md` rows and the notices for the frontend's admission *(revised 2026-10-26, at SJL-13.1, by [JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md) decision D29; the cell read "(none)")* | Area verdict JSD ([JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md)); the cut-over JSD at step 1, with registry revision 19 and the admission; JSC entries; JS-2 closed under its re-scoped gate *(revised 2026-10-26, at SJL-13.1, by JSD-0083 decision D3; the cell read "Registry revision; JSC entries; JS-2 closed under its re-scoped gate")* | Area verdict, for both engines' front ends *(revised 2026-10-26, at SJL-13.1, by JSD-0083; the cell read "(none)")* | (none) |
-| SJL-14 | (none) | (none) | `public-api.md` for `Ast` and `Parser` (`SJL-D-12`) | (none) |
+| SJL-14 | (none) | No verdict JSD: a dated note on [JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md) completing X6's Broiler.JS half; a dated note on JSD-0065's literal list *(revised 2026-11-03, at SJL-14.1, by SJL-13's plan's decision D40; the cell read "(none)")* | `public-api.md` for `Ast` and `Parser` (`SJL-D-12`); its shared-libraries plan's SJL-14 section with decisions D40 to D56 and D64, and bundle `sjl-14-001`'s rule, corrections and dispositions, filed at SJL-14.1 *(revised 2026-11-03, at SJL-14.1; the cell read "`public-api.md` for `Ast` and `Parser` (`SJL-D-12`)")* | (none) |
 | SJL-15 | (none) | `SJL-D-13`'s record; JSC entries | Modernization invariant 3 closed | (none) |
 | SJL-16 | ADR 0014 revision describing the end state; register rows' final status | Final JSC entries | Final plan and status state | Final roadmap state |
 | SJL-17 | (none) | Area verdict JSD | Area verdict; the host-collation correction | (none) |

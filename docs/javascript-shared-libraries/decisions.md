@@ -641,6 +641,15 @@ area. **Record:** Broiler.JS `docs/public-api.md`.
 use, (b) for the rest, and (c) only with a recorded consumer check. **Recorded by** Broiler.JS's
 `docs/public-api.md`, at SJL-3.5 and then at each area's cut-over.
 
+*(Noted 2026-11-03, at SJL-14.1, by SJL-13's plan's decision D55, the owner's decision of 2026-11-03, recorded in
+Broiler.JS's `docs/roadmap/SharedLibraries.md`, section "Broiler.JS on the shared syntax library (SJL-14)". The
+decision is unchanged.)* The first fact, "Broiler.JS has no type forwarding anywhere and no API baseline.", held when
+the decision was taken and no longer does. Since SJL-12.5 (Broiler.JS `792ff56e`, the merge of
+Broiler-Platform/Broiler.JS#1066) `Runtime` forwards `RegExpUnicodeValidator` and `CancellableDisposableAction` to
+`Ast` with `[TypeForwardedTo]` (JSD-0080's decision D20), and Broiler.JS has had an API baseline since SJL-0 and
+SJL-2. SJL-14 records `Ast`'s and `Parser`'s dispositions per type and member at SJL-14.1, in Broiler.JS's bundle
+`sjl-14-001`'s `dispositions.md`, and in `docs/public-api.md` at its cut-over (decision D50).
+
 <a id="sjl-d-17"></a>
 ### SJL-D-17 — Broiler.JS's non-standard extensions stay in Broiler.JS
 
