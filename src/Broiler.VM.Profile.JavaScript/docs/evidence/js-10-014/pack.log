@@ -1,0 +1,65 @@
+Determining projects to restore...
+  Restored /home/user/vm-repin/src/compositions/Broiler.VM.Composition.PolyglotCli/Broiler.VM.Composition.PolyglotCli.csproj (in 427 ms).
+  Restored /home/user/vm-repin/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj (in 427 ms).
+  Restored /home/user/vm-repin/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj (in 423 ms).
+  Restored /home/user/vm-repin/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 413 ms).
+  Restored /home/user/vm-repin/src/tests/Broiler.VM.Contract.Tests/Broiler.VM.Contract.Tests.csproj (in 708 ms).
+  Restored /home/user/vm-repin/src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj (in 724 ms).
+  25 of 31 projects are up-to-date for restore.
+  Broiler.VM.Binary -> /home/user/vm-repin/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/vm-repin/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> /home/user/vm-repin/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Binary.0.1.0-preview.6.f9-candidate.nupkg'.
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Binary.0.1.0-preview.6.f9-candidate.snupkg'.
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Abstractions.0.1.0-preview.6.f9-candidate.nupkg'.
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Abstractions.0.1.0-preview.6.f9-candidate.snupkg'.
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Profile.JavaScript.Format.0.1.0-preview.6.f9-candidate.nupkg'.
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Profile.JavaScript.Format.0.1.0-preview.6.f9-candidate.snupkg'.
+  Broiler.VM.Ubc -> /home/user/vm-repin/src/Broiler.VM.Ubc/bin/Release/net10.0/Broiler.VM.Ubc.dll
+  Broiler.VM.Emitter.Bytecode -> /home/user/vm-repin/src/Broiler.VM.Emitter.Bytecode/bin/Release/net10.0/Broiler.VM.Emitter.Bytecode.dll
+  Broiler.VM.Runtime -> /home/user/vm-repin/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.WebAssembly -> /home/user/vm-repin/src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Profile.JavaScript -> /home/user/vm-repin/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Ubc.0.1.0-preview.6.f9-candidate.nupkg'.
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Ubc.0.1.0-preview.6.f9-candidate.snupkg'.
+  Broiler.VM.Profile.MachineCode -> /home/user/vm-repin/src/Broiler.VM.Profile.MachineCode/bin/Release/net10.0/Broiler.VM.Profile.MachineCode.dll
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Emitter.Bytecode.0.1.0-preview.6.f9-candidate.nupkg'.
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Emitter.Bytecode.0.1.0-preview.6.f9-candidate.snupkg'.
+  Broiler.VM.Profile.JavaScript.Intl -> /home/user/vm-repin/src/Broiler.VM.Profile.JavaScript.Intl/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Intl.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> /home/user/vm-repin/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Runtime.0.1.0-preview.6.f9-candidate.nupkg'.
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Runtime.0.1.0-preview.6.f9-candidate.snupkg'.
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Profile.JavaScript.0.1.0-preview.6.f9-candidate.nupkg'.
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Profile.JavaScript.0.1.0-preview.6.f9-candidate.snupkg'.
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Profile.JavaScript.Intl.0.1.0-preview.6.f9-candidate.nupkg'.
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Profile.JavaScript.Intl.0.1.0-preview.6.f9-candidate.snupkg'.
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Profile.WebAssembly.0.1.0-preview.6.f9-candidate.nupkg'.
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Profile.WebAssembly.0.1.0-preview.6.f9-candidate.snupkg'.
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Profile.JavaScript.Compiler.0.1.0-preview.6.f9-candidate.nupkg'.
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Profile.JavaScript.Compiler.0.1.0-preview.6.f9-candidate.snupkg'.
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Profile.MachineCode.0.1.0-preview.6.f9-candidate.nupkg'.
+  Successfully created package '/tmp/broiler-js-pack-m_hjvzuq/Broiler.VM.Profile.MachineCode.0.1.0-preview.6.f9-candidate.snupkg'.
+exit code: 0
+--- produced ---
+Broiler.VM.Abstractions.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Abstractions.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Binary.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Binary.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Emitter.Bytecode.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Emitter.Bytecode.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Profile.JavaScript.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Profile.JavaScript.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Profile.JavaScript.Compiler.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Profile.JavaScript.Compiler.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Profile.JavaScript.Format.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Profile.JavaScript.Format.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Profile.JavaScript.Intl.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Profile.JavaScript.Intl.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Profile.MachineCode.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Profile.MachineCode.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Profile.WebAssembly.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Profile.WebAssembly.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Runtime.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Runtime.0.1.0-preview.6.f9-candidate.snupkg
+Broiler.VM.Ubc.0.1.0-preview.6.f9-candidate.nupkg
+Broiler.VM.Ubc.0.1.0-preview.6.f9-candidate.snupkg
