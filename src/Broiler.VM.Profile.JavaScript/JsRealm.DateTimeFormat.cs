@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   34
-// Annotated:        34/34
+// Relevant units:   32
+// Annotated:        32/32
 // Exempt:           15
-// Human-reviewed:   0/34
+// Human-reviewed:   0/32
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
-// Resource impact:  2/10 max
-// Unverified:       34
+// Resource impact:  1/10 max
+// Unverified:       32
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -206,18 +206,6 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>
-    /// The calendars the formatter writes, sorted (the Intl era and month code proposal's
-    /// AvailableCalendars, JSD-0057): every calendar type of its Table 1 but the aliases.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3EEE3A
-    // Broiler-Human:        PENDING
-    internal static readonly string[] FormatterCalendars =
-    [
-        "buddhist", "chinese", "coptic", "dangi", "ethioaa", "ethiopic", "gregory", "hebrew", "indian",
-        "islamic-civil", "islamic-tbla", "islamic-umalqura", "iso8601", "japanese", "persian", "roc",
-    ];
-
-    /// <summary>
     /// The locale data's <c>ca</c> values: the Gregorian calendar first, as every supported locale's
     /// default, then the others, and the deprecated Hijri types the constructor falls back from.
     /// </summary>
@@ -228,53 +216,6 @@ internal sealed partial class JsRealm
         "gregory", "buddhist", "chinese", "coptic", "dangi", "ethioaa", "ethiopic", "hebrew", "indian", "islamic",
         "islamic-civil", "islamic-rgsa", "islamic-tbla", "islamic-umalqura", "iso8601", "japanese", "persian", "roc",
     ];
-
-    /// <summary>ECMA-402's <c>Intl.supportedValuesOf</c>: the values this data supports for a key, sorted.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s8.3.2; IP=Low; Security=Low; Resources=2; Fingerprint=978B5F
-    // Broiler-Human:        PENDING
-    private static JsValue SupportedValuesOf(JsEngine engine, JsValue key)
-    {
-        var name = engine.ToStringValue(key);
-        var tables = engine.Intl!;
-        var values = new List<string>();
-
-        switch (name)
-        {
-            case "calendar":
-                values.AddRange(FormatterCalendars);
-                break;
-            case "collation":
-                values.Add("phonebk");
-                break;
-            case "currency":
-                foreach (var entry in tables.Numbers.Currencies.Keys)
-                {
-                    var code = entry[(entry.IndexOf('|') + 1)..];
-
-                    if (code.Length == 3 && !values.Contains(code))
-                    {
-                        values.Add(code);
-                    }
-                }
-
-                break;
-            case "numberingSystem":
-                values.AddRange(tables.Numbers.NumberingSystems.Keys);
-                break;
-            case "timeZone":
-                // ECMA-402 6.5.3: every primary identifier the time zone data names (JSD-0053).
-                values.AddRange(tables.TimeZones.PrimaryIdentifiers);
-                break;
-            case "unit":
-                values.AddRange(SanctionedUnits);
-                break;
-            default:
-                throw engine.Error("RangeError", "Intl.supportedValuesOf: invalid key: " + name);
-        }
-
-        values.Sort(StringComparer.Ordinal);
-        return JsValue.Object(engine.Realm.NewArray(values.ConvertAll(static value => JsValue.String(value))));
-    }
 
     /// <summary>The text of a list of parts.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=81E849
@@ -557,7 +498,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's CreateDateTimeFormat (s11.1.2).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3A6238
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8D6709
     // Broiler-Human:        PENDING
     internal static JsDateTimeFormatObject CreateDateTimeFormat(JsEngine engine, JsObject prototype, JsValue locales, JsValue optionsValue, string required, string defaults, string? toLocaleStringTimeZone = null)
     {
@@ -617,11 +558,11 @@ internal sealed partial class JsRealm
                 _ => [null],
             });
 
-        var tag = JsLocaleTag.Parse(resolved.DataLocale);
+        var tag = ParseLocale(resolved.DataLocale);
         var language = tag?.Language ?? "en";
         var region = tag?.Region is { Length: > 0 } explicitRegion
             ? explicitRegion
-            : tables.Likely(language) is { } likely ? likely[(likely.LastIndexOf('-') + 1)..] : "001";
+            : tables.LocaleData.LikelySubtags(language) is { } likely ? likely[(likely.LastIndexOf('-') + 1)..] : "001";
         var preferred = dates.PreferredHourChar(region);
         var defaultCycle = HourCycleOfChar(preferred);
 

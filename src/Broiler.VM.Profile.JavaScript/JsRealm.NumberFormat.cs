@@ -289,7 +289,7 @@ internal sealed partial class JsRealm
     /// ECMA-402's <c>Intl.NumberFormat</c> constructor: the prototype from the new target, then
     /// InitializeNumberFormat, then the legacy path when called as a function.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.1.1; IP=Low; Security=Medium; Resources=3; Fingerprint=5F52CF
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s16.1.1; IP=Low; Security=Medium; Resources=3; Fingerprint=856677
     // Broiler-Falsified-If: an option is read in another order than ECMA-402's, an invalid option is admitted, or a resolved option differs from what the locale and options select
     // Broiler-Human:        PENDING
     internal static JsValue NewNumberFormat(JsEngine engine, JsValue newTarget, JsValue[] arguments, JsValue thisValue, bool called)
@@ -323,7 +323,7 @@ internal sealed partial class JsRealm
 
         var resolved = ResolveLocale(engine, requested, new Dictionary<string, string?>(StringComparer.Ordinal) { ["nu"] = numberingSystem }, ["nu"], (locale, key) => key == "nu" ? nuValues : [null]);
 
-        var language = JsLocaleTag.Parse(resolved.DataLocale)?.Language ?? "en";
+        var language = LanguageOf(resolved.DataLocale) ?? "en";
 
         // SetNumberFormatUnitOptions.
         var style = GetStringOption(engine, options, "style", ["decimal", "percent", "currency", "unit"], "decimal")!;

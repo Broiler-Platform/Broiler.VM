@@ -125,7 +125,7 @@ internal sealed partial class JsRealm
         throw engine.Error("TypeError", "Intl.ListFormat.prototype." + member + " requires that 'this' be an Intl.ListFormat");
 
     /// <summary>ECMA-402's <c>Intl.ListFormat</c> constructor (s14.1.1): the options read in its order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=40D97C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D57EDF
     // Broiler-Human:        PENDING
     internal static JsValue NewListFormat(JsEngine engine, JsValue newTarget, JsValue[] arguments)
     {
@@ -141,7 +141,7 @@ internal sealed partial class JsRealm
 
         var type = GetStringOption(engine, options, "type", ["conjunction", "disjunction", "unit"], "conjunction")!;
         var style = GetStringOption(engine, options, "style", ["long", "short", "narrow"], "long")!;
-        var language = JsLocaleTag.Parse(resolved.DataLocale)?.Language ?? "en";
+        var language = LanguageOf(resolved.DataLocale) ?? "en";
 
         // [[TEMPLATES]]: CLDR's type for the type and style.
         var key = language + "|" + type switch { "disjunction" => "or", "unit" => "unit", _ => "standard" } +

@@ -174,7 +174,7 @@ internal sealed partial class JsRealm
         throw engine.Error("TypeError", "Intl.DurationFormat.prototype." + member + " requires that 'this' be an Intl.DurationFormat");
 
     /// <summary>ECMA-402's <c>Intl.DurationFormat</c> constructor (s13.1.1): the options read in its order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=54826B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=944B1A
     // Broiler-Human:        PENDING
     internal static JsValue NewDurationFormat(JsEngine engine, JsValue newTarget, JsValue[] arguments)
     {
@@ -209,7 +209,7 @@ internal sealed partial class JsRealm
 
         // [[DIGITALFORMAT]]: CLDR's time separator, and whether its hours-minutes-seconds pattern
         // writes the hours with two digits.
-        var language = JsLocaleTag.Parse(resolved.DataLocale)?.Language ?? "en";
+        var language = LanguageOf(resolved.DataLocale) ?? "en";
         var separator = numbers.Value(language, "symbols.timeSeparator") ?? ":";
         var twoDigitHours = (numbers.Value(language, "duration.hms") ?? "h:mm:ss").StartsWith("hh", System.StringComparison.Ordinal);
 

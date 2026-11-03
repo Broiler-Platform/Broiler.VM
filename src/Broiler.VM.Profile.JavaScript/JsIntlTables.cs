@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   26
-// Annotated:        26/26
-// Exempt:           13
-// Human-reviewed:   0/26
+// Relevant units:   19
+// Annotated:        19/19
+// Exempt:           11
+// Human-reviewed:   0/19
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       26
+// Unverified:       19
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using Broiler.ECMAScript.Intl;
 using Broiler.ECMAScript.Temporal;
 using Broiler.ECMAScript.Time;
 using Broiler.VM.Profile.JavaScript.Format;
@@ -40,6 +41,15 @@ namespace Broiler.VM.Profile.JavaScript;
 /// shape the profile can search; no realm, engine or guest value is held, so sharing them across
 /// runtimes shares nothing a guest could write.
 /// </para>
+/// <para>
+/// <b>The locale core reads the shared Intl library's decoder since SJL-9.4</b> (JSD-0082, decisions
+/// D8 and D24): <see cref="LocaleData"/> is <c>Broiler.ECMAScript.Intl</c>'s <c>TableLocaleData</c>
+/// over the same tables, handed over through <see cref="JsIntlDataSet"/>, so that this family's
+/// <see cref="IJsIntlData"/> and <see cref="JsIntlTable"/> stay its public contract. The decoders of
+/// the likely subtags, the aliases, the extension types, the locale list, the week data and the
+/// scripts' directions left this type with it; the number, date, list, relative-time, display-name
+/// and zone-name decoders stay until their sub-areas move.
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BAE255
 // Broiler-Human:        PENDING
@@ -49,21 +59,9 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly IJsIntlData data;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=97E10B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CBA9D2
     // Broiler-Human:        PENDING
-    private readonly Lazy<Dictionary<string, string>> likely;
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=98B3AA
-    // Broiler-Human:        PENDING
-    private readonly Lazy<Dictionary<string, Dictionary<string, string>>> aliases;
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=717B72
-    // Broiler-Human:        PENDING
-    private readonly Lazy<Dictionary<string, string>> extensions;
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F63895
-    // Broiler-Human:        PENDING
-    private readonly Lazy<string[]> locales;
+    private readonly Lazy<string[]> availableLocales;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B4AA12
     // Broiler-Human:        PENDING
@@ -98,15 +96,15 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly Lazy<JsZoneNames> zoneNames;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=78C665
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B7E217
     // Broiler-Human:        PENDING
     internal JsIntlTables(IJsIntlData data)
     {
         this.data = data;
-        likely = new(() => Pairs(JsIntlTable.LikelySubtags));
-        aliases = new(ReadAliases);
-        extensions = new(ReadExtensions);
-        locales = new(() => [.. Lines(JsIntlTable.Locales)]);
+        // THE SHARED DECODER (JSD-0082, decision D8): built here, decoding nothing until a question needs
+        // a table, each table group once per process under its own thread-safe lazy, as this type's are.
+        LocaleData = new TableLocaleData(new JsIntlDataSet(data));
+        availableLocales = new(ReadAvailableLocales);
         collation = new(() => new JsCollationData(data.Table(JsIntlTable.CollationRoot), data.Table(JsIntlTable.CollationTailorings)));
         numbers = new(ReadNumbers);
         dates = new(ReadDates);
@@ -129,10 +127,23 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     internal string CldrVersion => data.CldrVersion;
 
-    /// <summary>The locales the data supports, in canonical form.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0D8A26
+    /// <summary>
+    /// The shared Intl library's answers over this composition's tables (JSD-0082, decision D8): the
+    /// likely subtags, aliases and extension types canonicalisation reads, the locale list, the hour
+    /// cycles, the week data and the scripts' directions.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=35CA41
     // Broiler-Human:        PENDING
-    internal IReadOnlyList<string> Locales => locales.Value;
+    internal ILocaleData LocaleData { get; }
+
+    /// <summary>
+    /// The locales every service offers (the default-locale and available-locale providers, JSD-0082
+    /// decision D7): the data's list without <c>und</c>, in the data's order, <c>en-US</c>, the
+    /// default, among them.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3263E8
+    // Broiler-Human:        PENDING
+    internal IReadOnlyList<string> AvailableLocales => availableLocales.Value;
 
     /// <summary>
     /// The IANA Time Zone Database's identifiers, regions and offsets: the shared library's decoder over
@@ -161,45 +172,6 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     internal JsCollationData Collation => collation.Value;
 
-    /// <summary>The likely subtags of a source in CLDR's form - <c>en</c>, <c>und-Latn</c>, <c>und-US</c> - or nothing.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E6580E
-    // Broiler-Human:        PENDING
-    internal string? Likely(string source) => likely.Value.TryGetValue(source, out var target) ? target : null;
-
-    /// <summary>The alias of <paramref name="from"/> of one kind - language, script, region, variant, subdivision - or nothing.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B36EB0
-    // Broiler-Human:        PENDING
-    internal string? Alias(string kind, string from) =>
-        aliases.Value.TryGetValue(kind, out var table) && table.TryGetValue(from, out var replacement) ? replacement : null;
-
-    /// <summary>Every language alias, for the rule matcher that reads them all.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DBB89D
-    // Broiler-Human:        PENDING
-    internal IReadOnlyDictionary<string, string> LanguageAliases => aliases.Value["language"];
-
-    /// <summary>Whether <paramref name="key"/> is a key of extension <paramref name="singleton"/> the BCP 47 data defines.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8B3C4F
-    // Broiler-Human:        PENDING
-    internal bool IsKey(char singleton, string key) => extensions.Value.ContainsKey(singleton + "|" + key + "|");
-
-    /// <summary>
-    /// Whether <paramref name="type"/> is a type of <paramref name="key"/>, and its preferred form:
-    /// itself, or the type a deprecated one was replaced by.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A7A19D
-    // Broiler-Human:        PENDING
-    internal bool TryType(char singleton, string key, string type, out string preferred)
-    {
-        if (extensions.Value.TryGetValue(singleton + "|" + key + "|" + type, out var stated))
-        {
-            preferred = stated.Length == 0 ? type : stated;
-            return true;
-        }
-
-        preferred = type;
-        return false;
-    }
-
     /// <summary>The number, currency, unit and plural data, decoded the first time a number is formatted.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C30BD0
     // Broiler-Human:        PENDING
@@ -210,7 +182,7 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     internal JsDateData Dates => dates.Value;
 
-    /// <summary>The week data and the scripts' line directions, decoded the first time a locale is asked for them.</summary>
+    /// <summary>The list patterns, relative times and display names, decoded the first time a locale is asked for them.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F90F89
     // Broiler-Human:        PENDING
     internal JsLocaleInfo LocaleInfo => localeInfo.Value;
@@ -460,24 +432,12 @@ internal sealed class JsIntlTables
         return data;
     }
 
-    /// <summary>Decodes the week and script tables.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=280359
+    /// <summary>Decodes the list, relative-time and display-name tables.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AA9068
     // Broiler-Human:        PENDING
     private JsLocaleInfo ReadLocaleInfo()
     {
         var info = new JsLocaleInfo();
-
-        foreach (var line in Lines(JsIntlTable.WeekData))
-        {
-            var fields = line.Split('|');
-            info.Weeks[fields[0]] = (fields[1], fields[2], fields[3], fields[4]);
-        }
-
-        foreach (var line in Lines(JsIntlTable.Scripts))
-        {
-            var bar = line.IndexOf('|');
-            info.RightToLeft[line[..bar]] = line[(bar + 1)..] == "YES";
-        }
 
         foreach (var line in Lines(JsIntlTable.ListPatterns))
         {
@@ -520,54 +480,21 @@ internal sealed class JsIntlTables
         return lines;
     }
 
-    /// <summary>A two-field table as a dictionary.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=D4D9F0
+    /// <summary>The data's locales without <c>und</c>, which no service offers, in the data's order.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=15B295
     // Broiler-Human:        PENDING
-    private Dictionary<string, string> Pairs(JsIntlTable table)
+    private string[] ReadAvailableLocales()
     {
-        var pairs = new Dictionary<string, string>(StringComparer.Ordinal);
+        var available = new List<string>();
 
-        foreach (var line in Lines(table))
+        foreach (var locale in LocaleData.Locales)
         {
-            var bar = line.IndexOf('|');
-            pairs[line[..bar]] = line[(bar + 1)..];
+            if (locale != "und")
+            {
+                available.Add(locale);
+            }
         }
 
-        return pairs;
-    }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=4E9FB9
-    // Broiler-Human:        PENDING
-    private Dictionary<string, Dictionary<string, string>> ReadAliases()
-    {
-        var kinds = new Dictionary<string, Dictionary<string, string>>(StringComparer.Ordinal);
-
-        foreach (var kind in new[] { "language", "script", "region", "variant", "subdivision" })
-        {
-            kinds[kind] = new(StringComparer.Ordinal);
-        }
-
-        foreach (var line in Lines(JsIntlTable.Aliases))
-        {
-            var fields = line.Split('|');
-            kinds[fields[0]][fields[1]] = fields[2];
-        }
-
-        return kinds;
-    }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=5381D5
-    // Broiler-Human:        PENDING
-    private Dictionary<string, string> ReadExtensions()
-    {
-        var table = new Dictionary<string, string>(StringComparer.Ordinal);
-
-        foreach (var line in Lines(JsIntlTable.Extensions))
-        {
-            var fields = line.Split('|');
-            table[fields[0] + "|" + fields[1] + "|" + fields[2]] = fields[3];
-        }
-
-        return table;
+        return [.. available];
     }
 }

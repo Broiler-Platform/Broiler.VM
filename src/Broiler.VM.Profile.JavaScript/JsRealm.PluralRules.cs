@@ -162,7 +162,7 @@ internal sealed partial class JsRealm
         throw engine.Error("TypeError", "Intl.PluralRules.prototype." + member + " requires that 'this' be an Intl.PluralRules");
 
     /// <summary>ECMA-402's <c>Intl.PluralRules</c> constructor (s17.1.1): the options read in its order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=86D5A7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9FE040
     // Broiler-Human:        PENDING
     internal static JsValue NewPluralRules(JsEngine engine, JsValue newTarget, JsValue[] arguments)
     {
@@ -179,7 +179,7 @@ internal sealed partial class JsRealm
         var notation = GetStringOption(engine, options, "notation", ["standard", "scientific", "engineering", "compact"], "standard")!;
         var compactDisplay = GetStringOption(engine, options, "compactDisplay", ["short", "long"], "short")!;
         var digitOptions = SetNumberFormatDigitOptions(engine, options, 0, 3, notation);
-        var language = JsLocaleTag.Parse(resolved.DataLocale)?.Language ?? "en";
+        var language = LanguageOf(resolved.DataLocale) ?? "en";
 
         var formatter = new JsNumberFormatter(engine.Intl!.Numbers, language, "latn")
         {

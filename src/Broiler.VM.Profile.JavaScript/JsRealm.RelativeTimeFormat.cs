@@ -149,7 +149,7 @@ internal sealed partial class JsRealm
         throw engine.Error("TypeError", "Intl.RelativeTimeFormat.prototype." + member + " requires that 'this' be an Intl.RelativeTimeFormat");
 
     /// <summary>ECMA-402's <c>Intl.RelativeTimeFormat</c> constructor (s18.1.1): the options read in its order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F91077
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1E5187
     // Broiler-Human:        PENDING
     internal static JsValue NewRelativeTimeFormat(JsEngine engine, JsValue newTarget, JsValue[] arguments)
     {
@@ -204,7 +204,7 @@ internal sealed partial class JsRealm
         var pluralRules = (JsPluralRulesObject)NewPluralRules(
             engine, JsValue.Object(realm.PluralRulesConstructor!), [JsValue.String(resolved.Locale)]).AsObject();
 
-        var language = JsLocaleTag.Parse(resolved.DataLocale)?.Language ?? "en";
+        var language = LanguageOf(resolved.DataLocale) ?? "en";
         return JsValue.Object(new JsRelativeTimeFormatObject(
             prototype, resolved.Locale, language, style, numeric, nu, numberFormat.Formatter, pluralRules));
     }

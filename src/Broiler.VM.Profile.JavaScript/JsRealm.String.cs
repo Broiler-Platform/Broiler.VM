@@ -838,7 +838,7 @@ internal sealed partial class JsRealm
     /// (JSD-0074, decision 8): <c>tr</c> and <c>az</c> are <c>CaseLanguage.Turkic</c>, <c>lt</c> is
     /// <c>CaseLanguage.Lithuanian</c>, and anything else, <c>und</c> included, the default.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s20.1.2.1; IP=Low; Security=Medium; Resources=3; Fingerprint=84DDA4
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s20.1.2.1; IP=Low; Security=Medium; Resources=3; Fingerprint=C9CB47
     // Broiler-Human:        PENDING
     private static string TransformCase(JsEngine engine, string text, JsValue[] arguments, bool upper)
     {
@@ -848,8 +848,8 @@ internal sealed partial class JsRealm
         }
 
         var requested = CanonicalizeLocaleList(engine, Argument(arguments, 0));
-        var locale = JsLocaleTag.Parse(requested.Count != 0 ? requested[0] : DefaultLocale)!;
-        var language = LookupMatchingLocale(["az", "lt", "tr"], [locale.WithoutUnicodeExtension()])?.Locale ?? "und";
+        var locale = ParseLocale(requested.Count != 0 ? requested[0] : DefaultLocale)!;
+        var language = Broiler.ECMAScript.Intl.LocaleNegotiation.LookupMatchingLocaleByPrefix(["az", "lt", "tr"], [locale.WithoutUnicodeExtension().ToString()])?.Locale ?? "und";
 
         return ChangeCase(engine, text, upper, language switch
         {

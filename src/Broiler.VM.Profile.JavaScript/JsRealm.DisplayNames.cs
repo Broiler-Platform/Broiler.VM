@@ -122,7 +122,7 @@ internal sealed partial class JsRealm
         throw engine.Error("TypeError", "Intl.DisplayNames.prototype." + member + " requires that 'this' be an Intl.DisplayNames");
 
     /// <summary>ECMA-402's <c>Intl.DisplayNames</c> constructor (s12.1.1): the options required, and read in its order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=906C98
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A81A13
     // Broiler-Human:        PENDING
     internal static JsValue NewDisplayNames(JsEngine engine, JsValue newTarget, JsValue[] arguments)
     {
@@ -152,7 +152,7 @@ internal sealed partial class JsRealm
         return JsValue.Object(new JsDisplayNamesObject(prototype)
         {
             Locale = resolved.Locale,
-            Language = JsLocaleTag.Parse(resolved.DataLocale)?.Language ?? "en",
+            Language = LanguageOf(resolved.DataLocale) ?? "en",
             Style = style,
             Type = type,
             Fallback = fallback,
@@ -161,11 +161,22 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>ECMA-402's CanonicalCodeForDisplayNames (s12.5.1): a well-formed code of the type, case-regularized, or a <c>RangeError</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AF56E6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=93965B
     // Broiler-Human:        PENDING
     private static string CanonicalCodeForDisplayNames(JsEngine engine, string type, string code)
     {
-        static bool Letters(string text) => text.Length > 0 && JsLocaleTag.IsAlpha(text);
+        static bool Letters(string text)
+        {
+            foreach (var c in text)
+            {
+                if (c is not ((>= 'a' and <= 'z') or (>= 'A' and <= 'Z')))
+                {
+                    return false;
+                }
+            }
+
+            return text.Length > 0;
+        }
 
         static bool Digits(string text)
         {
@@ -186,13 +197,13 @@ internal sealed partial class JsRealm
                 {
                     // UNICODE_LANGUAGE_ID IN ITS BCP 47 FORM: no extension, no private use, no underscore.
                     if (code.Contains('_', System.StringComparison.Ordinal) ||
-                        JsLocaleTag.Parse(code) is not { } tag ||
-                        tag.LanguageId().Length != code.Length)
+                        ParseLocale(code) is not { } tag ||
+                        tag.BaseName.Length != code.Length)
                     {
                         throw engine.Error("RangeError", "Intl.DisplayNames: invalid language code: " + code);
                     }
 
-                    return tag.Canonicalize(engine.Intl!).ToString();
+                    return tag.Canonicalize(engine.Intl!.LocaleData).ToString();
                 }
 
             case "region":
@@ -280,11 +291,11 @@ internal sealed partial class JsRealm
     /// region and variants it did not cover in CLDR's locale pattern. An unnamed part is its code under
     /// the code fallback, as ICU writes "xyz (Germany)", and makes the whole name nothing otherwise.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E05E65
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=837CBE
     // Broiler-Human:        PENDING
     private static string? LanguageName(JsEngine engine, JsDisplayNamesObject names, string code, Func<string, string, string?> named)
     {
-        var tag = JsLocaleTag.Parse(code)!;
+        var tag = ParseLocale(code)!;
         var data = engine.Intl!.LocaleInfo.DisplayNames;
         var language = tag.Language;
         var script = tag.Script;
