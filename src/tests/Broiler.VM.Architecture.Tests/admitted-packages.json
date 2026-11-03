@@ -55,6 +55,22 @@
       "archiveHash": "+h4CNmGrXL8ExeWV/YC5R1qc2yusGj3z6hENOm9qHBtaLGIKQXCvPgZx+cv0RREdOBidVHngxjBHH0DXAknjfQ=="
     },
     {
+      "id": "Broiler.ECMAScript.Intl",
+      "version": "0.1.0-preview.9",
+      "contentHash": "nBHZWb3ylXCjgGLUiGAGptMAB8i2c4bPFuHzcO2NDhOAfAB1x3xQeFRDlO9S9qnJnsVh1+IQLcnaw1RTEzdFvw==",
+      "use": "product",
+      "projects": [
+        "Broiler.VM.Profile.JavaScript"
+      ],
+      "sources": [
+        "committed-feed",
+        "nuget.org"
+      ],
+      "pin": "eng/packages/Broiler.ECMAScript.Intl.0.1.0-preview.9.pin",
+      "admittedBy": "SJL-9.4 and JSD-0082 (decisions D8 and D9): the shared Intl library - ECMA-402's algorithms over the locale data an engine hands in through its provider - referenced by the JavaScript profile alone, which hands it this family's own tables through its IJsIntlData, adapted internally, so that no shared type enters its public surface; the locale data stays in the optional Intl data assembly. Admitted on 2026-11-03 as 0.1.0-preview.9, published to nuget.org that day from Broiler.JS 6f7284daa2d2fbec3104a9498d5f7c989f956946 (its publish-shared workflow, run 41679821770), downloaded from nuget.org, its archive hashing to the SHA-512 nuget.org's catalog publishes for it, and its content hash the one a restore into an empty package cache recorded. Its nuspec depends on Broiler.ECMAScript.Algorithms 0.1.0-preview.9 and Broiler.Unicode.Algorithms 0.1.0-preview.6, the versions this list admits. No package, pin or lock file is placed in eng/packages/.",
+      "archiveHash": "/6WnACqDwEFzasUK+9WWh6GAvAsaz8A8z8TA3AXXC2zIzhVEvyGusfhluHksmEzEuPBTcQxjFtS7GdnsSj4PIw=="
+    },
+    {
       "id": "Broiler.Unicode.Algorithms",
       "version": "0.1.0-preview.6",
       "contentHash": "ix5d1rK49zNV7mWQLg780RV8VrTaAuGaerMbTwsR4g0Zgm8cOKCesB+MLQIfHojEMBpP8dAzOqn0PBnre1fmAQ==",

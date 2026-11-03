@@ -59,4 +59,15 @@
     <PackageReference Include="Broiler.Unicode.Algorithms" />
   </ItemGroup>
 
+  <!--
+    THE SHARED INTL LIBRARY (JSD-0082, decisions D8 and D9; milestone SJL-9.4): ECMA-402's algorithms over the
+    locale data this family embeds, which the profile hands the library through its own IJsIntlData, adapted
+    internally, so that no shared type enters the profile's public surface. Restored from nuget.org under
+    rule I1, as the packages above are. Every root that carries the profile carries this assembly (rules K2
+    and K4); the locale data stays in the optional Intl data assembly (rule I3).
+  -->
+  <ItemGroup>
+    <PackageReference Include="Broiler.ECMAScript.Intl" />
+  </ItemGroup>
+
 </Project>
