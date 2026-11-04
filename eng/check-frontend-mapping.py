@@ -74,10 +74,11 @@
 #       `defensive` (added 2026-11-04, at SJL-13's second tools commit, on the owner's decision of that
 #       day on registry revision 19) only when the registry and the mapping both say so: its registry
 #       row states why no source reaches it, the mapping maps onto it exactly one catalogue row, which
-#       is in DEFENSIVE_ROWS (EE0021 or EX0024, the meanings rule N7's DefensiveRows admits, in
+#       is in DEFENSIVE_ROWS (EE0021, EX0024 or EX0013, the meanings rule N7's DefensiveRows admits, in
 #       src/tests/Broiler.VM.Architecture.Tests/ArchitectureRules.cs; one code each, as decision D12
 #       gives each meaning its own), and the mapping's `registry` row for it says `defensive` in its
-#       `notes`. Until that day E13 refused every new defensive row;
+#       `notes`. Until that day E13 refused every new defensive row. (EX0013 added 2026-11-04, later,
+#       on the owner's decision of that day, "Defensive too"; it read "EE0021 or EX0024".);
 #   E14 such a code has no class: it is missing from LanguageErrors.Classified, or Classify gives it no
 #       arm; or it is not graded as decision D12 grades it: a code whose registry row's `notes` says
 #       `a language rule` left 2104, is classed EarlyError, and is not among the codes Test262Run's
@@ -148,9 +149,12 @@ SEAM_STAGES = ("tokenizer", "parser", "semantics", "lowering")
 LEFT = re.compile(r"\bleft (?P<code>\d{4}) (?P<name>[A-Za-z]+)\b")
 LANGUAGE_RULE = "a language rule"
 # The catalogue rows whose meaning a new code may hold as a defensive row (E13), and the only ones: rule
-# N7's DefensiveRows in ArchitectureRules.cs names the same two, and each list names the other. Added
+# N7's DefensiveRows in ArchitectureRules.cs names the same three, and each list names the other. Added
 # 2026-11-04, on the owner's decision of that day on registry revision 19 (JSD-0083's note on D12).
-DEFENSIVE_ROWS = ("EE0021", "EX0024")
+# EX0013 joined it later that day, on the owner's further decision, "Defensive too" (JSD-0083's further
+# note on D12): eval code reachable only past the eval nesting bound no public request can raise. The
+# tuple read ("EE0021", "EX0024"), and the comment "names the same two".
+DEFENSIVE_ROWS = ("EE0021", "EX0024", "EX0013")
 DEFENSIVE = "defensive"
 DEFENSIVE_REASON_LENGTH = 20
 CONSTRUCT_OUTSIDE_MANIFEST = "2104"
@@ -748,7 +752,7 @@ def check_revision_19(header, revision, registry, registry_header, registry_rows
         mapping_row = registry_row_of.get(code)
         if entry["reachability"] == DEFENSIVE:
             meanings = rows_onto.get(code, [])
-            admitted = " and ".join(DEFENSIVE_ROWS)
+            admitted = ", ".join(DEFENSIVE_ROWS[:-1]) + " and " + DEFENSIVE_ROWS[-1]
             if not meanings:
                 refuse("E13", f"{where}: defensive, and the mapping maps no catalogue row onto it; a new code "
                               f"may be defensive only for {admitted} (rule N7's DefensiveRows)")

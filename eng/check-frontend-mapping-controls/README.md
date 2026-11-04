@@ -64,12 +64,21 @@ It prints one line per control and exits 0 only when every control behaves as `c
 | C18 | 2304, defensive, with no reason in its registry row *(added 2026-11-04)* | E13 |
 | C19 | 2304, defensive, also reached by `EX0002`, a meaning E13 does not admit *(added 2026-11-04)* | E13 |
 | C20 | 2304, defensive, reached by both `EE0021` and `EX0024`, where each takes its own code *(added 2026-11-04, before any run)* | E13 |
+| C21 | 2304, defensive, reached by `EX0013` in place of `EX0024` *(added 2026-11-04, later)* | passes |
 | R1 | at 18: this checkout's mapping and registry, stated at revision 19; at 19: the stage table's digest changed and the owning decision removed | at 18: E10, E11, E12; at 19: E11, E12 |
 | R2 | this checkout's mapping and registry, the four revision-19 inputs named where no file is | at 18: passes; at 19: unreadable, naming a path it left absent |
 
 C10, a new code made defensive for `EX0002`'s meaning, is the control that the widening of E13 still
 refuses what it refused before: `EX0002` is not one of the two meanings E13 admits. F0, which carries
 2304, shows the widening admits the one case it was made for.
+
+*(Added 2026-11-04, later, on the owner's decision of that day on EX0013, "Defensive too".)* E13 admits a
+third meaning, `EX0013`, eval code reachable only past the eval nesting bound no public request can raise.
+C21 must pass: it gives the fixture's catalogue `EX0013` in place of `EX0024`, with the copies' digests,
+and maps it onto 2304. It is a fixture shape, since the real `EX0013` left 2103 and not 2104; E13 reads
+only which catalogue row the mapping maps onto the code, and the checker as it stood before this change
+refuses C21 at E13. C10 and C19 still show a meaning E13 does not name refused: `EX0002` is not one of the
+three. The paragraph above says "two meanings", which now reads three.
 
 **R1 and R2 were restated on 2026-11-04**, on the owner's decision of that day on registry revision 19
 (JSD-0083's note on decision D12). They edited and expected revision 18 only: R1 replaced the literal
@@ -113,9 +122,11 @@ The registry commit of step 1 writes the files these checks read, and it may not
   mints no code for those three, on the owner's decision of that day, so no row says it; the check and
   the fixture's 2211 stay)*;
 - *(added 2026-11-04)* a code the registry adds may instead be a `defensive` row, whose case states why
-  no source reaches it, when the mapping maps onto it exactly one catalogue row, `EE0021` or `EX0024`,
-  and its `registry` row's `notes` says `defensive`; rule N7's `DefensiveRows` admits the same two, one
-  code each (made exact in a later commit of the same change, before any run: it read "maps onto it no
-  catalogue row but `EE0021` or `EX0024`", which C20 now shows E13 refuses when it is both);
+  no source reaches it, when the mapping maps onto it exactly one catalogue row, `EE0021`, `EX0024` or
+  `EX0013`, and its `registry` row's `notes` says `defensive`; rule N7's `DefensiveRows` admits the same
+  three, one code each (made exact in a later commit of the same change, before any run: it read "maps
+  onto it no catalogue row but `EE0021` or `EX0024`", which C20 now shows E13 refuses when it is both;
+  `EX0013` added 2026-11-04, later, on the owner's decision "Defensive too", where it read "`EE0021` or
+  `EX0024`" and "the same two");
 - `Test262Run`'s `Refused` names, before its first `Test262Verdict.Unsupported`, exactly the codes it
   grades unsupported.
