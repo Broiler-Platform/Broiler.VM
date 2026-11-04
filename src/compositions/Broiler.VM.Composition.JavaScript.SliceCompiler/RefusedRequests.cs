@@ -18,10 +18,19 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// registry revision 19</b> (JSD-0083's dated note on decision D12). Revision 19 gives a new code to
 /// each meaning a split row of the front end's mapping leaves, and check E13 of
 /// <c>eng/check-frontend-mapping.py</c> asks each new code to be reached by a refused entry of this
-/// corpus. Three of those meanings are reached only by something a single text cannot carry: two
-/// module units under one key (the catalogue's EX0020), a compile request the engine cannot serve
-/// (EX0030), and eval code under its caller's flags (EX0013). Every other refused source is one text
-/// under one goal, in <see cref="SliceSourcePrograms"/>; this is the form for the ones that are not.
+/// corpus. Two of those meanings are reached only by something a single text cannot carry: two
+/// module units under one key (the catalogue's EX0020) and a compile request the engine cannot serve
+/// (EX0030). Every other refused source is one text under one goal, in
+/// <see cref="SliceSourcePrograms"/>; this is the form for the ones that are not.
+/// </para>
+/// <para>
+/// <b>Revised 2026-11-04, later, on the owner's decision of that day on EX0013, "Defensive too"</b>
+/// (JSD-0083's further dated note on decision D12). The paragraph above read "Three of those meanings
+/// are reached only by something a single text cannot carry: two module units under one key (the
+/// catalogue's EX0020), a compile request the engine cannot serve (EX0030), and eval code under its
+/// caller's flags (EX0013)." EX0013's new code is minted as defensive, because every eval unit is parsed
+/// within a nesting bound no public request can raise, so no entry here is owed for it. The form can
+/// still carry eval units with their flags.
 /// </para>
 /// <para>
 /// <b>Here, in the composition, and not beside the other lists in the lowering assembly</b>, because
@@ -161,9 +170,12 @@ internal sealed record RefusedRequest(string Name, SliceSourceDiagnosticCode Cod
 /// At registry revision 18 two modules under one key are refused with 2201 and the value form under
 /// the numeric manifest with 2104, codes the front end's mapping marks as split for those meanings
 /// (EX0020 and EX0030). Revision 19 mints their codes, and the registry commit changes the code each
-/// entry here is answered with, which is all it needs to give each new code a case. An entry for EX0013
-/// is not here: every eval unit is parsed within the default nesting bound, and no source found so far
-/// crosses the scope-depth ceiling inside it (JSD-0083's note of 2026-11-04 on decision D12).
+/// entry here is answered with, which is all it needs to give each new code a case. EX0013 has no entry
+/// and is owed none: its new code is minted as defensive, reachable only past the eval nesting bound no
+/// public request can raise (the owner's decision of 2026-11-04, "Defensive too", in JSD-0083's further
+/// note on decision D12). Revised that day, later: this sentence read "An entry for EX0013 is not here:
+/// every eval unit is parsed within the default nesting bound, and no source found so far crosses the
+/// scope-depth ceiling inside it (JSD-0083's note of 2026-11-04 on decision D12)."
 /// </remarks>
 internal static class RefusedRequests
 {
