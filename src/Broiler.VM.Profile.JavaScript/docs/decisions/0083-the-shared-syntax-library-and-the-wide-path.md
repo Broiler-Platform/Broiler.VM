@@ -964,6 +964,24 @@ repository, found none that adds more than two records for each level of that bo
 carry the request flags of eval code, but the bound stays where it is. Whether EX0013 is minted as defensive, reached by
 a public change to eval's parse options, or decided otherwise is the owner's choice, before the registry commit.
 
+*(Noted 2026-11-04, later: the owner's decision of 2026-11-04 on EX0013, which the owner named "Defensive too". It is
+the owner's own dated choice, asked and answered that day, and not one taken under the direction of 2026-10-18. It
+settles the finding above, whose last sentence reads "Whether EX0013 is minted as defensive, reached by a public change
+to eval's parse options, or decided otherwise is the owner's choice, before the registry commit.")* EX0013's new code
+is minted as **defensive**, as EE0021's and EX0024's are, with the reason "reachable only past the eval nesting bound
+no public request can raise". Item 2 above therefore reads for EE0021, EX0024 and EX0013: rule N7's `DefensiveRows`
+and check E13's `DEFENSIVE_ROWS` name all three, one new code for each, and each revision keeps a control that refuses
+a meaning it does not name. Item 3 reads for EX0020 and EX0030 only: the retained source corpus carries no refused
+request for EX0013, and its producer and the `--checks` row are unchanged by this. The second tools commit makes the
+change, before step 1's base, and the rule's revision of 2026-11-04 records it in a further dated item, its item 12.
+- **Not taken: "Public eval depth".** Eval's nesting bound would become settable through a public request, so that a
+  retained refused request could cross the scope-depth ceiling and give EX0013 a source case. That is a change to the
+  compiler's public surface and to its behaviour, which the second tools commit may not make and decision D16 does not
+  ask for.
+- **Not taken: "Keep shared code".** EX0013 would take no new code and stay under 2103 NestingTooDeep, the code its
+  site gives it today. That keeps a meaning under a code whose registry row does not publish it, which is the finding
+  the mapping recorded when it marked EX0013's row `split`, as "Fold into existing" would have for all eight.
+
 **Decision D13 - test262 at step 1, and the floors** *(revised 2026-10-26, finding F20)*. Bundle `sjl-13-001`'s part
 A names its C1 kinds before any run, (R) the regrade, (G) the decorator's stage, (B) the admission walk and (F) a
 correction by row, and C3 (L) for the left-operand charge; no C2, no C5. **No floor is re-based unless a classified
@@ -1101,7 +1119,9 @@ may change neither the checker, nor rule N7, nor the source corpus's format, and
 D35). *(Corrected 2026-11-04, in a later commit of the change that adds this note, before any run: the list read "the
 retained source corpus (`src/tests/corpus/js-1/source/`) and `docs/`", and left out this profile's `docs/`, where this
 note is; the change lands as one merge, which is the second tools commit, so its own list must name it. The rule's
-revision of 2026-11-04 makes the same correction in its item 10.)*
+revision of 2026-11-04 makes the same correction in its item 10.)* *(Extended 2026-11-04, later, by the owner's
+decision "Defensive too", recorded under decision D12: "a new defensive code for EE0021 and EX0024" now reads "a new
+defensive code for EE0021, EX0024 and EX0013", and the paths the second tools commit may touch are unchanged.)*
 
 **Decision D29 - admission and closures.** The frontend is admitted for `Broiler.VM.Profile.JavaScript.Compiler` only
 (I1, A2); I3 gains its subject, and its register row's "UNTIL SJL-3" is corrected by a dated note; K4's rows for
@@ -1645,7 +1665,9 @@ configuration; part H's population and controls; "Revisions"; "What this file do
    semicolon. Revision 19 mints no code for the three language rules coded 2104, so test262 regrades nothing. EE0021
    and EX0024 take new codes minted as defensive. EX0013, EX0020 and EX0030 take new codes with real source cases,
    carried by the retained source corpus's refused requests. Whether EX0013 can be reached is open, as that note
-   records.)*
+   records.)* *(Settled 2026-11-04, later, by the owner's decision "Defensive too", recorded under decision D12: the
+   sentence "Whether EX0013 can be reached is open, as that note records." now reads "EX0013's new code is minted as
+   defensive too, so EX0020 and EX0030 alone take source cases.")*
 5. **Corrections.** This family's are the rows section "The corrections step 1 makes" names, made at step 1;
    Broiler.JS's are SJL-14's.
 6. **The deletion lists** are X6's (decision D20). Broiler.JS's half is completed at SJL-14.1.

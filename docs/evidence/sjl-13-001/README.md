@@ -24,6 +24,9 @@ mints no code for the three language rules coded 2104, so part A's kind (R) list
 and EX0024, are minted as defensive, which rule N7 and check E13 admit from a second tools commit. That commit also
 lets a refused source of the retained source corpus carry a compile request or more than one unit, and restates the
 mapping checker's controls R1 and R2. The base descends from both tools commits. Neither earlier rule file is edited.
+*(Added 2026-11-04, later.)* On the owner's further decision of that day on EX0013 ("Defensive too"), a third new
+code, for EX0013, is minted as defensive too, by that revision's dated item 12, so EX0020 and EX0030 alone take
+source cases from the refused requests.
 
 **Records:** [JSD-0083](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md),
 the area verdict, which records the owner's decisions D2 to D39 of 2026-10-26, with D1 a reading of the owner's words

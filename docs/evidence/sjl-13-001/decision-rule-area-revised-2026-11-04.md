@@ -105,6 +105,32 @@ commit, before the base. The registry commit then mints the codes and adds their
     and by check E13, as decision D12 gives each meaning its own new code; the checker's control C20 is that case. In
     item 1, "Two new numbers are minted as defensive, for EE0021 (...) and EX0024 (...)" is read so: one number for
     each.
+12. **EX0013 is defensive too** *(added 2026-11-04, in a later commit of the change that files this revision, before
+    any run it judges, on the owner's decision of that day on EX0013, "Defensive too", which JSD-0083's further dated
+    note on decision D12 records)*. That note's finding, that EX0013 may have no source case under any request because
+    every eval unit is parsed within the default nesting bound and no public member raises it, is settled: EX0013's
+    new code is minted as defensive, with the reason "reachable only past the eval nesting bound no public request can
+    raise". Wherever this revision names EE0021 and EX0024 as the meanings a new defensive code may hold, it names
+    EE0021, EX0024 and EX0013:
+    - in the opening paragraph, "EE0021 and EX0024 take new codes minted as defensive, which rule N7 and check E13,
+      revised, admit. EX0013, EX0020 and EX0030 take new codes with real source cases," now reads "EE0021, EX0024 and
+      EX0013 take new codes minted as defensive, which rule N7 and check E13, revised, admit. EX0020 and EX0030 take
+      new codes with real source cases,"; and the title's "two defensive codes" reads "three defensive codes";
+    - in item 1, "Two new numbers are minted as defensive, for EE0021 (a template literal with 2^32 strings or more)
+      and EX0024 (a construct the lowering has no arm for)," now reads "Three new numbers are minted as defensive, for
+      EE0021 (a template literal with 2^32 strings or more), EX0024 (a construct the lowering has no arm for) and
+      EX0013 (eval code whose free name crosses more than 255 scope records, reachable only past the eval nesting
+      bound no public request can raise),", one number for each, as item 11 reads it;
+    - in item 2, "admits a new defensive code for EE0021 and EX0024" now reads "admits a new defensive code for
+      EE0021, EX0024 and EX0013";
+    - in item 8, as item 11 reads it, "exactly one catalogue row, EE0021's or EX0024's," now reads "exactly one
+      catalogue row, EE0021's, EX0024's or EX0013's,"; and in item 11, "A code onto which the mapping maps both is
+      refused" now reads "A code onto which the mapping maps more than one of them is refused".
+
+    The registry commit's cases (item 4) are then for EX0020, EX0030 and the meanings that are not defensive, and
+    EX0013 has none, as no new defensive code has. Rule N7 and check E13 name EX0013 from the commit that adds this
+    item, which is part of the second tools commit; the registry commit still changes neither. Item 2's paths are
+    unchanged.
 
 **What does not change.** Every other part, class and control, and the revision of 2026-11-02. Part B's population is
 the parse corpus's manifest as the base commit holds it, which the second tools commit does not change; its refused
