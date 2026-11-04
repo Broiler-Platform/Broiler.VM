@@ -309,7 +309,7 @@
     },
     {
       "id": "C20",
-      "what": "a defensive new code onto which the mapping maps both meanings E13 admits, EE0021 and EX0024, where each takes its own code (added 2026-11-04, before any run)",
+      "what": "a defensive new code onto which the mapping maps two of the meanings E13 admits, EE0021 and EX0024, where each takes its own code (added 2026-11-04, before any run; it read \"both meanings E13 admits\" until E13 admitted EX0013, 2026-11-04, later)",
       "edits": [
         {
           "file": "early-errors.tsv",
@@ -377,6 +377,35 @@
         }
       ],
       "refused": []
+    },
+    {
+      "id": "C22",
+      "what": "a defensive new code onto which the mapping maps two of the meanings E13 admits, EX0013 and EX0024, where each takes its own code (added 2026-11-04, later, on the owner's decision \"Defensive too\"; a fixture shape, as C21 is)",
+      "edits": [
+        {
+          "file": "early-errors.tsv",
+          "old": "EX0024\tEX\tJSE9308\tConstructNotCompiled\t-\t2104\n",
+          "new": "EX0024\tEX\tJSE9308\tConstructNotCompiled\t-\t2104\nEX0013\tEX\tJSE9203\tEvalScopeTooDeep\t-\t2104\n"
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "# catalogue-sha256: 545b38dcc2a09f993d14001441becee82656bf8b9ff41b9ce8cc12e15e3fcc8f",
+          "new": "# catalogue-sha256: 2b70f69229a30327f8261e65bd3349f638c80343079a3cc1eb0e6a6dd7570a1d"
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "registry\t-\t-\tConstructNotCompiled\t-\t-\t2304",
+          "new": "registry\t-\t-\tConstructNotCompiled;EvalScopeTooDeep\t-\t-\t2304"
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "code\tJSE9308\tEX0024\tConstructNotCompiled\t2104\t2104\t2304\twithin-meaning\t2304 ConstructTheLoweringHasNoArmFor: a construct the manifest admitted and the lowering has no arm for\t2104 split: the default arms' code at the base, which revision 19 renumbers\t-",
+          "new": "code\tJSE9308\tEX0024\tConstructNotCompiled\t2104\t2104\t2304\twithin-meaning\t2304 ConstructTheLoweringHasNoArmFor: a construct the manifest admitted and the lowering has no arm for\t2104 split: the default arms' code at the base, which revision 19 renumbers\t-\ncode\tJSE9203\tEX0013\tEvalScopeTooDeep\t2104\tnone\t2304\twithin-meaning\t2304 ConstructTheLoweringHasNoArmFor: a construct the manifest admitted and the lowering has no arm for\t2104 split: the default arms' code at the base, which revision 19 renumbers\t-"
+        }
+      ],
+      "refused": [
+        "E13"
+      ]
     }
   ],
   "real": [

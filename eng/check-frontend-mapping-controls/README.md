@@ -65,6 +65,7 @@ It prints one line per control and exits 0 only when every control behaves as `c
 | C19 | 2304, defensive, also reached by `EX0002`, a meaning E13 does not admit *(added 2026-11-04)* | E13 |
 | C20 | 2304, defensive, reached by both `EE0021` and `EX0024`, where each takes its own code *(added 2026-11-04, before any run)* | E13 |
 | C21 | 2304, defensive, reached by `EX0013` in place of `EX0024` *(added 2026-11-04, later)* | passes |
+| C22 | 2304, defensive, reached by both `EX0013` and `EX0024`, where each takes its own code *(added 2026-11-04, later)* | E13 |
 | R1 | at 18: this checkout's mapping and registry, stated at revision 19; at 19: the stage table's digest changed and the owning decision removed | at 18: E10, E11, E12; at 19: E11, E12 |
 | R2 | this checkout's mapping and registry, the four revision-19 inputs named where no file is | at 18: passes; at 19: unreadable, naming a path it left absent |
 
@@ -78,7 +79,9 @@ C21 must pass: it gives the fixture's catalogue `EX0013` in place of `EX0024`, w
 and maps it onto 2304. It is a fixture shape, since the real `EX0013` left 2103 and not 2104; E13 reads
 only which catalogue row the mapping maps onto the code, and the checker as it stood before this change
 refuses C21 at E13. C10 and C19 still show a meaning E13 does not name refused: `EX0002` is not one of the
-three. The paragraph above says "two meanings", which now reads three.
+three. C22, which keeps `EX0024` and adds `EX0013` under the same code, shows E13 refuses two of the
+three meanings under one code, as C20 does for `EE0021` and `EX0024` and as rule N7's test does for
+both pairs. The paragraph above says "two meanings", which now reads three.
 
 **R1 and R2 were restated on 2026-11-04**, on the owner's decision of that day on registry revision 19
 (JSD-0083's note on decision D12). They edited and expected revision 18 only: R1 replaced the literal
