@@ -144,7 +144,8 @@ internal sealed class JsIntlTables
         FormatData = new CompositeLocaleData(LocaleData);
         availableLocales = new(ReadAvailableLocales);
         // THE COLLATION DATA (SJL-17.4, JSD-0084 decision E11): the shared library's UcaCollationData over
-        // JsIntlDataSet, the adapter LocaleData reads too. It decodes the root and tailoring tables once,
+        // a JsIntlDataSet of its own, the adapter type LocaleData reads too, which holds only the data's
+        // reference, so the two answer the same tables. It decodes the root and tailoring tables once,
         // on first use, thread-safely, as this type's lazy JsCollationData did; this family's data carries
         // no CollationSettings table, which the adapter answers empty, so no tailoring states a setting.
         CollationData = new UcaCollationData(new JsIntlDataSet(data));
@@ -256,8 +257,9 @@ internal sealed class JsIntlTables
 
     /// <summary>
     /// The collation data, as the shared Intl library's collator reads it: the composition's root and
-    /// tailoring tables, decoded by <see cref="UcaCollationData"/> the first time a collator needs them
-    /// (SJL-17.4; until then this family's <c>JsCollationData</c> decoded them).
+    /// tailoring tables, decoded by <see cref="UcaCollationData"/> the first time a collator's
+    /// construction or <c>Intl.Locale.prototype.getCollations</c> needs them (SJL-17.4; until then this
+    /// family's <c>JsCollationData</c> decoded them, when a collator was first made).
     /// </summary>
     // Broiler-AI:           Origin=AI; Spec=JSD-0084 E11; IP=Low; Security=Low; Resources=1; Fingerprint=8F9D09
     // Broiler-Human:        PENDING

@@ -187,10 +187,10 @@ internal sealed partial class JsRealm
     /// decision E7), and refuses a string whose NFD form passes this engine's string-length ceiling
     /// with the <c>RangeError</c> <c>normalize</c> throws.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10.3.3.1; IP=Low; Security=Medium; Resources=3; Fingerprint=04FC3E
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10.3.3.1; IP=Low; Security=Medium; Resources=3; Fingerprint=560FA7
     // Broiler-Falsified-If: an order, a charge or an error differs from what JsCollator gave for the same strings and options before SJL-17.4
     // Broiler-Human:        PENDING
-    internal static int CompareStrings(JsEngine engine, JsCollatorObject collator, string x, string y) =>
+    private static int CompareStrings(JsEngine engine, JsCollatorObject collator, string x, string y) =>
         collator.Collator.Compare(x, y, StringLengthCeiling, engine.WorkCharge, out var order) == IntlStatus.Completed
             ? order
             : throw engine.Error("RangeError", "Invalid string length");
@@ -286,7 +286,10 @@ internal sealed partial class JsRealm
     /// <c>CollatorKeyData</c>", which SJL-17.4 deleted; they are the shared library's
     /// <see cref="UcaCollationData.KeyValues"/>, over this family's tables, which answers the same; and
     /// the Collator's comparison is the library's since SJL-17.4. The sentence on SJL-17 is kept as
-    /// written.)</i>
+    /// written.)</i> Of the two, only <c>Intl.Locale.prototype.getCollations</c> reads
+    /// <see cref="CollatorLocaleData.SortLocaleData"/>, and so the tables; <c>supportedValuesOf("collation")</c>
+    /// reads <see cref="CollatorLocaleData.Collations"/>, the fixed list, which no tailoring of the tables
+    /// reaches (JSD-0086, its readings only an embedder's data can show).
     /// </summary>
     // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10.2.3; IP=Low; Security=Low; Resources=1; Fingerprint=2E44A4
     // Broiler-Human:        PENDING
