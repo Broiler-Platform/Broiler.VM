@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   21
-// Annotated:        21/21
+// Relevant units:   20
+// Annotated:        20/20
 // Exempt:           5
-// Human-reviewed:   0/21
+// Human-reviewed:   0/20
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       21
+// Unverified:       20
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -40,7 +40,10 @@ namespace Broiler.VM.Profile.JavaScript;
 /// <b>The time zones are the IANA Time Zone Database's</b> (JSD-0053), from tzdb 2026e, resolved by the
 /// shared <c>ResolvedTimeZone</c>: an offset to its <c>+HH:MM</c> or <c>-HH:MM</c> form, and a name, in
 /// any ASCII case, to its zone, whose offset is read at each instant formatted, and which is named by its
-/// primary identifier. Any other name is a <c>RangeError</c>.
+/// primary identifier. Any other name is a <c>RangeError</c>. <c>resolvedOptions().timeZone</c> is the
+/// identifier as given, in the database's case: <c>Asia/Calcutta</c> stays <c>Asia/Calcutta</c>, as
+/// <c>tc39/proposal-temporal@e8cc03fc</c>'s <c>intl.html:434</c> has it (row Z8, JSD-0082 decision D15),
+/// where until SJL-9.4 it was the primary, <c>Asia/Kolkata</c>.
 /// </para>
 /// <para>
 /// <i>Revised 2026-11-03, at SJL-9.4's sub-area (d).</i> The first paragraph read: "<b>The constructor
@@ -606,11 +609,14 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>
-    /// The time zone an option names (ECMA-402 11.1.2 steps 29 to 36, JSD-0053): UTC by default, and
-    /// otherwise the option's String resolved by the shared <c>ResolvedTimeZone</c>, an offset string by
-    /// its <c>+HH:MM</c> or <c>-HH:MM</c> form and an IANA Zone or Link name matched without regard to
-    /// ASCII case. This keeps the option's conversion and the two <c>RangeError</c>s; the resolution
-    /// charges nothing, as before (JSD-0082, decision D18, row L43).
+    /// The time zone an option names (ECMA-402 11.1.2 steps 29 to 36, as
+    /// <c>tc39/proposal-temporal@e8cc03fc</c>'s <c>intl.html:434</c> amends them; JSD-0053): UTC by
+    /// default, and otherwise the option's String resolved by the shared <c>ResolvedTimeZone</c>, an
+    /// offset string by its <c>+HH:MM</c> or <c>-HH:MM</c> form and an IANA Zone or Link name matched
+    /// without regard to ASCII case. [[TimeZone]] is the identifier as given, in the database's case,
+    /// and the zone is named by its primary identifier (row Z8, JSD-0082 decision D15). This keeps the
+    /// option's conversion and the two <c>RangeError</c>s; the resolution charges nothing, as before
+    /// (JSD-0082, decision D18, row L43).
     /// </summary>
     /// <remarks>
     /// <i>Revised 2026-11-03, at SJL-9.4's sub-area (d).</i> The summary read: "The time zone an option
@@ -622,9 +628,11 @@ internal sealed partial class JsRealm
     /// SJL-8.5 (JSD-0076, JSD-0077): <c>OffsetTimeZones</c> reads and writes the offsets and names the
     /// <c>Etc/GMT</c> zones' fixed offsets, and the Intl data's <c>TimeZoneDatabase</c> finds a name, its
     /// primary identifier and its rules. This keeps the option's conversion, the two <c>RangeError</c>s and
-    /// the formatter's choice to report the primary identifier."
+    /// the formatter's choice to report the primary identifier." Until row Z8's correction, made by the
+    /// commit after sub-area (d)'s, the zone was resolved again from its primary identifier, so that the
+    /// format reported the primary.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5DFD73
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=433463
     // Broiler-Human:        PENDING
     private static ResolvedTimeZone ResolveTimeZone(JsEngine engine, JsValue value, ITimeZoneDatabase zones)
     {
@@ -637,22 +645,11 @@ internal sealed partial class JsRealm
 
         return ResolvedTimeZone.Resolve(text, zones, out var zone) switch
         {
-            IntlStatus.Completed => ReportedTimeZone(zone!, zones),
+            IntlStatus.Completed => zone!,
             IntlStatus.TimeZoneOffsetHasSeconds => throw engine.Error("RangeError", "Intl.DateTimeFormat: a time zone offset cannot have seconds: " + text),
             _ => throw engine.Error("RangeError", "Intl.DateTimeFormat: " + text + " is not an available time zone"),
         };
     }
-
-    /// <summary>
-    /// The zone a format reports as [[TimeZone]]: this family's primary identifier, the zone resolved
-    /// again from it, until row Z8's correction (JSD-0082, decision D15) reports the identifier as given.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=JSD-0082 D15; IP=Low; Security=Low; Resources=1; Fingerprint=ED37DA
-    // Broiler-Human:        PENDING
-    private static ResolvedTimeZone ReportedTimeZone(ResolvedTimeZone zone, ITimeZoneDatabase zones) =>
-        zone.Identifier == zone.PrimaryIdentifier || ResolvedTimeZone.Resolve(zone.PrimaryIdentifier, zones, out var primary) != IntlStatus.Completed
-            ? zone
-            : primary!;
 }
 
 /// <summary>

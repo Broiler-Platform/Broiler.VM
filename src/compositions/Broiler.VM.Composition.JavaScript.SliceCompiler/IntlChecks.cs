@@ -300,9 +300,13 @@ internal static class IntlChecks
         var own = Evaluate(Program, With(JsCldrData.Instance));
         var without = Evaluate(Program, With(new DataWithoutTheTzRelease()));
 
+        // THE FORMAT REPORTS THE ZONE AS GIVEN, in the database's case, since SJL-9.4's row Z8 (JSD-0082
+        // decision D15): 'asia/calcutta' is Asia/Calcutta. (Revised 2026-11-03, at SJL-9.4's row Z8; the
+        // answer read "-04:00 3 Asia/Kolkata", the Link's primary identifier, which the format reported
+        // before. What the check holds, both data answering alike, is unchanged.)
         return (
             Name,
-            own == "-04:00 3 Asia/Kolkata" && without == own,
+            own == "-04:00 3 Asia/Calcutta" && without == own,
             $"the family's data answered `{own}`, and the same data without the release `{without}`");
     }
 
