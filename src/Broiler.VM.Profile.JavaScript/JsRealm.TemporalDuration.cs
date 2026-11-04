@@ -33,7 +33,7 @@ internal sealed partial class JsRealm
     private static readonly string[] DurationFieldNames =
         ["years", "months", "weeks", "days", "hours", "minutes", "seconds", "milliseconds", "microseconds", "nanoseconds"];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=55B601
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3D2DBE
     // Broiler-Human:        PENDING
     private void SetupTemporalDuration(JsObject temporal)
     {
@@ -142,14 +142,7 @@ internal sealed partial class JsRealm
                 engine,
                 JsValue.Object(engine.Realm.DurationFormatConstructor!),
                 [TemporalArgument(arguments, 0), TemporalArgument(arguments, 1)]).AsObject();
-            var text = new System.Text.StringBuilder();
-
-            foreach (var part in PartitionDurationFormatPattern(engine, format, JsTemporal.FieldsArray(duration.Fields)))
-            {
-                text.Append(part.Value);
-            }
-
-            return JsValue.String(text.ToString());
+            return JsValue.String(format.Core.Format(duration.Fields, engine.WorkCharge));
         });
 
         Method(prototype, "valueOf", 0, static (engine, thisValue, arguments) => TemporalValueOf(engine, "Duration"));
