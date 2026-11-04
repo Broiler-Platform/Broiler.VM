@@ -130,7 +130,9 @@ commit, before the base. The registry commit then mints the codes and adds their
     The registry commit's cases (item 4) are then for EX0020, EX0030 and the meanings that are not defensive, and
     EX0013 has none, as no new defensive code has. Rule N7 and check E13 name EX0013 from the commit that adds this
     item, which is part of the second tools commit; the registry commit still changes neither. Item 2's paths are
-    unchanged.
+    unchanged. *(Corrected 2026-11-04, later, before any run: "from the commit that adds this item, which is part of
+    the second tools commit" reads "from the second tools commit, in later commits of the change that adds this
+    item", as items 9 to 11 say. The commit that adds this item changes neither rule N7 nor check E13.)*
 
 **What does not change.** Every other part, class and control, and the revision of 2026-11-02. Part B's population is
 the parse corpus's manifest as the base commit holds it, which the second tools commit does not change; its refused

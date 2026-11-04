@@ -1665,9 +1665,14 @@ configuration; part H's population and controls; "Revisions"; "What this file do
    semicolon. Revision 19 mints no code for the three language rules coded 2104, so test262 regrades nothing. EE0021
    and EX0024 take new codes minted as defensive. EX0013, EX0020 and EX0030 take new codes with real source cases,
    carried by the retained source corpus's refused requests. Whether EX0013 can be reached is open, as that note
-   records.)* *(Settled 2026-11-04, later, by the owner's decision "Defensive too", recorded under decision D12: the
-   sentence "Whether EX0013 can be reached is open, as that note records." now reads "EX0013's new code is minted as
-   defensive too, so EX0020 and EX0030 alone take source cases.")*
+   records.)* *(Settled 2026-11-04, later, by the owner's decision "Defensive too", recorded under decision D12. In the
+   note above, "EE0021 and EX0024 take new codes minted as defensive." now reads "EE0021, EX0024 and EX0013 take new
+   codes minted as defensive."; "EX0013, EX0020 and EX0030 take new codes with real source cases, carried by the
+   retained source corpus's refused requests." now reads "EX0020 and EX0030 take new codes with real source cases,
+   carried by the retained source corpus's refused requests."; and the sentence "Whether EX0013 can be reached is
+   open, as that note records." now reads "No public request reaches EX0013, as the further note on decision D12
+   records." This note, as first committed on the change that adds it, restated only the last of these, as "EX0013's
+   new code is minted as defensive too, so EX0020 and EX0030 alone take source cases.")*
 5. **Corrections.** This family's are the rows section "The corrections step 1 makes" names, made at step 1;
    Broiler.JS's are SJL-14's.
 6. **The deletion lists** are X6's (decision D20). Broiler.JS's half is completed at SJL-14.1.
