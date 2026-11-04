@@ -388,7 +388,10 @@ internal static class DiagnosticRegistry
     /// <remarks>
     /// <b>Read for rule N7's second list and for nothing else</b> (added 2026-11-04, at SJL-13's
     /// second tools commit, on the owner's decision of that day): a new code may claim to be
-    /// unreachable only when every catalogue row mapped onto it is a meaning the rule names. The
+    /// unreachable only when the mapping maps exactly one catalogue row onto it, and that row is a
+    /// meaning the rule names. (Corrected 2026-11-04, later, before any run: this read "only when
+    /// every catalogue row mapped onto it is a meaning the rule names", the wording rule N7 had
+    /// before a later commit of the same change gave each defensive code one meaning.) The
     /// columns are the ones <c>eng/check-frontend-mapping.py</c> holds the mapping to: a
     /// <c>code</c> row's third cell is its catalogue row and its seventh its registry code. A line
     /// whose registry code is not a number is not read here; the checker refuses it.
