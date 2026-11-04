@@ -146,7 +146,7 @@
     },
     {
       "id": "C10",
-      "what": "a new defensive row",
+      "what": "a new defensive row, for EX0002's meaning, which E13 does not admit (read so since 2026-11-04)",
       "edits": [
         {
           "file": "registry.txt",
@@ -178,7 +178,7 @@
       "edits": [
         {
           "file": "frontend-mapping.tsv",
-          "old": "# stage-table-sha256: 40227b9122db8f373657a78d89016c6657529f7da9564d515523b7172f9f5d88\n",
+          "old": "# stage-table-sha256: bc613ba53d62df02b3e5754ee192a93b9cee6c2a91efa0b20c584e9f05c7e966\n",
           "new": ""
         }
       ],
@@ -264,6 +264,48 @@
         }
       ],
       "refused": []
+    },
+    {
+      "id": "C17",
+      "what": "a defensive new code whose mapping row does not say it is defensive (added 2026-11-04)",
+      "edits": [
+        {
+          "file": "frontend-mapping.tsv",
+          "old": ", defensive, as rule N7 admits for the catalogue's EX0024",
+          "new": ""
+        }
+      ],
+      "refused": [
+        "E13"
+      ]
+    },
+    {
+      "id": "C18",
+      "what": "a defensive new code that states no reason (added 2026-11-04)",
+      "edits": [
+        {
+          "file": "registry.txt",
+          "old": "|defensive|no source reaches it: the lowering's default arms answer a construct the front end admitted|19",
+          "new": "|defensive|unreachable|19"
+        }
+      ],
+      "refused": [
+        "E13"
+      ]
+    },
+    {
+      "id": "C19",
+      "what": "a defensive new code onto which the mapping also maps a meaning E13 does not admit (added 2026-11-04)",
+      "edits": [
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "code\tJSE9209\tEX0002\tBigIntTooWide\t2104\tnone\t2105\twithin-meaning\t2105 BigIntWiderThanTheFormat: a BigInt literal wider than the format's BigInt constant\t2104 split: the width refusal's code at the base, which revision 19 renumbers\t-",
+          "new": "code\tJSE9209\tEX0002\tBigIntTooWide\t2104\tnone\t2304\twithin-meaning\t2304 ConstructTheLoweringHasNoArmFor: a construct the manifest admitted and the lowering has no arm for\t2104 split: the width refusal's code at the base, which revision 19 renumbers\t-"
+        }
+      ],
+      "refused": [
+        "E13"
+      ]
     }
   ],
   "real": [
@@ -273,24 +315,31 @@
       "edits": [
         {
           "file": "registry.txt",
-          "old": "# registry-revision: 18",
+          "pattern": "^# registry-revision: \\d+$",
           "new": "# registry-revision: 19"
         },
         {
           "file": "frontend-mapping.tsv",
-          "old": "# registry-revision: 18",
+          "pattern": "^# registry-revision: \\d+$",
           "new": "# registry-revision: 19"
         }
       ],
-      "refused": [
-        "E10",
-        "E11",
-        "E12"
-      ]
+      "by-revision": {
+        "18": {
+          "refused": [
+            "E10",
+            "E11",
+            "E12"
+          ]
+        },
+        "19": {
+          "refused": []
+        }
+      }
     },
     {
       "id": "R2",
-      "what": "this checkout's mapping and registry at revision 18, the four revision-19 inputs named where nothing is",
+      "what": "this checkout's mapping and registry, the four revision-19 inputs named where nothing is",
       "edits": [],
       "sources": {
         "enum": "absent.cs",
@@ -298,7 +347,14 @@
         "test262-run": "absent.cs",
         "source-manifest": "absent.manifest"
       },
-      "refused": []
+      "by-revision": {
+        "18": {
+          "refused": []
+        },
+        "19": {
+          "unreadable": true
+        }
+      }
     }
   ]
 }

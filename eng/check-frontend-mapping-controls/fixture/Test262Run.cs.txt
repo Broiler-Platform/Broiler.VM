@@ -8,6 +8,7 @@ internal static class Test262Run
         var first = diagnostics.Count == 0 ? null : diagnostics[0];
 
         if (first is not null && first.Code is SliceSourceDiagnosticCode.ConstructOutsideManifest
+                or SliceSourceDiagnosticCode.ConstructTheLoweringHasNoArmFor
                 or SliceSourceDiagnosticCode.BigIntWiderThanTheFormat)
         {
             return new Test262Outcome(relativePath, variant, Test262Verdict.Unsupported, first.ToString());
