@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 6409 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 6370 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -78,13 +78,13 @@ date, any annotation is malformed or any generated artefact is stale.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 320 |
-| Code units | 11264 |
-| Relevant | 6409 |
-| Exempt | 4855 |
-| Assessed | 6409 of 6409 (100%) |
-| Human reviewed | 0 of 6409 (0%) |
-| Unverified | 6409 |
+| Files scanned | 318 |
+| Code units | 11198 |
+| Relevant | 6370 |
+| Exempt | 4828 |
+| Assessed | 6370 of 6370 (100%) |
+| Human reviewed | 0 of 6370 (0%) |
+| Unverified | 6370 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6409 |
+| HUMAN_PENDING | 6370 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4855 |
+| EXEMPT | 4828 |
 
 ## 5. Aliases In The Tree
 
@@ -238,8 +238,6 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` | 37 | 33 | 4 | 33 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` | 78 | 50 | 28 | 50 | Low | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript/JsClone.cs` | 92 | 30 | 62 | 30 | Low | High | 6/6 |
-| `src/Broiler.VM.Profile.JavaScript/JsCollationData.cs` | 44 | 29 | 15 | 29 | Low | Medium | 2/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsCollator.cs` | 21 | 9 | 12 | 9 | Low | Medium | 1/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsCollections.cs` | 110 | 66 | 44 | 66 | Low | High | 2/2 |
 | `src/Broiler.VM.Profile.JavaScript/JsComposition.cs` | 7 | 1 | 6 | 1 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.Async.cs` | 8 | 8 | 0 | 8 | Low | High | 4/4 |
@@ -276,7 +274,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` | 104 | 88 | 16 | 88 | Low | High | 44/44 |
 | `src/Broiler.VM.Profile.JavaScript/JsHostValue.cs` | 135 | 56 | 79 | 56 | Low | High | 9/9 |
 | `src/Broiler.VM.Profile.JavaScript/JsIntlDataSet.cs` | 5 | 2 | 3 | 2 | Low | Low | 1/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsIntlTables.cs` | 19 | 10 | 9 | 10 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsIntlTables.cs` | 18 | 9 | 9 | 9 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsModule.cs` | 51 | 15 | 36 | 15 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativeAbi.cs` | 4 | 4 | 0 | 4 | Low | Critical | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` | 38 | 9 | 29 | 9 | Low | Critical | 24/24 |
@@ -306,7 +304,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs` | 11 | 8 | 3 | 8 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Generator.cs` | 12 | 9 | 3 | 9 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Global.cs` | 10 | 9 | 1 | 9 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs` | 40 | 28 | 12 | 28 | Low | Medium | 3/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs` | 40 | 28 | 12 | 28 | Low | Medium | 4/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Iterator.cs` | 29 | 16 | 13 | 16 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.IteratorHelpers.cs` | 27 | 18 | 9 | 18 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs` | 40 | 30 | 10 | 30 | Low | Medium | 0/0 |
@@ -4258,7 +4256,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 6270 of the 6409 assessed units declare
+That is not a figure of speech. 6231 of the 6370 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

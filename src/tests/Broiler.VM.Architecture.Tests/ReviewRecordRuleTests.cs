@@ -1245,6 +1245,9 @@ public sealed class ReviewRecordRuleTests
         // them has been read by a human. (Noted 2026-11-04, at SJL-9.4: "JsLocaleTag.cs, the language
         // tag's parse, canonicalization and likely subtags" is deleted at its sub-area (a), as the
         // paragraph on the Intl area's cut-over below records; this one is kept as written.)
+        // (Noted 2026-11-04, at SJL-17.4: "JsCollationData.cs and JsCollator.cs, the collation elements
+        // and their comparison" are deleted, as the paragraph on the collation cut-over below records;
+        // this one is kept as written.)
         //
         // AND NUMBER FORMATTING (phase F7, 2026-10-04, JSD-0044): JsDecimal.cs, the exact decimal and
         // its rounding; JsNumberData.cs, the decoded number data and the CLDR pattern reader;
@@ -1376,7 +1379,12 @@ public sealed class ReviewRecordRuleTests
         // JsLocaleInfo.cs, whose date data, pattern generator, interval formats, formatter, zone names and
         // display names the shared library's DateTimeFormat and DateTimeData implement;
         // JsRealm.DateTimeFormat.cs and JsIntlTables.cs stay, and call it. The count read 326 before.
-        Assert.Equal(320, AssuranceSources.Files.Count);
+        //
+        // AND THE COLLATION CUT-OVER (SJL-17.4, 2026-11-04, JSD-0084 decision E11) TOOK TWO AWAY:
+        // JsCollator.cs and JsCollationData.cs, whose comparison, decoder and element lookup the shared
+        // library's UcaCollator and UcaCollationData implement; JsRealm.Intl.cs and JsIntlTables.cs stay,
+        // and call them. The count read 320 before.
+        Assert.Equal(318, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   10
-// Annotated:        10/10
+// Relevant units:   9
+// Annotated:        9/9
 // Exempt:           9
-// Human-reviewed:   0/10
+// Human-reviewed:   0/9
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       10
+// Unverified:       9
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -84,6 +84,13 @@ namespace Broiler.VM.Profile.JavaScript;
 /// but the collation tables, which <c>JsCollationData</c> decodes until SJL-17.4, and the time zones and
 /// calendars, which the shared time library's own decoders read.
 /// </para>
+/// <para>
+/// <i>Noted 2026-11-04, at SJL-17.4: the paragraph above says the collation tables are those "which
+/// <c>JsCollationData</c> decodes until SJL-17.4"; since SJL-17.4 the shared library's
+/// <see cref="UcaCollationData"/> decodes them, once, through <see cref="JsIntlDataSet"/>
+/// (<see cref="CollationData"/>), and <c>JsCollationData</c> is deleted. The paragraph is kept as
+/// written.</i>
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BAE255
 // Broiler-Human:        PENDING
@@ -96,10 +103,6 @@ internal sealed class JsIntlTables
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CBA9D2
     // Broiler-Human:        PENDING
     private readonly Lazy<string[]> availableLocales;
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B4AA12
-    // Broiler-Human:        PENDING
-    private readonly Lazy<JsCollationData> collation;
 
     /// <summary>The release the database states for data that does not carry <see cref="JsIntlTable.TimeZoneRelease"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=4E10B0
@@ -118,7 +121,7 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly Lazy<DateTimeData> dateTimes;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=83AC78
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=12195C
     // Broiler-Human:        PENDING
     internal JsIntlTables(IJsIntlData data)
     {
@@ -140,7 +143,12 @@ internal sealed class JsIntlTables
         LocaleData = new TableLocaleData(new JsIntlDataSet(data));
         FormatData = new CompositeLocaleData(LocaleData);
         availableLocales = new(ReadAvailableLocales);
-        collation = new(() => new JsCollationData(data.Table(JsIntlTable.CollationRoot), data.Table(JsIntlTable.CollationTailorings)));
+        // THE COLLATION DATA (SJL-17.4, JSD-0084 decision E11): the shared library's UcaCollationData over
+        // a JsIntlDataSet of its own, the adapter type LocaleData reads too, which holds only the data's
+        // reference, so the two answer the same tables. It decodes the root and tailoring tables once,
+        // on first use, thread-safely, as this type's lazy JsCollationData did; this family's data carries
+        // no CollationSettings table, which the adapter answers empty, so no tailoring states a setting.
+        CollationData = new UcaCollationData(new JsIntlDataSet(data));
         // DATA THAT DOES NOT CARRY THE RELEASE, as an embedder's written before SJL-8.5 does not, still
         // reads: the database states the release and nothing in the profile reads it (JSD-0077).
         timeZones = new(() => new TimeZoneDatabase(
@@ -247,10 +255,15 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     internal DateTimeData DateTimeData => dateTimes.Value;
 
-    /// <summary>The collation data.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B35C2E
+    /// <summary>
+    /// The collation data, as the shared Intl library's collator reads it: the composition's root and
+    /// tailoring tables, decoded by <see cref="UcaCollationData"/> the first time a collator's
+    /// construction or <c>Intl.Locale.prototype.getCollations</c> needs them (SJL-17.4; until then this
+    /// family's <c>JsCollationData</c> decoded them, when a collator was first made).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=JSD-0084 E11; IP=Low; Security=Low; Resources=1; Fingerprint=8F9D09
     // Broiler-Human:        PENDING
-    internal JsCollationData Collation => collation.Value;
+    internal UcaCollationData CollationData { get; }
 
     /// <summary>
     /// The text segmentation <c>Intl.Segmenter</c> reads, which the composition's data offers beside its

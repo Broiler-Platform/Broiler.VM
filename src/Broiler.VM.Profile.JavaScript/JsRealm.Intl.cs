@@ -9,7 +9,7 @@
 // Human-reviewed:   0/28
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         3/0
+// Criteria:         4/0
 // Resource impact:  3/10 max
 // Unverified:       28
 //
@@ -44,6 +44,19 @@ namespace Broiler.VM.Profile.JavaScript;
 /// (<see cref="JsIntlTables.LocaleData"/>). What reads a script value stays here: the walk over the
 /// locales argument and each element's checks, the options and their order, and the charges this
 /// family makes there (decision D18). The Collator's own steps and data are SJL-17's and stay.
+/// </para>
+/// <para>
+/// <b>The comparison is the shared Intl library's since SJL-17.4</b> (JSD-0084, JSD-0086):
+/// <see cref="UcaCollator"/> compares, over <see cref="UcaCollationData"/>, the composition's
+/// collation tables the library decodes (<see cref="JsIntlTables.CollationData"/>), which also
+/// answers which tailoring a collator compares by and the values of its relevant keys. What reads a
+/// script value stays here: the constructor's option reads in the specification's order, each
+/// checked as it is read, the resolved options, the bound <c>compare</c>, <c>localeCompare</c>'s
+/// coercion and its realm's <c>%Intl.Collator%</c>, the errors, and the meter the library charges
+/// in this family's units (decision E7). <i>(Noted 2026-11-04, at SJL-17.4: the paragraph above
+/// says "The Collator's own steps and data are SJL-17's and stay"; the steps stay, and the
+/// comparison, the tailoring's choice and the key values are the library's, as this paragraph
+/// says. The paragraph above is kept as written.)</i>
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ECMA-402; IP=Low; Security=Medium; Resources=3; Fingerprint=60DD8D
@@ -94,7 +107,7 @@ internal sealed partial class JsRealm
 
     // ---- Intl.Collator ---------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10; IP=Low; Security=Medium; Resources=3; Fingerprint=5358E3
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10; IP=Low; Security=Medium; Resources=3; Fingerprint=BFF221
     // Broiler-Human:        PENDING
     private void SetupCollator(JsObject intl)
     {
@@ -132,7 +145,7 @@ internal sealed partial class JsRealm
                 {
                     var x = inner.ToStringValue(Argument(values, 0));
                     var y = inner.ToStringValue(Argument(values, 1));
-                    return JsValue.Number(collator.Collator.Compare(inner, x, y));
+                    return JsValue.Number(CompareStrings(inner, collator, x, y));
                 });
 
                 collator.BoundCompare = bound;
@@ -168,10 +181,25 @@ internal sealed partial class JsRealm
         throw engine.Error("TypeError", "Intl.Collator.prototype." + member + " requires that 'this' be an Intl.Collator");
 
     /// <summary>
+    /// ECMA-402's <c>CompareStrings</c> for <paramref name="collator"/>: -1, 0 or 1, from the shared
+    /// library's <see cref="UcaCollator"/>, which charges this engine's meter in its units, NFD as
+    /// <c>normalize</c> charges it and then each collation element of both strings (JSD-0084,
+    /// decision E7), and refuses a string whose NFD form passes this engine's string-length ceiling
+    /// with the <c>RangeError</c> <c>normalize</c> throws.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10.3.3.1; IP=Low; Security=Medium; Resources=3; Fingerprint=560FA7
+    // Broiler-Falsified-If: an order, a charge or an error differs from what JsCollator gave for the same strings and options before SJL-17.4
+    // Broiler-Human:        PENDING
+    private static int CompareStrings(JsEngine engine, JsCollatorObject collator, string x, string y) =>
+        collator.Collator.Compare(x, y, StringLengthCeiling, engine.WorkCharge, out var order) == IntlStatus.Completed
+            ? order
+            : throw engine.Error("RangeError", "Invalid string length");
+
+    /// <summary>
     /// ECMA-402's <c>Intl.Collator</c> constructor steps: the prototype from the new target, then the
     /// options read in the specification's order, then the locale resolved.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10.1.1; IP=Low; Security=Medium; Resources=3; Fingerprint=779136
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10.1.1; IP=Low; Security=Medium; Resources=3; Fingerprint=5A6B74
     // Broiler-Falsified-If: an option is read in another order than ECMA-402's, or a resolved option differs from what the locale and options select
     // Broiler-Human:        PENDING
     internal static JsValue NewCollator(JsEngine engine, JsValue newTarget, JsValue[] arguments)
@@ -194,34 +222,29 @@ internal sealed partial class JsRealm
         var numericOption = GetBooleanOption(engine, options, "numeric", null);
         var caseFirstOption = GetStringOption(engine, options, "caseFirst", ["upper", "lower", "false"], null);
 
+        // THE KEYS' VALUES, THE TAILORING AND THE COMPARISON ARE THE SHARED LIBRARY'S (SJL-17.4, JSD-0084
+        // decision E11): its UcaCollationData answers them from the tailorings this family's tables carry,
+        // as CollatorKeyData and the choice of a tailoring here did.
+        var data = engine.Intl!.CollationData;
         var resolved = ResolveLocale(engine, requested, new Dictionary<string, string?>(StringComparer.Ordinal)
         {
             ["co"] = collation,
             ["kn"] = numericOption is null ? null : numericOption.Value ? "true" : "false",
             ["kf"] = caseFirstOption,
-        }, ["co", "kf", "kn"], (locale, key) => CollatorKeyData(locale, key, usage));
+        }, ["co", "kf", "kn"], (locale, key) => [.. data.KeyValues(LanguageOf(locale) ?? string.Empty, key, usage)]);
 
         var collationValue = resolved.Keys["co"] ?? "default";
         var numeric = resolved.Keys["kn"] == "true";
         var caseFirst = resolved.Keys["kf"] ?? "false";
+        var tailoring = data.TailoringFor(LanguageOf(resolved.DataLocale) ?? "en", usage, collationValue);
 
         var sensitivity = GetStringOption(engine, options, "sensitivity", ["base", "accent", "case", "variant"], "variant")!;
-        var ignorePunctuation = GetBooleanOption(engine, options, "ignorePunctuation", false) ?? false;
+        var ignorePunctuation = GetBooleanOption(engine, options, "ignorePunctuation", data.ShiftedByDefault(tailoring)) ?? false;
 
-        var data = engine.Intl!.Collation;
-        var language = LanguageOf(resolved.DataLocale) ?? "en";
-        var tailoringName = usage == "search"
-            ? (language == "de" ? "de-search" : "und-search")
-            : collationValue == "phonebk" && language == "de" ? "de-phonebk" : null;
-
-        var collator = new JsCollator(
+        var collator = new UcaCollator(
             data,
-            tailoringName is null ? null : data.TailoringNamed(tailoringName),
-            strength: sensitivity switch { "base" or "case" => 1, "accent" => 2, _ => 3 },
-            caseLevel: sensitivity == "case",
-            caseFirst: caseFirst switch { "upper" => JsCaseFirst.Upper, "lower" => JsCaseFirst.Lower, _ => JsCaseFirst.Off },
-            shifted: ignorePunctuation,
-            numeric: numeric);
+            UcaCollatorOptions.FromResolved(sensitivity, ignorePunctuation, caseFirst, numeric, tailoring),
+            JsUnicode.Normalization);
 
         return JsValue.Object(new JsCollatorObject(prototype, collator)
         {
@@ -234,21 +257,6 @@ internal sealed partial class JsRealm
             CaseFirst = caseFirst,
         });
     }
-
-    /// <summary>
-    /// The values a collator supports for one relevant extension key in one locale, the default
-    /// first: ECMA-402's <c>[[SortLocaleData]]</c> and <c>[[SearchLocaleData]]</c>.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10.2.3; IP=Low; Security=Low; Resources=1; Fingerprint=7391C5
-    // Broiler-Human:        PENDING
-    private static string?[] CollatorKeyData(string locale, string key, string usage) => key switch
-    {
-        // THE FIRST VALUE OF `co` IS NULL, and neither `standard` nor `search` is ever one (s10.2.3).
-        "co" => usage == "sort" && LanguageOf(locale) == "de" ? [null, "phonebk"] : [null],
-        "kn" => ["false", "true"],
-        "kf" => ["false", "lower", "upper"],
-        _ => [null],
-    };
 
     /// <summary>The locales the data supports, as every service offers them: the data's list without <c>und</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9DBD54
@@ -272,12 +280,20 @@ internal sealed partial class JsRealm
     /// <summary>
     /// <c>Intl.Collator</c>'s data as the shared library's Locale info and <c>supportedValuesOf</c> read
     /// it (JSD-0082, rows L17, L18, L32 and L40): the services' available locales, each one's sort
-    /// collations from <see cref="CollatorKeyData"/>, and the one collation this family's data adds,
+    /// collations from <see cref="UcaCollationData.KeyValues"/>, and the one collation this family's data adds,
     /// <c>phonebk</c>. The Collator itself stays this family's until SJL-17 (decision SJL-D-24 (c)).
+    /// <i>(Noted 2026-11-04, at SJL-17.4: each locale's sort collations read "from
+    /// <c>CollatorKeyData</c>", which SJL-17.4 deleted; they are the shared library's
+    /// <see cref="UcaCollationData.KeyValues"/>, over this family's tables, which answers the same; and
+    /// the Collator's comparison is the library's since SJL-17.4. The sentence on SJL-17 is kept as
+    /// written.)</i> Of the two, only <c>Intl.Locale.prototype.getCollations</c> reads
+    /// <see cref="CollatorLocaleData.SortLocaleData"/>, and so the tables; <c>supportedValuesOf("collation")</c>
+    /// reads <see cref="CollatorLocaleData.Collations"/>, the fixed list, which no tailoring of the tables
+    /// reaches (JSD-0086, its readings only an embedder's data can show).
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10.2.3; IP=Low; Security=Low; Resources=1; Fingerprint=8D86BE
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10.2.3; IP=Low; Security=Low; Resources=1; Fingerprint=2E44A4
     // Broiler-Human:        PENDING
-    private sealed class CollatorLocaleData(IReadOnlyList<string> availableLocales) : ICollatorLocaleData
+    private sealed class CollatorLocaleData(IReadOnlyList<string> availableLocales, UcaCollationData data) : ICollatorLocaleData
     {
         // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=AFF13A
         // Broiler-Human:        PENDING
@@ -287,15 +303,15 @@ internal sealed partial class JsRealm
         // Broiler-Human:        PENDING
         public IReadOnlyList<string> Collations => ["phonebk"];
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9F3B8D
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B33ECD
         // Broiler-Human:        PENDING
-        public IReadOnlyList<string?> SortLocaleData(string locale) => CollatorKeyData(locale, "co", "sort");
+        public IReadOnlyList<string?> SortLocaleData(string locale) => data.KeyValues(LanguageOf(locale) ?? string.Empty, "co", "sort");
     }
 
     /// <summary>The Collator's data the shared library reads, over the services' available locales.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6BC18F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4846C1
     // Broiler-Human:        PENDING
-    private static ICollatorLocaleData CollatorData(JsEngine engine) => new CollatorLocaleData(AvailableLocales(engine));
+    private static ICollatorLocaleData CollatorData(JsEngine engine) => new CollatorLocaleData(AvailableLocales(engine), engine.Intl!.CollationData);
 
     /// <summary>
     /// ECMA-402's <c>Intl.supportedValuesOf</c>: the key converted here, and the values this data supports
@@ -499,13 +515,14 @@ internal sealed partial class JsRealm
 // Broiler-Human:        PENDING
 internal sealed class JsCollatorObject : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=58315C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FADDEA
     // Broiler-Human:        PENDING
-    internal JsCollatorObject(JsObject prototype, JsCollator collator) : base(prototype) => Collator = collator;
+    internal JsCollatorObject(JsObject prototype, UcaCollator collator) : base(prototype) => Collator = collator;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=24AFF4
+    /// <summary>The shared library's collator, under the resolved options (SJL-17.4; it was this family's <c>JsCollator</c>).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D988D9
     // Broiler-Human:        PENDING
-    internal JsCollator Collator { get; }
+    internal UcaCollator Collator { get; }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EDBB2D
     // Broiler-Human:        PENDING

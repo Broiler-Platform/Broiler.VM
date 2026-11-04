@@ -90,7 +90,22 @@
     "arrays and their charges; and NewCollator and CollatorKeyData, collation, which is SJL-17's.",
     "JsLocalTime.From, which SJL-6.4's paragraph names as an adapter that stays, went with its type, and so did",
     "JsZoneNames, which SJL-8.5's paragraph names: the shared ZoneNamer reads the database's regions, rules and daylight",
-    "flag itself."
+    "flag itself.",
+    "(Noted 2026-11-04, at SJL-17.4: \"NewCollator and CollatorKeyData, collation, which is SJL-17's\" no longer both",
+    "stay; CollatorKeyData went at SJL-17.4, whose paragraph registers it, and NewCollator stays as its adapter. The",
+    "paragraph is kept as written.)",
+    "",
+    "SJL-17.4 (JSD-0086, applying JSD-0084): collation, whose shared home is Broiler.ECMAScript.Intl's UcaCollator over",
+    "UcaCollationData, which decodes the collation tables this family's composition hands in through JsIntlDataSet, as",
+    "JsIntlTables.CollationData. The types deleted whole are registered by type: JsCollator and JsCaseFirst, from",
+    "JsCollator.cs, and JsCollationData, with its nested Tailoring, from JsCollationData.cs. The members cut from the",
+    "types that stay are registered by member: JsRealm.CollatorKeyData, and JsIntlTables' Collation and its lazy. What",
+    "stays as adapters is not here: JsRealm.NewCollator, which reads every option in the specification's order and",
+    "checks each as it is read, resolves the locale over the library's key values, and hands UcaCollator a",
+    "UcaCollatorOptions record with the tailoring the library chooses; JsRealm.CompareStrings, which hands it this",
+    "engine's meter and maps its status to the RangeError normalize throws; JsCollatorObject, its resolved options and",
+    "the bound compare; String.prototype.localeCompare, repointed onto CompareStrings; and JsIntlTables, which keeps its",
+    "name (decision D31 of JSD-0082)."
   ],
   "retired": [
     {
@@ -2707,6 +2722,36 @@
       "member": "Broiler.VM.Profile.JavaScript.JsZoneNaming",
       "milestone": "SJL-9.4",
       "replacedBy": "Broiler.ECMAScript.Intl.ZoneNaming"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsCaseFirst",
+      "milestone": "SJL-17.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.CollationCaseFirst, in the UcaCollatorOptions record JsRealm.NewCollator hands the library"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsCollationData",
+      "milestone": "SJL-17.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.UcaCollationData (the decoder and UCA's element lookup, and the tailoring's choice), over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.CollationData"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsCollator",
+      "milestone": "SJL-17.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.UcaCollator under a UcaCollatorOptions record, which JsCollatorObject.Collator holds and JsRealm.CompareStrings calls with this engine's meter"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.Collation",
+      "milestone": "SJL-17.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.UcaCollationData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.CollationData, which decodes the collation tables once"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.collation",
+      "milestone": "SJL-17.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.UcaCollationData, which decodes the collation tables once, on first use, as JsIntlTables.CollationData"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.CollatorKeyData",
+      "milestone": "SJL-17.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.UcaCollationData.KeyValues, over the tailorings this family's tables carry, which JsRealm.NewCollator's ResolveLocale and CollatorLocaleData read"
     }
   ]
 }

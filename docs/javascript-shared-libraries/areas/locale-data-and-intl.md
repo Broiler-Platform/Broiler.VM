@@ -242,6 +242,14 @@ decision D24.)* Both lists are extended. Every deleted type and member of Broile
 The lists read as above, Broiler.VM's ending at "**at SJL-17:** `JsCollator` and `JsCollationData`" and Broiler.JS's
 at "**at SJL-17:** the `CompareInfo` path for the locales the shared data covers".
 
+*(Noted 2026-11-04, at SJL-17.4, by
+[JSD-0086](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0086-the-profile-collates-with-the-shared-intl-library.md).)*
+Broiler.VM's "**at SJL-17:** `JsCollator` and `JsCollationData`" is done: both are deleted, with `JsCaseFirst`, and so are
+`CollatorKeyData` and `NewCollator`'s tailoring core, which JSD-0084's decision E11 adds and the revision above names as
+SJL-17's; `NewCollator` stays as the adapter, and every deleted type and member is registered in rule I5. Section 3.4's
+"Today" cell for Broiler.VM, and its "After SJL-17" cell, now read as this family's state before and after SJL-17.4. The
+lists and the table are kept as written.
+
 ---
 
 ## 5. Corrections Broiler.JS should expect

@@ -32,6 +32,10 @@
   owner's decisions of 2026-11-02". Han across blocks keeps UCA 17's implicit weights by block in the shared collator,
   so row O3's reading is settled: the bullet above that reads "row O3's reading stays open" is answered, and so is
   finding F1. It changes no row's class and no rule.
+- *(Added 2026-11-04, at SJL-17.4.)* **This family's cut-over is recorded in
+  [JSD-0086](0086-the-profile-collates-with-the-shared-intl-library.md)**, a record of its own, which says why it is not
+  a section of this record, with [JSC-325](../roadmap.corrections.md#jsc-325). The bullet above that reads "The cut-overs
+  are SJL-17.4's and SJL-17.5's own changes, and this record is what they apply" stands; nothing else here is edited.
 
 **Date:** 2026-11-01.
 
