@@ -114,6 +114,13 @@ are given:** they go stale, and review documents may not cite them.
 | Collation | `JsCollator`, `JsCollationData` | host `CompareInfo` | light / host | shared later, at SJL-17 (`SJL-D-24` (c)) |
 | CLDR data | `JsCldrTables` (generated, pinned) | `Broiler.Unicode.Cldr.LocaleData`; hand-written subsets; host | pure / host | shared: Broiler.VM's generator and pins in the Broiler.JS repository, tables embedded by each engine (`SJL-D-22` (a), `SJL-D-6` (c)) |
 
+*(Noted 2026-11-04, at SJL-9.4, by [JSD-0085](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0085-the-profile-on-the-shared-intl-library.md).)* This family's column names the code SJL-9.4 deleted: "`JsLocaleTag`", "`JsDecimal`, `JsNumberData`, `JsNumberFormatter`", "`JsPluralRule`", "`JsDatePatternGenerator`, `JsDateTimeFormatter`, `JsDateIntervalFormat`, `JsZoneNames`, `JsDateData`", the decoders of `JsIntlTables` and the `JsRealm.*` cores. Their algorithms are `Broiler.ECMAScript.Intl`'s since then, and `JsIntlTables` hands the library this family's data. Collation stays this family's until SJL-17. Rows outside this table name the same code: the numerics table's
+unsigned-rounding row, "`JsDecimal.JsUnsignedRounding`"; the date table's civil-day row, "`JsLocalTime.From`";
+and section 2's rows "Gregorian day arithmetic in `JsRealm.Date`, `JsTemporalCore`, `JsTimeZones` and
+`JsLocalTime.From`" and "Unsigned rounding in `JsTemporalCore`, and in `JsDecimal` with `JsNumberFormatter`";
+`JsLocalTime`, `JsDecimal` and `JsNumberFormatter` went at SJL-9.4 too (`JsTemporalCore` and `JsTimeZones` at
+SJL-10.4 and SJL-8.5). The table and those rows are kept as written, the inventory as SJL-0 took it.
+
 ### Temporal (SJL-10)
 
 | Responsibility | Broiler.VM | Broiler.JS | Coupling | Disposition |

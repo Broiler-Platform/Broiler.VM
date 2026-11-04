@@ -60,8 +60,14 @@
 65 he-IL {"script":"Latn"} calendars => [gregory]
 
 # The profile's Collator offers phonebk for German and no other tailoring (JSD-0043). ECMA-402
-# (15.5.10 CollationsOfLocale) answers the collator's own collations for a locale it supports, and
-# emoji and eor for one it does not, so the profile answers those where Node lists ICU's.
+# (15.5.10 CollationsOfLocale) answers, for a locale whose language is not und, the collations of the
+# Collator's locale that matches it, or DefaultLocale's when none does, and emoji and eor for und alone:
+# so the profile answers the collator's own collations for German and English, and [] - its default
+# en-US's, which has none but the standard one - for every other language, where Node lists ICU's
+# (JSD-0082, decision D32, row L18, since SJL-9.4). Revised 2026-11-03, at SJL-9.4: the header read
+# "ECMA-402 (15.5.10 CollationsOfLocale) answers the collator's own collations for a locale it
+# supports, and emoji and eor for one it does not, so the profile answers those where Node lists
+# ICU's.", and the profile answered [emoji,eor] for a language its Collator lacks.
 1 en collations => []
 2 en-US collations => []
 3 en-GB collations => []
@@ -71,25 +77,51 @@
 7 de collations => [phonebk]
 8 de-AT collations => [phonebk]
 9 de-CH collations => [phonebk]
-12 es-419 collations => [emoji,eor]
-14 ar collations => [emoji,eor]
-15 ar-EG collations => [emoji,eor]
-20 zh collations => [emoji,eor]
-21 zh-Hant collations => [emoji,eor]
-22 zh-TW collations => [emoji,eor]
-23 zh-Hans-SG collations => [emoji,eor]
-24 ja collations => [emoji,eor]
-25 ko collations => [emoji,eor]
-46 es-ES-preeuro collations => [emoji,eor]
+10 fr collations => []
+11 fr-CA collations => []
+12 es-419 collations => []
+13 pt-BR collations => []
+14 ar collations => []
+15 ar-EG collations => []
+16 he collations => []
+17 fa-IR collations => []
+18 ur collations => []
+19 hi collations => []
+20 zh collations => []
+21 zh-Hant collations => []
+22 zh-TW collations => []
+23 zh-Hans-SG collations => []
+24 ja collations => []
+25 ko collations => []
+26 th collations => []
+27 ru collations => []
+28 sr-Latn collations => []
+29 uz-Cyrl collations => []
+37 mo collations => []
+38 iw collations => []
+39 in-ID collations => []
+40 sh collations => []
+41 no collations => []
+42 tl collations => []
+43 art-lojban collations => []
+44 zh-hakka collations => []
+45 aar-x-private collations => []
+46 es-ES-preeuro collations => []
+47 sl-rozaj-biske-1994 collations => []
+48 hy-SU collations => []
+49 ru-SU collations => []
 51 en-u-nu-thai-hc-h23 collations => []
 53 en-u-fw-mon collations => []
 54 en-u-rg-gbzzzz collations => []
 55 en-u-sd-usca collations => []
-56 ar-u-nu-arab collations => [emoji,eor]
+56 ar-u-nu-arab collations => []
+57 pt-u-attr2-attr1-ca-gregory collations => []
 58 en-t-iw collations => []
+61 en-US {"language":"fr","script":"Cyrl","region":"BE","variants":"Fonipa-1996"} collations => []
 62 de-u-kn-false {"numeric":true} collations => [phonebk]
 63 en {"firstDayOfWeek":"tue"} collations => []
-64 ja-JP {"region":"US"} collations => [emoji,eor]
+64 ja-JP {"region":"US"} collations => []
+65 he-IL {"script":"Latn"} collations => []
 
 # A region's time zones are tzdb 2026e's zone.tab entries for it (JSD-0053), which are IANA Zone
 # names, as ECMA-402 (15.5.13 TimeZonesOfLocale) asks. Node 22 answers CLDR's older canonical names

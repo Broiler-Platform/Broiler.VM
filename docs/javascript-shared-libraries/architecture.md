@@ -504,6 +504,12 @@ The duplication the programme removes is of two kinds, and both count.
 
   It also holds two unsigned-rounding implementations, `JsTemporalCore` and the `JsDecimal` and
   `JsNumberFormatter` pair.
+
+  *(Noted 2026-11-04, at SJL-9.4, by
+  [JSD-0085](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0085-the-profile-on-the-shared-intl-library.md).)*
+  "`JsLocalTime.From` in the date-time formatter" and "the `JsDecimal` and `JsNumberFormatter` pair" are deleted at
+  SJL-9.4, which moves the profile's Intl algorithms to `Broiler.ECMAScript.Intl`; `JsTemporalCore` and `JsTimeZones`
+  went at SJL-10.4 and SJL-8.5. The paragraph is kept as written, as the programme's start found the runtime.
 - **Broiler.JS** converts numbers in its parser (`NumberCoercion`), in its runtime
   (`NumberParser`), and in its built-ins (`JSNumber.ToECMAString`, which the runtime reaches
   through a delegate the built-ins initializer installs).

@@ -3,22 +3,22 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   26
-// Annotated:        26/26
-// Exempt:           13
-// Human-reviewed:   0/26
+// Relevant units:   10
+// Annotated:        10/10
+// Exempt:           9
+// Human-reviewed:   0/10
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       26
+// Unverified:       10
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
+using Broiler.ECMAScript.Intl;
 using Broiler.ECMAScript.Temporal;
 using Broiler.ECMAScript.Time;
 using Broiler.VM.Profile.JavaScript.Format;
@@ -40,6 +40,50 @@ namespace Broiler.VM.Profile.JavaScript;
 /// shape the profile can search; no realm, engine or guest value is held, so sharing them across
 /// runtimes shares nothing a guest could write.
 /// </para>
+/// <para>
+/// <b>The locale core reads the shared Intl library's decoder since SJL-9.4</b> (JSD-0082, decisions
+/// D8 and D24): <see cref="LocaleData"/> is <c>Broiler.ECMAScript.Intl</c>'s <c>TableLocaleData</c>
+/// over the same tables, handed over through <see cref="JsIntlDataSet"/>, so that this family's
+/// <see cref="IJsIntlData"/> and <see cref="JsIntlTable"/> stay its public contract. The decoders of
+/// the likely subtags, the aliases, the extension types, the locale list, the week data and the
+/// scripts' directions left this type with it; the number, date, list, relative-time, display-name
+/// and zone-name decoders stay until their sub-areas move.
+/// </para>
+/// <para>
+/// <b>The number formats read the same decoder since sub-areas (b) and (c)</b> (JSD-0082, decision
+/// D24): <see cref="FormatData"/> orders <see cref="LocaleData"/> as the library's formatters read it,
+/// and this type's own number decoder, with its <c>JsNumberData</c>, left it. The date, list,
+/// relative-time, display-name and zone-name decoders stay until sub-area (d) moves; the list,
+/// relative-time and display-name formats no longer read them, and the date format's zone names still
+/// read the display names.
+/// </para>
+/// <para>
+/// <i>Noted 2026-11-03, at SJL-9.4's review of sub-areas (b) and (c): the list and relative-time
+/// decoders the paragraph above names as staying have gone after all, with <c>JsLocaleInfo</c>'s
+/// <c>ListPatterns</c> and <c>RelativeTimes</c>, whose only readers were the ListFormat and
+/// RelativeTimeFormat cores; the locale-information decoder now decodes the display names alone, which
+/// the date format's zone names read, and the paragraph is kept as written.</i>
+/// </para>
+/// <para>
+/// <i>Noted 2026-11-03, at SJL-9.4's sub-areas (b) and (c): the paragraph above, as stage (a) wrote
+/// it, still lists "the number" decoder among those that stay; since then it has gone, and the
+/// paragraph is kept as written.</i>
+/// </para>
+/// <para>
+/// <i>Noted 2026-11-03, at SJL-9.4's review of sub-areas (d) and (e): the two paragraphs above that
+/// say the date, display-name and zone-name decoders "stay until their sub-areas move" and "stay until
+/// sub-area (d) moves" are kept as written; sub-area (d) removed those decoders, as the next paragraph
+/// says.</i>
+/// </para>
+/// <para>
+/// <b>The date formats read the same decoder since sub-area (d)</b> (JSD-0082, decision D24): the
+/// date, time-data and day-period decoder with its <c>JsDateData</c>, the display-name decoder with its
+/// <c>JsLocaleInfo</c>, and the zone-name decoder with its <c>JsZoneNames</c> left this type, and
+/// <see cref="DateTimeData"/> hands the shared library's date-time formats <see cref="FormatData"/>, the
+/// time zones and the calendars. Every table group is now decoded once, by the library's decoder,
+/// but the collation tables, which <c>JsCollationData</c> decodes until SJL-17.4, and the time zones and
+/// calendars, which the shared time library's own decoders read.
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BAE255
 // Broiler-Human:        PENDING
@@ -49,37 +93,13 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly IJsIntlData data;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=97E10B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CBA9D2
     // Broiler-Human:        PENDING
-    private readonly Lazy<Dictionary<string, string>> likely;
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=98B3AA
-    // Broiler-Human:        PENDING
-    private readonly Lazy<Dictionary<string, Dictionary<string, string>>> aliases;
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=717B72
-    // Broiler-Human:        PENDING
-    private readonly Lazy<Dictionary<string, string>> extensions;
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F63895
-    // Broiler-Human:        PENDING
-    private readonly Lazy<string[]> locales;
+    private readonly Lazy<string[]> availableLocales;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B4AA12
     // Broiler-Human:        PENDING
     private readonly Lazy<JsCollationData> collation;
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A521AC
-    // Broiler-Human:        PENDING
-    private readonly Lazy<JsNumberData> numbers;
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4B2C9F
-    // Broiler-Human:        PENDING
-    private readonly Lazy<JsDateData> dates;
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=07F030
-    // Broiler-Human:        PENDING
-    private readonly Lazy<JsLocaleInfo> localeInfo;
 
     /// <summary>The release the database states for data that does not carry <see cref="JsIntlTable.TimeZoneRelease"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=4E10B0
@@ -94,23 +114,33 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly Lazy<TemporalCalendars> calendars;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F83F08
+    // Broiler-AI:           Origin=AI; Spec=JSD-0082 D8; IP=Low; Security=Low; Resources=1; Fingerprint=E1D5B0
     // Broiler-Human:        PENDING
-    private readonly Lazy<JsZoneNames> zoneNames;
+    private readonly Lazy<DateTimeData> dateTimes;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=78C665
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=83AC78
     // Broiler-Human:        PENDING
     internal JsIntlTables(IJsIntlData data)
     {
         this.data = data;
-        likely = new(() => Pairs(JsIntlTable.LikelySubtags));
-        aliases = new(ReadAliases);
-        extensions = new(ReadExtensions);
-        locales = new(() => [.. Lines(JsIntlTable.Locales)]);
+        // THE SHARED DECODER (JSD-0082, decision D8): built here, decoding nothing until a question needs
+        // a table, each of its table groups once per process under its own thread-safe lazy, as this
+        // type's are. Since sub-area (d) it is the only decoder of the number, date, time-data, day-period,
+        // display-name, list, relative-time and metazone tables: every question the Intl services ask of
+        // them reads LocaleData, the formatters' through FormatData's parent walk, and no group is decoded
+        // twice. (Revised 2026-11-03, at SJL-9.4's sub-area (d), when this type's dates, localeInfo and
+        // zoneNames left it. Sub-areas (b) and (c) wrote: "Its number group is decoded there alone since
+        // sub-areas (b) and (c): every number, currency, unit and plural question, the formatters' among
+        // them, reads LocaleData, through FormatData's parent walk. Its date and locale-info groups are
+        // still decoded a second time, apart from this type's own dates and localeInfo below: Intl.Locale's
+        // information methods, supportedValuesOf and the list, relative-time and display-name formats read
+        // them through LocaleData, while the date format still reads this type's. A script that uses both
+        // holds two decoded copies of those groups, which costs memory and a first call's time and changes
+        // no answer; it lasts until sub-area (d) deletes this type's decoders (decision D24).")
+        LocaleData = new TableLocaleData(new JsIntlDataSet(data));
+        FormatData = new CompositeLocaleData(LocaleData);
+        availableLocales = new(ReadAvailableLocales);
         collation = new(() => new JsCollationData(data.Table(JsIntlTable.CollationRoot), data.Table(JsIntlTable.CollationTailorings)));
-        numbers = new(ReadNumbers);
-        dates = new(ReadDates);
-        localeInfo = new(ReadLocaleInfo);
         // DATA THAT DOES NOT CARRY THE RELEASE, as an embedder's written before SJL-8.5 does not, still
         // reads: the database states the release and nothing in the profile reads it (JSD-0077).
         timeZones = new(() => new TimeZoneDatabase(
@@ -121,7 +151,10 @@ internal sealed class JsIntlTables
         // THE CALENDARS ARE THE SHARED LIBRARY'S since SJL-10.4 (JSD-0078): one TemporalCalendars over the
         // shared CalendarTables of the table the Intl data hands in, as the time zones are one database.
         calendars = new(() => new TemporalCalendars(new CalendarTables(data.Table(JsIntlTable.Calendars))));
-        zoneNames = new(() => new JsZoneNames(Lines(JsIntlTable.MetaZones), TimeZones));
+        // THE DATE-TIME FORMATS' DATA (JSD-0082, decision D8): the library's DateTimeData over FormatData,
+        // the time zones and the calendars, made the first time a date-time format is created, so that its
+        // pattern generators and its zone names are made once and shared, as this type's were.
+        dateTimes = new(() => new DateTimeData(FormatData, TimeZones, Calendars));
     }
 
     /// <summary>The CLDR release the tables come from.</summary>
@@ -129,10 +162,64 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     internal string CldrVersion => data.CldrVersion;
 
-    /// <summary>The locales the data supports, in canonical form.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0D8A26
+    /// <summary>
+    /// The shared Intl library's answers over this composition's tables (JSD-0082, decision D8): the
+    /// likely subtags, aliases and extension types canonicalisation reads, the locale list, the hour
+    /// cycles, the week data and the scripts' directions.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=35CA41
     // Broiler-Human:        PENDING
-    internal IReadOnlyList<string> Locales => locales.Value;
+    internal ILocaleData LocaleData { get; }
+
+    /// <summary>
+    /// <see cref="LocaleData"/> as the shared Intl library's formatters read it (JSD-0082, decision D8):
+    /// the library's <c>CompositeLocaleData</c> over it, with no secondary provider (decision D6), so
+    /// that a question at a locale the tables do not hold, such as <c>en-US</c>, reads its parent's
+    /// lines, <c>en</c>'s, which are the lines this family's formatters read at the data locale's
+    /// language.
+    /// </summary>
+    /// <remarks>
+    /// <i>Noted 2026-11-03, at SJL-9.4's review of sub-areas (b) and (c):</i> the number, list,
+    /// relative-time and display-name formats read through this the data locale's whole chain (the
+    /// locale, its truncations, then <c>und</c>, stopping at the first locale the data holds), where
+    /// the realm's own decoders read the data locale's language alone and never read a region locale's
+    /// lines. The shipped tables carry those groups for <c>de</c> and <c>en</c> alone, so every shipped
+    /// answer is the one the language-only read gave; the two can differ only for data an embedder
+    /// hands in through <see cref="IJsIntlData"/> that holds lines for a region locale, such as
+    /// <c>en-GB</c>, which are read now and were ignored before. The plural rules still read by
+    /// language and are unaffected.
+    /// <para>
+    /// <i>Noted 2026-11-03, at SJL-9.4's review of sub-areas (d) and (e):</i> the note above names "the
+    /// number, list, relative-time and display-name formats"; since sub-areas (d) and (e) the date-time
+    /// and duration formats read through this the same chain too: the date-time format's decimal symbol
+    /// and its zone naming's region names, and the duration format's <c>symbols.timeSeparator</c> and
+    /// <c>duration.hms</c> (row U13), each at the full data locale where the realm's own code read the
+    /// data locale's language. Two more differences come with the shared library's date-time and
+    /// duration formats. The 12- and 24-hour cycles, [[hourCycle12]] and [[hourCycle24]], are the
+    /// region's preferred cycle where it is of the kind asked for and otherwise the first of that kind
+    /// CLDR's time data allows for the region (row T10), where the realm's code answered <c>h12</c> and
+    /// <c>h23</c>; and the <c>nu</c> values put the locale's <c>defaultNumberingSystem</c> first (rows
+    /// T37 and U16, decisions D13 and D21), where the realm's code put <c>latn</c> first. The shipped
+    /// time data (<c>DE</c> <c>H hB</c>, <c>US</c> <c>h hb H hB</c>, <c>001</c> <c>H h</c>) and the
+    /// shipped locales' <c>latn</c> defaults give every shipped answer unchanged; data an embedder hands
+    /// in through <see cref="IJsIntlData"/> can differ, for example <c>ja</c>'s <c>hour12: true</c>
+    /// resolving <c>h11</c> (Japan allows <c>H K h</c>) where the realm's code resolved <c>h12</c>, or a
+    /// locale whose default system is <c>arab</c> resolving <c>nu</c> to <c>arab</c> where it resolved
+    /// <c>latn</c>. SJL-9.4's cut-over record lists these under rows T10, T37 and U16.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=JSD-0082 D8; IP=Low; Security=Low; Resources=1; Fingerprint=92318E
+    // Broiler-Human:        PENDING
+    internal ILocaleData FormatData { get; }
+
+    /// <summary>
+    /// The locales every service offers (the default-locale and available-locale providers, JSD-0082
+    /// decision D7): the data's list without <c>und</c>, in the data's order, <c>en-US</c>, the
+    /// default, among them.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3263E8
+    // Broiler-Human:        PENDING
+    internal IReadOnlyList<string> AvailableLocales => availableLocales.Value;
 
     /// <summary>
     /// The IANA Time Zone Database's identifiers, regions and offsets: the shared library's decoder over
@@ -151,69 +238,19 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     internal TemporalCalendars Calendars => calendars.Value;
 
-    /// <summary>CLDR's metazones and the algorithms that name a zone by them, built the first time a zone is named (JSD-0058).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0A74FA
+    /// <summary>
+    /// What the shared Intl library's date-time formats read besides their options (JSD-0082, decision
+    /// D8): <see cref="FormatData"/>, the time zones and the calendars, with the pattern generators and
+    /// CLDR's metazones the library makes from them, built the first time a date-time format is created.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=JSD-0082 D8; IP=Low; Security=Low; Resources=1; Fingerprint=F52075
     // Broiler-Human:        PENDING
-    internal JsZoneNames ZoneNames => zoneNames.Value;
+    internal DateTimeData DateTimeData => dateTimes.Value;
 
     /// <summary>The collation data.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B35C2E
     // Broiler-Human:        PENDING
     internal JsCollationData Collation => collation.Value;
-
-    /// <summary>The likely subtags of a source in CLDR's form - <c>en</c>, <c>und-Latn</c>, <c>und-US</c> - or nothing.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E6580E
-    // Broiler-Human:        PENDING
-    internal string? Likely(string source) => likely.Value.TryGetValue(source, out var target) ? target : null;
-
-    /// <summary>The alias of <paramref name="from"/> of one kind - language, script, region, variant, subdivision - or nothing.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B36EB0
-    // Broiler-Human:        PENDING
-    internal string? Alias(string kind, string from) =>
-        aliases.Value.TryGetValue(kind, out var table) && table.TryGetValue(from, out var replacement) ? replacement : null;
-
-    /// <summary>Every language alias, for the rule matcher that reads them all.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DBB89D
-    // Broiler-Human:        PENDING
-    internal IReadOnlyDictionary<string, string> LanguageAliases => aliases.Value["language"];
-
-    /// <summary>Whether <paramref name="key"/> is a key of extension <paramref name="singleton"/> the BCP 47 data defines.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8B3C4F
-    // Broiler-Human:        PENDING
-    internal bool IsKey(char singleton, string key) => extensions.Value.ContainsKey(singleton + "|" + key + "|");
-
-    /// <summary>
-    /// Whether <paramref name="type"/> is a type of <paramref name="key"/>, and its preferred form:
-    /// itself, or the type a deprecated one was replaced by.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A7A19D
-    // Broiler-Human:        PENDING
-    internal bool TryType(char singleton, string key, string type, out string preferred)
-    {
-        if (extensions.Value.TryGetValue(singleton + "|" + key + "|" + type, out var stated))
-        {
-            preferred = stated.Length == 0 ? type : stated;
-            return true;
-        }
-
-        preferred = type;
-        return false;
-    }
-
-    /// <summary>The number, currency, unit and plural data, decoded the first time a number is formatted.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C30BD0
-    // Broiler-Human:        PENDING
-    internal JsNumberData Numbers => numbers.Value;
-
-    /// <summary>The calendar, hour cycle and day period data, decoded the first time a date is formatted.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=813274
-    // Broiler-Human:        PENDING
-    internal JsDateData Dates => dates.Value;
-
-    /// <summary>The week data and the scripts' line directions, decoded the first time a locale is asked for them.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F90F89
-    // Broiler-Human:        PENDING
-    internal JsLocaleInfo LocaleInfo => localeInfo.Value;
 
     /// <summary>
     /// The text segmentation <c>Intl.Segmenter</c> reads, which the composition's data offers beside its
@@ -229,345 +266,21 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     internal IJsTextSegmentation? Segmentation => data as IJsTextSegmentation;
 
-    /// <summary>A table value with its <c>\uXXXX</c> escapes resolved.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1E0016
+    /// <summary>The data's locales without <c>und</c>, which no service offers, in the data's order.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=15B295
     // Broiler-Human:        PENDING
-    internal static string Unescape(string value)
+    private string[] ReadAvailableLocales()
     {
-        if (value.IndexOf('\\') < 0)
-        {
-            return value;
-        }
+        var available = new List<string>();
 
-        var text = new StringBuilder(value.Length);
-
-        for (var at = 0; at < value.Length; at++)
+        foreach (var locale in LocaleData.Locales)
         {
-            if (value[at] == '\\' && at + 5 < value.Length && value[at + 1] == 'u')
+            if (locale != "und")
             {
-                text.Append((char)int.Parse(value.AsSpan(at + 2, 4), NumberStyles.HexNumber, CultureInfo.InvariantCulture));
-                at += 5;
-                continue;
-            }
-
-            text.Append(value[at]);
-        }
-
-        return text.ToString();
-    }
-
-    /// <summary>Decodes the number tables.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=DEE8B0
-    // Broiler-Human:        PENDING
-    private JsNumberData ReadNumbers()
-    {
-        var data = new JsNumberData();
-
-        foreach (var line in Lines(JsIntlTable.NumberLocales))
-        {
-            var fields = line.Split('|');
-
-            if (!data.Locales.TryGetValue(fields[0], out var locale))
-            {
-                locale = new(StringComparer.Ordinal);
-                data.Locales[fields[0]] = locale;
-            }
-
-            locale[fields[1]] = Unescape(fields[2]);
-        }
-
-        foreach (var line in Lines(JsIntlTable.Currencies))
-        {
-            var fields = line.Split('|');
-            data.Currencies[fields[0] + "|" + fields[1]] = new JsCurrencyNames(
-                Unescape(fields[2]), Unescape(fields[3]), Unescape(fields[4]), Unescape(fields[5]), Unescape(fields[6]), fields[7], fields[8]);
-        }
-
-        foreach (var line in Lines(JsIntlTable.CurrencyDigits))
-        {
-            var bar = line.IndexOf('|');
-            data.CurrencyDigits[line[..bar]] = int.Parse(line[(bar + 1)..], CultureInfo.InvariantCulture);
-        }
-
-        foreach (var line in Lines(JsIntlTable.NumberingSystems))
-        {
-            var bar = line.IndexOf('|');
-            var digits = Unescape(line[(bar + 1)..]);
-            var list = new string[10];
-            var index = 0;
-
-            for (var at = 0; at < digits.Length && index < 10; index++)
-            {
-                var width = char.IsHighSurrogate(digits[at]) && at + 1 < digits.Length ? 2 : 1;
-                list[index] = digits.Substring(at, width);
-                at += width;
-            }
-
-            data.NumberingSystems[line[..bar]] = list;
-        }
-
-        foreach (var (table, plurals) in new[] { (JsIntlTable.Plurals, data.Plurals), (JsIntlTable.Ordinals, data.Ordinals) })
-        {
-            foreach (var line in Lines(table))
-            {
-                var fields = line.Split('|');
-
-                if (!plurals.TryGetValue(fields[0], out var rules))
-                {
-                    rules = [];
-                    plurals[fields[0]] = rules;
-                }
-
-                rules.Add((fields[1], JsPluralRule.Parse(Unescape(fields[2]))));
+                available.Add(locale);
             }
         }
 
-        foreach (var line in Lines(JsIntlTable.PluralRanges))
-        {
-            var fields = line.Split('|');
-            data.PluralRanges[fields[0] + "|" + fields[1] + "|" + fields[2]] = fields[3];
-        }
-
-        foreach (var line in Lines(JsIntlTable.Units))
-        {
-            var fields = line.Split('|');
-            data.Units[fields[0] + "|" + fields[1] + "|" + fields[2] + "|" + fields[3]] = Unescape(fields[4]);
-        }
-
-        return data;
-    }
-
-    /// <summary>Decodes the date tables.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9D65CD
-    // Broiler-Human:        PENDING
-    /// <summary>A layer of date data over the data below it: its values set, and its <c>-</c> keys removed.</summary>
-    private static Dictionary<string, string> Layered(Dictionary<string, string> below, Dictionary<string, string> layer)
-    {
-        var result = new Dictionary<string, string>(below, StringComparer.Ordinal);
-
-        foreach (var (key, value) in layer)
-        {
-            if (key.StartsWith('-'))
-            {
-                result.Remove(key[1..]);
-            }
-            else
-            {
-                result[key] = value;
-            }
-        }
-
-        return result;
-    }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1E9F5B
-    // Broiler-Human:        PENDING
-    private JsDateData ReadDates()
-    {
-        var data = new JsDateData();
-
-        foreach (var line in Lines(JsIntlTable.DateLocales))
-        {
-            var fields = line.Split('|');
-
-            if (!data.Locales.TryGetValue(fields[0], out var locale))
-            {
-                locale = new(StringComparer.Ordinal);
-                data.Locales[fields[0]] = locale;
-            }
-
-            locale[fields[1]] = Unescape(fields[2]);
-        }
-
-        // EACH LANGUAGE'S ISO 8601 CALENDAR (JSD-0055) is its Gregorian names under root's ISO 8601
-        // patterns, as CLDR's aliases make it: `<language>@iso8601`. The date-time glue stays the
-        // language's Gregorian one, as ICU resolves it, where root's would be "{1} {0}".
-        if (data.Locales.TryGetValue(JsDateData.Iso8601, out var iso8601))
-        {
-            foreach (var language in new List<string>(data.Locales.Keys))
-            {
-                if (language.Contains('@', StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                var calendar = new Dictionary<string, string>(StringComparer.Ordinal);
-
-                foreach (var (key, value) in data.Locales[language])
-                {
-                    if (!JsDateData.IsPatternKey(key) || key.StartsWith("dateTime.", StringComparison.Ordinal) || key.StartsWith("atTime.", StringComparison.Ordinal))
-                    {
-                        calendar[key] = value;
-                    }
-                }
-
-                foreach (var (key, value) in iso8601)
-                {
-                    if (!key.StartsWith("dateTime.", StringComparison.Ordinal) && !key.StartsWith("atTime.", StringComparison.Ordinal))
-                    {
-                        calendar[key] = value;
-                    }
-                }
-
-                data.Locales[language + JsDateData.Iso8601] = calendar;
-            }
-        }
-
-        // EACH LANGUAGE'S OTHER CALENDARS (JSD-0057) are layers: CLDR's generic patterns over the
-        // language's Gregorian data, and each calendar over the generic layer or its parent's. A layer's
-        // key beginning with `-` removes the key below it.
-        foreach (var language in new List<string>(data.Locales.Keys))
-        {
-            if (language.Contains('@', StringComparison.Ordinal) || !data.Locales.TryGetValue(language + "@generic", out var genericDiff))
-            {
-                continue;
-            }
-
-            var generic = Layered(data.Locales[language], genericDiff);
-            data.Locales.Remove(language + "@generic");
-
-            // A LAYER THE TABLE HOLDS NO LINE OF is its parent's data unchanged.
-            foreach (var (calendar, parent) in JsDateData.CalendarLayers)
-            {
-                var diff = data.Locales.TryGetValue(language + "@" + calendar, out var lines) ? lines : [];
-                data.Locales[language + "@" + calendar] = Layered(parent is null ? generic : data.Locales[language + "@" + parent], diff);
-            }
-        }
-
-        foreach (var line in Lines(JsIntlTable.TimeData))
-        {
-            var fields = line.Split('|');
-            data.TimeData[fields[0]] = (fields[1], fields[2]);
-        }
-
-        static int Minutes(string time) => time.Length == 0 ? -1 : (int.Parse(time[..2], CultureInfo.InvariantCulture) * 60) + int.Parse(time[3..], CultureInfo.InvariantCulture);
-
-        foreach (var line in Lines(JsIntlTable.DayPeriods))
-        {
-            var fields = line.Split('|');
-
-            if (!data.DayPeriods.TryGetValue(fields[0], out var rules))
-            {
-                rules = [];
-                data.DayPeriods[fields[0]] = rules;
-            }
-
-            rules.Add(fields[3].Length == 0
-                ? new JsDayPeriodRule(fields[1], Minutes(fields[2]), -1, At: true)
-                : new JsDayPeriodRule(fields[1], Minutes(fields[2]), Minutes(fields[3]), At: false));
-        }
-
-        return data;
-    }
-
-    /// <summary>Decodes the week and script tables.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=280359
-    // Broiler-Human:        PENDING
-    private JsLocaleInfo ReadLocaleInfo()
-    {
-        var info = new JsLocaleInfo();
-
-        foreach (var line in Lines(JsIntlTable.WeekData))
-        {
-            var fields = line.Split('|');
-            info.Weeks[fields[0]] = (fields[1], fields[2], fields[3], fields[4]);
-        }
-
-        foreach (var line in Lines(JsIntlTable.Scripts))
-        {
-            var bar = line.IndexOf('|');
-            info.RightToLeft[line[..bar]] = line[(bar + 1)..] == "YES";
-        }
-
-        foreach (var line in Lines(JsIntlTable.ListPatterns))
-        {
-            var fields = line.Split('|');
-            info.ListPatterns[fields[0] + "|" + fields[1]] =
-                (Unescape(fields[2]), Unescape(fields[3]), Unescape(fields[4]), Unescape(fields[5]));
-        }
-
-        foreach (var line in Lines(JsIntlTable.RelativeTimes))
-        {
-            var fields = line.Split('|');
-            info.RelativeTimes[fields[0] + "|" + fields[1] + "|" + fields[2]] = Unescape(fields[3]);
-        }
-
-        foreach (var line in Lines(JsIntlTable.DisplayNames))
-        {
-            var fields = line.Split('|');
-            info.DisplayNames[fields[0] + "|" + fields[1] + "|" + fields[2]] = Unescape(fields[3]);
-        }
-
-        return info;
-    }
-
-    /// <summary>The lines of a text table.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=7154A5
-    // Broiler-Human:        PENDING
-    private List<string> Lines(JsIntlTable table)
-    {
-        var text = Encoding.ASCII.GetString(data.Table(table));
-        var lines = new List<string>();
-
-        foreach (var line in text.Split('\n'))
-        {
-            if (line.Length != 0)
-            {
-                lines.Add(line);
-            }
-        }
-
-        return lines;
-    }
-
-    /// <summary>A two-field table as a dictionary.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=D4D9F0
-    // Broiler-Human:        PENDING
-    private Dictionary<string, string> Pairs(JsIntlTable table)
-    {
-        var pairs = new Dictionary<string, string>(StringComparer.Ordinal);
-
-        foreach (var line in Lines(table))
-        {
-            var bar = line.IndexOf('|');
-            pairs[line[..bar]] = line[(bar + 1)..];
-        }
-
-        return pairs;
-    }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=4E9FB9
-    // Broiler-Human:        PENDING
-    private Dictionary<string, Dictionary<string, string>> ReadAliases()
-    {
-        var kinds = new Dictionary<string, Dictionary<string, string>>(StringComparer.Ordinal);
-
-        foreach (var kind in new[] { "language", "script", "region", "variant", "subdivision" })
-        {
-            kinds[kind] = new(StringComparer.Ordinal);
-        }
-
-        foreach (var line in Lines(JsIntlTable.Aliases))
-        {
-            var fields = line.Split('|');
-            kinds[fields[0]][fields[1]] = fields[2];
-        }
-
-        return kinds;
-    }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=5381D5
-    // Broiler-Human:        PENDING
-    private Dictionary<string, string> ReadExtensions()
-    {
-        var table = new Dictionary<string, string>(StringComparer.Ordinal);
-
-        foreach (var line in Lines(JsIntlTable.Extensions))
-        {
-            var fields = line.Split('|');
-            table[fields[0] + "|" + fields[1] + "|" + fields[2]] = fields[3];
-        }
-
-        return table;
+        return [.. available];
     }
 }

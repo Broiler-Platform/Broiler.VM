@@ -100,7 +100,7 @@ implements none**.
 | The `WebAssembly` host-object surface | **Not provided**, and not inferable from a second profile in the image | `typeof WebAssembly` answers `"undefined"` and a reference throws `ReferenceError`; no manifest allocates it | [`realm/globals.txt`](realm/globals.txt); [`decisions/0007-cross-profile-position-and-amendment-grading.md`](decisions/0007-cross-profile-position-and-amendment-grading.md) |
 | Decorators | **Not provided** | Refused at compile time, `2104:ConstructOutsideManifest` | [`roadmap.parity.md`](roadmap.parity.md) |
 | `accessor` class elements | **Not provided** | Refused at compile time as a syntax error, `2102:ExpectedToken` | [`roadmap.parity.md`](roadmap.parity.md) |
-| Proposals the pinned suite carries beyond the edition, other than the four section 3 and the parity roadmap admit (`explicit-resource-management`, the `ShadowRealm` and `Temporal` proposals, and `Intl.Era-monthcode`) | **Not provided** | A proposal's syntax is refused at compile time and its library members are not installed; the suite skips each by its feature name | [`SuiteFeatures.cs`](../../compositions/Broiler.VM.Composition.JavaScript.Conformance/SuiteFeatures.cs) |
+| Proposals the pinned suite carries beyond the edition, other than the five section 3, the parity roadmap and JSD-0082 admit (`explicit-resource-management`, the `ShadowRealm` and `Temporal` proposals, `Intl.Era-monthcode`, and `canonical-tz`, which [JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)'s decision D15 admits since SJL-9.4) *(revised 2026-11-03, at SJL-9.4's row Z8, when `Intl.DateTimeFormat` began reporting a time zone as given: it read "other than the four section 3 and the parity roadmap admit (`explicit-resource-management`, the `ShadowRealm` and `Temporal` proposals, and `Intl.Era-monthcode`)")* | **Not provided** | A proposal's syntax is refused at compile time and its library members are not installed; the suite skips each by its feature name | [`SuiteFeatures.cs`](../../compositions/Broiler.VM.Composition.JavaScript.Conformance/SuiteFeatures.cs) |
 | Locales other than `de` and `en` | **Not provided** | Resolution falls back to `de` or `en` deterministically | [`decisions/0027-intl-scope-and-data-strategy.md`](decisions/0027-intl-scope-and-data-strategy.md) |
 | A function of more than 255 leading parameters | **Not provided** | Refused at compile time, `2301:TooManyLocals`, naming the count | [`roadmap.parity.md`](roadmap.parity.md) |
 | A persisted envelope or code cache | **Excluded** by roadmap section 16; reopened only against a host's latency budget and JS-10's figures | Every artifact is lowered or read as bytes and verified whole | [`baselines.md`](baselines.md); rule V10 |
@@ -198,14 +198,15 @@ before review. What each has been shown to do:
 
 **The family's four packages are frozen** in the [package baseline](packages.md), each with its
 dependencies and files, and rule N37 holds it to the checkout and to the candidate pack of bundle
-[JS-10-014](evidence/js-10-014/README.md), where a pristine consumer restored and ran them, and the
-shared packages they depend on - the shared algorithms package and, since the Unicode cut-over, the
-Unicode area's code and segmentation packages - with upstream unreachable and rolled back to the
+[JS-10-015](evidence/js-10-015/README.md), where a pristine consumer restored and ran them, and the
+shared packages they depend on - the shared algorithms package, since the Unicode cut-over the
+Unicode area's code and segmentation packages, and since SJL-9.4 the shared Intl package - with upstream unreachable and rolled back to the
 published `0.1.0-preview.5` and forward again *(corrected: [JSC-300](roadmap.corrections.md#jsc-300),
 [JSC-302](roadmap.corrections.md#jsc-302), [JSC-308](roadmap.corrections.md#jsc-308),
 [JSC-311](roadmap.corrections.md#jsc-311), [JSC-312](roadmap.corrections.md#jsc-312),
 [JSC-314](roadmap.corrections.md#jsc-314), [JSC-318](roadmap.corrections.md#jsc-318),
-[JSC-323](roadmap.corrections.md#jsc-323); until JSC-323 it named bundle JS-10-011, which the baseline had left
+[JSC-323](roadmap.corrections.md#jsc-323); revised 2026-11-03, at SJL-9.4, [JSC-324](roadmap.corrections.md#jsc-324): it named bundle JS-10-014 and its shared packages read "the shared
+algorithms package and, since the Unicode cut-over, the Unicode area's code and segmentation packages"; until JSC-323 it named bundle JS-10-011, which the baseline had left
 for JS-10-012 and JS-10-013 without this sentence following; before that it named bundle
 JS-10-010, before that JS-10-009, before that JS-10-008, before that JS-10-007, before that JS-10-006, before that JS-10-005, and before that
 JS-10-002)*.

@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Intl;
+
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
@@ -59,7 +61,7 @@ internal sealed partial class JsRealm
     internal JsObject? BigIntPrototype { get; private set; }
 
     /// <summary>Builds <c>BigInt</c>, its two statics and <c>BigInt.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=839008
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D0A7FE
     // Broiler-Human:        PENDING
     private void SetupBigInt()
     {
@@ -122,7 +124,7 @@ internal sealed partial class JsRealm
             // WITH INTL, ECMA-402 s20.3.1: through the realm's own %Intl.NumberFormat%.
             return engine.Realm.NumberFormatConstructor is null
                 ? JsValue.String(value.ToDecimalString(engine.WorkCharge))
-                : JsValue.String(ToLocaleNumberString(engine, JsDecimal.FromBigInt(value, engine.WorkCharge), arguments));
+                : JsValue.String(ToLocaleNumberString(engine, IntlDecimal.FromBigInt(value.Value, engine.WorkCharge), arguments));
         });
 
         Method(prototype, "valueOf", 0, static (engine, thisValue, arguments) =>

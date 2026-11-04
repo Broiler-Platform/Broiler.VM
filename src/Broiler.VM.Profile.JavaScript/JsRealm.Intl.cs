@@ -3,20 +3,21 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   22
-// Annotated:        22/22
-// Exempt:           11
-// Human-reviewed:   0/22
+// Relevant units:   28
+// Annotated:        28/28
+// Exempt:           12
+// Human-reviewed:   0/28
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         3/0
 // Resource impact:  3/10 max
-// Unverified:       22
+// Unverified:       28
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System;
 using System.Collections.Generic;
+using Broiler.ECMAScript.Intl;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -35,6 +36,14 @@ namespace Broiler.VM.Profile.JavaScript;
 /// <c>en-US</c> the default, so the answer does not depend on the host's culture. Every locale
 /// collates by the CLDR root, German's <c>phonebk</c> and <c>search</c> tailorings aside, and the root's
 /// <c>search</c> tailoring serves every other search.
+/// </para>
+/// <para>
+/// <b>The locale core is the shared Intl library's since SJL-9.4</b> (JSD-0082, sub-area (a)):
+/// canonicalisation through <c>LocaleId</c>, and the matchers, FilterLocales and ResolveLocale
+/// through <c>LocaleNegotiation</c>, over the composition's tables the library decodes
+/// (<see cref="JsIntlTables.LocaleData"/>). What reads a script value stays here: the walk over the
+/// locales argument and each element's checks, the options and their order, and the charges this
+/// family makes there (decision D18). The Collator's own steps and data are SJL-17's and stay.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ECMA-402; IP=Low; Security=Medium; Resources=3; Fingerprint=60DD8D
@@ -162,7 +171,7 @@ internal sealed partial class JsRealm
     /// ECMA-402's <c>Intl.Collator</c> constructor steps: the prototype from the new target, then the
     /// options read in the specification's order, then the locale resolved.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10.1.1; IP=Low; Security=Medium; Resources=3; Fingerprint=7011E0
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10.1.1; IP=Low; Security=Medium; Resources=3; Fingerprint=779136
     // Broiler-Falsified-If: an option is read in another order than ECMA-402's, or a resolved option differs from what the locale and options select
     // Broiler-Human:        PENDING
     internal static JsValue NewCollator(JsEngine engine, JsValue newTarget, JsValue[] arguments)
@@ -200,7 +209,7 @@ internal sealed partial class JsRealm
         var ignorePunctuation = GetBooleanOption(engine, options, "ignorePunctuation", false) ?? false;
 
         var data = engine.Intl!.Collation;
-        var language = JsLocaleTag.Parse(resolved.DataLocale)?.Language ?? "en";
+        var language = LanguageOf(resolved.DataLocale) ?? "en";
         var tailoringName = usage == "search"
             ? (language == "de" ? "de-search" : "und-search")
             : collationValue == "phonebk" && language == "de" ? "de-phonebk" : null;
@@ -230,39 +239,94 @@ internal sealed partial class JsRealm
     /// The values a collator supports for one relevant extension key in one locale, the default
     /// first: ECMA-402's <c>[[SortLocaleData]]</c> and <c>[[SearchLocaleData]]</c>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10.2.3; IP=Low; Security=Low; Resources=1; Fingerprint=99E57A
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10.2.3; IP=Low; Security=Low; Resources=1; Fingerprint=7391C5
     // Broiler-Human:        PENDING
     private static string?[] CollatorKeyData(string locale, string key, string usage) => key switch
     {
         // THE FIRST VALUE OF `co` IS NULL, and neither `standard` nor `search` is ever one (s10.2.3).
-        "co" => usage == "sort" && JsLocaleTag.Parse(locale)?.Language == "de" ? [null, "phonebk"] : [null],
+        "co" => usage == "sort" && LanguageOf(locale) == "de" ? [null, "phonebk"] : [null],
         "kn" => ["false", "true"],
         "kf" => ["false", "lower", "upper"],
         _ => [null],
     };
 
     /// <summary>The locales the data supports, as every service offers them: the data's list without <c>und</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9D5D44
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9DBD54
     // Broiler-Human:        PENDING
-    private static List<string> AvailableLocales(JsEngine engine)
-    {
-        var available = new List<string>();
+    private static IReadOnlyList<string> AvailableLocales(JsEngine engine) => engine.Intl!.AvailableLocales;
 
-        foreach (var locale in engine.Intl!.Locales)
+    /// <summary>
+    /// The language subtag of a well-formed tag, or nothing for one that is not: the shared library's
+    /// parse, ASCII alone (JSD-0082, decision D19).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=724332
+    // Broiler-Human:        PENDING
+    internal static string? LanguageOf(string locale) => ParseLocale(locale)?.Language;
+
+    /// <summary>A well-formed tag parsed by the shared library, in the case and order written, or nothing for one that is not.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0123C2
+    // Broiler-Human:        PENDING
+    internal static LocaleId? ParseLocale(string locale) =>
+        LocaleId.TryParse(locale, out var parsed) == IntlStatus.Completed ? parsed : null;
+
+    /// <summary>
+    /// <c>Intl.Collator</c>'s data as the shared library's Locale info and <c>supportedValuesOf</c> read
+    /// it (JSD-0082, rows L17, L18, L32 and L40): the services' available locales, each one's sort
+    /// collations from <see cref="CollatorKeyData"/>, and the one collation this family's data adds,
+    /// <c>phonebk</c>. The Collator itself stays this family's until SJL-17 (decision SJL-D-24 (c)).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s10.2.3; IP=Low; Security=Low; Resources=1; Fingerprint=8D86BE
+    // Broiler-Human:        PENDING
+    private sealed class CollatorLocaleData(IReadOnlyList<string> availableLocales) : ICollatorLocaleData
+    {
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=AFF13A
+        // Broiler-Human:        PENDING
+        public IReadOnlyList<string> AvailableLocales => availableLocales;
+
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1079F9
+        // Broiler-Human:        PENDING
+        public IReadOnlyList<string> Collations => ["phonebk"];
+
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9F3B8D
+        // Broiler-Human:        PENDING
+        public IReadOnlyList<string?> SortLocaleData(string locale) => CollatorKeyData(locale, "co", "sort");
+    }
+
+    /// <summary>The Collator's data the shared library reads, over the services' available locales.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6BC18F
+    // Broiler-Human:        PENDING
+    private static ICollatorLocaleData CollatorData(JsEngine engine) => new CollatorLocaleData(AvailableLocales(engine));
+
+    /// <summary>
+    /// ECMA-402's <c>Intl.supportedValuesOf</c>: the key converted here, and the values this data supports
+    /// for it, sorted, from the shared library (JSD-0082, rows L39 to L41).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s8.3.2; IP=Low; Security=Low; Resources=1; Fingerprint=05C1EE
+    // Broiler-Human:        PENDING
+    private static JsValue SupportedValuesOf(JsEngine engine, JsValue key)
+    {
+        var name = engine.ToStringValue(key);
+        var tables = engine.Intl!;
+
+        if (SupportedValues.Of(name, tables.LocaleData, tables.TimeZones, CollatorData(engine), out var values) != IntlStatus.Completed)
         {
-            if (locale != "und")
-            {
-                available.Add(locale);
-            }
+            throw engine.Error("RangeError", "Intl.supportedValuesOf: invalid key: " + name);
         }
 
-        return available;
+        var array = new List<JsValue>(values.Count);
+
+        foreach (var value in values)
+        {
+            array.Add(JsValue.String(value));
+        }
+
+        return JsValue.Object(engine.Realm.NewArray(array));
     }
 
     // ---- the abstract operations ----------------------------------------------------------------
 
     /// <summary>ECMA-402's <c>CanonicalizeLocaleList</c>.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.1; IP=Low; Security=Medium; Resources=3; Fingerprint=885230
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.1; IP=Low; Security=Medium; Resources=3; Fingerprint=CEC9F7
     // Broiler-Falsified-If: an element that is not a String or an Object is admitted, or a structurally invalid tag is not a RangeError
     // Broiler-Human:        PENDING
     internal static List<string> CanonicalizeLocaleList(JsEngine engine, JsValue locales)
@@ -296,12 +360,13 @@ internal sealed partial class JsRealm
 
             var tag = value.AsObjectOrNull() is JsLocaleObject locale ? locale.Locale : engine.ToStringValue(value);
 
-            if (JsLocaleTag.Parse(tag) is not { } parsed)
+            // THE STRING'S PART IS THE SHARED LIBRARY'S (JSD-0082, row L4): IsWellFormedLanguageTag and
+            // CanonicalizeUnicodeLocaleId. Tag parsing and canonicalisation charge nothing here, as
+            // before (row L43); the charge above is this adapter's, one per element.
+            if (LocaleId.TryCanonicalize(tag, engine.Intl!.LocaleData, out var canonical) != IntlStatus.Completed)
             {
                 return ThrowList(engine, "RangeError", "Incorrect locale information provided: " + tag);
             }
-
-            var canonical = parsed.Canonicalize(engine.Intl!).ToString();
 
             if (!seen.Contains(canonical))
             {
@@ -355,25 +420,9 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Whether a String is a BCP 47 type: subtags of three to eight letters and digits.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=793C6E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=05DF5D
     // Broiler-Human:        PENDING
-    private static bool IsTypeSequence(string text)
-    {
-        if (text.Length == 0)
-        {
-            return false;
-        }
-
-        foreach (var part in text.Split('-'))
-        {
-            if (part.Length is < 3 or > 8 || !JsLocaleTag.IsAlphanumeric(part))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    private static bool IsTypeSequence(string text) => LocaleId.IsUnicodeType(text);
 
     /// <summary>What <see cref="ResolveLocale"/> answers.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C02A03
@@ -393,169 +442,49 @@ internal sealed partial class JsRealm
     /// first requested locale a prefix of which is available, its supported <c>-u-</c> keywords kept,
     /// and an option overriding a keyword it names.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.7; IP=Low; Security=Medium; Resources=3; Fingerprint=4F53C6
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.7; IP=Low; Security=Medium; Resources=3; Fingerprint=82CDC3
     // Broiler-Falsified-If: a resolved locale names a keyword the locale data does not support, or an option the data supports is not honoured
     // Broiler-Human:        PENDING
     internal static JsResolvedLocale ResolveLocale(JsEngine engine, List<string> requested, Dictionary<string, string?> options, string[] relevantKeys, Func<string, string, string?[]> keyData)
     {
-        var available = AvailableLocales(engine);
-        var (found, extension) = LookupMatchingLocale(available, requested) ?? (DefaultLocale, null);
+        var tables = engine.Intl!;
 
-        var keywords = new List<(string Key, string Type)>();
-
-        if (extension is not null)
-        {
-            keywords.AddRange(extension.Keywords);
-        }
-
-        var supported = new List<(string Key, string Type)>();
-        var result = new Dictionary<string, string?>(StringComparer.Ordinal);
+        // THE SHARED NEGOTIATION (JSD-0082, rows L28 to L38): the match first, over this family's
+        // providers (decision D7), then each relevant key with the service's data for the matched
+        // locale and the option this service read for it, NullOption standing for ECMA-402's null.
+        var match = LocaleNegotiation.MatchLocale(tables.AvailableLocales, requested, DefaultLocale);
+        var keys = new List<RelevantKey>(relevantKeys.Length);
 
         foreach (var key in relevantKeys)
         {
-            var values = keyData(found, key);
-            var value = values[0];
-            (string Key, string Type)? keyword = null;
-
-            var entry = keywords.FindIndex(pair => pair.Key == key);
-
-            if (entry >= 0)
+            var option = options.TryGetValue(key, out var value) ? value : null;
+            keys.Add(new RelevantKey(key, keyData(match.Locale, key))
             {
-                var requestedValue = keywords[entry].Type;
-
-                if (requestedValue.Length != 0)
-                {
-                    if (Array.IndexOf(values, requestedValue) >= 0)
-                    {
-                        value = requestedValue;
-                        keyword = (key, value);
-                    }
-                }
-                else if (Array.IndexOf(values, "true") >= 0)
-                {
-                    value = "true";
-                    keyword = (key, string.Empty);
-                }
-            }
-
-            if (options.TryGetValue(key, out var optionValue) && optionValue == NullOption)
-            {
-                if (value is not null && Array.IndexOf(values, null) >= 0)
-                {
-                    value = null;
-                    keyword = null;
-                }
-            }
-            else if (optionValue is not null)
-            {
-                var canonical = optionValue.ToLowerInvariant();
-
-                if (engine.Intl!.TryType('u', key, canonical, out var preferred))
-                {
-                    canonical = preferred;
-                }
-
-                if (canonical.Length == 0)
-                {
-                    canonical = "true";
-                }
-
-                if (!string.Equals(canonical, value, StringComparison.Ordinal) && Array.IndexOf(values, canonical) >= 0)
-                {
-                    value = canonical;
-                    keyword = null;
-                }
-            }
-
-            if (keyword is { } kept)
-            {
-                supported.Add(kept);
-            }
-
-            result[key] = value;
+                Option = option == NullOption ? null : option,
+                OptionIsNull = option == NullOption,
+            });
         }
 
-        var locale = found;
-
-        if (supported.Count != 0)
-        {
-            var tag = JsLocaleTag.Parse(found)!;
-            tag.HasUnicodeExtension = true;
-            tag.Keywords.AddRange(supported);
-            locale = tag.Canonicalize(engine.Intl!).ToString();
-        }
-
-        return new JsResolvedLocale(locale, found, result);
-    }
-
-    /// <summary>
-    /// ECMA-402's <c>LookupMatchingLocaleByPrefix</c>: for each requested locale, its <c>-u-</c>
-    /// extension set aside, the longest available prefix, truncated a subtag (and a singleton before
-    /// it) at a time.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.3; IP=Low; Security=Low; Resources=2; Fingerprint=E6430F
-    // Broiler-Human:        PENDING
-    internal static (string Locale, JsLocaleTag? Extension)? LookupMatchingLocale(List<string> available, List<string> requested)
-    {
-        foreach (var locale in requested)
-        {
-            var tag = JsLocaleTag.Parse(locale);
-
-            if (tag is null)
-            {
-                continue;
-            }
-
-            var extension = tag.HasUnicodeExtension ? tag : null;
-            var prefix = tag.WithoutUnicodeExtension();
-
-            while (prefix.Length != 0)
-            {
-                if (available.Contains(prefix))
-                {
-                    return (prefix, extension);
-                }
-
-                var dash = prefix.LastIndexOf('-');
-
-                if (dash < 0)
-                {
-                    break;
-                }
-
-                prefix = prefix[..dash];
-
-                if (prefix.Length >= 2 && prefix[^2] == '-')
-                {
-                    prefix = prefix[..^2];
-                }
-            }
-        }
-
-        return null;
+        var resolved = LocaleNegotiation.ResolveLocale(match, keys, tables.LocaleData);
+        return new JsResolvedLocale(resolved.Locale, resolved.DataLocale, new Dictionary<string, string?>(resolved.KeyValues, StringComparer.Ordinal));
     }
 
     /// <summary>ECMA-402's <c>FilterLocales</c>: the requested locales a prefix of which is available, in the order requested.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.9; IP=Low; Security=Low; Resources=2; Fingerprint=35E186
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.9; IP=Low; Security=Low; Resources=2; Fingerprint=23E9BA
     // Broiler-Human:        PENDING
-    internal static List<string> FilterLocales(JsEngine engine, List<string> available, List<string> requested, JsValue options)
+    internal static List<string> FilterLocales(JsEngine engine, IReadOnlyList<string> available, List<string> requested, JsValue options)
     {
         var coerced = CoerceOptionsToObject(engine, options);
         _ = GetStringOption(engine, coerced, "localeMatcher", ["lookup", "best fit"], "best fit");
 
-        var subset = new List<string>();
-
-        foreach (var locale in requested)
+        // THE CHARGE STAYS THIS ADAPTER'S (JSD-0082, decision D18): one unit per requested locale, as
+        // before; the shared filter, handed no meter, charges nothing.
+        foreach (var _ in requested)
         {
             engine.Charge(1);
-
-            if (LookupMatchingLocale(available, [locale]) is not null)
-            {
-                subset.Add(locale);
-            }
         }
 
-        return subset;
+        return [.. LocaleNegotiation.FilterLocales(available, requested)];
     }
 
     /// <summary>The argument at <paramref name="index"/>, or <c>undefined</c>.</summary>

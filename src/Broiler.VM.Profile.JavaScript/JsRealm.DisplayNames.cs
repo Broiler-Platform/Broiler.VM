@@ -3,20 +3,21 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   10
-// Annotated:        10/10
-// Exempt:           8
-// Human-reviewed:   0/10
+// Relevant units:   7
+// Annotated:        7/7
+// Exempt:           3
+// Human-reviewed:   0/7
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       10
+// Unverified:       7
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System;
 using System.Collections.Generic;
+using Broiler.ECMAScript.Intl;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -33,6 +34,12 @@ namespace Broiler.VM.Profile.JavaScript;
 /// <c>Intl.DisplayNames.prototype.of</c> answers the code itself or <c>undefined</c>, as the draft
 /// states.
 /// </para>
+/// <para>
+/// <b>Since SJL-9.4 the core is the shared Intl library's <c>DisplayNamesCore</c></b> (JSD-0082,
+/// sub-area (c)): CanonicalCodeForDisplayNames, the names read at the data locale and their
+/// composition. The options and the code's ToString stay here; display names charge nothing in this
+/// family, so the adapter hands the library no meter (row L43, decision D18).
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=60DD8D
 // Broiler-Human:        PENDING
@@ -48,12 +55,12 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     internal JsNativeFunction? DisplayNamesConstructor { get; private set; }
 
-    /// <summary>The date-time field codes of table 19.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CE52F9
+    /// <summary>The <c>type</c> option's values, in <c>DisplayNamesType</c>'s order.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3533EF
     // Broiler-Human:        PENDING
-    private static readonly string[] DateTimeFieldCodes = ["era", "year", "quarter", "month", "weekOfYear", "weekday", "day", "dayPeriod", "hour", "minute", "second", "timeZoneName"];
+    private static readonly string[] DisplayNamesTypeNames = ["language", "region", "script", "currency", "calendar", "dateTimeField"];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FCEBD2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1C2440
     // Broiler-Human:        PENDING
     private void SetupDisplayNames(JsObject intl)
     {
@@ -84,27 +91,39 @@ internal sealed partial class JsRealm
 
         Method(prototype, "of", 1, static (engine, thisValue, arguments) =>
         {
-            var names = DisplayNamesOfThis(engine, thisValue, "of");
-            var code = CanonicalCodeForDisplayNames(engine, names.Type, engine.ToStringValue(Argument(arguments, 0)));
-            var name = DisplayName(engine, names, code);
+            var names = DisplayNamesOfThis(engine, thisValue, "of").Core;
+            var code = engine.ToStringValue(Argument(arguments, 0));
 
-            return name is not null ? JsValue.String(name) : names.Fallback == "code" ? JsValue.String(code) : JsValue.Undefined;
+            // THE CODE'S CHECK AND CANONICAL FORM, THE NAME AND THE FALLBACK are the library's (JSD-0082,
+            // sub-area (c)); display names charge nothing here, so neither does the code's parse (row L43).
+            // THE MESSAGE is the one the realm's own core threw before the cut-over: the type's option value,
+            // except that a date-time field's reads "date-time field", not "dateTimeField". (Revised
+            // 2026-11-03, at SJL-9.4's review of sub-areas (b) and (c): the cut-over commit wrote the option
+            // value for every type, "Intl.DisplayNames: invalid " + DisplayNamesTypeNames[(int)names.Type] +
+            // " code: ", which changed the date-time field's message.)
+            if (names.Of(code, out var name) != IntlStatus.Completed)
+            {
+                var kind = names.Type == DisplayNamesType.DateTimeField ? "date-time field" : DisplayNamesTypeNames[(int)names.Type];
+                throw engine.Error("RangeError", "Intl.DisplayNames: invalid " + kind + " code: " + code);
+            }
+
+            return name is not null ? JsValue.String(name) : JsValue.Undefined;
         });
 
         Method(prototype, "resolvedOptions", 0, static (engine, thisValue, arguments) =>
         {
-            var names = DisplayNamesOfThis(engine, thisValue, "resolvedOptions");
+            var names = DisplayNamesOfThis(engine, thisValue, "resolvedOptions").Core;
             var options = new JsObject(engine.Realm.ObjectPrototype);
 
             // TABLE 18, IN ITS ORDER.
             options.DefineOrdinary("locale", JsValue.String(names.Locale));
-            options.DefineOrdinary("style", JsValue.String(names.Style));
-            options.DefineOrdinary("type", JsValue.String(names.Type));
-            options.DefineOrdinary("fallback", JsValue.String(names.Fallback));
+            options.DefineOrdinary("style", JsValue.String(FormatStyleNames[(int)names.Style]));
+            options.DefineOrdinary("type", JsValue.String(DisplayNamesTypeNames[(int)names.Type]));
+            options.DefineOrdinary("fallback", JsValue.String(names.Fallback == DisplayNamesFallback.Code ? "code" : "none"));
 
             if (names.LanguageDisplay is { } display)
             {
-                options.DefineOrdinary("languageDisplay", JsValue.String(display));
+                options.DefineOrdinary("languageDisplay", JsValue.String(display == LanguageDisplay.Dialect ? "dialect" : "standard"));
             }
 
             return JsValue.Object(options);
@@ -122,7 +141,7 @@ internal sealed partial class JsRealm
         throw engine.Error("TypeError", "Intl.DisplayNames.prototype." + member + " requires that 'this' be an Intl.DisplayNames");
 
     /// <summary>ECMA-402's <c>Intl.DisplayNames</c> constructor (s12.1.1): the options required, and read in its order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=906C98
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9B0C84
     // Broiler-Human:        PENDING
     internal static JsValue NewDisplayNames(JsEngine engine, JsValue newTarget, JsValue[] arguments)
     {
@@ -144,285 +163,32 @@ internal sealed partial class JsRealm
         var resolved = ResolveLocale(engine, requested, new Dictionary<string, string?>(StringComparer.Ordinal), [], static (locale, key) => [null]);
 
         var style = GetStringOption(engine, options, "style", ["narrow", "short", "long"], "long")!;
-        var type = GetStringOption(engine, options, "type", ["language", "region", "script", "currency", "calendar", "dateTimeField"], null) ??
+        var type = GetStringOption(engine, options, "type", DisplayNamesTypeNames, null) ??
             throw engine.Error("TypeError", "Intl.DisplayNames: the type option is required");
         var fallback = GetStringOption(engine, options, "fallback", ["code", "none"], "code")!;
         var languageDisplay = GetStringOption(engine, options, "languageDisplay", ["dialect", "standard"], "dialect")!;
 
-        return JsValue.Object(new JsDisplayNamesObject(prototype)
-        {
-            Locale = resolved.Locale,
-            Language = JsLocaleTag.Parse(resolved.DataLocale)?.Language ?? "en",
-            Style = style,
-            Type = type,
-            Fallback = fallback,
-            LanguageDisplay = type == "language" ? languageDisplay : null,
-        });
-    }
-
-    /// <summary>ECMA-402's CanonicalCodeForDisplayNames (s12.5.1): a well-formed code of the type, case-regularized, or a <c>RangeError</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AF56E6
-    // Broiler-Human:        PENDING
-    private static string CanonicalCodeForDisplayNames(JsEngine engine, string type, string code)
-    {
-        static bool Letters(string text) => text.Length > 0 && JsLocaleTag.IsAlpha(text);
-
-        static bool Digits(string text)
-        {
-            foreach (var c in text)
-            {
-                if (!char.IsAsciiDigit(c))
-                {
-                    return false;
-                }
-            }
-
-            return text.Length > 0;
-        }
-
-        switch (type)
-        {
-            case "language":
-                {
-                    // UNICODE_LANGUAGE_ID IN ITS BCP 47 FORM: no extension, no private use, no underscore.
-                    if (code.Contains('_', System.StringComparison.Ordinal) ||
-                        JsLocaleTag.Parse(code) is not { } tag ||
-                        tag.LanguageId().Length != code.Length)
-                    {
-                        throw engine.Error("RangeError", "Intl.DisplayNames: invalid language code: " + code);
-                    }
-
-                    return tag.Canonicalize(engine.Intl!).ToString();
-                }
-
-            case "region":
-                if (!(code.Length == 2 && Letters(code)) && !(code.Length == 3 && Digits(code)))
-                {
-                    throw engine.Error("RangeError", "Intl.DisplayNames: invalid region code: " + code);
-                }
-
-                return code.ToUpperInvariant();
-
-            case "script":
-                if (code.Length != 4 || !Letters(code))
-                {
-                    throw engine.Error("RangeError", "Intl.DisplayNames: invalid script code: " + code);
-                }
-
-                return char.ToUpperInvariant(code[0]) + code[1..].ToLowerInvariant();
-
-            case "calendar":
-                if (!IsTypeSequence(code) || code.Contains('_', System.StringComparison.Ordinal))
-                {
-                    throw engine.Error("RangeError", "Intl.DisplayNames: invalid calendar code: " + code);
-                }
-
-                return code.ToLowerInvariant();
-
-            case "dateTimeField":
-                if (System.Array.IndexOf(DateTimeFieldCodes, code) < 0)
-                {
-                    throw engine.Error("RangeError", "Intl.DisplayNames: invalid date-time field code: " + code);
-                }
-
-                return code;
-
-            default:
-                if (!IsWellFormedCurrencyCode(code))
-                {
-                    throw engine.Error("RangeError", "Intl.DisplayNames: invalid currency code: " + code);
-                }
-
-                return code.ToUpperInvariant();
-        }
-    }
-
-    /// <summary>The name [[Fields]] holds for a canonical code, or nothing.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=997FE9
-    // Broiler-Human:        PENDING
-    private static string? DisplayName(JsEngine engine, JsDisplayNamesObject names, string code)
-    {
-        var data = engine.Intl!.LocaleInfo.DisplayNames;
-        var prefix = names.Language + "|";
-        var shortened = names.Style != "long";
-
-        string? Named(string kind, string key) =>
-            (shortened && data.TryGetValue(prefix + kind + "|" + key + "-alt-short", out var alternate)) ? alternate :
-            data.TryGetValue(prefix + kind + "|" + key, out var name) ? name : null;
-
-        switch (names.Type)
-        {
-            case "region":
-                return Named("region", code);
-
-            case "script":
-                return data.TryGetValue(prefix + "script|" + code, out var script) ? script : null;
-
-            case "calendar":
-                return data.TryGetValue(prefix + "calendar|" + code, out var calendar) ? calendar : null;
-
-            case "dateTimeField":
-                return data.TryGetValue(prefix + "field|" + code + "-" + names.Style, out var field) ? field : null;
-
-            case "currency":
-                return engine.Intl!.Numbers.Currencies.TryGetValue(names.Language + "|" + code, out var currency) && currency.Name.Length != 0
-                    ? currency.Name
-                    : null;
-
-            default:
-                return LanguageName(engine, names, code, Named);
-        }
-    }
-
-    /// <summary>
-    /// A language code's name, composed as ICU's LocaleDisplayNames composes it: under the dialect
-    /// display the whole code's own name where CLDR has one, then the language's name, and the script,
-    /// region and variants it did not cover in CLDR's locale pattern. An unnamed part is its code under
-    /// the code fallback, as ICU writes "xyz (Germany)", and makes the whole name nothing otherwise.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E05E65
-    // Broiler-Human:        PENDING
-    private static string? LanguageName(JsEngine engine, JsDisplayNamesObject names, string code, Func<string, string, string?> named)
-    {
-        var tag = JsLocaleTag.Parse(code)!;
-        var data = engine.Intl!.LocaleInfo.DisplayNames;
-        var language = tag.Language;
-        var script = tag.Script;
-        var region = tag.Region;
-        string? name = null;
-
-        if (names.LanguageDisplay == "dialect")
-        {
-            // ONE DIALECT KEY, THE WHOLE CODE'S: a script and a region together are never split.
-            if (script is not null && region is not null)
-            {
-                if (named("language", language + "-" + script + "-" + region) is { } full)
-                {
-                    (name, script, region) = (full, null, null);
-                }
-            }
-            else if (script is not null)
-            {
-                if (named("language", language + "-" + script) is { } withScript)
-                {
-                    (name, script) = (withScript, null);
-                }
-            }
-            else if (region is not null && named("language", language + "-" + region) is { } withRegion)
-            {
-                (name, region) = (withRegion, null);
-            }
-        }
-
-        var substitute = names.Fallback == "code";
-        name ??= named("language", language) ?? (substitute ? language : null);
-
-        if (name is null)
-        {
-            return null;
-        }
-
-        var details = new System.Collections.Generic.List<string>();
-
-        if (script is not null)
-        {
-            if (!data.TryGetValue(names.Language + "|script|" + script, out var scriptName))
-            {
-                if (!substitute)
-                {
-                    return null;
-                }
-
-                scriptName = script;
-            }
-
-            details.Add(scriptName);
-        }
-
-        if (region is not null)
-        {
-            if (named("region", region) is not { } regionName)
-            {
-                if (!substitute)
-                {
-                    return null;
-                }
-
-                regionName = region;
-            }
-
-            details.Add(regionName);
-        }
-
-        foreach (var variant in tag.Variants)
-        {
-            if (!data.TryGetValue(names.Language + "|variant|" + variant.ToUpperInvariant(), out var variantName))
-            {
-                if (!substitute)
-                {
-                    return null;
-                }
-
-                variantName = variant.ToUpperInvariant();
-            }
-
-            details.Add(variantName);
-        }
-
-        if (details.Count == 0)
-        {
-            return name;
-        }
-
-        var separator = data.TryGetValue(names.Language + "|pattern|localeSeparator", out var s) ? s : "{0}, {1}";
-        var pattern = data.TryGetValue(names.Language + "|pattern|localePattern", out var p) ? p : "{0} ({1})";
-        var joined = details[0];
-
-        for (var i = 1; i < details.Count; i++)
-        {
-            joined = separator.Replace("{0}", joined, StringComparison.Ordinal).Replace("{1}", details[i], StringComparison.Ordinal);
-        }
-
-        return pattern.Replace("{0}", name, StringComparison.Ordinal).Replace("{1}", joined, StringComparison.Ordinal);
+        // THE RECORD THE LIBRARY TAKES: the names are read at the data locale through the composite.
+        var core = DisplayNamesCore.Create(engine.Intl!.FormatData, resolved.Locale, resolved.DataLocale,
+            (FormatStyle)Array.IndexOf(FormatStyleNames, style),
+            (DisplayNamesType)Array.IndexOf(DisplayNamesTypeNames, type),
+            fallback == "none" ? DisplayNamesFallback.None : DisplayNamesFallback.Code,
+            languageDisplay == "standard" ? LanguageDisplay.Standard : LanguageDisplay.Dialect);
+        return JsValue.Object(new JsDisplayNamesObject(prototype, core));
     }
 }
 
-/// <summary>An <c>Intl.DisplayNames</c>: its resolved options and the language whose names it reads.</summary>
+/// <summary>An <c>Intl.DisplayNames</c>: the shared library's core, which holds its resolved options and reads its names.</summary>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6F2395
 // Broiler-Human:        PENDING
 internal sealed class JsDisplayNamesObject : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AD6CCF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BDC8AB
     // Broiler-Human:        PENDING
-    internal JsDisplayNamesObject(JsObject prototype) : base(prototype) { }
+    internal JsDisplayNamesObject(JsObject prototype, DisplayNamesCore core) : base(prototype) => Core = core;
 
-    /// <summary>The resolved locale.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EDBB2D
+    /// <summary>The core <c>of</c> and <c>resolvedOptions</c> read.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=ACA1A3
     // Broiler-Human:        PENDING
-    internal string Locale { get; init; } = string.Empty;
-
-    /// <summary>The language whose names are read.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D9CAFA
-    // Broiler-Human:        PENDING
-    internal string Language { get; init; } = "en";
-
-    /// <summary><c>narrow</c>, <c>short</c> or <c>long</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D3FBA0
-    // Broiler-Human:        PENDING
-    internal string Style { get; init; } = "long";
-
-    /// <summary>The display name type.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6B9B9B
-    // Broiler-Human:        PENDING
-    internal string Type { get; init; } = "language";
-
-    /// <summary><c>code</c> or <c>none</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D1331D
-    // Broiler-Human:        PENDING
-    internal string Fallback { get; init; } = "code";
-
-    /// <summary><c>dialect</c> or <c>standard</c> for the language type, and nothing otherwise.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=10E9F7
-    // Broiler-Human:        PENDING
-    internal string? LanguageDisplay { get; init; }
+    internal DisplayNamesCore Core { get; }
 }

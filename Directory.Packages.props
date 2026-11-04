@@ -23,6 +23,10 @@
          holds every reference to the allow-list, src/tests/Broiler.VM.Architecture.Tests/admitted-packages.json,
          and to its pin.") -->
     <PackageVersion Include="Broiler.ECMAScript.Algorithms" Version="0.1.0-preview.9" />
+    <!-- The shared Intl library (JSD-0082, decision D9; milestone SJL-9.4), from the same source and under the
+         same rule, referenced by the JavaScript profile alone; it carries no locale data, which this family
+         embeds in its optional Intl data assembly (decision SJL-D-6 (c)). -->
+    <PackageVersion Include="Broiler.ECMAScript.Intl" Version="0.1.0-preview.9" />
     <!-- The time data home's generator (JSD-0076; milestone SJL-8.5), from the same source and under
          the same rule (2026-11-01: it read "from the same committed feed"), admitted test-only, for the architecture tests alone; no package carries the time
          zone or calendar tables (decision SJL-D-6 (c)). Since SJL-9.2c (JSD-0082) the architecture tests also run

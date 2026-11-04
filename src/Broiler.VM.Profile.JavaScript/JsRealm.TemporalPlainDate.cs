@@ -15,6 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Intl;
 using Broiler.ECMAScript.Numbers;
 using Broiler.ECMAScript.Temporal;
 using Broiler.ECMAScript.Time;
@@ -26,7 +27,7 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F963BE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4AF81A
     // Broiler-Human:        PENDING
     private void SetupTemporalPlainDate(JsObject temporal)
     {
@@ -185,7 +186,7 @@ internal sealed partial class JsRealm
         Method(prototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
         {
             _ = TemporalThis<JsPlainDateObject>(engine, thisValue, "PlainDate", "toLocaleString");
-            return JsValue.String(TemporalToLocaleString(engine, thisValue, arguments, "date", "date"));
+            return JsValue.String(TemporalToLocaleString(engine, thisValue, arguments, DateTimeRequired.Date, DateTimeDefaults.Date));
         });
 
         Method(prototype, "toJSON", 0, static (engine, thisValue, arguments) =>
