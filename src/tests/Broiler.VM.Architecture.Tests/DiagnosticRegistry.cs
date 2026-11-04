@@ -371,6 +371,41 @@ internal static class DiagnosticRegistry
     internal static string SourceCorpusText =>
         File.ReadAllText(Path.Combine(ComponentGraph.Root, SourceCorpusPath));
 
+    /// <summary>
+    /// The front end's diagnostic mapping, which maps each catalogue row's shared code onto one
+    /// registry code (JSD-0080 decision D13, JSD-0083 decision D12).
+    /// </summary>
+    internal const string MappingPath =
+        "src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv";
+
+    /// <summary>The mapping's text.</summary>
+    internal static string MappingText =>
+        File.ReadAllText(Path.Combine(ComponentGraph.Root, MappingPath));
+
+    /// <summary>
+    /// The catalogue rows the mapping maps onto each registry code, from its <c>code</c> rows.
+    /// </summary>
+    /// <remarks>
+    /// <b>Read for rule N7's second list and for nothing else</b> (added 2026-11-04, at SJL-13's
+    /// second tools commit, on the owner's decision of that day): a new code may claim to be
+    /// unreachable only when every catalogue row mapped onto it is a meaning the rule names. The
+    /// columns are the ones <c>eng/check-frontend-mapping.py</c> holds the mapping to: a
+    /// <c>code</c> row's third cell is its catalogue row and its seventh its registry code. A line
+    /// whose registry code is not a number is not read here; the checker refuses it.
+    /// </remarks>
+    internal static ILookup<int, string> MappedRows(string text) => text
+        .Split('\n')
+        .Select(static line => line.TrimEnd('\r'))
+        .Where(static line => line.Length > 0 && line[0] != '#')
+        .Select(static line => line.Split('\t'))
+        .Where(static cells => cells.Length >= 7 &&
+            string.Equals(cells[0], "code", StringComparison.Ordinal) &&
+            int.TryParse(cells[6], System.Globalization.NumberStyles.None,
+                System.Globalization.CultureInfo.InvariantCulture, out _))
+        .ToLookup(
+            static cells => int.Parse(cells[6], System.Globalization.CultureInfo.InvariantCulture),
+            static cells => cells[2]);
+
     /// <summary>One place the profile answers a resource exhaustion, and the pair it names.</summary>
     internal sealed record ExhaustionAnswer(string File, int Line, string Dimension, string Scope);
 

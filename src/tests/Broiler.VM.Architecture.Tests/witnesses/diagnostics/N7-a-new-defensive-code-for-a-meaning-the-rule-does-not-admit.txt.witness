@@ -1,0 +1,17 @@
+# A registry at revision 19 whose new defensive rows are not the ones rule N7 admits.
+#
+# Added 2026-11-04, at SJL-13's second tools commit, with the rule's second list (the owner's decision
+# of that day on registry revision 19). From revision 19 a new embedder-seam code may claim to be
+# unreachable only when every catalogue row the front end's mapping maps onto it is EE0021 or EX0024.
+# The rule's test reads this file with the mapping it states here, since the mapping is a second file:
+# 2105 holds the catalogue's EX0028, a BigInt literal wider than the format, which a source reaches;
+# 2106 holds EX0013, eval code deeper than the scope-depth ceiling, which is not one of the two; and
+# the mapping maps nothing onto 2107. Each is the escape hatch the list exists to keep shut, reached
+# through a meaning rather than through a number.
+#
+# registry-revision: 19
+#
+# code|name|half|reason|stage|reachability|case|since
+2105|BigIntWiderThanTheFormat|embedder-seam|-|parser|defensive|no source reaches it, says this witness, for a meaning a source does reach|19
+2106|EvalScopeDeeperThanTheCeiling|embedder-seam|-|lowering|defensive|no source reaches it, says this witness, for a meaning the rule does not admit|19
+2107|SomethingNothingMapsOnto|embedder-seam|-|lowering|defensive|no source reaches it, says this witness, for a code no catalogue row is mapped onto|19

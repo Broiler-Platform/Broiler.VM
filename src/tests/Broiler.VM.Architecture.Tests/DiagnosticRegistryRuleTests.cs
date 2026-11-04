@@ -252,8 +252,9 @@ public sealed class DiagnosticRegistryRuleTests
     {
         var corpus = DiagnosticRegistry.CorpusCases(DiagnosticRegistry.CorpusText);
         var sourceCorpus = DiagnosticRegistry.SourceCases(DiagnosticRegistry.SourceCorpusText);
+        var mapped = DiagnosticRegistry.MappedRows(DiagnosticRegistry.MappingText);
 
-        Assert.Empty(ArchitectureRules.N7(Registry, corpus, sourceCorpus));
+        Assert.Empty(ArchitectureRules.N7(Registry, corpus, sourceCorpus, mapped));
 
         // Non-vacuous, and the figures that matter: sixty-five of the sixty-six core-result rows
         // are reached by a retained corpus entry and one is not, which is the count rule N7 fixes
@@ -323,7 +324,8 @@ public sealed class DiagnosticRegistryRuleTests
                         row.Code == 1625 ? row with { Case = "wide-a-corpus-entry-nobody-wrote" } : row)
                     .ToArray(),
                 corpus,
-                sourceCorpus),
+                sourceCorpus,
+                mapped),
             violation => violation.Contains(
                 "names the case wide-a-corpus-entry-nobody-wrote, and no corpus entry of that " +
                 "name records code 1625",
@@ -337,7 +339,8 @@ public sealed class DiagnosticRegistryRuleTests
                         : row)
                     .ToArray(),
                 corpus,
-                sourceCorpus),
+                sourceCorpus,
+                mapped),
             violation => violation.Contains(
                 "names the case wide-a-native-payload-no-surface-declares, and no corpus entry of " +
                 "that name records code 1625",
@@ -352,7 +355,8 @@ public sealed class DiagnosticRegistryRuleTests
                         row.Code == 1624 ? row with { Reachability = "check" } : row)
                     .ToArray(),
                 corpus,
-                sourceCorpus),
+                sourceCorpus,
+                mapped),
             violation => violation.Contains(
                 "claims the reachability check, which is not one",
                 StringComparison.Ordinal));
@@ -389,7 +393,8 @@ public sealed class DiagnosticRegistryRuleTests
                         row.Code == 2001 ? row with { Half = "core-result" } : row)
                     .ToArray(),
                 corpus,
-                sourceCorpus),
+                sourceCorpus,
+                mapped),
             violation => violation.Contains(
                 "is reached by a source and is not an embedder-seam row", StringComparison.Ordinal));
 
@@ -401,7 +406,8 @@ public sealed class DiagnosticRegistryRuleTests
                         row.Code == 2001 ? row with { Case = "refuse-something-nobody-wrote" } : row)
                     .ToArray(),
                 corpus,
-                sourceCorpus),
+                sourceCorpus,
+                mapped),
             violation => violation.Contains(
                 "names the case refuse-something-nobody-wrote, and no retained source entry of " +
                 "that name is refused with UnexpectedCharacter",
@@ -410,7 +416,7 @@ public sealed class DiagnosticRegistryRuleTests
         var witness = Witness("N7-registry-names-a-case-the-corpus-does-not-have.txt.witness");
 
         var violations = ArchitectureRules
-            .N7(DiagnosticRegistry.Read(witness), corpus, sourceCorpus)
+            .N7(DiagnosticRegistry.Read(witness), corpus, sourceCorpus, mapped)
             .ToArray();
 
         Assert.Contains(violations, violation => violation.Contains(
@@ -431,9 +437,99 @@ public sealed class DiagnosticRegistryRuleTests
             .ToArray();
 
         Assert.Contains(
-            ArchitectureRules.N7(promoted, corpus, sourceCorpus),
+            ArchitectureRules.N7(promoted, corpus, sourceCorpus, mapped),
             violation => violation.Contains(
                 "is admitted as unreachable and claims to be reachable", StringComparison.Ordinal));
+
+        N7_A_New_Defensive_Code_Is_Admitted_For_Its_Meaning_And_For_No_Other(corpus, sourceCorpus, mapped);
+    }
+
+    /// <summary>
+    /// Rule N7's second list (2026-11-04, SJL-13's second tools commit, on the owner's decision of
+    /// that day on registry revision 19): a code revision 19 or later adds may be defensive only
+    /// when every catalogue row the mapping maps onto it is EE0021 or EX0024.
+    /// </summary>
+    /// <remarks>
+    /// <b>The real registry and mapping, with one row added and the mapping's answer for it
+    /// stated</b>, because the codes the list exists for are minted by step 1's registry commit and
+    /// do not exist at this one. 2299 is a number no revision has published. What the mapping maps
+    /// onto it is injected, so each control varies one fact: the meaning, the revision, the half,
+    /// the reason. The widening must admit the one case it was made for and still refuse every
+    /// other, which is what the rule refused before it.
+    /// </remarks>
+    private static void N7_A_New_Defensive_Code_Is_Admitted_For_Its_Meaning_And_For_No_Other(
+        ILookup<int, string> corpus,
+        ILookup<string, string> sourceCorpus,
+        ILookup<int, string> mapped)
+    {
+        Assert.Equal(["EE0021", "EX0024"], ArchitectureRules.DefensiveRows);
+        Assert.Equal(19, ArchitectureRules.DefensiveRowsRevision);
+
+        // The real mapping maps rows onto registry codes, so the lookup the rule reads is not
+        // empty: every catalogue row with a shared code has one mapping row.
+        Assert.NotEmpty(mapped[2101]);
+
+        var added = new DiagnosticRegistryRow(
+            2299,
+            "ConstructTheLoweringHasNoArmFor",
+            "embedder-seam",
+            "-",
+            "lowering",
+            "defensive",
+            "no source reaches it: the lowering's default arms answer a construct the front end admitted and no arm compiles",
+            19);
+
+        static ILookup<int, string> With(ILookup<int, string> real, params string[] rows) => real
+            .SelectMany(static group => group.Select(row => (Code: group.Key, Row: row)))
+            .Concat(rows.Select(static row => (Code: 2299, Row: row)))
+            .ToLookup(static pair => pair.Code, static pair => pair.Row);
+
+        IEnumerable<string> Run(DiagnosticRegistryRow row, ILookup<int, string> lookup) => ArchitectureRules
+            .N7([.. Registry, row], corpus, sourceCorpus, lookup)
+            .Where(static violation => violation.Contains("2299", StringComparison.Ordinal));
+
+        // Admitted: a new seam code onto which the mapping maps one of the two meanings, or both.
+        Assert.Empty(Run(added, With(mapped, "EX0024")));
+        Assert.Empty(Run(added, With(mapped, "EE0021")));
+        Assert.Empty(Run(added, With(mapped, "EE0021", "EX0024")));
+
+        // Refused: another meaning, a second meaning beside an admitted one, no meaning at all, a
+        // row of an earlier revision, a core-result row, and an admitted meaning with no reason.
+        Assert.Contains(Run(added, With(mapped, "EX0013")), static violation => violation.Contains(
+            "the mapping maps onto it EX0013, where the rule admits a new defensive code only for EE0021 and EX0024",
+            StringComparison.Ordinal));
+        Assert.Contains(Run(added, With(mapped, "EX0024", "EX0028")), static violation => violation.Contains(
+            "the mapping maps onto it EX0024, EX0028", StringComparison.Ordinal));
+        Assert.Contains(Run(added, mapped), static violation => violation.Contains(
+            "the mapping maps no catalogue row onto it", StringComparison.Ordinal));
+        Assert.Contains(Run(added with { Since = 18 }, With(mapped, "EX0024")), static violation => violation.Contains(
+            "it is not an embedder-seam row added at revision 19 or later", StringComparison.Ordinal));
+        Assert.Contains(Run(added with { Half = "core-result" }, With(mapped, "EX0024")), static violation => violation.Contains(
+            "it is not an embedder-seam row added at revision 19 or later", StringComparison.Ordinal));
+        Assert.Contains(Run(added with { Case = "unreachable" }, With(mapped, "EX0024")), static violation => violation.Contains(
+            "claims to be unreachable and states no reason", StringComparison.Ordinal));
+
+        // The witness: a registry whose two new defensive rows hold meanings the rule does not
+        // admit, read with the meanings the witness's own header states for them.
+        var witness = Witness("N7-a-new-defensive-code-for-a-meaning-the-rule-does-not-admit.txt.witness");
+        var witnessMeanings = new[] { (Code: 2105, Row: "EX0028"), (Code: 2106, Row: "EX0013") }
+            .ToLookup(static pair => pair.Code, static pair => pair.Row);
+        var violations = ArchitectureRules
+            .N7(DiagnosticRegistry.Read(witness), corpus, sourceCorpus, witnessMeanings)
+            .ToArray();
+
+        Assert.Contains(violations, static violation => violation.Contains(
+            "registry row 2105 claims to be unreachable and is not one of the rows this rule admits as unreachable: " +
+            "it is not in its list of codes, and the mapping maps onto it EX0028",
+            StringComparison.Ordinal));
+        Assert.Contains(violations, static violation => violation.Contains(
+            "registry row 2106 claims to be unreachable and is not one of the rows this rule admits as unreachable: " +
+            "it is not in its list of codes, and the mapping maps onto it EX0013",
+            StringComparison.Ordinal));
+        Assert.Contains(violations, static violation => violation.Contains(
+            "registry row 2107 claims to be unreachable and is not one of the rows this rule admits as unreachable: " +
+            "it is not in its list of codes, and the mapping maps no catalogue row onto it",
+            StringComparison.Ordinal));
     }
 
     [Fact]
@@ -620,7 +716,8 @@ public sealed class DiagnosticRegistryRuleTests
             ("N7", () => ArchitectureRules.N7(
                 Registry,
                 DiagnosticRegistry.CorpusCases(DiagnosticRegistry.CorpusText),
-                DiagnosticRegistry.SourceCases(DiagnosticRegistry.SourceCorpusText))),
+                DiagnosticRegistry.SourceCases(DiagnosticRegistry.SourceCorpusText),
+                DiagnosticRegistry.MappedRows(DiagnosticRegistry.MappingText))),
             ("N8", () => ArchitectureRules.N8(
                 Registry, DiagnosticRegistry.Mirror(Parse(DiagnosticRegistry.MirrorPath)))),
             ("N9", () => ArchitectureRules.N9(
