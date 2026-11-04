@@ -63,8 +63,9 @@ It prints one line per control and exits 0 only when every control behaves as `c
 | C17 | 2304, defensive, whose mapping row does not say it is defensive *(added 2026-11-04)* | E13 |
 | C18 | 2304, defensive, with no reason in its registry row *(added 2026-11-04)* | E13 |
 | C19 | 2304, defensive, also reached by `EX0002`, a meaning E13 does not admit *(added 2026-11-04)* | E13 |
-| R1 | this checkout's mapping and registry, stated at revision 19 | at 18: E10, E11, E12; at 19: passes |
-| R2 | this checkout's mapping and registry, the four revision-19 inputs named where no file is | at 18: passes; at 19: unreadable |
+| C20 | 2304, defensive, reached by both `EE0021` and `EX0024`, where each takes its own code *(added 2026-11-04, before any run)* | E13 |
+| R1 | at 18: this checkout's mapping and registry, stated at revision 19; at 19: the stage table's digest changed and the owning decision removed | at 18: E10, E11, E12; at 19: E11, E12 |
+| R2 | this checkout's mapping and registry, the four revision-19 inputs named where no file is | at 18: passes; at 19: unreadable, naming a path it left absent |
 
 C10, a new code made defensive for `EX0002`'s meaning, is the control that the widening of E13 still
 refuses what it refused before: `EX0002` is not one of the two meanings E13 admits. F0, which carries
@@ -80,8 +81,21 @@ R2 must be unreadable, because from 19 the four inputs are read and an absent on
 pass. They read: "R1 | this checkout's mapping and registry, stated at revision 19 | E10, E11, E12" and
 "R2 | this checkout at revision 18, the four revision-19 inputs named where no file is | passes".
 
+*Made exact in a later commit of the same change, before any run (2026-11-04).* At 19, R1 as first
+restated set the revision line to 19 on records already at 19, which repeated the plain check and
+tested nothing; and R2 counted any input that could not be read as the one it is about. An expectation
+may now name its own edits: at 19, R1 changes the mapping's `stage-table-sha256` and removes the
+registry's `owning-decision` line from the records the registry commit wrote, and must be refused at
+E11 and E12, which shows the revision-19 checks bite on this checkout's own records. R2 at 19 is as
+stated only when the error names one of the paths it left absent. The sentence above read "At 19, R1,
+which sets the revision line to 19 whatever it was, reads the records the registry commit wrote and
+must pass".
+
 A control lists the checks that must be among the refusals; an edit that breaks more than one check
-(C1, C2 and C15 do) is refused by those too, and the line the checker prints names them.
+(C1, C2, C15 and C19 do) is refused by those too, and the line the checker prints names them. C19
+moves `EX0002`'s only mapping row onto 2304, so 2105 is left reached by no row and E6 and E7 refuse
+it as well; with `CHECK_FRONTEND_MAPPING_VERBOSE` set, its E13 line names `EX0002` beside `EX0024`
+(noted 2026-11-04, before any run).
 
 ## What revision 19 must state, so that these checks can read it
 
@@ -99,7 +113,9 @@ The registry commit of step 1 writes the files these checks read, and it may not
   mints no code for those three, on the owner's decision of that day, so no row says it; the check and
   the fixture's 2211 stay)*;
 - *(added 2026-11-04)* a code the registry adds may instead be a `defensive` row, whose case states why
-  no source reaches it, when the mapping maps onto it no catalogue row but `EE0021` or `EX0024` and its
-  `registry` row's `notes` says `defensive`; rule N7's `DefensiveRows` admits the same two;
+  no source reaches it, when the mapping maps onto it exactly one catalogue row, `EE0021` or `EX0024`,
+  and its `registry` row's `notes` says `defensive`; rule N7's `DefensiveRows` admits the same two, one
+  code each (made exact in a later commit of the same change, before any run: it read "maps onto it no
+  catalogue row but `EE0021` or `EX0024`", which C20 now shows E13 refuses when it is both);
 - `Test262Run`'s `Refused` names, before its first `Test262Verdict.Unsupported`, exactly the codes it
   grades unsupported.
