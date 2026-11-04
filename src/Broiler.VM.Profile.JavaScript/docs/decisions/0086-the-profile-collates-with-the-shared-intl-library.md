@@ -7,7 +7,9 @@
 [JSD-0084](0084-collation-moves-to-the-shared-intl-library.md), the area's verdict, which leaves this cut-over to
 "the next free JSC, or ... a section of this record" (its section "Correction entries"). **The code landed in the
 changes before this record**, on one branch that lands as one merge (JSD-0084 decision E14), so that the local
-pre-checks this record cites could be taken at commits of the code it judges; this record is a change after them.
+pre-checks this record cites could be taken at commits of the code it judges; this record is a change after them. A
+review of the branch found three small corrections to the product source, which `066f012` makes after this record was
+first written and before its revision that says so; it changes no answer (section 4).
 
 **Date:** 2026-11-04.
 
@@ -56,6 +58,7 @@ re-pin to the version carrying the collator (owner approval)" has nothing to do,
 |---|---|
 | `eb29fb8` | The cut-over: `JsCollator`, `JsCaseFirst` and `JsCollationData` deleted, `NewCollator`'s tailoring core and `CollatorKeyData` replaced by calls to the library, `localeCompare` and the bound `compare` repointed; the review record's count; the assurance artefacts |
 | `f2bcca4` | Rule I5 registers every type and member the cut-over deleted (section 5) |
+| `066f012` | After the review: `CompareStrings` is private, as its only callers are `JsRealm`'s own; two comments on the collation data's adapter and one on `CollatorLocaleData` say what they read; the assurance artefacts |
 
 **What did not move.** This family's tables (`JsCldrTables.g.cs`, held by rule N28), its CLDR pin (rule N27), the
 Format assembly's `IJsIntlData` and `JsIntlTable`, `JsComposition.IntlData`, `JsIntlTables`' name, `JsEngine`'s
@@ -70,7 +73,7 @@ roots' assemblies, the default locale `en-US`, the available locales, and option
 
 | Seam | What it is |
 |---|---|
-| `JsIntlTables.CollationData` (new, internal) | The library's `UcaCollationData` over a `JsIntlDataSet`, the adapter `LocaleData` reads too, which hands it the composition's `CollationRoot` and `CollationTailorings` unchanged; it decodes them once, on first use, thread-safely, as the deleted lazy did |
+| `JsIntlTables.CollationData` (new, internal) | The library's `UcaCollationData` over a `JsIntlDataSet` of its own, the adapter type `LocaleData` reads too, which holds only the data's reference and hands it the composition's `CollationRoot` and `CollationTailorings` unchanged; it decodes them once, on first use, thread-safely, as the deleted lazy did |
 | The settings table | `UcaCollationData` also reads `IntlTable.CollationSettings` (32), which SJL-17.3 appended for Broiler.JS's Thai; `JsIntlTable` does not define 32, so `JsIntlDataSet` answers it empty (JSD-0085 section 2), and no tailoring of this family's data states a setting |
 | Unchanged | `IJsIntlData`, `JsIntlTable` and `JsComposition.IntlData`; `JsIntlTables`' name and `JsEngine`'s constructor |
 
@@ -96,15 +99,19 @@ the data home's generator from this family's pins and compare it byte for byte, 
   - the collator is a `UcaCollator` under `UcaCollatorOptions.FromResolved(sensitivity, ignorePunctuation, caseFirst,
     numeric, tailoring)`, the same mapping the deleted constructor call made, with the profile's own
     `UnicodeNormalization`, `JsUnicode.Normalization`.
-- **`CompareStrings`** (new, `VM/JsRealm.Intl.cs`) is ECMA-402's CompareStrings for a collator object: it calls
-  `UcaCollator.Compare` with the engine's string-length ceiling and its meter, and maps the library's
+- **`CompareStrings`** (new, private, `VM/JsRealm.Intl.cs`) is ECMA-402's CompareStrings for a collator object: it
+  calls `UcaCollator.Compare` with the engine's string-length ceiling and its meter, and maps the library's
   `NormalizedStringTooLong` to the `RangeError` "Invalid string length" that `normalize` throws, which `JsCollator`
-  threw through `NormalizeText`.
+  threw through `NormalizeText`. A probe added after the review, of strings whose NFD form falls below, at and past the
+  ceiling, through the bound `compare` and `localeCompare` under the root, German search and phonebook, answers as at the
+  base, and its refusal's charge is the base's (section 4).
 - **Repointed callers:** the bound `compare` (`VM/JsRealm.Intl.cs:148`, was `:135` at `68cad8b`) and
   `String.prototype.localeCompare` (`VM/JsRealm.String.cs:641`, was `:639`), which still makes its collator with the
   realm's own `%Intl.Collator%`; `CollatorLocaleData.SortLocaleData`, which `Intl.Locale.prototype.getCollations`
-  (`VM/JsRealm.Locale.cs:125`) and `Intl.supportedValuesOf` read, now reads `KeyValues`, where it read
-  `CollatorKeyData`.
+  (`VM/JsRealm.Locale.cs:125`) reads through the library's Locale info, now reads `KeyValues`, where it read
+  `CollatorKeyData`. `Intl.supportedValuesOf("collation")` does not read it: the library's `SupportedValues.Of` reads
+  `CollatorLocaleData.Collations`, the fixed list `phonebk` the adapter already held at `68cad8b`, which this change
+  does not touch and which reads no table.
 - **What stays the engine's**, as JSD-0084's decision item 4 lists it: the `Intl.Collator` object and prototype,
   `JsCollatorObject` with its resolved options, the bound `compare` and its caching, `localeCompare`'s coercion, the
   errors and their messages, and the default-locale and available-locale providers.
@@ -123,10 +130,15 @@ twins answer as at the base (section 4).
 
 ### 4. Evidence at this change
 
-Local pre-checks, taken after each commit of the branch and before the next, on binaries built at it (a commit that
-changes no product source keeps the binaries before it), against base answers taken at `68cad8b` before any change, with
-the scripts and logs kept outside the tree; they are not evidence of the rule, whose runs are SJL-17.6's at the base and
-after commits. No figure of them is quoted here.
+Local pre-checks, on binaries built at each commit of the branch that changes product source (a commit that changes
+none keeps the binaries before it), against base answers on binaries built at `68cad8b` and kept, with the scripts and
+logs kept outside the tree; they are not evidence of the rule, whose runs are SJL-17.6's at the base and after commits.
+No figure of them is quoted here. **When they were taken.** The base's test262 runs, checks, twins, probes and charge
+probes were taken before any change was committed, and the cut-over's (`eb29fb8`) before the next commit. The collation
+vectors were not: the base's ran on the kept `68cad8b` binaries after `eb29fb8` was committed, and the cut-over's
+finished after `f2bcca4` was, which changes no product source. The review's corrections, `066f012`, were taken whole
+again, on binaries built at it, against the same base answers, before the next commit; with them, two probes the review
+asked for, run on the kept base binaries first, and a second run of the base's checks.
 - **test262**, `test/intl402/Collator`, `test/intl402/String/prototype/localeCompare` and
   `test/built-ins/String/prototype/localeCompare`, in the bytecode and the native forms: no variant moved from its base
   answer.
@@ -135,7 +147,10 @@ after commits. No figure of them is quoted here.
 - **Fuel ceilings**, the collation selection at four low ceilings in the bytecode form: no variant moved.
 - **The slice compiler's `--checks`**, built in Release and run in a `git archive` of the commit: every check passes, and
   every line of the intl, tzdb and temporal checks, part B's collation checks and the `orderings` check among them,
-  reads as at the base.
+  reads as at the base. Of the other checks' lines, with addresses and wall-clock timings set aside, one differed at
+  the cut-over: a native baseline layout check's allocated-byte figure, whose verdict holds at both commits. A second
+  run of the base's checks on the same base binaries moves that figure too, and nothing else, so it varies between runs
+  of one commit; at `066f012` every line reads as at the base.
 - **Part C's twins**, every `*.small.js` twin of `src/tests/forms/wide`, bisected at the base under the bytecode form
   with the command-line root: each completes at its base figure and is refused on fuel one below, in both forms, with
   the base's answer.
@@ -144,7 +159,8 @@ after commits. No figure of them is quoted here.
   every usage, the four options and their extensions, lone surrogates, `resolvedOptions`, the option read order, the
   errors with their names and messages, `localeCompare`, the bound `compare`, `getCollations` and
   `supportedValuesOf("collation")`, in both forms; and five charge probes, bisected at the base: every line answers as
-  at the base.
+  at the base. After the review, a probe of the string-length ceiling through `CompareStrings` (section 2) and a sixth
+  charge probe, of its refusal, bisected at the base, answer as at the base at `066f012`.
 - **The collation vectors**: the conformance root over Broiler.JS's corpus revision 34, from the scratch archive bundle
   `sjl-17-001`'s `vectors/scratch-pin-revision-34.pin` pins, at the base and at the cut-over: every collation vector
   answers alike, and so does every other.
@@ -195,15 +211,34 @@ it reads already, where the adapters live.
 ## Readings only an embedder's data can show
 
 Every shipped answer is unchanged by these, and no probe moved.
+Each is read from the code, not run: no composition of this family carries other collation tables, and the pre-check
+runs only this family's data.
 - **When the tables are decoded.** `JsCollationData` was decoded when `NewCollator` first read `JsIntlTables.Collation`,
   after the `sensitivity` and `ignorePunctuation` reads; `UcaCollationData` decodes on the first question, which is now
-  ResolveLocale's `co` values, before them, and `getCollations` and `supportedValuesOf` now ask it too. Decoding charges
-  nothing, so no meter reading moves; an embedder's malformed tables fail at that earlier point, with the library's
-  `InvalidDataException` where the deleted decoder failed with an index error, as an internal defect either way.
+  ResolveLocale's `co` values, before them, and `Intl.Locale.prototype.getCollations` now asks it too
+  (`supportedValuesOf` does not; section 2). Decoding charges nothing, so no meter reading moves; an embedder's malformed
+  tables fail at that earlier point, with the library's `InvalidDataException` where the deleted decoder failed with an
+  index error, as an internal defect either way.
+- **Data without the collation tables.** `IJsIntlData` lets an embedder's data answer a table empty, and the profile
+  does not require the collation tables. With no root table, the deleted code failed in `NewCollator` and so in
+  `localeCompare`, after the `sensitivity` and `ignorePunctuation` reads, with an index error; the library fails there
+  too, with its `InvalidDataException` ("the data set carries no root collation"), before those two reads. And
+  `getCollations`, which answered the deleted fixed list (`phonebk` for German, nothing otherwise) without reading the
+  tables, now fails the same way, as an internal defect, where it answered.
+- **Fewer tailorings.** Tables with a root but without German `phonebook` no longer offer `phonebk`: `getCollations`
+  drops it, and `de-u-co-phonebk` or the `collation` option `phonebk` resolve to `de` and `default`, where the deleted
+  code resolved `phonebk` and then compared by the root, as it does now; `supportedValuesOf("collation")` still lists
+  `phonebk`. Tables with `und-search` but not German `search` now give German search `und-search`, where the deleted
+  code compared by the root.
 - **More tailorings.** An embedder's tables that carried a tailoring named `language-type` would now be offered as that
-  language's collation by `KeyValues` and chosen by `TailoringFor`, and a `CollationSettings` table its data could not
-  carry through `IJsIntlData` would not be read. This family's tables carry three, and the answers are the deleted
+  language's collation by `KeyValues`, and so by `getCollations`, and chosen by `TailoringFor`, but
+  `supportedValuesOf("collation")` would not list it, as it reads the fixed `Collations` list and not the tables; and a
+  `CollationSettings` table its data could not carry through `IJsIntlData` would not be read. This family's tables carry
+  the root and three tailorings, German `phonebook` and `search` and root `search`, and the answers are the deleted
   code's.
+- **Not taken.** Keeping the deleted fixed lists for such data would put back the key data decision E11 deletes, so the
+  adapter reads the data; making `Collations` read the tables is a product change of its own, with its own pre-check, and
+  SJL-17.4 does not make it.
 
 ## Where the plan, JSD-0084 and the code disagreed
 
@@ -247,7 +282,8 @@ Settled in the change that files it. **This record is reopened only by a new dat
 
 - a member rule I5 registers is declared again in the family's product sources;
 - an adapter of section 2 computes a collation element, a weight, a level comparison, a tailoring's choice or a key's
-  values itself;
+  values itself, `CollatorLocaleData.Collations` aside: the fixed list `supportedValuesOf("collation")` reads, which
+  the adapter held at `68cad8b` and this change does not touch (section 2);
 - a library status reaches a script as another error type or message than the base gave;
 - a test262 verdict, a check, a dataset line, a twin's figure or a charge moves at the after commit, without a dated
   decision admitting it;

@@ -183,8 +183,11 @@ bytes, but a table of those alone orders no other ideograph.
 records it), and lands in one merge: that merge is this bundle's after commit, and its first parent the base, each named
 here by all forty digits when it lands.
 [JSD-0086](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0086-the-profile-collates-with-the-shared-intl-library.md)
-records it. The branch's local pre-checks, against answers taken at `68cad8b` before any change, are no run of this
-bundle's rule and are kept outside the tree; no figure of them is quoted. Nothing under `src/tests/cldr/` or
+records it. The branch's local pre-checks, against answers on binaries built at `68cad8b` and kept, are no run of this
+bundle's rule and are kept outside the tree; no figure of them is quoted. The base's test262 runs, checks, twins and
+probes were taken before any change was committed; its collation vectors ran on the kept base binaries after the
+cut-over's first commit, and the cut-over's finished after the next, which changes no product source (JSD-0086,
+section 4). Nothing under `src/tests/cldr/` or
 `src/tests/temporal/` changes on the branch, and `JsCldrTables.g.cs` is the same file at both ends of it (rule N28). No
 root's assemblies move, so the composition register's evidence stays bundle `sjl-9-001`'s `cutover/closures/`. Part A's
 hosted runs, parts B and C, and the exclusion for the code that left this component's assurance coverage are SJL-17.6's.

@@ -14012,20 +14012,21 @@ change.
 
 **What the plan said.** Rule I5's register named no member of collation, and its SJL-9.4 paragraph said that
 "NewCollator and CollatorKeyData, collation, which is SJL-17's" stay; its register row named the milestones to SJL-9.4.
-The review record counted 320 covered files, and its JSD-0043 paragraph named "JsCollationData.cs and JsCollator.cs, the
-collation elements and their comparison". `JsRealm.Intl`'s remarks said "The Collator's own steps and data are SJL-17's
-and stay", and `JsIntlTables`' that the collation tables are those "which `JsCollationData` decodes until SJL-17.4".
-`inventory.md`'s collation row named `JsCollator` and `JsCollationData` as this family's; the area design's deletion
-list read "**at SJL-17:** `JsCollator` and `JsCollationData`"; and the milestone's SJL-17.4 section listed them as to be
-deleted.
+The review record's test (`ReviewRecordRuleTests.cs`) asserted the count of covered files SJL-9.4's deletions left, and
+its JSD-0043 paragraph named "JsCollationData.cs and JsCollator.cs, the collation elements and their comparison".
+`JsRealm.Intl`'s remarks said "The Collator's own steps and data are SJL-17's and stay", and `JsIntlTables`' that the
+collation tables are those "which `JsCollationData` decodes until SJL-17.4". `inventory.md`'s collation row named
+`JsCollator` and `JsCollationData` as this family's; the area design's deletion list read "**at SJL-17:** `JsCollator`
+and `JsCollationData`"; and the milestone's SJL-17.4 section listed them as to be deleted.
 
 **What replaced it.** The profile's collation is `Broiler.ECMAScript.Intl`'s `UcaCollator` over `UcaCollationData`, at
 `0.1.0-preview.9`, which SJL-9.4 admitted; no package moves. Rule I5's register names `JsCollator`, `JsCaseFirst` and
 `JsCollationData` by type and `JsRealm.CollatorKeyData` and `JsIntlTables`' `Collation` and `collation` by member, with
 a paragraph for SJL-17.4 and a dated note on SJL-9.4's; its register row names SJL-17.4 and JSD-0086, with a dated
-revision quoting what it read. The review record counts 318 files, with a paragraph saying which two went, and the
-JSD-0043 paragraph gains a dated note. The two remarks gain dated notes quoting what they read. `inventory.md`, the area
-design and the milestone keep their text as the programme wrote it, each with a dated note naming what SJL-17.4 deleted.
+revision quoting what it read. The review record's test asserts a count two files fewer, with a paragraph saying which
+two went, and the JSD-0043 paragraph gains a dated note. The two remarks gain dated notes quoting what they read.
+`inventory.md`, the area design and the milestone keep their text as the programme wrote it, each with a dated note
+naming what SJL-17.4 deleted.
 
 **Authority and date.** [JSD-0084](decisions/0084-collation-moves-to-the-shared-intl-library.md)'s decisions E7, E11
 and E13, taken by the owner on 2026-11-01 under the direction of 2026-10-18; rules I5 and N28; the programme's work
