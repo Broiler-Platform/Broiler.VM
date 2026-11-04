@@ -307,10 +307,11 @@ runs are SJL-9.6's at the base and after commits. No figure of them is quoted he
 - **Packages.** `packages.md` and `support.md` name JS-10-015 ([JSC-324](../roadmap.corrections.md#jsc-324)).
 - **Support.** `support.md`'s row of proposals not provided names `canonical-tz` among the five admitted, with a dated
   note.
-- **The closures** are retaken from a clean checkout after the branch's last product-source change, into
-  `docs/evidence/sjl-9-001/cutover/`; its `identity.txt` names the commit checked out and the product sources'
-  digest, which the last product-source change gives too, and `cutover/README.md` names both commits; SJL-9.6 takes them again at the
-  after commit (exit clause 14).
+- **The closures** are retaken from a clean checkout of `b3fd2ba`, after every product-source change but
+  `65ad719`'s, rule I5's architecture test, which no root compiles, into `docs/evidence/sjl-9-001/cutover/`; its
+  `identity.txt` names `b3fd2ba` and that checkout's product-sources digest. `cutover/README.md` records a retake from
+  `1fac124`, after `65ad719`, whose closures, catalogs and package identities match byte for byte, and why it is
+  not committed. SJL-9.6 takes them again at the after commit (exit clause 14).
 
 ### 12. `canonical-tz`'s entry names JSD-0082
 

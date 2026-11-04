@@ -35,6 +35,23 @@ byte the one the first collection retained; the transcripts differ in timings an
 alone, and each Native AOT image record has a new digest. The paragraph above describes the first collection, which
 named `2b798a7` and recorded the product sources' digest `37743fbc…`; it is kept as written.
 
+*(Revised 2026-11-04, later, after the review of SJL-9.4's records. The paragraph above said the branch's later
+changes are "documents only"; one is not.)* `65ad719` changed one path outside the documents after `b3fd2ba`: rule
+I5's architecture test, `src/tests/Broiler.VM.Architecture.Tests/I5RetiredDuplicatesRuleTests.cs`, which no root
+compiles. The product sources' digest moved with it, to `14c1478e…` at `1fac124`, while no root's input moved. The
+closures were taken again by the same step from a clean checkout of `1fac124`, the change after it:
+- every root's JIT and trimmed publish and run, every closure's JIT and trimmed lines and every catalog matched the
+  committed ones byte for byte, but every Native AOT publish failed at restore. NuGet's audit reported error NU1903,
+  advisory GHSA-p3jp-9v83-76w9 against `Microsoft.DotNet.ILCompiler` 10.0.12, which its vulnerability data had not
+  reported at the collection from `b3fd2ba`, and the collector publishes with warnings as errors;
+- a further collection from the same checkout, with NuGet's audit turned off in the environment and nothing else
+  changed, published and ran every root in three modes, and every closure, catalog and admitted package's identity
+  matched the committed ones byte for byte.
+
+Neither is committed, since the first is incomplete and the second departs from the step's method; both are kept
+outside the tree. The collection from `b3fd2ba`, which [`identity.txt`](identity.txt) names, stays this directory's.
+SJL-9.6 takes the closures again at the after commit, where the advisory has to be met first.
+
 The packages the closures carry are the ones the allow-list admits, restored from nuget.org;
 [`closures/admitted-packages.json`](closures/admitted-packages.json) names each by its version, its content and
 archive hashes and the commit its nuspec names (rule I7).
