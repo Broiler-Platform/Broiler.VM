@@ -9,6 +9,13 @@
 **Rule:** [`decision-rule-area.md`](decision-rule-area.md), written at SJL-9.1 before any code it judges existed: no
 data-home generator, no shared Intl member and no cut-over.
 
+*(Added 2026-11-04.)* The rule is revised, before any of its runs, by
+[`decision-rule-area-revised-2026-11-04.md`](decision-rule-area-revised-2026-11-04.md), on the owner's decision of
+2026-11-04, which JSD-0082's dated note on decision D15 records: part B's class Z8 also admits the guard
+`temporal/t1/data-without-the-tz-release-reads-its-zones`, whose expected literal and output move from the primary
+`Asia/Kolkata` to the identifier as given, `Asia/Calcutta`, its verdict passing at both commits, and nothing else.
+`decision-rule-area.md` is not edited, and section 1's summary of part B describes it as filed.
+
 **Records:** [JSD-0082](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md),
 the area verdict, which records decisions SJL-D-22 and SJL-D-24 and the owner's decisions D1 to D35 of 2026-10-26. Its
 input is [`correspondence.md`](correspondence.md), with:
