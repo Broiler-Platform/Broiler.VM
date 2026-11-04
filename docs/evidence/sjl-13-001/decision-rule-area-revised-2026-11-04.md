@@ -80,6 +80,14 @@ commit, before the base. The registry commit then mints the codes and adds their
    and says it is defensive,". Part E's three controls and its MET line are unchanged; the checker's own controls,
    restated by the second tools commit, include its control of a defensive code for a meaning it does not admit.
 
+9. **"The commits", the registry commit, once more** *(added 2026-11-04, in a later commit of the change that files
+   this revision, before any run it judges)*. The registry commit's list, "and nothing else outside `docs/`", now
+   also admits `src/tests/Broiler.VM.Architecture.Tests/DiagnosticRegistryRuleTests.cs`, for the assertions that pin
+   the registry's revision and its counts and nothing else: rule N5's revision and vocabulary counts, and rule N7's
+   counts of `corpus`, `source` and defensive embedder-seam rows. Those assertions pin revision 18 at the base, so a
+   registry commit that states revision 19 and adds codes could not pass the architecture tests without changing
+   them. Neither rule N5 nor rule N7, nor any other assertion of that file, changes at the registry commit.
+
 **What does not change.** Every other part, class and control, and the revision of 2026-11-02. Part B's population is
 the parse corpus's manifest as the base commit holds it, which the second tools commit does not change; its refused
 requests are not inputs of part B.
