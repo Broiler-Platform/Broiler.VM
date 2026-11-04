@@ -61,7 +61,7 @@ internal sealed partial class JsRealm
     private const int StringLengthCeiling = 1 << 24;
 
     /// <summary>Builds <c>String</c>, <c>String.fromCharCode</c> and <c>String.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=36D659
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8925C2
     // Broiler-Human:        PENDING
     private void SetupString()
     {
@@ -636,7 +636,9 @@ internal sealed partial class JsRealm
                     JsValue.Object(constructor),
                     [ArgOfString(arguments, 1), ArgOfString(arguments, 2)]);
 
-                return JsValue.Number(((JsCollatorObject)made.AsObject()).Collator.Compare(engine, text, other));
+                // THE COMPARISON IS THE SHARED LIBRARY'S since SJL-17.4 (JSD-0084): CompareStrings
+                // hands it the collator's UcaCollator and this engine's meter.
+                return JsValue.Number(CompareStrings(engine, (JsCollatorObject)made.AsObject(), text, other));
             }
 
             // THE ORDER IS ORDINAL OVER THE CANONICAL DECOMPOSITIONS. The specification allows any
