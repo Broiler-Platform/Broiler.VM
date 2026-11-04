@@ -27,6 +27,8 @@
     "TimeString and TimeZoneString; DateFromFields, DateSetTimeFields and DateSetDateFields, which keep the conversion and",
     "its order; JsTemporalCore.AddDays, one line; JsLocalTime.From, which reads the shared field operations; and",
     "JsZone.MondayFirst, which maps the shared WeekDay to the zone rules' Monday 0.",
+    "(Noted 2026-11-04, at SJL-9.4: \"JsLocalTime.From, which reads the shared field operations\" no longer stays; it went",
+    "with its type, which SJL-9.4's paragraph registers. The paragraph is kept as written.)",
     "",
     "SJL-7.4 (JSD-0075, applying JSD-0074): the Unicode area, whose owner is Broiler.Unicode. Format's lookups, its",
     "lexical classes and its folding and string-property readers are registered by type; so are the profile's",
@@ -46,6 +48,8 @@
     "reads CalendarYears through JsCalendarSystem.SharedYear; and JsIntlTables.TimeZones and Calendars, which build the",
     "database and the tables once per data instance. JsZone.MondayFirst, which SJL-6.4's paragraph names as an adapter",
     "that stays, went with its type: the zone rules it fed are the shared library's.",
+    "(Noted 2026-11-04, at SJL-9.4: \"JsZoneNames, which reads the database's regions, rules and daylight flag\" no longer",
+    "stays; it went whole, and SJL-9.4's paragraph registers it. The paragraph is kept as written.)",
     "",
     "SJL-10.4 (JSD-0079, applying JSD-0078): the Temporal core, whose shared home is Broiler.ECMAScript.Algorithms'",
     "Temporal namespace. The types deleted whole are registered by type: JsTemporalCore and the records it declared",
@@ -63,7 +67,30 @@
     "resolve relativeTo and a wall time's instant; TimeZoneOf, which hands a zone to the core as TemporalTimeZone; and",
     "the realm files' methods, which keep their reads and map each TemporalStatus in StatusError. JsTemporalCore.AddDays,",
     "which SJL-6.4's paragraph names as an adapter that stays, went with its type, and so did the calendar systems' Year",
-    "and JsCalendarSystem.SharedYear, which SJL-8.5's paragraph names: the shared calendars read CalendarYears themselves."
+    "and JsCalendarSystem.SharedYear, which SJL-8.5's paragraph names: the shared calendars read CalendarYears themselves.",
+    "",
+    "SJL-9.4 (JSD-0085, applying JSD-0082): locale data and the Intl algorithms, whose shared home is",
+    "Broiler.ECMAScript.Intl, over the locale data this family's composition hands in, which JsIntlDataSet adapts and",
+    "JsIntlTables.LocaleData decodes as the library's TableLocaleData. The types deleted whole are registered by type:",
+    "JsLocaleTag; JsDecimal.cs's, JsPluralRule.cs's, JsNumberData.cs's and JsNumberFormatter.cs's; JsDateData.cs's,",
+    "JsDatePatternGenerator, JsDateIntervalFormat, JsDateTimeFormatter.cs's and JsZoneNames.cs's; JsLocaleInfo, whose",
+    "members SJL-9.4's earlier sub-areas cut before it went; JsTemporalDateFormats; and JsRealm's nested JsDigitOptions.",
+    "The members cut from the types that stay are registered by member: JsIntlTables' decoders and their lazies, the",
+    "JsRealm cores of Intl, Locale, NumberFormat, PluralRules, RelativeTimeFormat, ListFormat, DisplayNames,",
+    "DateTimeFormat and DurationFormat, and the Intl objects' fields that the library's records replace.",
+    "JsRealm.DateTimeComponents and DateTimeValue are registered too: they were renamed DateTimeComponentOptions and",
+    "FormatValue to free the library's names, and a member of the old name would shadow the library's type. What stays",
+    "as adapters is not here: JsIntlTables, which keeps its name, and JsEngine's constructor, so that BigIntChecks'",
+    "accessor binds (decision D31); JsIntlDataSet; the Intl objects' constructors, which read every option in the",
+    "specification's order and check each as it is read; JsRealm's CanonicalizeLocaleList, ResolveLocale, FilterLocales,",
+    "IsTypeSequence and SupportedValuesOf, which keep their reads and charges and call LocaleId, LocaleNegotiation and",
+    "SupportedValues; SetNumberFormatDigitOptions, which keeps its reads and conversions and hands DigitOptionRules a",
+    "record; CreateDateTimeFormat, FormatValue, DateRangeValues and ResolveTimeZone; GetDurationUnitOptions and",
+    "ToDurationRecord, the argument's reading ECMA-402 states, which JSD-0082's decision D24 keeps here; the parts",
+    "arrays and their charges; and NewCollator and CollatorKeyData, collation, which is SJL-17's.",
+    "JsLocalTime.From, which SJL-6.4's paragraph names as an adapter that stays, went with its type, and so did",
+    "JsZoneNames, which SJL-8.5's paragraph names: the shared ZoneNamer reads the database's regions, rules and daylight",
+    "flag itself."
   ],
   "retired": [
     {
@@ -1940,6 +1967,746 @@
       "member": "Broiler.VM.Profile.JavaScript.JsTemporalParser.z",
       "milestone": "SJL-10.4",
       "replacedBy": "Broiler.ECMAScript.Temporal.TemporalGrammar, this family's parser moved whole, behind the thin wrapper JsTemporalParser keeps"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsAffixKind",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.AffixKind"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsAffixToken",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.AffixToken"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsCurrencyNames",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.CurrencyNames"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDateData",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeData and DateData, which JsIntlTables.DateTimeData builds over the format data"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDateField",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeField"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDateIntervalFormat",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateIntervalFormatter"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDatePart",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimePart"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDatePatternGenerator",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimePatternGenerator"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDateTimeFormatObject.Calendar",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat, which JsDateTimeFormatObject.Format holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDateTimeFormatObject.DateStyle",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat, which JsDateTimeFormatObject.Format holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDateTimeFormatObject.Formatter",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat, which JsDateTimeFormatObject.Format holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDateTimeFormatObject.HourCycle",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat, which JsDateTimeFormatObject.Format holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDateTimeFormatObject.Locale",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat, which JsDateTimeFormatObject.Format holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDateTimeFormatObject.NumberingSystem",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat, which JsDateTimeFormatObject.Format holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDateTimeFormatObject.Temporal",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat, which JsDateTimeFormatObject.Format holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDateTimeFormatObject.TimeStyle",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat, which JsDateTimeFormatObject.Format holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDateTimeFormatter",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormatter"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDayPeriodRule",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DayPeriodRule"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDecimal",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.IntlDecimal"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDecimalKind",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.IntlDecimalKind"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDisplayNamesObject.Fallback",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DisplayNamesCore, which JsDisplayNamesObject.Core holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDisplayNamesObject.Language",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DisplayNamesCore, which JsDisplayNamesObject.Core holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDisplayNamesObject.LanguageDisplay",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DisplayNamesCore, which JsDisplayNamesObject.Core holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDisplayNamesObject.Locale",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DisplayNamesCore, which JsDisplayNamesObject.Core holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDisplayNamesObject.Style",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DisplayNamesCore, which JsDisplayNamesObject.Core holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDisplayNamesObject.Type",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DisplayNamesCore, which JsDisplayNamesObject.Core holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDurationFormatObject.FractionalDigits",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DurationFormatCore, which JsDurationFormatObject.Core holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDurationFormatObject.HourMinuteSeparator",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DurationFormatCore, which JsDurationFormatObject.Core holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDurationFormatObject.Locale",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DurationFormatCore, which JsDurationFormatObject.Core holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDurationFormatObject.MinuteSecondSeparator",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DurationFormatCore, which JsDurationFormatObject.Core holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDurationFormatObject.NumberingSystem",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DurationFormatCore, which JsDurationFormatObject.Core holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDurationFormatObject.Style",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DurationFormatCore, which JsDurationFormatObject.Core holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsDurationFormatObject.Units",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DurationFormatCore, which JsDurationFormatObject.Core holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.Alias",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData, whose aliases LocaleId reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.Dates",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData's date tables, through JsIntlTables.FormatData and DateTimeData"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.IsKey",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData, whose extension keys and types LocaleId reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.LanguageAliases",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData, whose aliases LocaleId reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.Layered",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData's date tables, through JsIntlTables.FormatData and DateTimeData"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.Likely",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData, whose likely subtags LocaleId reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.Lines",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.IntlTableText, which TableLocaleData decodes every table with"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.LocaleInfo",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData's locale-information tables, through JsIntlTables.FormatData"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.Locales",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData; JsIntlTables.AvailableLocales reads its locale list"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.Numbers",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData, which decodes the number group once"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.Pairs",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData, which decodes every table"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.ReadAliases",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData, whose aliases LocaleId reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.ReadDates",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData's date tables, through JsIntlTables.FormatData and DateTimeData"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.ReadExtensions",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData, whose extension keys and types LocaleId reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.ReadLocaleInfo",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData's locale-information tables, through JsIntlTables.FormatData"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.ReadNumbers",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData, which decodes the number group once"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.TryType",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData, whose extension keys and types LocaleId reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.Unescape",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.IntlTableText, which TableLocaleData decodes every table with"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.ZoneNames",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData's metazone tables, which ZoneNamer reads through JsIntlTables.DateTimeData"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.aliases",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData, whose aliases LocaleId reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.dates",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData's date tables, through JsIntlTables.FormatData and DateTimeData"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.extensions",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData, whose extension keys and types LocaleId reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.likely",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData, whose likely subtags LocaleId reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.localeInfo",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData's locale-information tables, through JsIntlTables.FormatData"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.locales",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData; JsIntlTables.AvailableLocales reads its locale list"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.numbers",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData, which decodes the number group once"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsIntlTables.zoneNames",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData's metazone tables, which ZoneNamer reads through JsIntlTables.DateTimeData"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsListFormatObject.Locale",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.ListFormatter, which JsListFormatObject.Formatter holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsListFormatObject.Style",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.ListFormatter, which JsListFormatObject.Formatter holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsListFormatObject.Templates",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.ListFormatter, which JsListFormatObject.Formatter holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsListFormatObject.Type",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.ListFormatter, which JsListFormatObject.Formatter holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsLocalTime",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocalDateTime"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsLocaleInfo",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData, whose display names ZoneNamer reads, and LocaleInfo for the week and the script's direction"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsLocaleObject.Calendar",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleRecord, which LocaleRecord.TryCreate builds and JsLocaleObject.Record holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsLocaleObject.CaseFirst",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleRecord, which LocaleRecord.TryCreate builds and JsLocaleObject.Record holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsLocaleObject.Collation",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleRecord, which LocaleRecord.TryCreate builds and JsLocaleObject.Record holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsLocaleObject.FirstDayOfWeek",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleRecord, which LocaleRecord.TryCreate builds and JsLocaleObject.Record holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsLocaleObject.HourCycle",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleRecord, which LocaleRecord.TryCreate builds and JsLocaleObject.Record holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsLocaleObject.NumberingSystem",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleRecord, which LocaleRecord.TryCreate builds and JsLocaleObject.Record holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsLocaleObject.Numeric",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleRecord, which LocaleRecord.TryCreate builds and JsLocaleObject.Record holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsLocaleTag",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleId (parse, canonicalisation, aliases, likely subtags, maximise and minimise) and LocaleTag"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberData",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TableLocaleData, over JsIntlDataSet's adapter of the composition's IJsIntlData, as JsIntlTables.LocaleData, whose number tables NumberFormatter reads through ILocaleData"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberFormatter",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.NumberFormatter"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberPart",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.NumberPart"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsNumberPattern",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.NumberPattern"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsPluralOperands",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.PluralOperands"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsPluralRule",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.PluralEngine and PluralRule"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsPluralRulesObject.Formatter",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.PluralRulesRecord, which JsPluralRulesObject.Rules holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsPluralRulesObject.Language",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.PluralRulesRecord, which JsPluralRulesObject.Rules holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsPluralRulesObject.Type",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.PluralRulesRecord, which JsPluralRulesObject.Rules holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRawDecimal",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.IntlDecimal"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRawFormat",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.NumericFormat.RawFormat and FormattedNumeric"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.AdjustStylePattern",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat.Create and DateTimePatternGenerator, behind JsRealm.CreateDateTimeFormat, which keeps its option reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.CalendarKeyValues",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat.CalendarKeyValues"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.CanonicalCodeForDisplayNames",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DisplayNamesCore"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.CanonicalizeUValue",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleRecord.TryCreate and LocaleId, behind the Intl.Locale constructor, which keeps its option reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.CharOfHourCycle",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat.Create and DateTimePatternGenerator, behind JsRealm.CreateDateTimeFormat, which keeps its option reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.ClippedTime",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat, behind JsRealm.FormatValue"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.ComponentsOf",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat.Create and DateTimePatternGenerator, behind JsRealm.CreateDateTimeFormat, which keeps its option reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.CreatePartsFromList",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.ListFormatter"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateTimeComponents",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeComponents, the library's record of the components; the option names CreateDateTimeFormat reads are JsRealm.DateTimeComponentOptions, renamed to free the library's name"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateTimeFieldCodes",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DisplayNamesCore"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DateTimeValue",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeValue, the library's value to format; the adapter that hands it one is JsRealm.FormatValue, renamed to free the library's name"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DeconstructPattern",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.ListFormatter"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.Digits",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleRecord.TryCreate and LocaleId, behind the Intl.Locale constructor, which keeps its option reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DisplayName",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DisplayNamesCore"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DurationNumberFormat",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DurationFormatCore"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DurationSign",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DurationFormatCore"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.DurationUnits",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DurationFormatCore"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.FormatNumericField",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DurationFormatCore"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.FormatNumericUnits",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DurationFormatCore"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.FormatterCalendars",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.SupportedValues.Of, behind Intl.supportedValuesOf"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.FractionSettings",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DurationFormatCore"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.HourCycleOf",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat.Create and DateTimePatternGenerator, behind JsRealm.CreateDateTimeFormat, which keeps its option reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.HourCycleOfChar",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat.Create and DateTimePatternGenerator, behind JsRealm.CreateDateTimeFormat, which keeps its option reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.HourCyclesOf",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleInfo, behind the Intl.Locale information methods"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.IsFractionalSecondUnitName",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DurationFormatCore"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.IsValidDuration",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Temporal.TemporalLimits.CheckDuration, behind JsRealm.ToDurationRecord"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.IsWellFormedCurrencyCode",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.NumberFormatter.IsWellFormedCurrencyCode"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.IsWellFormedUnitIdentifier",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.NumberFormatter.IsWellFormedUnitIdentifier"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.Joined",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat, behind JsRealm.FormatValue"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.JsDigitOptions",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DigitOptions, which DigitOptionRules.SetNumberFormatDigitOptions answers behind JsRealm.SetNumberFormatDigitOptions"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.LanguageName",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DisplayNamesCore"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.LocaleExtensionKeys",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleRecord.TryCreate and LocaleId, behind the Intl.Locale constructor, which keeps its option reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.LookupMatchingLocale",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleNegotiation.MatchLocale, behind JsRealm.ResolveLocale"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.PartitionDurationFormatPattern",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DurationFormatCore"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.PartitionRelativeTimePattern",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.RelativeTimeFormatter"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.PluralCategoriesOf",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.PluralRulesRecord"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.PluralCategoryOrder",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.PluralRulesRecord"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.RegionPreference",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleId and LocaleRegionPreference"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.ReplaceHourCycle",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat.Create and DateTimePatternGenerator, behind JsRealm.CreateDateTimeFormat, which keeps its option reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.ResolvePlural",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.PluralRulesRecord"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.ResolvePluralRange",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.PluralRulesRecord"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.SanctionedUnits",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.NumberFormatter.IsWellFormedUnitIdentifier"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.SingularRelativeTimeUnit",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.RelativeTimeFormatter"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.SkeletonOfComponents",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat.Create and DateTimePatternGenerator, behind JsRealm.CreateDateTimeFormat, which keeps its option reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.StylePattern",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat.Create and DateTimePatternGenerator, behind JsRealm.CreateDateTimeFormat, which keeps its option reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.Subdivision",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleRecord.TryCreate and LocaleId, behind the Intl.Locale constructor, which keeps its option reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.TemporalFormatPattern",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat.Create and DateTimePatternGenerator, behind JsRealm.CreateDateTimeFormat, which keeps its option reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.TextDirectionOf",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleInfo, behind the Intl.Locale information methods"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.UpdateLanguageId",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleRecord.TryCreate and LocaleId, behind the Intl.Locale constructor, which keeps its option reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.WeekInfoOf",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleInfo, behind the Intl.Locale information methods"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.WeekdayKeys",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.LocaleInfo, behind the Intl.Locale information methods"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRealm.WithFractions",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DurationFormatCore"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRelativeTimeFormatObject.Language",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.RelativeTimeFormatter, which JsRelativeTimeFormatObject.Formatter holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRelativeTimeFormatObject.Locale",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.RelativeTimeFormatter, which JsRelativeTimeFormatObject.Formatter holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRelativeTimeFormatObject.NumberFormatter",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.RelativeTimeFormatter, which JsRelativeTimeFormatObject.Formatter holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRelativeTimeFormatObject.NumberingSystem",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.RelativeTimeFormatter, which JsRelativeTimeFormatObject.Formatter holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRelativeTimeFormatObject.Numeric",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.RelativeTimeFormatter, which JsRelativeTimeFormatObject.Formatter holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRelativeTimeFormatObject.PluralRules",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.RelativeTimeFormatter, which JsRelativeTimeFormatObject.Formatter holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsRelativeTimeFormatObject.Style",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.RelativeTimeFormatter, which JsRelativeTimeFormatObject.Formatter holds"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsTemporalDateFormats",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.DateTimeFormat, which formats a Temporal object itself, held as JsDateTimeFormatObject.Format"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsZoneKind",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.TimeZoneKind"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsZoneNames",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.ZoneNamer"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.JsZoneNaming",
+      "milestone": "SJL-9.4",
+      "replacedBy": "Broiler.ECMAScript.Intl.ZoneNaming"
     }
   ]
 }
