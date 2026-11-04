@@ -17,14 +17,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Broiler.ECMAScript.Intl;
 using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
-/// <c>Intl.DateTimeFormat</c>, the three <c>Date.prototype.toLocale*</c> methods through it, and
-/// <c>Intl.supportedValuesOf</c> (ECMA-402 s11, s8.3.2; JSD-0045).
+/// <c>Intl.DateTimeFormat</c> and the three <c>Date.prototype.toLocale*</c> methods through it
+/// (ECMA-402 s11; JSD-0045).
 /// </summary>
 /// <remarks>
 /// <para>
@@ -53,6 +54,12 @@ namespace Broiler.VM.Profile.JavaScript;
 /// any ASCII case, to its primary identifier: a name resolving to UTC to <c>UTC</c>, IANA's
 /// <c>Etc/GMT+N</c> and <c>Etc/GMT-N</c> zones to themselves as fixed offsets, and any other to its zone,
 /// whose offset is read at each instant formatted. Any other name is a <c>RangeError</c>."
+/// </para>
+/// <para>
+/// <i>Revised 2026-11-03, at SJL-9.4's review of sub-areas (d) and (e).</i> The summary read:
+/// "<c>Intl.DateTimeFormat</c>, the three <c>Date.prototype.toLocale*</c> methods through it, and
+/// <c>Intl.supportedValuesOf</c> (ECMA-402 s11, s8.3.2; JSD-0045)." <c>Intl.supportedValuesOf</c> left
+/// this file for <c>JsRealm.Intl.cs</c> at SJL-9.4's sub-area (a), and the summary still named it.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=60DD8D
@@ -91,7 +98,7 @@ internal sealed partial class JsRealm
         ("timeZoneName", ["short", "long", "shortOffset", "longOffset", "shortGeneric", "longGeneric"]),
     ];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5CAFA1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3C4D97
     // Broiler-Human:        PENDING
     private void SetupDateTimeFormat(JsObject intl)
     {
@@ -198,7 +205,9 @@ internal sealed partial class JsRealm
             {
                 if (name == "fractionalSecondDigits")
                 {
-                    options.DefineOrdinary(name, JsValue.Number(value[0] - '0'));
+                    // The library writes the S-run's length as a decimal string; it is parsed whole, not by its
+                    // first character, so that a longer string could not read as a wrong Number.
+                    options.DefineOrdinary(name, JsValue.Number(int.Parse(value, NumberStyles.None, CultureInfo.InvariantCulture)));
                 }
                 else
                 {
@@ -616,7 +625,7 @@ internal sealed partial class JsRealm
     /// without regard to ASCII case. [[TimeZone]] is the identifier as given, in the database's case,
     /// and the zone is named by its primary identifier (row Z8, JSD-0082 decision D15). This keeps the
     /// option's conversion and the two <c>RangeError</c>s; the resolution charges nothing, as before
-    /// (JSD-0082, decision D18, row L43).
+    /// (JSD-0082, decision D18, row T40).
     /// </summary>
     /// <remarks>
     /// <i>Revised 2026-11-03, at SJL-9.4's sub-area (d).</i> The summary read: "The time zone an option

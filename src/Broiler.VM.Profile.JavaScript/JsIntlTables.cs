@@ -70,6 +70,12 @@ namespace Broiler.VM.Profile.JavaScript;
 /// paragraph is kept as written.</i>
 /// </para>
 /// <para>
+/// <i>Noted 2026-11-03, at SJL-9.4's review of sub-areas (d) and (e): the two paragraphs above that
+/// say the date, display-name and zone-name decoders "stay until their sub-areas move" and "stay until
+/// sub-area (d) moves" are kept as written; sub-area (d) removed those decoders, as the next paragraph
+/// says.</i>
+/// </para>
+/// <para>
 /// <b>The date formats read the same decoder since sub-area (d)</b> (JSD-0082, decision D24): the
 /// date, time-data and day-period decoder with its <c>JsDateData</c>, the display-name decoder with its
 /// <c>JsLocaleInfo</c>, and the zone-name decoder with its <c>JsZoneNames</c> left this type, and
@@ -182,6 +188,25 @@ internal sealed class JsIntlTables
     /// hands in through <see cref="IJsIntlData"/> that holds lines for a region locale, such as
     /// <c>en-GB</c>, which are read now and were ignored before. The plural rules still read by
     /// language and are unaffected.
+    /// <para>
+    /// <i>Noted 2026-11-03, at SJL-9.4's review of sub-areas (d) and (e):</i> the note above names "the
+    /// number, list, relative-time and display-name formats"; since sub-areas (d) and (e) the date-time
+    /// and duration formats read through this the same chain too: the date-time format's decimal symbol
+    /// and its zone naming's region names, and the duration format's <c>symbols.timeSeparator</c> and
+    /// <c>duration.hms</c> (row U13), each at the full data locale where the realm's own code read the
+    /// data locale's language. Two more differences come with the shared library's date-time and
+    /// duration formats. The 12- and 24-hour cycles, [[hourCycle12]] and [[hourCycle24]], are the
+    /// region's preferred cycle where it is of the kind asked for and otherwise the first of that kind
+    /// CLDR's time data allows for the region (row T10), where the realm's code answered <c>h12</c> and
+    /// <c>h23</c>; and the <c>nu</c> values put the locale's <c>defaultNumberingSystem</c> first (rows
+    /// T37 and U16, decisions D13 and D21), where the realm's code put <c>latn</c> first. The shipped
+    /// time data (<c>DE</c> <c>H hB</c>, <c>US</c> <c>h hb H hB</c>, <c>001</c> <c>H h</c>) and the
+    /// shipped locales' <c>latn</c> defaults give every shipped answer unchanged; data an embedder hands
+    /// in through <see cref="IJsIntlData"/> can differ, for example <c>ja</c>'s <c>hour12: true</c>
+    /// resolving <c>h11</c> (Japan allows <c>H K h</c>) where the realm's code resolved <c>h12</c>, or a
+    /// locale whose default system is <c>arab</c> resolving <c>nu</c> to <c>arab</c> where it resolved
+    /// <c>latn</c>. SJL-9.4's cut-over record lists these under rows T10, T37 and U16.
+    /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; Spec=JSD-0082 D8; IP=Low; Security=Low; Resources=1; Fingerprint=92318E
     // Broiler-Human:        PENDING
