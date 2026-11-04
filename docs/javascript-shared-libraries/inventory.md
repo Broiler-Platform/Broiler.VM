@@ -121,6 +121,10 @@ and section 2's rows "Gregorian day arithmetic in `JsRealm.Date`, `JsTemporalCor
 `JsLocalTime`, `JsDecimal` and `JsNumberFormatter` went at SJL-9.4 too (`JsTemporalCore` and `JsTimeZones` at
 SJL-10.4 and SJL-8.5). The table and those rows are kept as written, the inventory as SJL-0 took it.
 
+*(Noted 2026-11-04, at SJL-17.4, by [JSD-0086](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0086-the-profile-collates-with-the-shared-intl-library.md).)* This family's column of the collation row, "`JsCollator`, `JsCollationData`", names code SJL-17.4 deleted:
+the profile's collation is `Broiler.ECMAScript.Intl`'s `UcaCollator` and `UcaCollationData`, over the collation tables
+`JsCldrTables` still carries. The row is kept as written.
+
 ### Temporal (SJL-10)
 
 | Responsibility | Broiler.VM | Broiler.JS | Coupling | Disposition |

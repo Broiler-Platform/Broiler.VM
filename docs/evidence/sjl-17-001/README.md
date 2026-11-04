@@ -176,6 +176,19 @@ times at the smallest; the same run list big-endian, which the decision did not 
 still more than three times it. The 35 ideographs the collation vectors of corpus revision 34 reach would take 210
 bytes, but a table of those alone orders no other ideograph.
 
+## 4. SJL-17.4's cut-over, on its branch
+
+*(Added 2026-11-04, at SJL-17.4.)* This family's cut-over is made on the branch `sjl-17-4-cutover`, cut from `68cad8b`
+(this repository's default branch after SJL-9.4's merge, the commit bundle `sjl-9-001` names as its after commit when it
+records it), and lands in one merge: that merge is this bundle's after commit, and its first parent the base, each named
+here by all forty digits when it lands.
+[JSD-0086](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0086-the-profile-collates-with-the-shared-intl-library.md)
+records it. The branch's local pre-checks, against answers taken at `68cad8b` before any change, are no run of this
+bundle's rule and are kept outside the tree; no figure of them is quoted. Nothing under `src/tests/cldr/` or
+`src/tests/temporal/` changes on the branch, and `JsCldrTables.g.cs` is the same file at both ends of it (rule N28). No
+root's assemblies move, so the composition register's evidence stays bundle `sjl-9-001`'s `cutover/closures/`. Part A's
+hosted runs, parts B and C, and the exclusion for the code that left this component's assurance coverage are SJL-17.6's.
+
 ## 9. Exclusions
 
 Sections 3 to 8 are added as the bundle's runs are taken (section 3 since 2026-11-02). The exclusions keep this section's number, where rule H2

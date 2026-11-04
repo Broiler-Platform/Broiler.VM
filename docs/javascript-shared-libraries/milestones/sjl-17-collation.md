@@ -94,6 +94,13 @@ by JSD-0084's decision E11: `NewCollator`'s tailoring core (`JsRealm.Intl.cs:202
 `compare` and `localeCompare`'s coercion stay. This family's locale list and tables do not change (decisions E3 and
 E13), and it has no correction in this area. The text above is left as written.
 
+*(Noted 2026-11-04, at SJL-17.4, by [JSD-0086](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0086-the-profile-collates-with-the-shared-intl-library.md).)* The deletions are made on the branch
+`sjl-17-4-cutover`, which lands in one merge, bundle `sjl-17-001`'s after commit: `JsCollator` and `JsCollationData`,
+with `JsCaseFirst`, `NewCollator`'s tailoring core and `CollatorKeyData`, each registered in rule I5. The collation tables
+in the `.Intl` assembly do not change, byte for byte (rule N28), and neither do optionality or what `localeCompare` does
+in a composition that carries no Intl data. `Broiler.ECMAScript.Intl` `0.1.0-preview.9`, admitted at SJL-9.4, carries the
+collator, so no package moves. The text above is left as written.
+
 ### SJL-17.5 — Broiler.JS's cut-over
 
 **Deleted:** the `CompareInfo` path of `Intl.Collator` and `String.prototype.localeCompare` for the
