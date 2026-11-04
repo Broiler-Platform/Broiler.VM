@@ -510,10 +510,12 @@ public sealed class DiagnosticRegistryRuleTests
         Assert.Empty(Run(added, With(mapped, "EE0021")));
         Assert.Empty(Run(added, With(mapped, "EX0013")));
 
-        // Refused: both meanings under one code (each meaning takes its own new code, decision
-        // D12; admitted until a later commit of the change that added the list, before any run),
-        // another meaning, a second meaning beside an admitted one, no meaning at all, a row of an
-        // earlier revision, a core-result row, and an admitted meaning with no reason.
+        // Refused: two admitted meanings under one code, EE0021 with EX0024 and EX0013 with EX0024
+        // (each meaning takes its own new code, decision D12; admitted until a later commit of the
+        // change that added the list, before any run; the EX0013 case added 2026-11-04, later, on
+        // "Defensive too", when this read "both meanings under one code"), another meaning, a
+        // second meaning beside an admitted one, no meaning at all, a row of an earlier revision, a
+        // core-result row, and an admitted meaning with no reason.
         Assert.Contains(Run(added, With(mapped, "EE0021", "EX0024")), static violation => violation.Contains(
             "the mapping maps onto it EE0021, EX0024, where the rule admits a new defensive code for one meaning, one of EE0021, EX0024 and EX0013",
             StringComparison.Ordinal));
