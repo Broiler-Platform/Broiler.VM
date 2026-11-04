@@ -623,14 +623,17 @@ resolved-name lines of its divergences files and their headers". At SJL-9.4 it a
 compiler: `temporal/t1/data-without-the-tz-release-reads-its-zones`, one of the guards part B of
 [`decision-rule-area.md`](../../../../docs/evidence/sjl-9-001/decision-rule-area.md) holds unchanged, formats a zone its
 program names as `'asia/calcutta'`, so its output and the literal it is compared with in `IntlChecks.cs` move from
-`-04:00 3 Asia/Kolkata`, the primary, to `-04:00 3 Asia/Calcutta`, the identifier as given. Its verdict passes on
+`-04:00 3 Asia/Kolkata`, the primary, to `-04:00 3 Asia/Calcutta`, the identifier as given, case-normalised. Its verdict passes on
 both sides, and what it holds, the family's data and the same data without the time-zone release answering alike, does
-not move. The decision is extended to that guard's literal and output, and to nothing else: no other check, program
-or retained answer moves under it. Part B's class Z8 is extended the same way, before its runs, by a new dated rule
+not move. The decision is extended to that guard's literal and output, and to nothing else: no other guard, program
+or retained answer moves under it. One area check's output moves under the decision as written, not under this
+extension: `tzdb/time-zone-offsets-match-icu` reads more of its lines as the divergences name them, through class
+Z8's lines, with its verdict unchanged. Part B's class Z8 is extended the same way, before its runs, by a new dated rule
 file, [`decision-rule-area-revised-2026-11-04.md`](../../../../docs/evidence/sjl-9-001/decision-rule-area-revised-2026-11-04.md),
 which quotes `decision-rule-area.md` whole and leaves it unedited. The alternative, not taken, was to leave the rule as
-written and record the move as a finding against this decision and class Z8; part B would then have read a
-correction this record decided, with a verdict that does not move, as a regression. The sentence quoted above, and
+written and record the move as a finding against this decision and class Z8; part B as filed could then have been
+read as holding the guard's output unchanged, and so as reading a correction this record decided, with a verdict
+that does not move, as a regression. The sentence quoted above, and
 the rest of this decision, are left as written.
 
 **Decision D16 - the reference datasets as acceptance data.** Copy every `src/tests/cldr/` area except `orderings`

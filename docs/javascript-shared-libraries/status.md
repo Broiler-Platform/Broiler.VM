@@ -2828,7 +2828,8 @@ the merge is bundle [`sjl-9-001`](../evidence/sjl-9-001/README.md)'s after commi
 - **Stale through the window.** Part B admits no other change under `src/tests/cldr/`, so the locales and time-zone
   datasets' READMEs and the time-zone divergences' third group header stay as committed until SJL-9.6's after runs;
   JSD-0085 records them.
-- **The closures** of every root are taken again from a clean checkout at the branch's last change into the bundle's
+- **The closures** of every root are taken again from a clean checkout after the branch's last product-source
+  change into the bundle's
   `cutover/`; SJL-9.6 takes them at the after commit.
 
 This change meets no clause, and no other ledger's row moves. SJL-9 stays `In progress`, every clause unmet. Nothing

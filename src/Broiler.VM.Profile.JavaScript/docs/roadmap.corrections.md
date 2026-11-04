@@ -13991,7 +13991,9 @@ library among its shared assemblies, and the five rows this machine publishes na
 `cutover/closures/` as their evidence (rules K2 to K4, I7), with a dated note quoting the cells. Rule I5's register
 names every type and member the cut-over deleted, as SJL-9.4's, and its register row names SJL-9.4 and JSD-0085.
 `inventory.md` and `architecture.md` keep their tables and paragraphs as the programme's start found them, each with a
-dated note naming what SJL-9.4 deleted.
+dated note naming what SJL-9.4 deleted. `THIRD_PARTY_NOTICES.md`'s rows for the Unicode packages still name
+`0.1.0-preview.5` and Broiler.Unicode `b802014`, stale since the same move of 2026-10-31; SJL-9.4 moves no notice of
+theirs, so they are left for a later change, which corrects them with a dated note.
 
 **Authority and date.** [JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)'s
 decisions D8, D9, D15, D24, D29 and D32, taken by the owner on 2026-10-26 under the direction of 2026-10-18; the owner's

@@ -7,7 +7,7 @@
 **whatever JS-10 makes packable be frozen in a baseline of its own, compared in both directions so an
 addition and a removal each fail**. This is that baseline: the JavaScript family's packable set, each
 package's dependencies and each package's files, as the candidate pack of
-**bundle [JS-10-015](evidence/js-10-015/README.md)** produced them *(recertified on 2026-11-03, at SJL-9.4, when `Broiler.VM.Profile.JavaScript` took `Broiler.ECMAScript.Intl`; previously JS-10-014. Recertified on 2026-11-03 for ECMAScript preview.9, JSC-323; previously JS-10-013. Recertified on 2026-10-31 for the already selected Unicode preview.6; previously JS-10-012. Recertified on 2026-10-30 for ECMAScript preview.8; previously JS-10-011. Earlier corrections: JSC-300, JSC-302,
+**bundle [JS-10-015](evidence/js-10-015/README.md)** produced them *(recertified on 2026-11-03, at SJL-9.4, [JSC-324](roadmap.corrections.md#jsc-324), when `Broiler.VM.Profile.JavaScript` took `Broiler.ECMAScript.Intl`; previously JS-10-014. Recertified on 2026-11-03 for ECMAScript preview.9, JSC-323; previously JS-10-013. Recertified on 2026-10-31 for the already selected Unicode preview.6; previously JS-10-012. Recertified on 2026-10-30 for ECMAScript preview.8; previously JS-10-011. Earlier corrections: JSC-300, JSC-302,
 JSC-308, JSC-311, JSC-312, JSC-314, JSC-318; it was bundle JS-10-010's pack, before the shared algorithms
 dependency moved to `0.1.0-preview.7`, before that bundle JS-10-009's pack, before it moved to `0.1.0-preview.6`, before that bundle JS-10-008's pack, before it moved to `0.1.0-preview.5`, before that bundle JS-10-007's pack, before the Unicode area's dependencies moved to
 `0.1.0-preview.5`, before that bundle JS-10-006's pack, before the Unicode cut-over gave the family's packages the
@@ -104,6 +104,6 @@ since SJL-9.4, `Broiler.ECMAScript.Intl` through them, and the Unicode area's `B
 a local feed that holds the shared packages beside the family's, rolling back to the published
 `0.1.0-preview.5` set and forward again, failing to restore a version only nuget.org holds, and
 running as Native AOT; rule N37 holds the bundle's transcript to having done each *(corrected:
-JSC-300, JSC-302, JSC-308, JSC-311, JSC-312, JSC-314, JSC-318, JSC-323; revised 2026-11-03, at SJL-9.4: it read
+JSC-300, JSC-302, JSC-308, JSC-311, JSC-312, JSC-314, JSC-318, JSC-323; revised 2026-11-03, at SJL-9.4, JSC-324: it read
 "it restores `Broiler.ECMAScript.Algorithms` through them" and named bundle JS-10-014; until JSC-323 it named bundle JS-10-011, which the baseline had left for JS-10-012 and JS-10-013 without this sentence following; before that it named bundle JS-10-010, before that bundle JS-10-009, before that bundle JS-10-008, before that bundle JS-10-007, before that bundle JS-10-006, before that bundle JS-10-005, and before that
 bundle JS-10-002, whose consumer had no shared package to restore)*.

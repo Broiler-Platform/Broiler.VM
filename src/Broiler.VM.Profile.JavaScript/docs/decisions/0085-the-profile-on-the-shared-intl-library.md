@@ -58,6 +58,7 @@ existed, as revised before its runs (section 4).
 | `044dc40` | The review of stage 3: records and one option's parse |
 | `0c3d982` | Part B's class Z8 takes one guard's literal, by a dated revision of the rule (section 4) |
 | `69f9e6a` | Rule I5 registers every type and member the cut-over deleted (section 8) |
+| `65ad719` | After this record: rule I5's test reads the files the rest of the registered members lived in (section 8) |
 
 **What did not move.** This family's tables (`JsCldrTables.g.cs`, held by rule N28), its CLDR pin (rule N27), the
 Format assembly's `IJsIntlData` and `JsIntlTable`, `JsComposition.IntlData`, the test262 pin `ccaac100`, the vectors
@@ -175,8 +176,15 @@ These are the only answers the cut-over moved. The local pre-check before each c
   (`0c3d982`), which adds this one guard's literal and output, moving from the primary to the identifier as given,
   its verdict passing at both commits, to part B's class Z8, and nothing else; JSD-0082 carries a dated note on
   decision D15 quoting what it extends, and the bundle's README names the revision. **The alternative not taken:**
-  leave the rule as written and record the move as a finding against decision D15 and class Z8; part B would then
-  have read a correction this family decided, with a verdict that does not move, as a regression.
+  leave the rule as written and record the move as a finding against decision D15 and class Z8; part B as filed could
+  then have been read as holding the guard's output unchanged, and so as reading a correction this family decided,
+  with a verdict that does not move, as a regression. Part B compares each check's verdict, and the trees under
+  `src/tests/cldr/` and `src/tests/temporal/` byte for byte, and this guard's verdict is ok at both commits and
+  `IntlChecks.cs` is outside both trees, so the rule as filed may also be read as never seeing the move; the
+  revision only narrows the rule either way, and its premise, that part B as filed "reads its output as a line that
+  moves outside Z8 and L18", is to be read as that possible reading. Its class text's "names that identifier as
+  given" is decision D15's "as given, case-normalised": the program gives `'asia/calcutta'`, and the output names
+  `Asia/Calcutta`. The revision's file, a rule, is not edited for either; this paragraph says how it is read.
 
 ### 5. Same answers, a different reading: what only an embedder's data can show
 
@@ -201,10 +209,22 @@ Every shipped answer is unchanged by these, and no probe moved; an embedder that
 **Every library call takes `engine.WorkCharge`, and the charges are this family's, in its units.** Tag parsing and
 canonicalisation charge nothing (row L43), so the display names and the time-zone resolution pass no meter. The
 relative-time adapter charges what the nested NumberFormat and PluralRules constructors charged through
-CanonicalizeLocaleList. The engine-side charges stay where decision D18 names them; its citations have moved with the
-code: CanonicalizeLocaleList's and FilterLocales' per-element charges are at `VM/JsRealm.Intl.cs:346` and `:484`
-(cited `:282` and `:550`), the date-time parts charge at `VM/JsRealm.DateTimeFormat.cs:388` (cited `:460`); the
-formatter's length charge and PartitionDurationFormatPattern's per-unit charge are the library's. The correspondence's
+CanonicalizeLocaleList. The engine-side charges stay where decision D18 names them, and its citations have moved with the
+code *(this list revised 2026-11-04, after review: it gave the first three moves below, and said that "the
+formatter's length charge and PartitionDurationFormatPattern's per-unit charge are the library's")*:
+- CanonicalizeLocaleList's and FilterLocales' per-element charges are at `VM/JsRealm.Intl.cs:346` and `:484` (cited
+  `:282` and `:550`);
+- the `formatToParts` per-part charges are at `VM/JsRealm.DateTimeFormat.cs:388` (cited `:460`),
+  `VM/JsRealm.ListFormat.cs:99` (cited `:94`), `VM/JsRealm.NumberFormat.cs:292` (cited `:216`) and
+  `VM/JsRealm.RelativeTimeFormat.cs:115` (cited `:106`); `VM/JsRealm.DurationFormat.cs:124` still holds its;
+- StringListFromIterable's per-element charge is still at `VM/JsRealm.ListFormat.cs:179`.
+
+The charges decision D18 names in this family's deleted code are the library's now, at the same points and in the
+same units: the mathematical value of a String and of a BigInt (cited `VM/JsDecimal.cs:215` and `:198-204`),
+FormatNumericToString (cited `VM/JsNumberFormatter.cs:821`), CreatePartsFromList (cited
+`VM/JsRealm.ListFormat.cs:217`, a line the file no longer has), the date formatter's length charge (cited
+`VM/JsDateTimeFormatter.cs:298` and `:316`) and PartitionDurationFormatPattern's per-unit charge (cited
+`VM/JsRealm.DurationFormat.cs:597`). The correspondence's
 charge probes of rows M9, N16, T40 and U19, and the branch's own, complete at their base figures and run out one
 below, at every commit of the branch (section 9). **No C2.**
 
@@ -235,7 +255,10 @@ registered by type where its type went whole and by member where its type stays.
 that `JsLocalTime.From` and `JsZoneNames`, which SJL-6.4's and SJL-8.5's paragraphs name as adapters that stay, went
 with their types. Rule I5's register row names SJL-9.4 and this record, dated. Rule I5's test reads `JsRealm.NumberFormat.cs` and
 `JsIntlTables.cs` where it read `JsDecimal.cs`, `JsZoneNames.cs` and `JsDateTimeFormatter.cs`, each with a dated
-note.
+note, and since `65ad719` it also reads the files the rest of the registered members lived in, where their adapters
+live now, and the data's adapter: `JsRealm.Intl.cs`, `JsRealm.Locale.cs`, `JsRealm.PluralRules.cs`,
+`JsRealm.ListFormat.cs`, `JsRealm.RelativeTimeFormat.cs`, `JsRealm.DisplayNames.cs`, `JsRealm.DurationFormat.cs`
+and `JsIntlDataSet.cs`, with a dated note.
 
 ### 9. Evidence at this change
 
@@ -284,8 +307,9 @@ runs are SJL-9.6's at the base and after commits. No figure of them is quoted he
 - **Packages.** `packages.md` and `support.md` name JS-10-015 ([JSC-324](../roadmap.corrections.md#jsc-324)).
 - **Support.** `support.md`'s row of proposals not provided names `canonical-tz` among the five admitted, with a dated
   note.
-- **The closures** are retaken at the branch's last change, after every product-source change, into
-  `docs/evidence/sjl-9-001/cutover/`, and its `identity.txt` records that commit; SJL-9.6 takes them again at the
+- **The closures** are retaken from a clean checkout after the branch's last product-source change, into
+  `docs/evidence/sjl-9-001/cutover/`; its `identity.txt` names the commit checked out and the product sources'
+  digest, which the last product-source change gives too, and `cutover/README.md` names both commits; SJL-9.6 takes them again at the
   after commit (exit clause 14).
 
 ### 12. `canonical-tz`'s entry names JSD-0082
@@ -340,6 +364,12 @@ section 4.
 9. **`SuiteFeatures`' entry**: section 12.
 10. **The datasets' READMEs and one header** move with the code, and part B forbids editing them in the window: the
     section above.
+11. **One commit per sub-area.** Decision D3 says SJL-9.4 is "one cut-over merge, prepared as one commit per
+    sub-area". Sub-areas (a), (d) and (e) are one commit each, but (b) and the number formats and relative times
+    of (c) share `9d9758a`, and (c) spans `9d9758a` and `c0066b8`. The plan's task 7.3 takes (b) and (c) as one
+    task, and the files deleted whole there served both: ResolvePlural reads FormatNumericToString, which lived in
+    `JsNumberFormatter.cs` beside the number formatter, over `JsDecimal.cs`'s mathematical value.
+    The one merge, which is what decisions D3 and D4 rest on, holds; each commit was pre-checked before the next.
 
 ## Commit messages this record corrects
 
@@ -367,8 +397,8 @@ Settled in the change that files it. **This record is reopened only by a new dat
 
 ## What this record does not decide
 
-- **Whether SJL-9 is met.** Its evidence is bundle `sjl-9-001`, read under its rule as revised at SJL-9.6, and the
-  ledger records the result.
+- **Whether SJL-9 is met.** Its evidence is bundle `sjl-9-001`, read at SJL-9.6 under its rule as revised on
+  2026-11-04 (section 4), and the ledger records the result.
 - **Broiler.JS's cut-over**, SJL-9.5, which its own changelog records with its corrections (decision D25).
 - **The vectors' per-engine Z8, L9 and L18 expectations**, which the corpus's next revision retires (decision D15;
   SJL-9.6).
