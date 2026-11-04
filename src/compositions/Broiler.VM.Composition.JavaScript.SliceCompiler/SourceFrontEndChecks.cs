@@ -347,12 +347,25 @@ internal static class SourceFrontEndChecks
     }
 
     /// <summary>
-    /// Every module-goal early error is refused by the wide front end, with its own code.
+    /// Every module-goal early error, and every refused request, is refused by the wide front end,
+    /// with its own code.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// A separate check from the one below rather than an extension of it, because the compiler
     /// differs: these sources are put to the wide front end, which is the only one with a module
     /// goal, and the two lists would otherwise be one list whose rows go to two compilers.
+    /// </para>
+    /// <para>
+    /// <b>The refused requests joined it on 2026-11-04</b>, at SJL-13's second tools commit, on the
+    /// owner's decision of that day on registry revision 19: sources of the retained corpus refused
+    /// only under a compile request or as more than one unit (<see cref="RefusedRequests"/>), each
+    /// compiled as a host compiles it, every unit under the request. Each is also compiled as a
+    /// single text would be, its first unit alone under the default request, and that compilation
+    /// must not be refused with the entry's code: a request or a unit the entry carries for nothing
+    /// would make it a case of something else. The row read "every module-goal early error is
+    /// refused with its own code" until then.
+    /// </para>
     /// </remarks>
     private static (string, bool, string) EveryModuleEarlyErrorIsRefusedByName()
     {
@@ -380,11 +393,38 @@ internal static class SourceFrontEndChecks
             }
         }
 
+        var requests = RefusedRequests.All;
+
+        foreach (var request in requests)
+        {
+            var compiled = request.Compile();
+
+            if (compiled.Succeeded)
+            {
+                failed.Add($"{request.Name}: compiled under its request, and should not have");
+            }
+            else if (!compiled.Diagnostics.Any(diagnostic => diagnostic.Code == request.Code))
+            {
+                failed.Add(
+                    $"{request.Name}: expected {request.Code} and got " +
+                    string.Join(", ", compiled.Diagnostics.Select(diagnostic => diagnostic.Code)));
+            }
+
+            var alone = request.CompileFirstUnitAlone();
+
+            if (alone.Diagnostics.Any(diagnostic => diagnostic.Code == request.Code))
+            {
+                failed.Add(
+                    $"{request.Name}: its first unit alone, under the default request, is refused with " +
+                    $"{request.Code} too, so the request and the units it carries reach nothing");
+            }
+        }
+
         return (
-            "every module-goal early error is refused with its own code",
+            "every module-goal early error and refused request is refused with its own code",
             failed.Count == 0,
             failed.Count == 0
-                ? $"{SliceSourcePrograms.RefusedModules.Length} sources, each refused by name"
+                ? $"{SliceSourcePrograms.RefusedModules.Length} sources and {requests.Length} requests, each refused by name"
                 : string.Join("; ", failed));
     }
 

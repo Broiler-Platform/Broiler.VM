@@ -278,6 +278,11 @@ internal static class Program
             .Append("# retained is `file` where the source text is beside this manifest, and ")
             .Append("`generated` where it is produced by a named member of SliceSourcePrograms")
             .Append(Eol);
+        manifest
+            .Append("# or, from 2026-11-04, `request` where the source is refused only under a compile request or as more than one unit: ")
+            .Append("its `.request` file beside this manifest names the request and each unit's file and SHA-256, ")
+            .Append("and the sha256 here is the request file's")
+            .Append(Eol);
 
         foreach (var program in SliceSourcePrograms.Accepted)
         {
@@ -322,6 +327,24 @@ internal static class Program
             manifest.Append("refused|").Append(program.Name).Append('|')
                 .Append(Sha256(System.Text.Encoding.UTF8.GetBytes(text))).Append('|')
                 .Append(program.Code).Append("|file").Append(Eol);
+        }
+
+        // THE REFUSED REQUESTS (2026-11-04, SJL-13's second tools commit): a source refused only under a
+        // compile request or as more than one unit. Every unit is a file beside the others, and the
+        // `.request` file names the request and each unit with its options, file and SHA-256; the
+        // manifest's row names the request file's SHA-256, so the row binds every file the entry has.
+        foreach (var request in RefusedRequests.All)
+        {
+            var files = request.Files(Normalise);
+
+            foreach (var (file, text) in files)
+            {
+                File.WriteAllText(Path.Combine(refused, file), text);
+            }
+
+            manifest.Append("refused|").Append(request.Name).Append('|')
+                .Append(Sha256(System.Text.Encoding.UTF8.GetBytes(files[^1].Text))).Append('|')
+                .Append(request.Code).Append("|request").Append(Eol);
         }
 
         File.WriteAllText(Path.Combine(root, "source.manifest"), manifest.ToString());
