@@ -59,7 +59,15 @@ public sealed class I5RetiredDuplicatesRuleTests
         // instead.) (Revised 2026-11-03, at SJL-9.4's sub-area (d): JsZoneNames.cs and
         // JsDateTimeFormatter.cs, which the list named since SJL-8.5, are deleted whole, their types the
         // shared Intl library's DateTimeFormat, DateTimeFormatter and ZoneNamer now; JsIntlTables.cs, which
-        // hands those the time zones and the calendars, is named instead.)
+        // hands those the time zones and the calendars, is named instead.) (Revised 2026-11-04, at SJL-9.4's
+        // records, when the register took every type and member SJL-9.4 deleted: the list named no file the
+        // members of sub-areas (a), (b), (c) and (e) lived in but JsRealm.NumberFormat.cs, and no file of the
+        // adapters for the files deleted whole, JsLocaleTag.cs, JsNumberData.cs, JsPluralRule.cs,
+        // JsNumberFormatter.cs, JsDateData.cs, JsDatePatternGenerator.cs, JsDateIntervalFormat.cs and
+        // JsLocaleInfo.cs. JsRealm.Intl.cs, JsRealm.Locale.cs, JsRealm.PluralRules.cs, JsRealm.ListFormat.cs,
+        // JsRealm.RelativeTimeFormat.cs, JsRealm.DisplayNames.cs and JsRealm.DurationFormat.cs, where those
+        // members lived and their adapters live now, and JsIntlDataSet.cs, which hands the shared Intl library
+        // this family's data, are added.)
         Assert.Equal(FamilyAssemblies.Order(StringComparer.Ordinal), covered.Select(static f => f.Assembly).Distinct().Order(StringComparer.Ordinal));
         foreach (var file in (string[])["src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs", "src/Broiler.VM.Profile.JavaScript/JsRealm.Number.cs",
                                          "src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs", "src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs",
@@ -69,7 +77,11 @@ public sealed class I5RetiredDuplicatesRuleTests
                                          "src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs", "src/Broiler.VM.Profile.JavaScript/JsTemporalParser.cs",
                                          "src/Broiler.VM.Profile.JavaScript/JsTemporal.Zones.cs", "src/Broiler.VM.Profile.JavaScript/JsTemporal.Calendar.cs",
                                          "src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs", "src/Broiler.VM.Profile.JavaScript/JsIntlTables.cs",
-                                         "src/Broiler.VM.Profile.JavaScript/JsTemporal.Durations.cs", "src/Broiler.VM.Profile.JavaScript/JsTemporal.Options.cs"])
+                                         "src/Broiler.VM.Profile.JavaScript/JsTemporal.Durations.cs", "src/Broiler.VM.Profile.JavaScript/JsTemporal.Options.cs",
+                                         "src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs", "src/Broiler.VM.Profile.JavaScript/JsRealm.Locale.cs",
+                                         "src/Broiler.VM.Profile.JavaScript/JsRealm.PluralRules.cs", "src/Broiler.VM.Profile.JavaScript/JsRealm.ListFormat.cs",
+                                         "src/Broiler.VM.Profile.JavaScript/JsRealm.RelativeTimeFormat.cs", "src/Broiler.VM.Profile.JavaScript/JsRealm.DisplayNames.cs",
+                                         "src/Broiler.VM.Profile.JavaScript/JsRealm.DurationFormat.cs", "src/Broiler.VM.Profile.JavaScript/JsIntlDataSet.cs"])
         {
             Assert.Contains(covered, file2 => string.Equals(file2.RelativePath, file, StringComparison.Ordinal));
         }
