@@ -3,20 +3,21 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   9
-// Annotated:        9/9
-// Exempt:           6
-// Human-reviewed:   0/9
+// Relevant units:   8
+// Annotated:        8/8
+// Exempt:           3
+// Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       9
+// Unverified:       8
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System;
 using System.Collections.Generic;
+using Broiler.ECMAScript.Intl;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -29,6 +30,12 @@ namespace Broiler.VM.Profile.JavaScript;
 /// templates by the elements, as Spanish chooses <c>y</c> or <c>e</c> by the next word. German and
 /// English have no such choice, so the index into [[Templates]] is always the one template CLDR
 /// gives.
+/// <para>
+/// <b>Since SJL-9.4 the core is the shared Intl library's <c>ListFormatter</c></b> (JSD-0082,
+/// sub-area (c)): [[Templates]] read at the data locale, and CreatePartsFromList with its one unit per
+/// template step charged on the engine's meter (decision D18). The options, StringListFromIterable with
+/// its one unit per element, and the parts array with its one unit per part stay here.
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=60DD8D
 // Broiler-Human:        PENDING
@@ -44,7 +51,12 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     internal JsNativeFunction? ListFormatConstructor { get; private set; }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=63DF42
+    /// <summary>The <c>type</c> option's values, in <c>ListFormatType</c>'s order.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=FC69B9
+    // Broiler-Human:        PENDING
+    private static readonly string[] ListTypeNames = ["conjunction", "disjunction", "unit"];
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=49AD4C
     // Broiler-Human:        PENDING
     private void SetupListFormat(JsObject intl)
     {
@@ -73,14 +85,7 @@ internal sealed partial class JsRealm
         {
             var format = ListFormatOfThis(engine, thisValue, "format");
             var list = StringListFromIterable(engine, Argument(arguments, 0));
-            var text = new System.Text.StringBuilder();
-
-            foreach (var (_, value) in CreatePartsFromList(engine, format, list))
-            {
-                text.Append(value);
-            }
-
-            return JsValue.String(text.ToString());
+            return JsValue.String(format.Formatter.Format(list, engine.WorkCharge));
         });
 
         Method(prototype, "formatToParts", 1, static (engine, thisValue, arguments) =>
@@ -89,7 +94,7 @@ internal sealed partial class JsRealm
             var list = StringListFromIterable(engine, Argument(arguments, 0));
             var values = new List<JsValue>();
 
-            foreach (var (type, value) in CreatePartsFromList(engine, format, list))
+            foreach (var (type, value) in format.Formatter.FormatToParts(list, engine.WorkCharge))
             {
                 engine.Charge(1);
                 var item = new JsObject(engine.Realm.ObjectPrototype);
@@ -107,9 +112,10 @@ internal sealed partial class JsRealm
             var options = new JsObject(engine.Realm.ObjectPrototype);
 
             // TABLE 25, IN ITS ORDER.
-            options.DefineOrdinary("locale", JsValue.String(format.Locale));
-            options.DefineOrdinary("type", JsValue.String(format.Type));
-            options.DefineOrdinary("style", JsValue.String(format.Style));
+            var formatter = format.Formatter;
+            options.DefineOrdinary("locale", JsValue.String(formatter.Locale));
+            options.DefineOrdinary("type", JsValue.String(ListTypeNames[(int)formatter.Type]));
+            options.DefineOrdinary("style", JsValue.String(FormatStyleNames[(int)formatter.Style]));
             return JsValue.Object(options);
         });
 
@@ -125,7 +131,7 @@ internal sealed partial class JsRealm
         throw engine.Error("TypeError", "Intl.ListFormat.prototype." + member + " requires that 'this' be an Intl.ListFormat");
 
     /// <summary>ECMA-402's <c>Intl.ListFormat</c> constructor (s14.1.1): the options read in its order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=40D97C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B71E35
     // Broiler-Human:        PENDING
     internal static JsValue NewListFormat(JsEngine engine, JsValue newTarget, JsValue[] arguments)
     {
@@ -139,19 +145,13 @@ internal sealed partial class JsRealm
 
         var resolved = ResolveLocale(engine, requested, new Dictionary<string, string?>(StringComparer.Ordinal), [], static (locale, key) => [null]);
 
-        var type = GetStringOption(engine, options, "type", ["conjunction", "disjunction", "unit"], "conjunction")!;
-        var style = GetStringOption(engine, options, "style", ["long", "short", "narrow"], "long")!;
-        var language = JsLocaleTag.Parse(resolved.DataLocale)?.Language ?? "en";
+        var type = GetStringOption(engine, options, "type", ListTypeNames, "conjunction")!;
+        var style = GetStringOption(engine, options, "style", FormatStyleNames, "long")!;
 
-        // [[TEMPLATES]]: CLDR's type for the type and style.
-        var key = language + "|" + type switch { "disjunction" => "or", "unit" => "unit", _ => "standard" } +
-            style switch { "short" => "-short", "narrow" => "-narrow", _ => string.Empty };
-
-        var templates = engine.Intl!.LocaleInfo.ListPatterns.TryGetValue(key, out var found)
-            ? found
-            : ("{0}, {1}", "{0}, {1}", "{0}, {1}", "{0}, {1}");
-
-        return JsValue.Object(new JsListFormatObject(prototype, resolved.Locale, type, style, templates));
+        // [[TEMPLATES]]: CLDR's patterns for the type and style at the data locale, the library's.
+        var formatter = ListFormatter.Create(engine.Intl!.FormatData, resolved.Locale, resolved.DataLocale,
+            (ListFormatType)Array.IndexOf(ListTypeNames, type), (FormatStyle)Array.IndexOf(FormatStyleNames, style));
+        return JsValue.Object(new JsListFormatObject(prototype, formatter));
     }
 
     /// <summary>ECMA-402's StringListFromIterable (s14.5.5): every value a String, or the iterator closed and a <c>TypeError</c>.</summary>
@@ -182,114 +182,19 @@ internal sealed partial class JsRealm
 
         return list;
     }
-
-    /// <summary>
-    /// ECMA-402's CreatePartsFromList (s14.5.2): nothing, the element, the pair pattern, or the end
-    /// pattern folded leftward through the middle patterns to the start pattern.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5AB96A
-    // Broiler-Human:        PENDING
-    private static List<(string Type, string Value)> CreatePartsFromList(JsEngine engine, JsListFormatObject format, List<string> list)
-    {
-        var parts = new List<(string Type, string Value)>();
-        var size = list.Count;
-
-        if (size == 0)
-        {
-            return parts;
-        }
-
-        if (size == 1)
-        {
-            parts.Add(("element", list[0]));
-            return parts;
-        }
-
-        if (size == 2)
-        {
-            return DeconstructPattern(format.Templates.Pair, [("element", list[0])], [("element", list[1])]);
-        }
-
-        parts.Add(("element", list[size - 1]));
-
-        for (var i = size - 2; i >= 0; i--)
-        {
-            engine.Charge(1);
-            var pattern = i == 0 ? format.Templates.Start : i < size - 2 ? format.Templates.Middle : format.Templates.End;
-            parts = DeconstructPattern(pattern, [("element", list[i])], parts);
-        }
-
-        return parts;
-    }
-
-    /// <summary>
-    /// ECMA-402's DeconstructPattern (s14.5.1) over a list pattern: each non-empty literal between the
-    /// placeables, and the parts of <c>{0}</c> and <c>{1}</c> in their places.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A030D9
-    // Broiler-Human:        PENDING
-    private static List<(string Type, string Value)> DeconstructPattern(string pattern, List<(string Type, string Value)> zero, List<(string Type, string Value)> one)
-    {
-        var result = new List<(string Type, string Value)>();
-        var at = 0;
-
-        while (at < pattern.Length)
-        {
-            var open = pattern.IndexOf('{', at);
-
-            if (open < 0)
-            {
-                result.Add(("literal", pattern[at..]));
-                break;
-            }
-
-            var close = pattern.IndexOf('}', open);
-
-            if (open > at)
-            {
-                result.Add(("literal", pattern[at..open]));
-            }
-
-            result.AddRange(pattern[(open + 1)..close] == "0" ? zero : one);
-            at = close + 1;
-        }
-
-        return result;
-    }
 }
 
-/// <summary>An <c>Intl.ListFormat</c>: its locale, type, style, and the patterns they select.</summary>
+/// <summary>An <c>Intl.ListFormat</c>: the shared library's formatter, which holds its locale, type, style and the patterns they select.</summary>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CBDF77
 // Broiler-Human:        PENDING
 internal sealed class JsListFormatObject : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=536BEA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=62583B
     // Broiler-Human:        PENDING
-    internal JsListFormatObject(JsObject prototype, string locale, string type, string style, (string Start, string Middle, string End, string Pair) templates) : base(prototype)
-    {
-        Locale = locale;
-        Type = type;
-        Style = style;
-        Templates = templates;
-    }
+    internal JsListFormatObject(JsObject prototype, ListFormatter formatter) : base(prototype) => Formatter = formatter;
 
-    /// <summary>The resolved locale.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=04656B
+    /// <summary>The formatter CreatePartsFromList runs in.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9C61D7
     // Broiler-Human:        PENDING
-    internal string Locale { get; }
-
-    /// <summary><c>conjunction</c>, <c>disjunction</c> or <c>unit</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=35ED61
-    // Broiler-Human:        PENDING
-    internal string Type { get; }
-
-    /// <summary><c>long</c>, <c>short</c> or <c>narrow</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=528E3C
-    // Broiler-Human:        PENDING
-    internal string Style { get; }
-
-    /// <summary>CLDR's start, middle, end and two-element patterns.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3F580A
-    // Broiler-Human:        PENDING
-    internal (string Start, string Middle, string End, string Pair) Templates { get; }
+    internal ListFormatter Formatter { get; }
 }

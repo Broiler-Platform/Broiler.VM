@@ -169,10 +169,11 @@ rather than a decision record.
 | [JSC-321](#jsc-321) | the architecture tests' rules N27, N28 and I4, their register rows, and the records of what the test-only generator package is used for | N27 and N28 read and regenerate `JsCldrTables.g.cs` through the Intl data home's generator, which `Broiler.ECMAScript.Generation` `0.1.0-preview.8` carries, and the tests' own CLDR generator, UCD reader and CLDR pin reader are deleted; I4 holds the CLDR pin to the home's entry by entry | [JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md), decisions D2, D10 to D12, D24 |
 | [JSC-322](#jsc-322) | the records of the two admitted packages' version and identity: `Directory.Packages.props`, the allow-list, rule I1's witnesses, the feed's README and the notices rows | `Broiler.ECMAScript.Algorithms` and `Broiler.ECMAScript.Generation` move to `0.1.0-preview.9` as published on 2026-11-03, the algorithms package's code unchanged and the generator's gaining Broiler.JS's collation tailorings | the owner's publication of 2026-11-03; the admission procedure of `9d0f80e` |
 | [JSC-323](#jsc-323) | the package baseline's bundle and its account of the shared algorithms package's version; support section 9's bundle | The baseline is bundle JS-10-014's candidate pack, taken at the change that moved the shared packages to `0.1.0-preview.9`, and the two documents name it where they still named JS-10-011 or a version's commit wrongly | release gate 8 and rule N37 |
+| [JSC-324](#jsc-324) | the records of the profile's admission of `Broiler.ECMAScript.Intl` and of what its cut-over deleted: `packages.md`, `support.md`, `eng/packages/README.md`, ADR 0001, the notices row, the composition register, rule I5's register, and the programme's inventory and architecture documents | The profile references the shared Intl library from SJL-9.4, the package baseline is bundle JS-10-015's, `canonical-tz` is admitted, the register's rows carry the library, the code it replaced is gone and registered, and a stale Unicode version in `packages.md` is corrected | [JSD-0085](decisions/0085-the-profile-on-the-shared-intl-library.md), applying [JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md) |
 
 *(Added 2026-10-25, with JSC-319's row.)* The index holds rows for JSC-01 to JSC-80 and for JSC-319. JSC-81 to
 JSC-318 are not indexed here, and each is found by its heading below. *(Added 2026-10-26, with JSC-320's row: the
-index holds JSC-320's row too.)* *(Added 2026-11-01, with JSC-321's row: the index holds JSC-321's row too.)* *(Added 2026-11-03, with JSC-322's row: the index holds JSC-322's row too.)* *(Added 2026-11-03, later, with JSC-323's row: the index holds JSC-323's row too.)*
+index holds JSC-320's row too.)* *(Added 2026-11-01, with JSC-321's row: the index holds JSC-321's row too.)* *(Added 2026-11-03, with JSC-322's row: the index holds JSC-322's row too.)* *(Added 2026-11-03, later, with JSC-323's row: the index holds JSC-323's row too.)* *(Added 2026-11-04, with JSC-324's row: the index holds JSC-324's row too.)*
 
 ### JSC-01
 
@@ -13952,3 +13953,49 @@ commit, and both documents' bundle sentences name JS-10-014, each quoting what i
 
 **Authority and date.** Release gate 8 and rule N37, as [JSC-318](#jsc-318) applied them at `0.1.0-preview.7`.
 2026-11-03.
+
+### JSC-324
+
+**Where:** the records of the profile's admission of `Broiler.ECMAScript.Intl` and of what SJL-9.4's cut-over
+deleted: [`packages.md`](packages.md), the baseline's bundle, the profile's declared packages and its passage on the
+Unicode area's code package; [`support.md`](support.md), section 9's bundle and the row of proposals not provided;
+`eng/packages/README.md`'s table; ADR 0001's revision of the package edges; `THIRD_PARTY_NOTICES.md`'s row for the
+shared packages; the composition register `docs/compositions.md`; rule I5's register; and the programme's
+`inventory.md` and `architecture.md`. [JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)
+is not edited but by its dated note on decision D15, and
+[JSD-0085](decisions/0085-the-profile-on-the-shared-intl-library.md) records the change.
+
+**What the plan said.** `packages.md` named bundle JS-10-014 as the baseline's pack, and the profile declared
+`Broiler.ECMAScript.Algorithms` and the Unicode area's packages and no Intl library; its passage on
+`Broiler.Unicode.Algorithms` said "which all four declare at `0.1.0-preview.5`, published to nuget.org from
+Broiler.Unicode `b802014` on 2026-10-17". `support.md` section 9 named JS-10-014, and its row of proposals not provided
+read "other than the four section 3 and the parity roadmap admit (`explicit-resource-management`, the `ShadowRealm` and
+`Temporal` proposals, and `Intl.Era-monthcode`)". ADR 0001's revision of 2026-10-12 said "the product graph has none"
+of package edges. The register's JavaScript rows began their shared assemblies with "`Broiler.ECMAScript.Algorithms`,
+`Broiler.Unicode.Algorithms`" and named "`docs/evidence/sjl-7-001/cutover/closures`" as the evidence of five of them.
+The notices gave each shared package of the stream a row of its own. Rule I5's register named no member of this
+area, and `inventory.md` and `architecture.md` named the profile's Intl code as its own.
+
+**What replaced it.** The profile references `Broiler.ECMAScript.Intl` `0.1.0-preview.9`, published to nuget.org
+from Broiler.JS `6f7284da` on 2026-11-03, admitted for that project alone by the procedure of
+[JSC-322](#jsc-322). Rule N37 holds the baseline's candidate to the packages the family declares, so the baseline is
+bundle [JS-10-015](evidence/js-10-015/README.md)'s candidate pack, collected at the admission's change; every
+condition holds as JS-10-014's did, and the only difference between the two packs is the profile's new dependency.
+`packages.md` and `support.md` name it, each quoting what it read. The Unicode passage names `0.1.0-preview.6`,
+admitted on 2026-10-31 from Broiler.Unicode `ccef653c`, which the move of that day left unsaid, quoting what it read.
+`support.md`'s row names five admitted proposals, `canonical-tz` among them, which JSD-0082's decision D15 admits since
+SJL-9.4's row Z8. ADR 0001 gains a dated revision for the edge, recording that its 2026-10-12 sentence was false from
+SJL-3.4. The library shares the algorithms package's notices row, from the same stream and commit, because a row of its
+own repeated the row's blocker identity, which rule N38 refuses. Every JavaScript row of the register names the
+library among its shared assemblies, and the five rows this machine publishes name bundle `sjl-9-001`'s
+`cutover/closures/` as their evidence (rules K2 to K4, I7), with a dated note quoting the cells. Rule I5's register
+names every type and member the cut-over deleted, as SJL-9.4's, and its register row names SJL-9.4 and JSD-0085.
+`inventory.md` and `architecture.md` keep their tables and paragraphs as the programme's start found them, each with a
+dated note naming what SJL-9.4 deleted. `THIRD_PARTY_NOTICES.md`'s rows for the Unicode packages still name
+`0.1.0-preview.5` and Broiler.Unicode `b802014`, stale since the same move of 2026-10-31; SJL-9.4 moves no notice of
+theirs, so they are left for a later change, which corrects them with a dated note.
+
+**Authority and date.** [JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)'s
+decisions D8, D9, D15, D24, D29 and D32, taken by the owner on 2026-10-26 under the direction of 2026-10-18; the owner's
+publication of `0.1.0-preview.9` on 2026-11-03; release gate 8 and rules N37, N38, K2, K4 and I5; the programme's work
+package SJL-9.4, as [JSD-0085](decisions/0085-the-profile-on-the-shared-intl-library.md) records it. 2026-11-04.

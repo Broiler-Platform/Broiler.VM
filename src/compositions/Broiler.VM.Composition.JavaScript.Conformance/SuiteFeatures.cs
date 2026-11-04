@@ -80,6 +80,14 @@ internal sealed record SuiteFeatures(
     /// arithmetic in every calendar its Table 1 lists was built.
     /// </para>
     /// <para>
+    /// <i>Noted 2026-11-03, at SJL-9.4's row Z8:</i> the <c>canonical-tz</c> proposal is admitted by
+    /// JSD-0082's decision D15, with the change that makes <c>Intl.DateTimeFormat</c> report a time
+    /// zone identifier as given, case-normalised, as <c>tc39/proposal-temporal@e8cc03fc</c>'s
+    /// <c>intl.html:434</c> has it, where the profile reported its primary identifier. The entry names
+    /// JSD-0082, the record that decides it; the cut-over's own record, which SJL-9.4's task 7.6 files,
+    /// records the admission again.
+    /// </para>
+    /// <para>
     /// <b>An entry needs a record, and the record is named beside it</b>, so this set cannot grow
     /// the way JSD-0018 feared a hand-written list would: quietly, whenever something failed. It can
     /// only move tests from the skipped column into the scored ones, never out of them. The
@@ -94,6 +102,7 @@ internal sealed record SuiteFeatures(
             ["ShadowRealm"] = "JSD-0040",
             ["Temporal"] = "JSD-0054",
             ["Intl.Era-monthcode"] = "JSD-0056",
+            ["canonical-tz"] = "JSD-0082",
         };
 
     /// <summary>The proposed flags a <c>--test262</c> run skips: every proposal not admitted.</summary>

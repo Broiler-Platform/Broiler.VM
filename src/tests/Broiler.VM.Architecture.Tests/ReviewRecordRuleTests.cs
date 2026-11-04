@@ -1242,23 +1242,33 @@ public sealed class ReviewRecordRuleTests
         // data is read through. And the new family assembly's two files: JsCldrData.cs, which hands
         // the tables over, and JsCldrTables.g.cs, which CldrTableGenerator writes and rule N28
         // holds. All nine are covered on the same terms as every other product file, and nothing in
-        // them has been read by a human.
+        // them has been read by a human. (Noted 2026-11-04, at SJL-9.4: "JsLocaleTag.cs, the language
+        // tag's parse, canonicalization and likely subtags" is deleted at its sub-area (a), as the
+        // paragraph on the Intl area's cut-over below records; this one is kept as written.)
         //
         // AND NUMBER FORMATTING (phase F7, 2026-10-04, JSD-0044): JsDecimal.cs, the exact decimal and
         // its rounding; JsNumberData.cs, the decoded number data and the CLDR pattern reader;
         // JsPluralRule.cs, the plural rule evaluator; JsNumberFormatter.cs, the formatting itself; and
         // JsRealm.NumberFormat.cs, Intl.NumberFormat. All five are covered on the same terms as every
-        // other product file, and nothing in them has been read by a human.
+        // other product file, and nothing in them has been read by a human. (Noted 2026-11-03, at
+        // SJL-9.4: the first four of them are deleted; the paragraph on the Intl area's cut-over below
+        // records it, and this one is kept as written.)
         //
         // AND DATE FORMATTING (phase F7, 2026-10-04, JSD-0045): JsDateData.cs, the decoded calendar
         // data; JsDatePatternGenerator.cs, ICU's skeleton matching; JsDateIntervalFormat.cs, ICU's
         // range patterns; JsDateTimeFormatter.cs, the formatting itself; and JsRealm.DateTimeFormat.cs,
         // Intl.DateTimeFormat and Intl.supportedValuesOf. All five are covered on the same terms as
-        // every other product file, and nothing in them has been read by a human.
+        // every other product file, and nothing in them has been read by a human. (Noted 2026-11-04, at
+        // SJL-9.4: "JsDateData.cs", "JsDatePatternGenerator.cs", "JsDateIntervalFormat.cs" and
+        // "JsDateTimeFormatter.cs" are deleted at its sub-area (d), and Intl.supportedValuesOf left
+        // JsRealm.DateTimeFormat.cs for JsRealm.Intl.cs at its sub-area (a); the paragraphs on the Intl
+        // area's cut-over below record it, and this one is kept as written.)
         //
         // AND THE LOCALE (phase F7, 2026-10-04, JSD-0046): JsLocaleInfo.cs, the week and script data;
         // and JsRealm.Locale.cs, Intl.Locale. Both are covered on the same terms as every other
-        // product file, and nothing in them has been read by a human.
+        // product file, and nothing in them has been read by a human. (Noted 2026-11-04, at SJL-9.4:
+        // "JsLocaleInfo.cs, the week and script data" is deleted at its sub-area (d), as the paragraph
+        // on that sub-area below records; this one is kept as written.)
         //
         // AND PLURAL RULES (phase F7, 2026-10-04, JSD-0047): JsRealm.PluralRules.cs,
         // Intl.PluralRules over the number format's rounding. It is covered on the same terms as every
@@ -1312,7 +1322,9 @@ public sealed class ReviewRecordRuleTests
         //
         // AND THE TIME ZONES' NAMES (phase F8 slice T5, 2026-10-05, JSD-0058): JsZoneNames.cs, CLDR's
         // metazones and ICU's algorithms that name a zone by them. It is covered on the same terms as
-        // every other product file, and nothing in it has been read by a human.
+        // every other product file, and nothing in it has been read by a human. (Noted 2026-11-04, at
+        // SJL-9.4: "JsZoneNames.cs" is deleted at its sub-area (d), as the paragraph on that sub-area
+        // below records; this one is kept as written.)
         // The compiler's nineteen additional partial files each require a coverage row too.
         // Eighteen further partials keep the engine's operations separate from its dispatch loop.
         //
@@ -1331,6 +1343,9 @@ public sealed class ReviewRecordRuleTests
         // AND THE TIME-ZONE AND CALENDAR AREA'S CUT-OVER (SJL-8.5, JSD-0076 and JSD-0077) TOOK ONE AWAY:
         // JsTimeZones.cs, whose decoder, lookup and zone rules the shared library's TimeZoneDatabase
         // implements; JsTemporal.Zones.cs, JsCalendars.cs and the formatter's files stay, and call it.
+        // (Noted 2026-11-04, at SJL-9.4: of "JsTemporal.Zones.cs, JsCalendars.cs and the formatter's
+        // files stay", JsCalendars.cs went at SJL-10.4 and the formatter's files at SJL-9.4's sub-area
+        // (d), as the paragraphs below record; this one is kept as written.)
         //
         // AND THE TEMPORAL CORE'S CUT-OVER (SJL-10.4, JSD-0078 and JSD-0079) TOOK THREE AWAY:
         // JsTemporalCore.cs, whose records, limits, balancing, rounding, duration operations and string
@@ -1348,7 +1363,20 @@ public sealed class ReviewRecordRuleTests
         // compiler's JsBinder.EarlyErrors.cs, the language early errors the binder reports before the
         // lowering runs. It is covered on the same terms as every other product file, and nothing in it
         // has been read by a human.
-        Assert.Equal(330, AssuranceSources.Files.Count);
+        //
+        // AND THE INTL AREA'S CUT-OVER, SUB-AREAS (B) AND (C) (SJL-9.4, 2026-11-03, JSD-0082 decision
+        // D24), TOOK FOUR AWAY: JsDecimal.cs, JsNumberData.cs, JsPluralRule.cs and JsNumberFormatter.cs,
+        // whose decimal, digit options, plural rules and number formatting the shared library's
+        // Broiler.ECMAScript.Intl implements; JsRealm.NumberFormat.cs, JsRealm.PluralRules.cs and the
+        // other realm files stay, and call it. The count read 330 before. (Sub-area (a) took
+        // JsLocaleTag.cs away and added JsIntlDataSet.cs, which left the count as it was.)
+        //
+        // AND ITS SUB-AREA (D) (SJL-9.4, 2026-11-03, JSD-0082 decision D24) TOOK SIX AWAY: JsDateData.cs,
+        // JsDatePatternGenerator.cs, JsDateIntervalFormat.cs, JsDateTimeFormatter.cs, JsZoneNames.cs and
+        // JsLocaleInfo.cs, whose date data, pattern generator, interval formats, formatter, zone names and
+        // display names the shared library's DateTimeFormat and DateTimeData implement;
+        // JsRealm.DateTimeFormat.cs and JsIntlTables.cs stay, and call it. The count read 326 before.
+        Assert.Equal(320, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

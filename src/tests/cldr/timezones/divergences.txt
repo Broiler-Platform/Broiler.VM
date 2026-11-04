@@ -1,57 +1,173 @@
 # Lines of timezones.icu-77.1.txt where the profile answers otherwise, each the profile's line, under
 # the reason it is not Node's. A line replaces the Node line whose text before ` => ` is the same.
 
-# ECMA-402 6.5 makes every Zone of the IANA Time Zone Database a primary identifier and resolves a
-# Link to its Zone, by CLDR's grouping where the note recommends it, and Intl.DateTimeFormat resolves
-# a name to its primary identifier (11.1.2 step 36). CLDR's time zone keys name that Zone in their
-# `_iana` attribute: Asia/Kolkata for Asia/Calcutta, Europe/Kyiv for Europe/Kiev. V8 in Node 22.22.0
-# answers CLDR's own canonical identifier instead, the key's first alias, which is the older name.
-# The offsets agree on every one of these lines.
+# ECMA-402 6.5 makes every Zone of the IANA Time Zone Database a primary identifier, and CLDR's time
+# zone keys name that Zone in their `_iana` attribute: Asia/Kolkata for Asia/Calcutta, Europe/Kyiv for
+# Europe/Kiev. Intl.DateTimeFormat reports a name as given, case-normalised, where ECMA-402 11.1.2 step
+# 36 reported its primary identifier: tc39/proposal-temporal@e8cc03fc's intl.html:434 replaces that step
+# with [[Identifier]] (row Z8, JSD-0082 decision D15), and the zone keeps its names, the primary's. So a
+# Zone answers itself and a Link answers itself, where V8 in Node 22.22.0 answers CLDR's own canonical
+# identifier, the key's first alias, which for a Zone and for many Links is another name. The offsets
+# agree on every one of these lines.
+# (Rewritten 2026-11-03, at SJL-9.4's row Z8, when the profile stopped reporting a Link's Zone. It
+# read: "ECMA-402 6.5 makes every Zone of the IANA Time Zone Database a primary identifier and
+# resolves a Link to its Zone, by CLDR's grouping where the note recommends it, and
+# Intl.DateTimeFormat resolves a name to its primary identifier (11.1.2 step 36). CLDR's time zone
+# keys name that Zone in their `_iana` attribute: Asia/Kolkata for Asia/Calcutta, Europe/Kyiv for
+# Europe/Kiev. V8 in Node 22.22.0 answers CLDR's own canonical identifier instead, the key's first
+# alias, which is the older name. The offsets agree on every one of these lines.")
 Africa/Asmara => Africa/Asmara | GMT+02:27:16 GMT+02:27:16 GMT+02:45 GMT+03:00 GMT+03:00 GMT+03:00 GMT+03:00 GMT+03:00
-Africa/Asmera => Africa/Asmara | GMT+02:27:16 GMT+02:27:16 GMT+02:45 GMT+03:00 GMT+03:00 GMT+03:00 GMT+03:00 GMT+03:00
+Africa/Timbuktu => Africa/Timbuktu | GMT-00:16:08 GMT-00:16:08 GMT GMT GMT GMT GMT GMT
 America/Argentina/Buenos_Aires => America/Argentina/Buenos_Aires | GMT-03:53:48 GMT-04:16:48 GMT-04:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00
 America/Argentina/Catamarca => America/Argentina/Catamarca | GMT-04:23:08 GMT-04:16:48 GMT-04:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00
-America/Argentina/ComodRivadavia => America/Argentina/Catamarca | GMT-04:23:08 GMT-04:16:48 GMT-04:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00
+America/Argentina/ComodRivadavia => America/Argentina/ComodRivadavia | GMT-04:23:08 GMT-04:16:48 GMT-04:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00
 America/Argentina/Cordoba => America/Argentina/Cordoba | GMT-04:16:48 GMT-04:16:48 GMT-04:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00
 America/Argentina/Jujuy => America/Argentina/Jujuy | GMT-04:21:12 GMT-04:16:48 GMT-04:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00
 America/Argentina/Mendoza => America/Argentina/Mendoza | GMT-04:35:16 GMT-04:16:48 GMT-04:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00
 America/Atikokan => America/Atikokan | GMT-05:18:08 GMT-05:19:36 GMT-05:00 GMT-05:00 GMT-05:00 GMT-05:00 GMT-05:00 GMT-05:00
-America/Buenos_Aires => America/Argentina/Buenos_Aires | GMT-03:53:48 GMT-04:16:48 GMT-04:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00
-America/Catamarca => America/Argentina/Catamarca | GMT-04:23:08 GMT-04:16:48 GMT-04:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00
-America/Coral_Harbour => America/Atikokan | GMT-05:18:08 GMT-05:19:36 GMT-05:00 GMT-05:00 GMT-05:00 GMT-05:00 GMT-05:00 GMT-05:00
-America/Cordoba => America/Argentina/Cordoba | GMT-04:16:48 GMT-04:16:48 GMT-04:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00
-America/Fort_Wayne => America/Indiana/Indianapolis | GMT-05:44:38 GMT-06:00 GMT-06:00 GMT-05:00 GMT-05:00 GMT-05:00 GMT-04:00 GMT-04:00
-America/Godthab => America/Nuuk | GMT-03:26:56 GMT-03:26:56 GMT-03:00 GMT-03:00 GMT-02:00 GMT-02:00 GMT-01:00 GMT-01:00
+America/Atka => America/Atka | GMT+12:13:22 GMT-11:46:38 GMT-11:00 GMT-11:00 GMT-09:00 GMT-10:00 GMT-09:00 GMT-09:00
+America/Ensenada => America/Ensenada | GMT-07:48:04 GMT-07:48:04 GMT-08:00 GMT-08:00 GMT-07:00 GMT-08:00 GMT-07:00 GMT-07:00
+America/Fort_Wayne => America/Fort_Wayne | GMT-05:44:38 GMT-06:00 GMT-06:00 GMT-05:00 GMT-05:00 GMT-05:00 GMT-04:00 GMT-04:00
 America/Indiana/Indianapolis => America/Indiana/Indianapolis | GMT-05:44:38 GMT-06:00 GMT-06:00 GMT-05:00 GMT-05:00 GMT-05:00 GMT-04:00 GMT-04:00
-America/Indianapolis => America/Indiana/Indianapolis | GMT-05:44:38 GMT-06:00 GMT-06:00 GMT-05:00 GMT-05:00 GMT-05:00 GMT-04:00 GMT-04:00
-America/Jujuy => America/Argentina/Jujuy | GMT-04:21:12 GMT-04:16:48 GMT-04:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00
 America/Kentucky/Louisville => America/Kentucky/Louisville | GMT-05:43:02 GMT-06:00 GMT-06:00 GMT-05:00 GMT-04:00 GMT-05:00 GMT-04:00 GMT-04:00
-America/Louisville => America/Kentucky/Louisville | GMT-05:43:02 GMT-06:00 GMT-06:00 GMT-05:00 GMT-04:00 GMT-05:00 GMT-04:00 GMT-04:00
-America/Mendoza => America/Argentina/Mendoza | GMT-04:35:16 GMT-04:16:48 GMT-04:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00
+America/Knox_IN => America/Knox_IN | GMT-05:46:30 GMT-06:00 GMT-06:00 GMT-06:00 GMT-05:00 GMT-06:00 GMT-05:00 GMT-05:00
+America/Montreal => America/Montreal | GMT-05:17:32 GMT-05:00 GMT-04:00 GMT-05:00 GMT-04:00 GMT-05:00 GMT-04:00 GMT-04:00
+America/Nipigon => America/Nipigon | GMT-05:17:32 GMT-05:00 GMT-04:00 GMT-05:00 GMT-04:00 GMT-05:00 GMT-04:00 GMT-04:00
 America/Nuuk => America/Nuuk | GMT-03:26:56 GMT-03:26:56 GMT-03:00 GMT-03:00 GMT-02:00 GMT-02:00 GMT-01:00 GMT-01:00
-America/Rosario => America/Argentina/Cordoba | GMT-04:16:48 GMT-04:16:48 GMT-04:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00
-Asia/Calcutta => Asia/Kolkata | GMT+05:53:28 GMT+05:21:10 GMT+05:30 GMT+05:30 GMT+05:30 GMT+05:30 GMT+05:30 GMT+05:30
+America/Pangnirtung => America/Pangnirtung | GMT GMT GMT GMT-05:00 GMT-05:00 GMT-05:00 GMT-04:00 GMT-04:00
+America/Porto_Acre => America/Porto_Acre | GMT-04:31:12 GMT-04:31:12 GMT-05:00 GMT-05:00 GMT-05:00 GMT-05:00 GMT-05:00 GMT-05:00
+America/Rainy_River => America/Rainy_River | GMT-06:28:36 GMT-06:00 GMT-06:00 GMT-06:00 GMT-05:00 GMT-06:00 GMT-05:00 GMT-05:00
+America/Rosario => America/Rosario | GMT-04:16:48 GMT-04:16:48 GMT-04:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00
+America/Santa_Isabel => America/Santa_Isabel | GMT-07:48:04 GMT-07:48:04 GMT-08:00 GMT-08:00 GMT-07:00 GMT-08:00 GMT-07:00 GMT-07:00
+America/Shiprock => America/Shiprock | GMT-06:59:56 GMT-07:00 GMT-07:00 GMT-07:00 GMT-06:00 GMT-07:00 GMT-06:00 GMT-06:00
+America/Thunder_Bay => America/Thunder_Bay | GMT-05:17:32 GMT-05:00 GMT-04:00 GMT-05:00 GMT-04:00 GMT-05:00 GMT-04:00 GMT-04:00
+America/Virgin => America/Virgin | GMT-04:24:25 GMT-04:00 GMT-04:00 GMT-04:00 GMT-04:00 GMT-04:00 GMT-04:00 GMT-04:00
+America/Yellowknife => America/Yellowknife | GMT-07:33:52 GMT-07:33:52 GMT-07:00 GMT-07:00 GMT-06:00 GMT-07:00 GMT-06:00 GMT-06:00
+Antarctica/South_Pole => Antarctica/South_Pole | GMT+11:39:04 GMT+11:30 GMT+11:30 GMT+13:00 GMT+12:00 GMT+13:00 GMT+12:00 GMT+12:00
+Asia/Ashkhabad => Asia/Ashkhabad | GMT+03:53:32 GMT+03:53:32 GMT+05:00 GMT+05:00 GMT+05:00 GMT+05:00 GMT+05:00 GMT+05:00
+Asia/Choibalsan => Asia/Choibalsan | GMT+07:07:32 GMT+07:07:32 GMT+07:00 GMT+07:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00
+Asia/Chongqing => Asia/Chongqing | GMT+08:05:43 GMT+08:05:43 GMT+09:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00
+Asia/Chungking => Asia/Chungking | GMT+08:05:43 GMT+08:05:43 GMT+09:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00
+Asia/Dacca => Asia/Dacca | GMT+06:01:40 GMT+05:53:20 GMT+05:53:20 GMT+06:00 GMT+06:00 GMT+06:00 GMT+06:00 GMT+06:00
+Asia/Harbin => Asia/Harbin | GMT+08:05:43 GMT+08:05:43 GMT+09:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00
 Asia/Ho_Chi_Minh => Asia/Ho_Chi_Minh | GMT+07:06:30 GMT+07:06:30 GMT+07:00 GMT+08:00 GMT+07:00 GMT+07:00 GMT+07:00 GMT+07:00
+Asia/Istanbul => Asia/Istanbul | GMT+01:55:52 GMT+01:56:56 GMT+03:00 GMT+02:00 GMT+03:00 GMT+03:00 GMT+03:00 GMT+03:00
+Asia/Kashgar => Asia/Kashgar | GMT+05:50:20 GMT+05:50:20 GMT+06:00 GMT+06:00 GMT+06:00 GMT+06:00 GMT+06:00 GMT+06:00
 Asia/Kathmandu => Asia/Kathmandu | GMT+05:41:16 GMT+05:41:16 GMT+05:30 GMT+05:30 GMT+05:45 GMT+05:45 GMT+05:45 GMT+05:45
-Asia/Katmandu => Asia/Kathmandu | GMT+05:41:16 GMT+05:41:16 GMT+05:30 GMT+05:30 GMT+05:45 GMT+05:45 GMT+05:45 GMT+05:45
 Asia/Kolkata => Asia/Kolkata | GMT+05:53:28 GMT+05:21:10 GMT+05:30 GMT+05:30 GMT+05:30 GMT+05:30 GMT+05:30 GMT+05:30
-Asia/Rangoon => Asia/Yangon | GMT+06:24:47 GMT+06:24:47 GMT+06:30 GMT+06:30 GMT+06:30 GMT+06:30 GMT+06:30 GMT+06:30
-Asia/Saigon => Asia/Ho_Chi_Minh | GMT+07:06:30 GMT+07:06:30 GMT+07:00 GMT+08:00 GMT+07:00 GMT+07:00 GMT+07:00 GMT+07:00
+Asia/Macao => Asia/Macao | GMT+07:34:10 GMT+07:34:10 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00
+Asia/Tel_Aviv => Asia/Tel_Aviv | GMT+02:20:54 GMT+02:20:40 GMT+03:00 GMT+02:00 GMT+03:00 GMT+02:00 GMT+03:00 GMT+03:00
+Asia/Thimbu => Asia/Thimbu | GMT+05:58:36 GMT+05:58:36 GMT+05:58:36 GMT+05:30 GMT+06:00 GMT+06:00 GMT+06:00 GMT+06:00
+Asia/Ujung_Pandang => Asia/Ujung_Pandang | GMT+07:57:36 GMT+07:57:36 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00
+Asia/Ulan_Bator => Asia/Ulan_Bator | GMT+07:07:32 GMT+07:07:32 GMT+07:00 GMT+07:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00
 Asia/Yangon => Asia/Yangon | GMT+06:24:47 GMT+06:24:47 GMT+06:30 GMT+06:30 GMT+06:30 GMT+06:30 GMT+06:30 GMT+06:30
-Atlantic/Faeroe => Atlantic/Faroe | GMT-00:27:04 GMT-00:27:04 GMT GMT GMT+01:00 GMT GMT+01:00 GMT+01:00
 Atlantic/Faroe => Atlantic/Faroe | GMT-00:27:04 GMT-00:27:04 GMT GMT GMT+01:00 GMT GMT+01:00 GMT+01:00
-Europe/Kiev => Europe/Kyiv | GMT+02:02:04 GMT+02:02:04 GMT+03:00 GMT+03:00 GMT+03:00 GMT+02:00 GMT+03:00 GMT+03:00
+Atlantic/Jan_Mayen => Atlantic/Jan_Mayen | GMT+00:53:28 GMT+01:00 GMT+02:00 GMT+01:00 GMT+02:00 GMT+01:00 GMT+02:00 GMT+02:00
+Australia/ACT => Australia/ACT | GMT+10:04:52 GMT+10:00 GMT+10:00 GMT+11:00 GMT+10:00 GMT+11:00 GMT+10:00 GMT+10:00
+Australia/Canberra => Australia/Canberra | GMT+10:04:52 GMT+10:00 GMT+10:00 GMT+11:00 GMT+10:00 GMT+11:00 GMT+10:00 GMT+10:00
+Australia/Currie => Australia/Currie | GMT+09:49:16 GMT+10:00 GMT+10:00 GMT+11:00 GMT+10:00 GMT+11:00 GMT+10:00 GMT+10:00
+Australia/LHI => Australia/LHI | GMT+10:36:20 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:30 GMT+11:00 GMT+10:30 GMT+10:30
+Australia/NSW => Australia/NSW | GMT+10:04:52 GMT+10:00 GMT+10:00 GMT+11:00 GMT+10:00 GMT+11:00 GMT+10:00 GMT+10:00
+Australia/North => Australia/North | GMT+08:43:20 GMT+09:30 GMT+09:30 GMT+09:30 GMT+09:30 GMT+09:30 GMT+09:30 GMT+09:30
+Australia/Queensland => Australia/Queensland | GMT+10:12:08 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00
+Australia/South => Australia/South | GMT+09:14:20 GMT+09:30 GMT+09:30 GMT+10:30 GMT+09:30 GMT+10:30 GMT+09:30 GMT+09:30
+Australia/Tasmania => Australia/Tasmania | GMT+09:49:16 GMT+10:00 GMT+10:00 GMT+11:00 GMT+10:00 GMT+11:00 GMT+10:00 GMT+10:00
+Australia/Victoria => Australia/Victoria | GMT+09:39:52 GMT+10:00 GMT+10:00 GMT+11:00 GMT+10:00 GMT+11:00 GMT+10:00 GMT+10:00
+Australia/West => Australia/West | GMT+07:43:24 GMT+08:00 GMT+08:00 GMT+09:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00
+Australia/Yancowinna => Australia/Yancowinna | GMT+09:25:48 GMT+09:30 GMT+09:30 GMT+10:30 GMT+09:30 GMT+10:30 GMT+09:30 GMT+09:30
+Brazil/Acre => Brazil/Acre | GMT-04:31:12 GMT-04:31:12 GMT-05:00 GMT-05:00 GMT-05:00 GMT-05:00 GMT-05:00 GMT-05:00
+Brazil/DeNoronha => Brazil/DeNoronha | GMT-02:09:40 GMT-02:09:40 GMT-02:00 GMT-02:00 GMT-02:00 GMT-02:00 GMT-02:00 GMT-02:00
+Brazil/East => Brazil/East | GMT-03:06:28 GMT-03:06:28 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00 GMT-03:00
+Brazil/West => Brazil/West | GMT-04:00:04 GMT-04:00:04 GMT-04:00 GMT-04:00 GMT-04:00 GMT-04:00 GMT-04:00 GMT-04:00
+CET => CET | GMT+00:17:30 GMT GMT+02:00 GMT+01:00 GMT+02:00 GMT+01:00 GMT+02:00 GMT+02:00
+CST6CDT => CST6CDT | GMT-05:50:36 GMT-06:00 GMT-05:00 GMT-06:00 GMT-05:00 GMT-06:00 GMT-05:00 GMT-05:00
+Canada/Atlantic => Canada/Atlantic | GMT-04:14:24 GMT-04:14:24 GMT-03:00 GMT-04:00 GMT-03:00 GMT-04:00 GMT-03:00 GMT-03:00
+Canada/Central => Canada/Central | GMT-06:28:36 GMT-06:00 GMT-06:00 GMT-06:00 GMT-05:00 GMT-06:00 GMT-05:00 GMT-05:00
+Canada/Eastern => Canada/Eastern | GMT-05:17:32 GMT-05:00 GMT-04:00 GMT-05:00 GMT-04:00 GMT-05:00 GMT-04:00 GMT-04:00
+Canada/Mountain => Canada/Mountain | GMT-07:33:52 GMT-07:33:52 GMT-07:00 GMT-07:00 GMT-06:00 GMT-07:00 GMT-06:00 GMT-06:00
+Canada/Newfoundland => Canada/Newfoundland | GMT-03:30:52 GMT-03:30:52 GMT-02:30 GMT-03:30 GMT-02:30 GMT-03:30 GMT-02:30 GMT-02:30
+Canada/Pacific => Canada/Pacific | GMT-08:12:28 GMT-08:00 GMT-08:00 GMT-08:00 GMT-07:00 GMT-08:00 GMT-07:00 GMT-07:00
+Canada/Saskatchewan => Canada/Saskatchewan | GMT-06:58:36 GMT-06:58:36 GMT-06:00 GMT-06:00 GMT-06:00 GMT-06:00 GMT-06:00 GMT-06:00
+Canada/Yukon => Canada/Yukon | GMT-09:00:12 GMT-09:00:12 GMT-09:00 GMT-08:00 GMT-07:00 GMT-07:00 GMT-07:00 GMT-07:00
+Chile/Continental => Chile/Continental | GMT-04:42:45 GMT-04:42:45 GMT-04:00 GMT-03:00 GMT-04:00 GMT-03:00 GMT-04:00 GMT-04:00
+Chile/EasterIsland => Chile/EasterIsland | GMT-07:17:28 GMT-07:17:28 GMT-07:00 GMT-06:00 GMT-06:00 GMT-05:00 GMT-06:00 GMT-06:00
+Cuba => Cuba | GMT-05:29:28 GMT-05:29:36 GMT-04:00 GMT-05:00 GMT-04:00 GMT-05:00 GMT-04:00 GMT-04:00
+EET => EET | GMT+01:34:52 GMT+01:34:52 GMT+02:00 GMT+02:00 GMT+03:00 GMT+02:00 GMT+03:00 GMT+03:00
+EST => EST | GMT-05:18:08 GMT-05:19:36 GMT-05:00 GMT-05:00 GMT-05:00 GMT-05:00 GMT-05:00 GMT-05:00
+EST5EDT => EST5EDT | GMT-04:56:02 GMT-05:00 GMT-04:00 GMT-05:00 GMT-04:00 GMT-05:00 GMT-04:00 GMT-04:00
+Egypt => Egypt | GMT+02:05:09 GMT+02:05:09 GMT+02:00 GMT+02:00 GMT+03:00 GMT+02:00 GMT+03:00 GMT+03:00
+Eire => Eire | GMT-00:25:21 GMT-00:25:21 GMT+01:00 GMT GMT+01:00 GMT GMT+01:00 GMT+01:00
+Etc/GMT => Etc/GMT | GMT GMT GMT GMT GMT GMT GMT GMT
+Etc/GMT+0 => Etc/GMT+0 | GMT GMT GMT GMT GMT GMT GMT GMT
+Etc/GMT-0 => Etc/GMT-0 | GMT GMT GMT GMT GMT GMT GMT GMT
+Etc/GMT0 => Etc/GMT0 | GMT GMT GMT GMT GMT GMT GMT GMT
+Etc/Greenwich => Etc/Greenwich | GMT GMT GMT GMT GMT GMT GMT GMT
+Etc/UCT => Etc/UCT | GMT GMT GMT GMT GMT GMT GMT GMT
+Etc/UTC => Etc/UTC | GMT GMT GMT GMT GMT GMT GMT GMT
+Etc/Universal => Etc/Universal | GMT GMT GMT GMT GMT GMT GMT GMT
+Etc/Zulu => Etc/Zulu | GMT GMT GMT GMT GMT GMT GMT GMT
+Europe/Belfast => Europe/Belfast | GMT GMT GMT+01:00 GMT GMT+01:00 GMT GMT+01:00 GMT+01:00
 Europe/Kyiv => Europe/Kyiv | GMT+02:02:04 GMT+02:02:04 GMT+03:00 GMT+03:00 GMT+03:00 GMT+02:00 GMT+03:00 GMT+03:00
-Europe/Uzhgorod => Europe/Kyiv | GMT+02:02:04 GMT+02:02:04 GMT+03:00 GMT+03:00 GMT+03:00 GMT+02:00 GMT+03:00 GMT+03:00
-Europe/Zaporozhye => Europe/Kyiv | GMT+02:02:04 GMT+02:02:04 GMT+03:00 GMT+03:00 GMT+03:00 GMT+02:00 GMT+03:00 GMT+03:00
+Europe/Nicosia => Europe/Nicosia | GMT+02:13:28 GMT+02:13:28 GMT+02:00 GMT+02:00 GMT+03:00 GMT+02:00 GMT+03:00 GMT+03:00
+Europe/Tiraspol => Europe/Tiraspol | GMT+01:55:20 GMT+01:55 GMT+02:00 GMT+03:00 GMT+03:00 GMT+02:00 GMT+03:00 GMT+03:00
+Europe/Uzhgorod => Europe/Uzhgorod | GMT+02:02:04 GMT+02:02:04 GMT+03:00 GMT+03:00 GMT+03:00 GMT+02:00 GMT+03:00 GMT+03:00
+Europe/Zaporozhye => Europe/Zaporozhye | GMT+02:02:04 GMT+02:02:04 GMT+03:00 GMT+03:00 GMT+03:00 GMT+02:00 GMT+03:00 GMT+03:00
+GB => GB | GMT GMT GMT+01:00 GMT GMT+01:00 GMT GMT+01:00 GMT+01:00
+GB-Eire => GB-Eire | GMT GMT GMT+01:00 GMT GMT+01:00 GMT GMT+01:00 GMT+01:00
+GMT => GMT | GMT GMT GMT GMT GMT GMT GMT GMT
+GMT+0 => GMT+0 | GMT GMT GMT GMT GMT GMT GMT GMT
+GMT-0 => GMT-0 | GMT GMT GMT GMT GMT GMT GMT GMT
+GMT0 => GMT0 | GMT GMT GMT GMT GMT GMT GMT GMT
+Greenwich => Greenwich | GMT GMT GMT GMT GMT GMT GMT GMT
+HST => HST | GMT-10:31:26 GMT-10:30 GMT-10:30 GMT-10:00 GMT-10:00 GMT-10:00 GMT-10:00 GMT-10:00
+Hongkong => Hongkong | GMT+07:36:42 GMT+07:36:42 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00
+Iceland => Iceland | GMT-00:16:08 GMT-00:16:08 GMT GMT GMT GMT GMT GMT
+Iran => Iran | GMT+03:25:44 GMT+03:25:44 GMT+03:30 GMT+03:30 GMT+04:30 GMT+03:30 GMT+03:30 GMT+03:30
+Israel => Israel | GMT+02:20:54 GMT+02:20:40 GMT+03:00 GMT+02:00 GMT+03:00 GMT+02:00 GMT+03:00 GMT+03:00
+Jamaica => Jamaica | GMT-05:07:10 GMT-05:07:10 GMT-05:00 GMT-05:00 GMT-05:00 GMT-05:00 GMT-05:00 GMT-05:00
+Japan => Japan | GMT+09:18:59 GMT+09:00 GMT+09:00 GMT+09:00 GMT+09:00 GMT+09:00 GMT+09:00 GMT+09:00
+Kwajalein => Kwajalein | GMT+11:09:20 GMT+11:09:20 GMT+10:00 GMT-12:00 GMT+12:00 GMT+12:00 GMT+12:00 GMT+12:00
+Libya => Libya | GMT+00:52:44 GMT+00:52:44 GMT+01:00 GMT+02:00 GMT+02:00 GMT+02:00 GMT+02:00 GMT+02:00
+MET => MET | GMT+00:17:30 GMT GMT+02:00 GMT+01:00 GMT+02:00 GMT+01:00 GMT+02:00 GMT+02:00
+MST => MST | GMT-07:28:18 GMT-07:00 GMT-07:00 GMT-07:00 GMT-07:00 GMT-07:00 GMT-07:00 GMT-07:00
+MST7MDT => MST7MDT | GMT-06:59:56 GMT-07:00 GMT-07:00 GMT-07:00 GMT-06:00 GMT-07:00 GMT-06:00 GMT-06:00
+Mexico/BajaNorte => Mexico/BajaNorte | GMT-07:48:04 GMT-07:48:04 GMT-08:00 GMT-08:00 GMT-07:00 GMT-08:00 GMT-07:00 GMT-07:00
+Mexico/BajaSur => Mexico/BajaSur | GMT-07:05:40 GMT-07:05:40 GMT-06:00 GMT-07:00 GMT-06:00 GMT-07:00 GMT-07:00 GMT-07:00
+Mexico/General => Mexico/General | GMT-06:36:36 GMT-06:36:36 GMT-06:00 GMT-06:00 GMT-05:00 GMT-06:00 GMT-06:00 GMT-06:00
+NZ => NZ | GMT+11:39:04 GMT+11:30 GMT+11:30 GMT+13:00 GMT+12:00 GMT+13:00 GMT+12:00 GMT+12:00
+NZ-CHAT => NZ-CHAT | GMT+12:13:48 GMT+12:15 GMT+12:15 GMT+13:45 GMT+12:45 GMT+13:45 GMT+12:45 GMT+12:45
+Navajo => Navajo | GMT-06:59:56 GMT-07:00 GMT-07:00 GMT-07:00 GMT-06:00 GMT-07:00 GMT-06:00 GMT-06:00
+PRC => PRC | GMT+08:05:43 GMT+08:05:43 GMT+09:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00
+PST8PDT => PST8PDT | GMT-07:52:58 GMT-08:00 GMT-08:00 GMT-08:00 GMT-07:00 GMT-08:00 GMT-07:00 GMT-07:00
 Pacific/Chuuk => Pacific/Chuuk | GMT+09:48:40 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00
-Pacific/Enderbury => Pacific/Kanton | GMT GMT GMT-12:00 GMT-12:00 GMT+13:00 GMT+13:00 GMT+13:00 GMT+13:00
+Pacific/Johnston => Pacific/Johnston | GMT-10:31:26 GMT-10:30 GMT-10:30 GMT-10:00 GMT-10:00 GMT-10:00 GMT-10:00 GMT-10:00
 Pacific/Kanton => Pacific/Kanton | GMT GMT GMT-12:00 GMT-12:00 GMT+13:00 GMT+13:00 GMT+13:00 GMT+13:00
 Pacific/Pohnpei => Pacific/Pohnpei | GMT+10:39:48 GMT+10:39:48 GMT+11:00 GMT+11:00 GMT+11:00 GMT+11:00 GMT+11:00 GMT+11:00
-Pacific/Ponape => Pacific/Pohnpei | GMT+10:39:48 GMT+10:39:48 GMT+11:00 GMT+11:00 GMT+11:00 GMT+11:00 GMT+11:00 GMT+11:00
-Pacific/Truk => Pacific/Chuuk | GMT+09:48:40 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00
-Pacific/Yap => Pacific/Chuuk | GMT+09:48:40 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00
-US/East-Indiana => America/Indiana/Indianapolis | GMT-05:44:38 GMT-06:00 GMT-06:00 GMT-05:00 GMT-05:00 GMT-05:00 GMT-04:00 GMT-04:00
+Pacific/Samoa => Pacific/Samoa | GMT+12:37:12 GMT-11:22:48 GMT-11:00 GMT-11:00 GMT-11:00 GMT-11:00 GMT-11:00 GMT-11:00
+Pacific/Yap => Pacific/Yap | GMT+09:48:40 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00 GMT+10:00
+Poland => Poland | GMT+01:24 GMT+01:24 GMT+02:00 GMT+01:00 GMT+02:00 GMT+01:00 GMT+02:00 GMT+02:00
+Portugal => Portugal | GMT-00:36:45 GMT-00:36:45 GMT+01:00 GMT+01:00 GMT+01:00 GMT GMT+01:00 GMT+01:00
+ROC => ROC | GMT+08:06 GMT+08:00 GMT+09:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00
+ROK => ROK | GMT+08:27:52 GMT+08:27:52 GMT+09:00 GMT+09:00 GMT+09:00 GMT+09:00 GMT+09:00 GMT+09:00
+Singapore => Singapore | GMT+06:55:25 GMT+06:55:25 GMT+07:20 GMT+07:30 GMT+08:00 GMT+08:00 GMT+08:00 GMT+08:00
+Turkey => Turkey | GMT+01:55:52 GMT+01:56:56 GMT+03:00 GMT+02:00 GMT+03:00 GMT+03:00 GMT+03:00 GMT+03:00
+UCT => UCT | GMT GMT GMT GMT GMT GMT GMT GMT
+US/Alaska => US/Alaska | GMT+14:00:24 GMT-09:59:36 GMT-10:00 GMT-10:00 GMT-08:00 GMT-09:00 GMT-08:00 GMT-08:00
+US/Aleutian => US/Aleutian | GMT+12:13:22 GMT-11:46:38 GMT-11:00 GMT-11:00 GMT-09:00 GMT-10:00 GMT-09:00 GMT-09:00
+US/Arizona => US/Arizona | GMT-07:28:18 GMT-07:00 GMT-07:00 GMT-07:00 GMT-07:00 GMT-07:00 GMT-07:00 GMT-07:00
+US/Central => US/Central | GMT-05:50:36 GMT-06:00 GMT-05:00 GMT-06:00 GMT-05:00 GMT-06:00 GMT-05:00 GMT-05:00
+US/East-Indiana => US/East-Indiana | GMT-05:44:38 GMT-06:00 GMT-06:00 GMT-05:00 GMT-05:00 GMT-05:00 GMT-04:00 GMT-04:00
+US/Eastern => US/Eastern | GMT-04:56:02 GMT-05:00 GMT-04:00 GMT-05:00 GMT-04:00 GMT-05:00 GMT-04:00 GMT-04:00
+US/Hawaii => US/Hawaii | GMT-10:31:26 GMT-10:30 GMT-10:30 GMT-10:00 GMT-10:00 GMT-10:00 GMT-10:00 GMT-10:00
+US/Indiana-Starke => US/Indiana-Starke | GMT-05:46:30 GMT-06:00 GMT-06:00 GMT-06:00 GMT-05:00 GMT-06:00 GMT-05:00 GMT-05:00
+US/Michigan => US/Michigan | GMT-05:32:11 GMT-05:32:11 GMT-05:00 GMT-05:00 GMT-04:00 GMT-05:00 GMT-04:00 GMT-04:00
+US/Mountain => US/Mountain | GMT-06:59:56 GMT-07:00 GMT-07:00 GMT-07:00 GMT-06:00 GMT-07:00 GMT-06:00 GMT-06:00
+US/Pacific => US/Pacific | GMT-07:52:58 GMT-08:00 GMT-08:00 GMT-08:00 GMT-07:00 GMT-08:00 GMT-07:00 GMT-07:00
+US/Samoa => US/Samoa | GMT+12:37:12 GMT-11:22:48 GMT-11:00 GMT-11:00 GMT-11:00 GMT-11:00 GMT-11:00 GMT-11:00
+Universal => Universal | GMT GMT GMT GMT GMT GMT GMT GMT
+W-SU => W-SU | GMT+02:30:17 GMT+02:30:17 GMT+03:00 GMT+03:00 GMT+04:00 GMT+03:00 GMT+03:00 GMT+03:00
+WET => WET | GMT-00:36:45 GMT-00:36:45 GMT+01:00 GMT+01:00 GMT+01:00 GMT GMT+01:00 GMT+01:00
+Zulu => Zulu | GMT GMT GMT GMT GMT GMT GMT GMT
 
 # Morocco moved to permanent +00 on 2026-09-20, which tzdb 2026e records and its NEWS states; Node
 # 22.22.0 carries tzdb 2025b, which predicts Morocco's Ramadan changes to 2087 and +01 after them.

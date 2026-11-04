@@ -2109,3 +2109,26 @@ that job's success. **No RID claim moves.**
 
 **What is not edited.** Every revision above stands as written, and so does the file table's row,
 read with this revision.
+
+### 2026-11-03 - the shared Intl library, a product package edge of the profile, SJL-9.4
+
+**What the record said.** The revision of 2026-10-12 above says, of the package-edge budget: "At this
+revision every package edge is a test project's test framework; the product graph has none." That stopped
+being true at SJL-3.4, when `Broiler.VM.Profile.JavaScript` and `Broiler.VM.Profile.JavaScript.Compiler`
+took `Broiler.ECMAScript.Algorithms`, and at SJL-7.4, when the family took the Unicode area's owner's
+packages; no revision here said so.
+
+**What changes.** No project and no project edge. One package edge: `Broiler.VM.Profile.JavaScript`
+references `Broiler.ECMAScript.Intl`, the shared Intl library, which JSD-0082 (decision D9) admits for that
+project alone and rule I1's allow-list names at its pinned content and archive hashes. `graph.manifest.json`
+records the edge, and rule A7 holds it to the project file. The number of package edges stays the
+catalogue's, cited as `{graph:package-edges}`, as the revision of 2026-10-12 has it.
+
+**What is now true.** The project set, the project-edge set, the packable set and the last budget sentence
+above are unchanged. The product graph's package edges are the JavaScript family's to the packages rule I1
+admits for shipping, and every root that carries the profile carries the Intl library's assembly, which the
+composition register's shared-assemblies column names (`docs/compositions.md`, rules K2 and K4); the locale
+data stays in the optional `Broiler.VM.Profile.JavaScript.Intl` assembly, as rule I3 holds it.
+
+**What is not edited.** Every revision above stands as written, the 2026-10-12 sentence quoted here
+included, read with this revision.

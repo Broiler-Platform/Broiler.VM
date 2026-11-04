@@ -15,6 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Intl;
 using Broiler.ECMAScript.Numbers;
 using Broiler.ECMAScript.Temporal;
 using Broiler.ECMAScript.Time;
@@ -30,7 +31,7 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     private static readonly string[] TimeFieldNames = ["hour", "minute", "second", "millisecond", "microsecond", "nanosecond"];
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1BA459
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B0B7DB
     // Broiler-Human:        PENDING
     private void SetupTemporalPlainTime(JsObject temporal)
     {
@@ -141,7 +142,7 @@ internal sealed partial class JsRealm
         Method(prototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
         {
             _ = TemporalThis<JsPlainTimeObject>(engine, thisValue, "PlainTime", "toLocaleString");
-            return JsValue.String(TemporalToLocaleString(engine, thisValue, arguments, "time", "time"));
+            return JsValue.String(TemporalToLocaleString(engine, thisValue, arguments, DateTimeRequired.Time, DateTimeDefaults.Time));
         });
 
         Method(prototype, "toJSON", 0, static (engine, thisValue, arguments) =>

@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System;
+using Broiler.ECMAScript.Intl;
 using Broiler.ECMAScript.Time;
 
 namespace Broiler.VM.Profile.JavaScript;
@@ -65,7 +66,7 @@ internal sealed partial class JsRealm
     private static readonly FixedOffsetLocalTimeProvider DateZone = new(0, "Coordinated Universal Time");
 
     /// <summary>Builds <c>Date</c>, its statics and <c>Date.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3CFF7B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C41387
     // Broiler-Human:        PENDING
     private void SetupDate()
     {
@@ -261,7 +262,7 @@ internal sealed partial class JsRealm
                 return JsValue.String(EcmaDateFormatter.ToDateString(time, DateZone));
             }
 
-            return JsValue.String(double.IsNaN(time) ? DateInvalidText : ToLocaleDateString(engine, time, arguments, "any", "all"));
+            return JsValue.String(double.IsNaN(time) ? DateInvalidText : ToLocaleDateString(engine, time, arguments, DateTimeRequired.Any, DateTimeDefaults.All));
         });
 
         Method(DatePrototype, "toLocaleDateString", 0, static (engine, thisValue, arguments) =>
@@ -275,7 +276,7 @@ internal sealed partial class JsRealm
 
             return JsValue.String(engine.Realm.DateTimeFormatPrototype is null
                 ? EcmaDateFormatter.DateString(EcmaLocalTime.LocalTime(time, DateZone))
-                : ToLocaleDateString(engine, time, arguments, "date", "date"));
+                : ToLocaleDateString(engine, time, arguments, DateTimeRequired.Date, DateTimeDefaults.Date));
         });
 
         Method(DatePrototype, "toLocaleTimeString", 0, static (engine, thisValue, arguments) =>
@@ -289,7 +290,7 @@ internal sealed partial class JsRealm
 
             return JsValue.String(engine.Realm.DateTimeFormatPrototype is null
                 ? DateTimeText(time)
-                : ToLocaleDateString(engine, time, arguments, "time", "time"));
+                : ToLocaleDateString(engine, time, arguments, DateTimeRequired.Time, DateTimeDefaults.Time));
         });
 
         void DatePair(string localName, string utcName, JsNativeBody body)

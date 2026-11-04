@@ -7,7 +7,7 @@
 **whatever JS-10 makes packable be frozen in a baseline of its own, compared in both directions so an
 addition and a removal each fail**. This is that baseline: the JavaScript family's packable set, each
 package's dependencies and each package's files, as the candidate pack of
-**bundle [JS-10-014](evidence/js-10-014/README.md)** produced them *(recertified on 2026-11-03 for ECMAScript preview.9, JSC-323; previously JS-10-013. Recertified on 2026-10-31 for the already selected Unicode preview.6; previously JS-10-012. Recertified on 2026-10-30 for ECMAScript preview.8; previously JS-10-011. Earlier corrections: JSC-300, JSC-302,
+**bundle [JS-10-015](evidence/js-10-015/README.md)** produced them *(recertified on 2026-11-03, at SJL-9.4, [JSC-324](roadmap.corrections.md#jsc-324), when `Broiler.VM.Profile.JavaScript` took `Broiler.ECMAScript.Intl`; previously JS-10-014. Recertified on 2026-11-03 for ECMAScript preview.9, JSC-323; previously JS-10-013. Recertified on 2026-10-31 for the already selected Unicode preview.6; previously JS-10-012. Recertified on 2026-10-30 for ECMAScript preview.8; previously JS-10-011. Earlier corrections: JSC-300, JSC-302,
 JSC-308, JSC-311, JSC-312, JSC-314, JSC-318; it was bundle JS-10-010's pack, before the shared algorithms
 dependency moved to `0.1.0-preview.7`, before that bundle JS-10-009's pack, before it moved to `0.1.0-preview.6`, before that bundle JS-10-008's pack, before it moved to `0.1.0-preview.5`, before that bundle JS-10-007's pack, before the Unicode area's dependencies moved to
 `0.1.0-preview.5`, before that bundle JS-10-006's pack, before the Unicode cut-over gave the family's packages the
@@ -32,13 +32,14 @@ restores. `Broiler.VM.Profile.MachineCode` is packable and is its own family's, 
 
 | Package | Depends on | Files |
 |---|---|---|
-| `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Abstractions`, `Broiler.VM.Binary`, `Broiler.VM.Profile.JavaScript.Format`, `Broiler.ECMAScript.Algorithms`, `Broiler.Unicode.Algorithms` | `README.md`, `THIRD_PARTY_NOTICES.md`, `icon.png`, `lib/net10.0/Broiler.VM.Profile.JavaScript.dll`, `lib/net10.0/Broiler.VM.Profile.JavaScript.xml` |
+| `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Abstractions`, `Broiler.VM.Binary`, `Broiler.VM.Profile.JavaScript.Format`, `Broiler.ECMAScript.Algorithms`, `Broiler.ECMAScript.Intl`, `Broiler.Unicode.Algorithms` | `README.md`, `THIRD_PARTY_NOTICES.md`, `icon.png`, `lib/net10.0/Broiler.VM.Profile.JavaScript.dll`, `lib/net10.0/Broiler.VM.Profile.JavaScript.xml` |
 | `Broiler.VM.Profile.JavaScript.Compiler` | `Broiler.VM.Abstractions`, `Broiler.VM.Profile.JavaScript.Format`, `Broiler.ECMAScript.Algorithms`, `Broiler.Unicode.Algorithms` | `README.md`, `THIRD_PARTY_NOTICES.md`, `icon.png`, `lib/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll`, `lib/net10.0/Broiler.VM.Profile.JavaScript.Compiler.xml` |
 | `Broiler.VM.Profile.JavaScript.Format` | `Broiler.Unicode.Algorithms` | `README.md`, `THIRD_PARTY_NOTICES.md`, `icon.png`, `lib/net10.0/Broiler.VM.Profile.JavaScript.Format.dll`, `lib/net10.0/Broiler.VM.Profile.JavaScript.Format.xml` |
 | `Broiler.VM.Profile.JavaScript.Intl` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.Unicode.Algorithms`, `Broiler.Unicode.Segmentation` | `README.md`, `THIRD_PARTY_NOTICES.md`, `icon.png`, `lib/net10.0/Broiler.VM.Profile.JavaScript.Intl.dll`, `lib/net10.0/Broiler.VM.Profile.JavaScript.Intl.xml` |
 
-**No foreign dependency.** Every dependency above is a Broiler.VM package but three, each a shared
-package rule I1 admits for shipping, for the projects that declare it and no other:
+**No foreign dependency.** Every dependency above is a Broiler.VM package but four, each a shared
+package rule I1 admits for shipping, for the projects that declare it and no other *(revised 2026-11-03, at
+SJL-9.4: it read "but three", before `Broiler.ECMAScript.Intl` joined the list)*:
 
 - `Broiler.ECMAScript.Algorithms`, the shared JavaScript libraries' algorithms package, which
   `Broiler.VM.Profile.JavaScript` and `.Compiler` declare at `0.1.0-preview.9` since 2026-11-03, published to
@@ -71,11 +72,21 @@ package rule I1 admits for shipping, for the projects that declare it and no oth
   [JSD-0078](decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md)), published to
   nuget.org from Broiler.JS `fc829f8`, whose library code is that of `bf81d1b`, from which the baseline's
   candidate pack took its copy; they declared it at `0.1.0-preview.5`")*;
+- `Broiler.ECMAScript.Intl`, the shared JavaScript libraries' Intl package, which `Broiler.VM.Profile.JavaScript`
+  alone declares, at `0.1.0-preview.9` since 2026-11-03, published to nuget.org from Broiler.JS `6f7284da`, as the
+  baseline's candidate pack does: ECMA-402's algorithms over the locale data the profile hands it, which stays in
+  `.Intl` ([JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md), decisions
+  D8 and D9; SJL-9.4) *(added 2026-11-03)*;
 - `Broiler.Unicode.Algorithms`, the Unicode area's code package, which all four declare at
-  `0.1.0-preview.5`, published to nuget.org from Broiler.Unicode `b802014` on 2026-10-17; they declared
-  it at `0.1.0-preview.4`, from Broiler.Unicode `6e14f93`, from the Unicode cut-over (JSD-0075, on
-  [JSD-0074](decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md)) until then
-  *(added: JSC-308; until JSC-310 it read "and not yet on nuget.org"; corrected: JSC-311)*;
+  `0.1.0-preview.6`, published to nuget.org from Broiler.Unicode `ccef653c` and admitted on 2026-10-31; they declared
+  it at `0.1.0-preview.5`, published to nuget.org from Broiler.Unicode `b802014` on 2026-10-17, until then, and at
+  `0.1.0-preview.4`, from Broiler.Unicode `6e14f93`, from the Unicode cut-over (JSD-0075, on
+  [JSD-0074](decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md)) before that
+  *(added: JSC-308; until JSC-310 it read "and not yet on nuget.org"; corrected: JSC-311; corrected 2026-11-04, at
+  SJL-9.4, [JSC-324](roadmap.corrections.md#jsc-324): it read "which all four declare at `0.1.0-preview.5`, published to
+  nuget.org from Broiler.Unicode `b802014` on 2026-10-17; they declared it at `0.1.0-preview.4`, from Broiler.Unicode
+  `6e14f93`, from the Unicode cut-over (JSD-0075, on JSD-0074) until then", which the move to `0.1.0-preview.6` on
+  2026-10-31 left stale)*;
 - `Broiler.Unicode.Segmentation`, its optional segmentation package, which `.Intl` alone declares, at
   the same version and from the same commit, so that a composition that declines the Intl surface
   carries none of it (rule I3) *(added: JSC-308)*.
@@ -87,11 +98,12 @@ a later one *(corrected: JSC-296, JSC-300)*.
 ## The consumer
 
 The pristine consumer, `samples/Broiler.VM.Sample.JavaScriptConsumer`, references the three core
-packages and these four and nothing else (rule A14); it restores `Broiler.ECMAScript.Algorithms`
-through them, and the Unicode area's `Broiler.Unicode.Algorithms` and `Broiler.Unicode.Segmentation`
-with them. Bundle JS-10-014 records it restoring and running with upstream feeds unreachable, from
+packages and these four and nothing else (rule A14); it restores `Broiler.ECMAScript.Algorithms` and,
+since SJL-9.4, `Broiler.ECMAScript.Intl` through them, and the Unicode area's `Broiler.Unicode.Algorithms` and
+`Broiler.Unicode.Segmentation` with them. Bundle JS-10-015 records it restoring and running with upstream feeds unreachable, from
 a local feed that holds the shared packages beside the family's, rolling back to the published
 `0.1.0-preview.5` set and forward again, failing to restore a version only nuget.org holds, and
 running as Native AOT; rule N37 holds the bundle's transcript to having done each *(corrected:
-JSC-300, JSC-302, JSC-308, JSC-311, JSC-312, JSC-314, JSC-318, JSC-323; until JSC-323 it named bundle JS-10-011, which the baseline had left for JS-10-012 and JS-10-013 without this sentence following; before that it named bundle JS-10-010, before that bundle JS-10-009, before that bundle JS-10-008, before that bundle JS-10-007, before that bundle JS-10-006, before that bundle JS-10-005, and before that
+JSC-300, JSC-302, JSC-308, JSC-311, JSC-312, JSC-314, JSC-318, JSC-323; revised 2026-11-03, at SJL-9.4, JSC-324: it read
+"it restores `Broiler.ECMAScript.Algorithms` through them" and named bundle JS-10-014; until JSC-323 it named bundle JS-10-011, which the baseline had left for JS-10-012 and JS-10-013 without this sentence following; before that it named bundle JS-10-010, before that bundle JS-10-009, before that bundle JS-10-008, before that bundle JS-10-007, before that bundle JS-10-006, before that bundle JS-10-005, and before that
 bundle JS-10-002, whose consumer had no shared package to restore)*.

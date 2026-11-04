@@ -3,19 +3,20 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   19
-// Annotated:        19/19
-// Exempt:           10
-// Human-reviewed:   0/19
+// Relevant units:   9
+// Annotated:        9/9
+// Exempt:           4
+// Human-reviewed:   0/9
 // IP risk:          Low
 // Security risk:    Low
-// Criteria:         0/0
+// Criteria:         1/0
 // Resource impact:  1/10 max
-// Unverified:       19
+// Unverified:       9
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using System.Collections.Generic;
+using Broiler.ECMAScript.Intl;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -35,6 +36,16 @@ namespace Broiler.VM.Profile.JavaScript;
 /// every region and its line direction for every script. Since JSD-0053 the time zones in use in a
 /// region are the IANA Time Zone Database's <c>zone.tab</c> entries for it.
 /// </para>
+/// <para>
+/// <b>The constructor's steps and the information are the shared Intl library's since SJL-9.4</b>
+/// (JSD-0082, sub-area (a)): <c>LocaleRecord</c> makes the record, <c>LocaleId</c> answers its parts,
+/// Add and Remove Likely Subtags, and <c>LocaleInfo</c> the information, over the composition's
+/// tables (<see cref="JsIntlTables.LocaleData"/>). The constructor still reads the tag and every
+/// option here, in ECMA-402's order, checking each as it reads it, so that a refused option stops
+/// the reads where the specification does. Two answers move, as decision D32 names them: row L18,
+/// <c>getCollations</c> of a language the Collator lacks answers DefaultLocale's collations, and row
+/// L9, a subdivision alias whose replacement is a region is written as UTS #35 Annex C writes it.
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=60DD8D
 // Broiler-Human:        PENDING
@@ -50,17 +61,7 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     internal JsNativeFunction? LocaleConstructor { get; private set; }
 
-    /// <summary>%Intl.Locale%.[[LocaleExtensionKeys]]: the five ECMA-402 requires, and the collator's two.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6876AD
-    // Broiler-Human:        PENDING
-    private static readonly string[] LocaleExtensionKeys = ["ca", "co", "fw", "hc", "kf", "kn", "nu"];
-
-    /// <summary>ECMA-402's table of weekday strings, by their position in the week from Sunday at 0 and 7.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A9ED33
-    // Broiler-Human:        PENDING
-    private static readonly string[] WeekdayKeys = ["sun", "mon", "tue", "wed", "thu", "fri", "sat", "sun"];
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F2253E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C2803A
     // Broiler-Human:        PENDING
     private void SetupLocale(JsObject intl)
     {
@@ -84,15 +85,15 @@ internal sealed partial class JsRealm
 
         static JsValue Optional(string? value) => value is null ? JsValue.Undefined : JsValue.String(value);
 
-        Getter("baseName", static (engine, locale) => JsValue.String(Tag(locale.Locale).LanguageId()));
-        Getter("calendar", static (engine, locale) => Optional(locale.Calendar));
-        Getter("caseFirst", static (engine, locale) => Optional(locale.CaseFirst));
-        Getter("collation", static (engine, locale) => Optional(locale.Collation));
-        Getter("firstDayOfWeek", static (engine, locale) => Optional(locale.FirstDayOfWeek));
-        Getter("hourCycle", static (engine, locale) => Optional(locale.HourCycle));
+        Getter("baseName", static (engine, locale) => JsValue.String(Tag(locale.Locale).BaseName));
+        Getter("calendar", static (engine, locale) => Optional(locale.Record.Calendar));
+        Getter("caseFirst", static (engine, locale) => Optional(locale.Record.CaseFirst));
+        Getter("collation", static (engine, locale) => Optional(locale.Record.Collation));
+        Getter("firstDayOfWeek", static (engine, locale) => Optional(locale.Record.FirstDayOfWeek));
+        Getter("hourCycle", static (engine, locale) => Optional(locale.Record.HourCycle));
         Getter("language", static (engine, locale) => JsValue.String(Tag(locale.Locale).Language));
-        Getter("numberingSystem", static (engine, locale) => Optional(locale.NumberingSystem));
-        Getter("numeric", static (engine, locale) => JsValue.Boolean(locale.Numeric));
+        Getter("numberingSystem", static (engine, locale) => Optional(locale.Record.NumberingSystem));
+        Getter("numeric", static (engine, locale) => JsValue.Boolean(locale.Record.Numeric));
         Getter("region", static (engine, locale) => Optional(Tag(locale.Locale).Region));
         Getter("script", static (engine, locale) => Optional(Tag(locale.Locale).Script));
         Getter("variants", static (engine, locale) =>
@@ -101,67 +102,33 @@ internal sealed partial class JsRealm
         Method(prototype, "maximize", 0, static (engine, thisValue, arguments) =>
         {
             var locale = LocaleOfThis(engine, thisValue, "maximize");
-            var tag = Tag(locale.Locale);
-            _ = tag.Maximize(engine.Intl!);
-            return JsValue.Object(NewLocaleObject(engine, engine.Realm.LocalePrototype!, tag.ToString(), JsValue.Undefined));
+            var maximal = Tag(locale.Locale).Maximize(engine.Intl!.LocaleData, out _);
+            return JsValue.Object(NewLocaleObject(engine, engine.Realm.LocalePrototype!, maximal.ToString(), JsValue.Undefined));
         });
 
         Method(prototype, "minimize", 0, static (engine, thisValue, arguments) =>
         {
             var locale = LocaleOfThis(engine, thisValue, "minimize");
-            var tag = Tag(locale.Locale);
-            _ = tag.Minimize(engine.Intl!);
-            return JsValue.Object(NewLocaleObject(engine, engine.Realm.LocalePrototype!, tag.ToString(), JsValue.Undefined));
+            var minimal = Tag(locale.Locale).Minimize(engine.Intl!.LocaleData, out _);
+            return JsValue.Object(NewLocaleObject(engine, engine.Realm.LocalePrototype!, minimal.ToString(), JsValue.Undefined));
         });
 
         Method(prototype, "toString", 0, static (engine, thisValue, arguments) =>
             JsValue.String(LocaleOfThis(engine, thisValue, "toString").Locale));
 
         Method(prototype, "getCalendars", 0, static (engine, thisValue, arguments) =>
-        {
-            var locale = LocaleOfThis(engine, thisValue, "getCalendars");
-            return StringArray(engine, [locale.Calendar ?? "gregory"]);
-        });
+            StringArray(engine, LocaleInfo.Calendars(LocaleOfThis(engine, thisValue, "getCalendars").Record)));
 
+        // ROW L18 (JSD-0082, decision D32): a language the Collator does not support answers
+        // DefaultLocale's collations, and `emoji` and `eor` only `und`, as CollationsOfLocale has it.
         Method(prototype, "getCollations", 0, static (engine, thisValue, arguments) =>
-        {
-            var locale = LocaleOfThis(engine, thisValue, "getCollations");
-
-            if (locale.Collation is not null)
-            {
-                return StringArray(engine, [locale.Collation]);
-            }
-
-            if (LookupMatchingLocale(AvailableLocales(engine), [locale.Locale]) is { } match)
-            {
-                var list = new List<string>();
-
-                foreach (var value in CollatorKeyData(match.Locale, "co", "sort"))
-                {
-                    if (value is not null)
-                    {
-                        list.Add(value);
-                    }
-                }
-
-                list.Sort(System.StringComparer.Ordinal);
-                return StringArray(engine, list);
-            }
-
-            return StringArray(engine, ["emoji", "eor"]);
-        });
+            StringArray(engine, LocaleInfo.Collations(LocaleOfThis(engine, thisValue, "getCollations").Record, CollatorData(engine), DefaultLocale)));
 
         Method(prototype, "getHourCycles", 0, static (engine, thisValue, arguments) =>
-        {
-            var locale = LocaleOfThis(engine, thisValue, "getHourCycles");
-            return StringArray(engine, locale.HourCycle is not null ? [locale.HourCycle] : HourCyclesOf(engine, locale.Locale));
-        });
+            StringArray(engine, LocaleInfo.HourCycles(LocaleOfThis(engine, thisValue, "getHourCycles").Record, engine.Intl!.LocaleData)));
 
         Method(prototype, "getNumberingSystems", 0, static (engine, thisValue, arguments) =>
-        {
-            var locale = LocaleOfThis(engine, thisValue, "getNumberingSystems");
-            return StringArray(engine, [locale.NumberingSystem ?? "latn"]);
-        });
+            StringArray(engine, LocaleInfo.NumberingSystems(LocaleOfThis(engine, thisValue, "getNumberingSystems").Record, AvailableLocales(engine), engine.Intl!.LocaleData)));
 
         Method(prototype, "getTimeZones", 0, static (engine, thisValue, arguments) =>
         {
@@ -169,27 +136,34 @@ internal sealed partial class JsRealm
 
             // THE ZONES IN USE IN A REGION are zone.tab's for it, each a primary identifier
             // (ECMA-402 6.5 and 15.5.13, JSD-0053), in ordinal order: the shared database's answer
-            // since SJL-8.5 (JSD-0076).
-            return Tag(locale.Locale).Region is not { } region
-                ? JsValue.Undefined
-                : StringArray(engine, [.. engine.Intl!.TimeZones.RegionTimeZones(region)]);
+            // since SJL-8.5 (JSD-0076), through the shared Intl library's TimeZonesOfLocale since SJL-9.4.
+            return LocaleInfo.TimeZones(locale.Record, engine.Intl!.TimeZones) is { } zones
+                ? StringArray(engine, zones)
+                : JsValue.Undefined;
         });
 
         Method(prototype, "getTextInfo", 0, static (engine, thisValue, arguments) =>
         {
             var locale = LocaleOfThis(engine, thisValue, "getTextInfo");
             var info = new JsObject(engine.Realm.ObjectPrototype);
-            info.DefineOrdinary("direction", Optional(TextDirectionOf(engine, locale.Locale)));
+            info.DefineOrdinary("direction", Optional(LocaleInfo.TextDirection(locale.Record, engine.Intl!.LocaleData)));
             return JsValue.Object(info);
         });
 
         Method(prototype, "getWeekInfo", 0, static (engine, thisValue, arguments) =>
         {
             var locale = LocaleOfThis(engine, thisValue, "getWeekInfo");
-            var (firstDay, weekend) = WeekInfoOf(engine, locale);
+            var week = LocaleInfo.WeekInfo(locale.Record, engine.Intl!.LocaleData);
+            var weekend = new List<JsValue>(week.Weekend.Count);
+
+            foreach (var day in week.Weekend)
+            {
+                weekend.Add(JsValue.Number(day));
+            }
+
             var info = new JsObject(engine.Realm.ObjectPrototype);
-            info.DefineOrdinary("firstDay", JsValue.Number(firstDay));
-            info.DefineOrdinary("weekend", JsValue.Object(engine.Realm.NewArray(weekend.ConvertAll(static day => JsValue.Number(day)))));
+            info.DefineOrdinary("firstDay", JsValue.Number(week.FirstDay));
+            info.DefineOrdinary("weekend", JsValue.Object(engine.Realm.NewArray(weekend)));
             return JsValue.Object(info);
         });
 
@@ -198,14 +172,23 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The parsed form of a canonicalized locale identifier a Locale holds.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9FCCC7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=65E806
     // Broiler-Human:        PENDING
-    private static JsLocaleTag Tag(string locale) => JsLocaleTag.Parse(locale)!;
+    private static LocaleId Tag(string locale) => ParseLocale(locale)!;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=57717A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B41AE4
     // Broiler-Human:        PENDING
-    private static JsValue StringArray(JsEngine engine, List<string> values) =>
-        JsValue.Object(engine.Realm.NewArray(values.ConvertAll(static value => JsValue.String(value))));
+    private static JsValue StringArray(JsEngine engine, IReadOnlyList<string> values)
+    {
+        var array = new List<JsValue>(values.Count);
+
+        foreach (var value in values)
+        {
+            array.Add(JsValue.String(value));
+        }
+
+        return JsValue.Object(engine.Realm.NewArray(array));
+    }
 
     /// <summary>The Locale <paramref name="thisValue"/> is, or the <c>TypeError</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=14917F
@@ -231,26 +214,58 @@ internal sealed partial class JsRealm
         return JsValue.Object(NewLocaleObject(engine, prototype, text, Argument(arguments, 1)));
     }
 
-    /// <summary>The steps of the constructor after the tag is a String: the options read in order, and the record made.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=5DBFB3
+    /// <summary>
+    /// The steps of the constructor after the tag is a String: the options read in order, each checked
+    /// as it is read, and the record made by the shared library (JSD-0082, rows L13 and L14).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s15.1.1; IP=Low; Security=Low; Resources=1; Fingerprint=25C3BB
+    // Broiler-Falsified-If: an option is read in another order than ECMA-402's, a read follows an option the specification refuses before it, or the record differs from the one the shared library makes for the same tag and options
     // Broiler-Human:        PENDING
     private static JsLocaleObject NewLocaleObject(JsEngine engine, JsObject prototype, string text, JsValue optionsValue)
     {
-        var tables = engine.Intl!;
         var options = CoerceOptionsToObject(engine, optionsValue);
 
-        if (JsLocaleTag.Parse(text) is not { } parsed)
+        if (LocaleId.TryParse(text, out _) != IntlStatus.Completed)
         {
             throw engine.Error("RangeError", "Incorrect locale information provided: " + text);
         }
 
-        text = UpdateLanguageId(engine, parsed.Canonicalize(tables).ToString(), options);
+        // UPDATELANGUAGEID'S READS: each option checked as it is read, its absence the tag's own subtag.
+        var language = GetStringOption(engine, options, "language", null, null);
+
+        if (language is not null && LocaleRecord.CheckLanguage(language) != IntlStatus.Completed)
+        {
+            throw engine.Error("RangeError", "Intl.Locale: invalid language subtag: " + language);
+        }
+
+        var script = GetStringOption(engine, options, "script", null, null);
+
+        if (script is not null && LocaleRecord.CheckScript(script) != IntlStatus.Completed)
+        {
+            throw engine.Error("RangeError", "Intl.Locale: invalid script subtag: " + script);
+        }
+
+        var region = GetStringOption(engine, options, "region", null, null);
+
+        if (region is not null && LocaleRecord.CheckRegion(region) != IntlStatus.Completed)
+        {
+            throw engine.Error("RangeError", "Intl.Locale: invalid region subtag: " + region);
+        }
+
+        var variants = GetStringOption(engine, options, "variants", null, null);
+
+        if (variants is not null && LocaleRecord.CheckVariants(variants) != IntlStatus.Completed)
+        {
+            throw engine.Error("RangeError", variants.Length == 0
+                ? "Intl.Locale: the variants option is empty"
+                : "Intl.Locale: invalid variants: " + variants);
+        }
 
         string? TypeOption(string property)
         {
             var value = GetStringOption(engine, options, property, null, null);
 
-            if (value is not null && !IsTypeSequence(value))
+            if (value is not null && LocaleRecord.CheckType(value) != IntlStatus.Completed)
             {
                 throw engine.Error("RangeError", "Intl.Locale: the " + property + " option is not a well-formed type: " + value);
             }
@@ -258,377 +273,61 @@ internal sealed partial class JsRealm
             return value;
         }
 
-        var overrides = new Dictionary<string, string?>(System.StringComparer.Ordinal)
-        {
-            ["ca"] = TypeOption("calendar"),
-            ["co"] = TypeOption("collation")
-        };
-
+        var calendar = TypeOption("calendar");
+        var collation = TypeOption("collation");
         var firstDay = GetStringOption(engine, options, "firstDayOfWeek", null, null);
 
-        if (firstDay is not null)
+        if (firstDay is not null && LocaleRecord.CheckFirstDayOfWeek(firstDay) != IntlStatus.Completed)
         {
-            if (firstDay.Length == 1 && firstDay[0] is >= '0' and <= '7')
-            {
-                firstDay = WeekdayKeys[firstDay[0] - '0'];
-            }
-
-            if (!IsTypeSequence(firstDay))
-            {
-                throw engine.Error("RangeError", "Intl.Locale: the firstDayOfWeek option is not a well-formed type: " + firstDay);
-            }
+            throw engine.Error("RangeError", "Intl.Locale: the firstDayOfWeek option is not a well-formed type: " + LocaleRecord.WeekdayToUValue(firstDay));
         }
 
-        overrides["fw"] = firstDay;
-        overrides["hc"] = GetStringOption(engine, options, "hourCycle", ["h11", "h12", "h23", "h24"], null);
-        overrides["kf"] = GetStringOption(engine, options, "caseFirst", ["upper", "lower", "false"], null);
-        overrides["kn"] = GetBooleanOption(engine, options, "numeric", null) is { } numeric ? (numeric ? "true" : "false") : null;
-        overrides["nu"] = TypeOption("numberingSystem");
+        var hourCycle = GetStringOption(engine, options, "hourCycle", ["h11", "h12", "h23", "h24"], null);
+        var caseFirst = GetStringOption(engine, options, "caseFirst", ["upper", "lower", "false"], null);
+        var numeric = GetBooleanOption(engine, options, "numeric", null);
+        var numberingSystem = TypeOption("numberingSystem");
 
-        // MAKELOCALERECORD: each key from the tag's keywords, overridden by its option.
-        var record = JsLocaleTag.Parse(text)!;
-        var values = new Dictionary<string, string?>(System.StringComparer.Ordinal);
-
-        foreach (var key in LocaleExtensionKeys)
+        // MAKELOCALERECORD AND THE CANONICAL TAG, the shared library's, every option already checked.
+        var status = LocaleRecord.TryCreate(text, new LocaleOptions
         {
-            var entry = record.Keywords.FindIndex(pair => pair.Key == key);
-            var value = entry >= 0 ? record.Keywords[entry].Type : null;
+            Language = language,
+            Script = script,
+            Region = region,
+            Variants = variants,
+            Calendar = calendar,
+            Collation = collation,
+            FirstDayOfWeek = firstDay,
+            HourCycle = hourCycle,
+            CaseFirst = caseFirst,
+            Numeric = numeric,
+            NumberingSystem = numberingSystem,
+        }, engine.Intl!.LocaleData, out var record);
 
-            if (overrides[key] is { } overrideValue)
-            {
-                value = CanonicalizeUValue(tables, key, overrideValue);
-
-                if (entry >= 0)
-                {
-                    record.Keywords[entry] = (key, value);
-                }
-                else
-                {
-                    record.Keywords.Add((key, value));
-                }
-            }
-
-            values[key] = value;
+        if (status != IntlStatus.Completed)
+        {
+            throw engine.Error("RangeError", "Incorrect locale information provided: " + text);
         }
 
-        record.HasUnicodeExtension = record.Attributes.Count != 0 || record.Keywords.Count != 0;
-        var locale = record.Canonicalize(tables).ToString();
-
-        return new JsLocaleObject(prototype)
-        {
-            Locale = locale,
-            Calendar = values["ca"],
-            Collation = values["co"],
-            FirstDayOfWeek = values["fw"],
-            HourCycle = values["hc"],
-            CaseFirst = values["kf"],
-            Numeric = values["kn"] is "true" or "",
-            NumberingSystem = values["nu"],
-        };
-    }
-
-    /// <summary>ECMA-402's CanonicalizeUValue: the lower-case value, a deprecated one replaced, and <c>true</c> left implicit.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=65CB3C
-    // Broiler-Human:        PENDING
-    private static string CanonicalizeUValue(JsIntlTables tables, string key, string value)
-    {
-        var lower = JsLocaleTag.AsciiLower(value);
-
-        if (tables.TryType('u', key, lower, out var preferred))
-        {
-            lower = preferred;
-        }
-
-        return lower == "true" ? string.Empty : lower;
-    }
-
-    /// <summary>ECMA-402's UpdateLanguageId (s15.1.2): the language, script, region and variants the options replace.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9BF4A2
-    // Broiler-Human:        PENDING
-    private static string UpdateLanguageId(JsEngine engine, string tag, JsValue options)
-    {
-        var parsed = JsLocaleTag.Parse(tag)!;
-        var baseName = parsed.LanguageId();
-
-        static bool Letters(string text, int least, int most) =>
-            text.Length >= least && text.Length <= most && JsLocaleTag.IsAlpha(text);
-
-        var language = GetStringOption(engine, options, "language", null, parsed.Language)!;
-
-        if (!(Letters(language, 2, 3) || Letters(language, 5, 8)))
-        {
-            throw engine.Error("RangeError", "Intl.Locale: invalid language subtag: " + language);
-        }
-
-        var script = GetStringOption(engine, options, "script", null, parsed.Script);
-
-        if (script is not null && !Letters(script, 4, 4))
-        {
-            throw engine.Error("RangeError", "Intl.Locale: invalid script subtag: " + script);
-        }
-
-        var region = GetStringOption(engine, options, "region", null, parsed.Region);
-
-        if (region is not null && !(Letters(region, 2, 2) || (region.Length == 3 && Digits(region))))
-        {
-            throw engine.Error("RangeError", "Intl.Locale: invalid region subtag: " + region);
-        }
-
-        var variants = GetStringOption(engine, options, "variants", null, parsed.Variants.Count == 0 ? null : string.Join('-', parsed.Variants));
-
-        if (variants is not null)
-        {
-            if (variants.Length == 0)
-            {
-                throw engine.Error("RangeError", "Intl.Locale: the variants option is empty");
-            }
-
-            // ASCII-lowercase, not the platform's casing, which would lower U+212A KELVIN SIGN to `k`
-            // and let it through the check below.
-            var lower = JsLocaleTag.AsciiLower(variants);
-            var seen = new List<string>();
-
-            foreach (var variant in lower.Split('-'))
-            {
-                if (!JsLocaleTag.IsVariant(variant) || seen.Contains(variant))
-                {
-                    throw engine.Error("RangeError", "Intl.Locale: invalid variants: " + variants);
-                }
-
-                seen.Add(variant);
-            }
-        }
-
-        var extensions = tag[baseName.Length..];
-        var updated = new System.Text.StringBuilder(language);
-
-        if (script is not null)
-        {
-            updated.Append('-').Append(script);
-        }
-
-        if (region is not null)
-        {
-            updated.Append('-').Append(region);
-        }
-
-        if (variants is not null)
-        {
-            updated.Append('-').Append(variants);
-        }
-
-        return updated.Append(extensions).ToString();
-    }
-
-    /// <summary>
-    /// ECMA-402's RegionPreference (s15.5.8): the locale's region, its <c>-u-sd</c> subdivision's, or
-    /// its likely one, and its <c>-u-rg</c> override.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DF6CE7
-    // Broiler-Human:        PENDING
-    private static (string Region, string? Override) RegionPreference(JsEngine engine, string locale)
-    {
-        var tables = engine.Intl!;
-        var tag = Tag(locale);
-        var region = tag.Region ?? Subdivision(engine, tag, "sd");
-
-        if (region is null)
-        {
-            var maximal = Tag(locale);
-            _ = maximal.Maximize(tables);
-            region = maximal.Canonicalize(tables).Region ?? "001";
-        }
-
-        return (region, Subdivision(engine, tag, "rg"));
-    }
-
-    /// <summary>ECMA-402's CanonicalUnicodeSubdivision (s15.5.7): the region a subdivision keyword names.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DC863A
-    // Broiler-Human:        PENDING
-    private static string? Subdivision(JsEngine engine, JsLocaleTag tag, string key)
-    {
-        var entry = tag.Keywords.FindIndex(pair => pair.Key == key);
-
-        if (entry < 0)
-        {
-            return null;
-        }
-
-        var value = tag.Keywords[entry].Type;
-        var prefix = value.Length >= 3 && char.IsAsciiDigit(value[0]) ? 3 : 2;
-
-        if (value.Length < prefix + 1 || value.Length > prefix + 4 || !JsLocaleTag.IsAlphanumeric(value) ||
-            !(prefix == 3 ? Digits(value[..3]) : JsLocaleTag.IsAlpha(value[..2])))
-        {
-            return null;
-        }
-
-        return JsLocaleTag.Parse("und-" + value[..prefix])?.Canonicalize(engine.Intl!).Region;
-    }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F5A77B
-    // Broiler-Human:        PENDING
-    private static bool Digits(string text)
-    {
-        foreach (var c in text)
-        {
-            if (!char.IsAsciiDigit(c))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /// <summary>ECMA-402's HourCyclesOfLocale (s15.5.11): CLDR's time data for the preferred regions, preferred first.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BACCE8
-    // Broiler-Human:        PENDING
-    private static List<string> HourCyclesOf(JsEngine engine, string locale)
-    {
-        var (region, regionOverride) = RegionPreference(engine, locale);
-        var language = Tag(locale).Language;
-        var times = engine.Intl!.Dates.TimeData;
-        var cycles = new List<string>();
-
-        foreach (var preferred in regionOverride is null ? new[] { region } : [regionOverride, region])
-        {
-            if (cycles.Count != 0)
-            {
-                break;
-            }
-
-            if (!times.TryGetValue(language + "_" + preferred, out var data) && !times.TryGetValue(preferred, out data))
-            {
-                continue;
-            }
-
-            foreach (var format in (data.Preferred + " " + data.Allowed).Split(' '))
-            {
-                var cycle = format.Length == 0 ? null : format[0] switch
-                {
-                    'h' => "h12",
-                    'H' => "h23",
-                    'K' => "h11",
-                    'k' => "h24",
-                    _ => null,
-                };
-
-                if (cycle is not null && !cycles.Contains(cycle))
-                {
-                    cycles.Add(cycle);
-                }
-            }
-        }
-
-        return cycles.Count == 0 ? ["h23"] : cycles;
-    }
-
-    /// <summary>ECMA-402's TextDirectionOfLocale (s15.5.14): the line direction of the locale's script, or its likely one's.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=0E2E63
-    // Broiler-Human:        PENDING
-    private static string? TextDirectionOf(JsEngine engine, string locale)
-    {
-        var tables = engine.Intl!;
-        var tag = Tag(locale);
-
-        if (tag.Script is null && !tag.Maximize(tables))
-        {
-            return null;
-        }
-
-        return tag.Script is { } script && tables.LocaleInfo.RightToLeft.TryGetValue(script, out var rightToLeft)
-            ? rightToLeft ? "rtl" : "ltr"
-            : null;
-    }
-
-    /// <summary>ECMA-402's WeekInfoOfLocale (s15.5.17): CLDR's first day and weekend for the preferred region, the keyword's first day over it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3E8D86
-    // Broiler-Human:        PENDING
-    private static (int FirstDay, List<int> Weekend) WeekInfoOf(JsEngine engine, JsLocaleObject locale)
-    {
-        var weeks = engine.Intl!.LocaleInfo.Weeks;
-        var (region, regionOverride) = RegionPreference(engine, locale.Locale);
-        var lookup = regionOverride is not null && weeks.ContainsKey(regionOverride) ? regionOverride : weeks.ContainsKey(region) ? region : "001";
-        var (FirstDay, WeekendStart, WeekendEnd, _) = weeks["001"];
-        var week = weeks[lookup];
-
-        static int Day(string key) => key switch
-        {
-            "mon" => 1,
-            "tue" => 2,
-            "wed" => 3,
-            "thu" => 4,
-            "fri" => 5,
-            "sat" => 6,
-            "sun" => 7,
-            _ => 0,
-        };
-
-        var firstDay = Day(week.FirstDay.Length != 0 ? week.FirstDay : FirstDay);
-        var start = Day(week.WeekendStart.Length != 0 ? week.WeekendStart : WeekendStart);
-        var end = Day(week.WeekendEnd.Length != 0 ? week.WeekendEnd : WeekendEnd);
-        var weekend = new List<int>();
-
-        for (var day = start; ; day = (day % 7) + 1)
-        {
-            weekend.Add(day);
-
-            if (day == end || weekend.Count == 7)
-            {
-                break;
-            }
-        }
-
-        weekend.Sort();
-
-        if (locale.FirstDayOfWeek is { } keyword && Day(keyword) is > 0 and var overridden)
-        {
-            firstDay = overridden;
-        }
-
-        return (firstDay, weekend);
+        return new JsLocaleObject(prototype, record!);
     }
 }
 
-/// <summary>An <c>Intl.Locale</c>: its canonicalized identifier and its keywords.</summary>
+/// <summary>An <c>Intl.Locale</c>: its record, the shared library's (ECMA-402's internal slots).</summary>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A1974E
 // Broiler-Human:        PENDING
 internal sealed class JsLocaleObject : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CC67FA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3037C5
     // Broiler-Human:        PENDING
-    internal JsLocaleObject(JsObject prototype) : base(prototype) { }
+    internal JsLocaleObject(JsObject prototype, LocaleRecord record) : base(prototype) => Record = record;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EDBB2D
+    /// <summary>[[Locale]] and the seven keyword slots.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FBDE00
     // Broiler-Human:        PENDING
-    internal string Locale { get; init; } = string.Empty;
+    internal LocaleRecord Record { get; }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=88F3AD
+    /// <summary>[[Locale]], the canonical locale identifier.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=459B7C
     // Broiler-Human:        PENDING
-    internal string? Calendar { get; init; }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=ECB9B1
-    // Broiler-Human:        PENDING
-    internal string? Collation { get; init; }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=67CCBD
-    // Broiler-Human:        PENDING
-    internal string? FirstDayOfWeek { get; init; }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CC5C11
-    // Broiler-Human:        PENDING
-    internal string? HourCycle { get; init; }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F658F9
-    // Broiler-Human:        PENDING
-    internal string? CaseFirst { get; init; }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BDA850
-    // Broiler-Human:        PENDING
-    internal bool Numeric { get; init; }
-
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=308598
-    // Broiler-Human:        PENDING
-    internal string? NumberingSystem { get; init; }
+    internal string Locale => Record.Locale;
 }

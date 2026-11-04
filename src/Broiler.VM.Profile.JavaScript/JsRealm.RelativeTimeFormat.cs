@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   8
 // Annotated:        8/8
-// Exempt:           9
+// Exempt:           3
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    Low
@@ -14,6 +14,8 @@
 // Unverified:       8
 //
 // GENERATED - DO NOT EDIT MANUALLY
+
+using Broiler.ECMAScript.Intl;
 
 namespace Broiler.VM.Profile.JavaScript;
 
@@ -33,6 +35,13 @@ namespace Broiler.VM.Profile.JavaScript;
 /// draft's PartitionRelativeTimePattern passes the signed value to PartitionNumberPattern, which would
 /// write the minus sign as well; JSD-0049 section 3 records the reading.
 /// </para>
+/// <para>
+/// <b>Since SJL-9.4 the core is the shared Intl library's <c>RelativeTimeFormatter</c></b> (JSD-0082,
+/// sub-area (c)), which holds both and reads the patterns at the data locale; the options, the
+/// value's and the unit's conversions and the parts array stay here. Its number format and plural
+/// rules are made as the draft makes them, so the adapter charges the one unit per element their
+/// CanonicalizeLocaleList of the resolved locale charged here (decision D18).
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=60DD8D
 // Broiler-Human:        PENDING
@@ -48,7 +57,12 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     internal JsNativeFunction? RelativeTimeFormatConstructor { get; private set; }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6E8772
+    /// <summary>The <c>style</c> option's values of the relative-time and list formats, in <c>FormatStyle</c>'s order.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=082A57
+    // Broiler-Human:        PENDING
+    internal static readonly string[] FormatStyleNames = ["long", "short", "narrow"];
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=520C16
     // Broiler-Human:        PENDING
     private void SetupRelativeTimeFormat(JsObject intl)
     {
@@ -84,14 +98,8 @@ internal sealed partial class JsRealm
             var format = RelativeTimeFormatOfThis(engine, thisValue, "format");
             var value = engine.ToNumber(Argument(arguments, 0));
             var unit = engine.ToStringValue(Argument(arguments, 1));
-            var text = new System.Text.StringBuilder();
-
-            foreach (var part in PartitionRelativeTimePattern(engine, format, value, unit))
-            {
-                text.Append(part.Value);
-            }
-
-            return JsValue.String(text.ToString());
+            RelativeTimeCompleted(engine, format.Formatter.Format(value, unit, out var text, engine.WorkCharge), unit);
+            return JsValue.String(text);
         });
 
         Method(prototype, "formatToParts", 2, static (engine, thisValue, arguments) =>
@@ -100,8 +108,9 @@ internal sealed partial class JsRealm
             var value = engine.ToNumber(Argument(arguments, 0));
             var unit = engine.ToStringValue(Argument(arguments, 1));
             var values = new System.Collections.Generic.List<JsValue>();
+            RelativeTimeCompleted(engine, format.Formatter.FormatToParts(value, unit, out var parts, engine.WorkCharge), unit);
 
-            foreach (var (type, text, partUnit) in PartitionRelativeTimePattern(engine, format, value, unit))
+            foreach (var (type, text, partUnit) in parts)
             {
                 engine.Charge(1);
                 var item = new JsObject(engine.Realm.ObjectPrototype);
@@ -125,10 +134,11 @@ internal sealed partial class JsRealm
             var options = new JsObject(engine.Realm.ObjectPrototype);
 
             // TABLE 33, IN ITS ORDER.
-            options.DefineOrdinary("locale", JsValue.String(format.Locale));
-            options.DefineOrdinary("style", JsValue.String(format.Style));
-            options.DefineOrdinary("numeric", JsValue.String(format.Numeric));
-            options.DefineOrdinary("numberingSystem", JsValue.String(format.NumberingSystem));
+            var formatter = format.Formatter;
+            options.DefineOrdinary("locale", JsValue.String(formatter.Locale));
+            options.DefineOrdinary("style", JsValue.String(FormatStyleNames[(int)formatter.Style]));
+            options.DefineOrdinary("numeric", JsValue.String(formatter.Numeric == RelativeTimeNumeric.Auto ? "auto" : "always"));
+            options.DefineOrdinary("numberingSystem", JsValue.String(formatter.NumberingSystem));
             return JsValue.Object(options);
         });
 
@@ -149,7 +159,7 @@ internal sealed partial class JsRealm
         throw engine.Error("TypeError", "Intl.RelativeTimeFormat.prototype." + member + " requires that 'this' be an Intl.RelativeTimeFormat");
 
     /// <summary>ECMA-402's <c>Intl.RelativeTimeFormat</c> constructor (s18.1.1): the options read in its order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F91077
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C33D1E
     // Broiler-Human:        PENDING
     internal static JsValue NewRelativeTimeFormat(JsEngine engine, JsValue newTarget, JsValue[] arguments)
     {
@@ -168,195 +178,59 @@ internal sealed partial class JsRealm
             return engine.ThrowRangeError("Intl.RelativeTimeFormat: the numberingSystem option is not a well-formed type: " + numberingSystem);
         }
 
-        var systems = new System.Collections.Generic.List<string?> { "latn" };
-
-        foreach (var name in engine.Intl!.Numbers.NumberingSystems.Keys)
-        {
-            if (name != "latn")
-            {
-                systems.Add(name);
-            }
-        }
-
-        systems.Sort(1, systems.Count - 1, System.StringComparer.Ordinal);
-        var nuValues = systems.ToArray();
-
+        var data = engine.Intl!.FormatData;
         var resolved = ResolveLocale(
             engine,
             requested,
             new System.Collections.Generic.Dictionary<string, string?>(System.StringComparer.Ordinal) { ["nu"] = numberingSystem },
             ["nu"],
-            (locale, key) => key == "nu" ? nuValues : [null]);
+            (locale, key) => key == "nu" ? [.. NumberFormatter.NumberingSystemKeyValues(data, locale)] : [null]);
 
-        var style = GetStringOption(engine, options, "style", ["long", "short", "narrow"], "long")!;
+        var style = GetStringOption(engine, options, "style", FormatStyleNames, "long")!;
         var numeric = GetStringOption(engine, options, "numeric", ["always", "auto"], "always")!;
-        var nu = resolved.Keys["nu"] ?? "latn";
 
-        // [[NUMBERFORMAT]] AND [[PLURALRULES]], CONSTRUCTED AS THE DRAFT CONSTRUCTS THEM.
-        var nfOptions = new JsObject(null);
-        nfOptions.DefineOrdinary("numberingSystem", JsValue.String(nu));
-        var numberFormat = (JsNumberFormatObject)NewNumberFormat(
-            engine,
-            JsValue.Object(realm.NumberFormatConstructor!),
-            [JsValue.String(resolved.Locale), JsValue.Object(nfOptions)],
-            JsValue.Undefined,
-            called: false).AsObject();
-        var pluralRules = (JsPluralRulesObject)NewPluralRules(
-            engine, JsValue.Object(realm.PluralRulesConstructor!), [JsValue.String(resolved.Locale)]).AsObject();
-
-        var language = JsLocaleTag.Parse(resolved.DataLocale)?.Language ?? "en";
-        return JsValue.Object(new JsRelativeTimeFormatObject(
-            prototype, resolved.Locale, language, style, numeric, nu, numberFormat.Formatter, pluralRules));
+        // [[NUMBERFORMAT]] AND [[PLURALRULES]], CONSTRUCTED AS THE DRAFT CONSTRUCTS THEM, by the library:
+        // each from a list of the one resolved locale, whose CanonicalizeLocaleList charged one unit
+        // here when this family made them through its own constructors.
+        engine.Charge(2);
+        var formatter = RelativeTimeFormatter.Create(data, resolved.Locale, resolved.DataLocale,
+            (FormatStyle)System.Array.IndexOf(FormatStyleNames, style),
+            numeric == "auto" ? RelativeTimeNumeric.Auto : RelativeTimeNumeric.Always,
+            resolved.Keys["nu"] ?? "latn");
+        return JsValue.Object(new JsRelativeTimeFormatObject(prototype, formatter));
     }
 
-    /// <summary>ECMA-402's SingularRelativeTimeUnit (s18.5.1): a unit, or its plural, or a <c>RangeError</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4E1A47
-    // Broiler-Human:        PENDING
-    private static string SingularRelativeTimeUnit(JsEngine engine, string unit) => unit switch
-    {
-        "second" or "seconds" => "second",
-        "minute" or "minutes" => "minute",
-        "hour" or "hours" => "hour",
-        "day" or "days" => "day",
-        "week" or "weeks" => "week",
-        "month" or "months" => "month",
-        "quarter" or "quarters" => "quarter",
-        "year" or "years" => "year",
-        _ => throw engine.Error("RangeError", "Intl.RelativeTimeFormat: invalid unit: " + unit),
-    };
-
     /// <summary>
-    /// ECMA-402's PartitionRelativeTimePattern (s18.5.2): the literal for the value where the numeric
-    /// option is <c>auto</c> and CLDR names one, and otherwise the tense's pattern for the plural
-    /// category, its placeable the formatted number's parts, each with the unit.
+    /// PartitionRelativeTimePattern's refusals as the errors they are: a value that is not finite
+    /// (step 1) and a unit SingularRelativeTimeUnit refuses (step 3), each a <c>RangeError</c>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EB82D9
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s18.5.2; IP=Low; Security=Low; Resources=0; Fingerprint=F3CB30
     // Broiler-Human:        PENDING
-    private static System.Collections.Generic.List<(string Type, string Value, string? Unit)> PartitionRelativeTimePattern(
-        JsEngine engine, JsRelativeTimeFormatObject format, double value, string unit)
+    private static void RelativeTimeCompleted(JsEngine engine, IntlStatus status, string unit)
     {
-        if (double.IsNaN(value) || double.IsInfinity(value))
+        switch (status)
         {
-            throw engine.Error("RangeError", "Intl.RelativeTimeFormat: the value must be finite");
+            case IntlStatus.Completed:
+                return;
+            case IntlStatus.RelativeTimeValueNotFinite:
+                throw engine.Error("RangeError", "Intl.RelativeTimeFormat: the value must be finite");
+            default:
+                throw engine.Error("RangeError", "Intl.RelativeTimeFormat: invalid unit: " + unit);
         }
-
-        unit = SingularRelativeTimeUnit(engine, unit);
-        var patterns = engine.Intl!.LocaleInfo.RelativeTimes;
-        var field = unit;
-
-        if (format.Style != "long" && patterns.ContainsKey(format.Language + "|" + unit + "-" + format.Style + "|future.other"))
-        {
-            field = unit + "-" + format.Style;
-        }
-
-        var prefix = format.Language + "|" + field + "|";
-        var parts = new System.Collections.Generic.List<(string Type, string Value, string? Unit)>();
-
-        if (format.Numeric == "auto" &&
-            patterns.TryGetValue(prefix + engine.ToStringValue(JsValue.Number(value)), out var literal))
-        {
-            parts.Add(("literal", literal, null));
-            return parts;
-        }
-
-        var tense = value < 0 || (value == 0 && double.IsNegative(value)) ? "past" : "future";
-        var magnitude = JsDecimal.FromNumber(System.Math.Abs(value));
-        var category = ResolvePlural(engine, format.PluralRules, magnitude).Category;
-
-        if (!patterns.TryGetValue(prefix + tense + "." + category, out var pattern))
-        {
-            pattern = patterns[prefix + tense + ".other"];
-        }
-
-        // MAKEPARTSLIST (s18.5.3): the literals of the pattern, and the number's parts in its place.
-        var at = 0;
-
-        while (at < pattern.Length)
-        {
-            var open = pattern.IndexOf("{0}", at, System.StringComparison.Ordinal);
-
-            if (open < 0)
-            {
-                parts.Add(("literal", pattern[at..], null));
-                break;
-            }
-
-            if (open > at)
-            {
-                parts.Add(("literal", pattern[at..open], null));
-            }
-
-            foreach (var part in format.NumberFormatter.Parts(engine, magnitude))
-            {
-                parts.Add((part.Type, part.Value, unit));
-            }
-
-            at = open + 3;
-        }
-
-        return parts;
     }
 }
 
-/// <summary>An <c>Intl.RelativeTimeFormat</c>: its resolved options, and the number format and plural rules it writes with.</summary>
+/// <summary>An <c>Intl.RelativeTimeFormat</c>: the shared library's formatter, which holds its resolved options and the number format and plural rules it writes with.</summary>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=44505C
 // Broiler-Human:        PENDING
 internal sealed class JsRelativeTimeFormatObject : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B91AC9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=53B721
     // Broiler-Human:        PENDING
-    internal JsRelativeTimeFormatObject(
-        JsObject prototype,
-        string locale,
-        string language,
-        string style,
-        string numeric,
-        string numberingSystem,
-        JsNumberFormatter numberFormatter,
-        JsPluralRulesObject pluralRules)
-        : base(prototype)
-    {
-        Locale = locale;
-        Language = language;
-        Style = style;
-        Numeric = numeric;
-        NumberingSystem = numberingSystem;
-        NumberFormatter = numberFormatter;
-        PluralRules = pluralRules;
-    }
+    internal JsRelativeTimeFormatObject(JsObject prototype, RelativeTimeFormatter formatter) : base(prototype) => Formatter = formatter;
 
-    /// <summary>The resolved locale.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=04656B
+    /// <summary>The formatter PartitionRelativeTimePattern runs in.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=452DE7
     // Broiler-Human:        PENDING
-    internal string Locale { get; }
-
-    /// <summary>The language whose patterns are read.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=DE92F3
-    // Broiler-Human:        PENDING
-    internal string Language { get; }
-
-    /// <summary><c>long</c>, <c>short</c> or <c>narrow</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=528E3C
-    // Broiler-Human:        PENDING
-    internal string Style { get; }
-
-    /// <summary><c>always</c> or <c>auto</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A42596
-    // Broiler-Human:        PENDING
-    internal string Numeric { get; }
-
-    /// <summary>The resolved numbering system.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E2F6E7
-    // Broiler-Human:        PENDING
-    internal string NumberingSystem { get; }
-
-    /// <summary>[[NumberFormat]]'s formatter.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=966252
-    // Broiler-Human:        PENDING
-    internal JsNumberFormatter NumberFormatter { get; }
-
-    /// <summary>[[PluralRules]].</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B4F169
-    // Broiler-Human:        PENDING
-    internal JsPluralRulesObject PluralRules { get; }
+    internal RelativeTimeFormatter Formatter { get; }
 }

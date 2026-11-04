@@ -38,7 +38,9 @@
     "",
     "F7 adds Broiler.VM.Profile.JavaScript.Intl, the JavaScript family's internationalization data, taking the graph from 31 projects and 113 edges to 32 and 116: it references Broiler.VM.Profile.JavaScript.Format and nothing else, because the profile reads the data through the format's IJsIntlData and must not reference it (decision JSD-0043), and the two composition roots that admit Intl - Broiler.VM.Composition.JavaScript.SliceCompiler and Broiler.VM.Composition.JavaScript.Conformance - each reference it and hand its one instance to the profile. It is a family project and declares IsPackable true with no PackageId (rule N4), so it adds one packable assembly, which ADR 0001's revision of 2026-10-04 records; a composition that declines Intl does not reference it and carries none of the data.",
     "",
-    "SJL-3.4 adds the graph's first package edges and no project: Broiler.VM.Profile.JavaScript and Broiler.VM.Profile.JavaScript.Compiler reference Broiler.ECMAScript.Algorithms, the shared JavaScript libraries' algorithms package, which ADR 0014 admits and the allow-list (admitted-packages.json, rule I1) names for these two projects only, at its pinned content hash. The project count, the project edges and the packable set are unchanged."
+    "SJL-3.4 adds the graph's first package edges and no project: Broiler.VM.Profile.JavaScript and Broiler.VM.Profile.JavaScript.Compiler reference Broiler.ECMAScript.Algorithms, the shared JavaScript libraries' algorithms package, which ADR 0014 admits and the allow-list (admitted-packages.json, rule I1) names for these two projects only, at its pinned content hash. The project count, the project edges and the packable set are unchanged.",
+    "",
+    "SJL-9.4 adds one package edge and no project: Broiler.VM.Profile.JavaScript references Broiler.ECMAScript.Intl, the shared Intl library, which JSD-0082 (decision D9) admits and the allow-list names for this project only, at its pinned content and archive hashes. The project count, the project edges and the packable set are unchanged; every root that carries the profile carries the library's assembly, which the composition register's shared-assemblies column names (rules K2 and K4)."
   ],
   "milestone": "JS-1",
   "coreContractVersion": 1,
@@ -90,6 +92,7 @@
       ],
       "packageReferences": [
         "Broiler.ECMAScript.Algorithms",
+        "Broiler.ECMAScript.Intl",
         "Broiler.Unicode.Algorithms"
       ]
     },

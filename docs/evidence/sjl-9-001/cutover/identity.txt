@@ -1,0 +1,7 @@
+bundle sjl-9-001, the closures at SJL-9.4's last product-source change (sub-areas (a) to (e) cut over, the records filed)
+collected 2026-11-04T06:22:02Z
+commit b3fd2baa04619cbeaa021944971456fd327795bb
+tree clean
+product-sources sha256=3deceaf2465f12e183f531b9ad3f031045093a519b73b3d86c9c0223d4552029 over 5421 entries of `git ls-tree -r`, every path outside docs/ and outside any docs/ directory
+sdk 10.0.401
+machine Linux-6.18.44-fc-v233-x86_64-with-glibc2.39 x86_64 cpus=4

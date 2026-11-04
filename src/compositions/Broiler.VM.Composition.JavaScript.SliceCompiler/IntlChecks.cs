@@ -300,9 +300,18 @@ internal static class IntlChecks
         var own = Evaluate(Program, With(JsCldrData.Instance));
         var without = Evaluate(Program, With(new DataWithoutTheTzRelease()));
 
+        // THE FORMAT REPORTS THE ZONE AS GIVEN, in the database's case, since SJL-9.4's row Z8 (JSD-0082
+        // decision D15): 'asia/calcutta' is Asia/Calcutta. (Revised 2026-11-03, at SJL-9.4's row Z8; the
+        // answer read "-04:00 3 Asia/Kolkata", the Link's primary identifier, which the format reported
+        // before. What the check holds, both data answering alike, is unchanged.) (Noted 2026-11-03, at
+        // SJL-9.4's review of sub-areas (d) and (e): this is one of the guards part B of
+        // docs/evidence/sjl-9-001/decision-rule-area.md holds unchanged, every temporal/t1/ check, and its
+        // expected literal and its output moved with row Z8, which neither part B's class Z8, divergence
+        // lines alone, nor decision D15, "only the resolved-name lines of its divergences files and their
+        // headers", foresaw. Its verdict is ok at both commits; the cut-over's record lists the move.)
         return (
             Name,
-            own == "-04:00 3 Asia/Kolkata" && without == own,
+            own == "-04:00 3 Asia/Calcutta" && without == own,
             $"the family's data answered `{own}`, and the same data without the release `{without}`");
     }
 
