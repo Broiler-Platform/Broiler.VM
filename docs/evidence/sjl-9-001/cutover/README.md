@@ -26,6 +26,15 @@ with a final newline - which anyone can recompute at the later commit and find e
 git ls-tree -r HEAD | python3 -c "import sys,hashlib; l=[x for x in sys.stdin.read().splitlines() if not x.split('\t',1)[-1].startswith('docs/') and '/docs/' not in x.split('\t',1)[-1]]; print(hashlib.sha256(('\n'.join(l)+'\n').encode()).hexdigest(), len(l))"
 ```
 
+*(Revised 2026-11-04, at SJL-9.4's records.)* The closures were taken again, by the same step and the same method,
+from a clean checkout of `b3fd2ba`, the branch's change after its last change to a path outside the documents,
+`69f9e6a`, so that every product-source change of sub-areas (b) to (e) and of the records is under them.
+[`identity.txt`](identity.txt) names `b3fd2ba` and the product sources' digest, which `69f9e6a` gives too, and which the
+branch's later changes, documents only, keep. Every closure, catalog and identity of an admitted package is byte for
+byte the one the first collection retained; the transcripts differ in timings and in a heap plateau check's readings
+alone, and each Native AOT image record has a new digest. The paragraph above describes the first collection, which
+named `2b798a7` and recorded the product sources' digest `37743fbc…`; it is kept as written.
+
 The packages the closures carry are the ones the allow-list admits, restored from nuget.org;
 [`closures/admitted-packages.json`](closures/admitted-packages.json) names each by its version, its content and
 archive hashes and the commit its nuspec names (rule I7).

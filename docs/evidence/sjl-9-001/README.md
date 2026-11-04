@@ -185,7 +185,9 @@ This section is no part of the rule's parts A to C, and nothing in it is a verdi
 *(Added 2026-11-03, at SJL-9.4.)* [`cutover/`](cutover/README.md) holds the closures of every JavaScript root in three
 modes, collected at the branch commit that cuts sub-area (a) over, which the composition register's rows name as their
 evidence since the profile references `Broiler.ECMAScript.Intl` (rules K3, K4 and I7). It is no run of this bundle's
-rule: section 2's runs are still to be taken at the base and after commits.
+rule: section 2's runs are still to be taken at the base and after commits. *(Noted 2026-11-04, at SJL-9.4's records: the closures were
+taken again at the branch's last change to a product source, from a clean checkout of `b3fd2ba`, and `cutover/`'s
+README says so; this paragraph, which names the first collection, is kept as written.)*
 
 ## 9. Exclusions
 
