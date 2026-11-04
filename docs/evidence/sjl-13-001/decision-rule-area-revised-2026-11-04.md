@@ -88,6 +88,24 @@ commit, before the base. The registry commit then mints the codes and adds their
    registry commit that states revision 19 and adds codes could not pass the architecture tests without changing
    them. Neither rule N5 nor rule N7, nor any other assertion of that file, changes at the registry commit.
 
+10. **"The commits", the second tools commit, its paths** *(added 2026-11-04, in a later commit of the change that
+    files this revision, before any run it judges)*. In item 2's second condition, "names only paths under
+    `src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/`, `src/tests/corpus/js-1/source/` and `docs/`,"
+    now reads "names only paths under `src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/`,
+    `src/tests/corpus/js-1/source/`, `src/Broiler.VM.Profile.JavaScript/docs/` and `docs/`,". The change that files
+    this revision lands as one merge, and that merge is the second tools commit; it carries JSD-0083's dated notes,
+    under `src/Broiler.VM.Profile.JavaScript/docs/decisions/`, which `docs/` does not name: in this rule, as in bundle
+    `sjl-12-001`'s, `docs/` is the repository's top-level directory, and the profile's `docs/` is named apart.
+    Without this item the merge would name a path its own condition forbids. No product file of the compiler is under
+    the profile's `docs/`.
+11. **Part E, the defensive code, one meaning to one code** *(added 2026-11-04, in a later commit of the change that
+    files this revision, before any run it judges)*. In item 8, "a mapping that maps to it no catalogue row but
+    EE0021's or EX0024's and says it is defensive," now reads "a mapping that maps to it exactly one catalogue row,
+    EE0021's or EX0024's, and says it is defensive,". A code onto which the mapping maps both is refused, by rule N7
+    and by check E13, as decision D12 gives each meaning its own new code; the checker's control C20 is that case. In
+    item 1, "Two new numbers are minted as defensive, for EE0021 (...) and EX0024 (...)" is read so: one number for
+    each.
+
 **What does not change.** Every other part, class and control, and the revision of 2026-11-02. Part B's population is
 the parse corpus's manifest as the base commit holds it, which the second tools commit does not change; its refused
 requests are not inputs of part B.

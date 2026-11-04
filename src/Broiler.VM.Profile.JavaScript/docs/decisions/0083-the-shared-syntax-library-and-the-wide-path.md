@@ -934,9 +934,11 @@ The owner decided as follows.
    inputs the test262 run skips, and not these rules.
 2. **EE0021 and EX0024 take new codes minted as defensive.** A dated revision of rule N7 admits them, in its list, its
    register row with a dated note and its witness. A dated revision of check E13 admits them too: a new defensive code
-   passes only when the registry row says `defensive` with its reason, and the mapping maps to it only those two
-   catalogue rows and says it is defensive. Each revision has a control showing the widened rule still refuses what
-   it should.
+   passes only when the registry row says `defensive` with its reason, and the mapping maps to it exactly one
+   catalogue row, one of those two, and says it is defensive: one code for each meaning, as this decision asks. Each
+   revision has a control showing the widened rule still refuses what it should. *(Made exact 2026-11-04, in a later
+   commit of the change that adds this note, before any run: it read "the mapping maps to it only those two catalogue
+   rows", which rule N7 and check E13 first read as admitting one code that holds both; they now refuse it.)*
 3. **EX0013, EX0020 and EX0030 take new codes with real source cases.** The retained source corpus gains the means for
    a refused source to carry a compile request (eval code with its flags, or a manifest and output form) or more than
    one unit (two module units under one key), and so do its producer and the `--checks` row that compiles its refused
@@ -1086,17 +1088,20 @@ change the rule judges; `JsCompiler.Requests` is public and parses through the l
 
 *(Noted 2026-11-04: the owner's decision of 2026-11-04 on registry revision 19, recorded under decision D12.)* This
 decision names one tools commit, merged as `58b0c84` (Broiler-Platform/Broiler.VM#174). A **second tools commit**
-follows it, one merge before step 1's base, as the owner decided on 2026-11-04. It touches the slice compiler root,
-the architecture tests' named files (`ArchitectureRules.cs`, `DiagnosticRegistry.cs`,
-`DiagnosticRegistryRuleTests.cs`, `rules.register.json` and N7's witnesses), `eng/check-frontend-mapping.py` and its
-controls, the retained source corpus (`src/tests/corpus/js-1/source/`) and `docs/`. It never touches `eng/packages/`,
-`eng/test262-evidence.py`, any workflow, `SuiteFeatures.cs` or a product file of the compiler. It contains rule N7's
-and check E13's admission of a new defensive code for EE0021 and EX0024, with their controls and witness; the
-retained source corpus's refused requests, their producer and the `--checks` row that compiles them; and the
-restatement of the checker's controls R1 and R2. It changes no behaviour of the compiler and mints no code. The rule's
-revision of 2026-11-04 names it among "The commits", and the base descends from both tools commits. The reason: the
-registry commit may change neither the checker, nor rule N7, nor the source corpus's format, and it sits directly on
-the base (decision D35).
+follows it, one merge before step 1's base, as the owner decided on 2026-11-04. It touches the slice compiler root, the
+architecture tests' named files (`ArchitectureRules.cs`, `DiagnosticRegistry.cs`, `DiagnosticRegistryRuleTests.cs`,
+`rules.register.json` and N7's witnesses), `eng/check-frontend-mapping.py` and its controls, the retained source corpus
+(`src/tests/corpus/js-1/source/`), this profile's `docs/` and `docs/`. It never touches `eng/packages/`,
+`eng/test262-evidence.py`, any workflow, `SuiteFeatures.cs` or a product file of the compiler. It contains rule N7's and
+check E13's admission of a new defensive code for EE0021 and EX0024, with their controls and witness; the retained
+source corpus's refused requests, their producer and the `--checks` row that compiles them; and the restatement of the
+checker's controls R1 and R2. It changes no behaviour of the compiler and mints no code. The rule's revision of
+2026-11-04 names it among "The commits", and the base descends from both tools commits. The reason: the registry commit
+may change neither the checker, nor rule N7, nor the source corpus's format, and it sits directly on the base (decision
+D35). *(Corrected 2026-11-04, in a later commit of the change that adds this note, before any run: the list read "the
+retained source corpus (`src/tests/corpus/js-1/source/`) and `docs/`", and left out this profile's `docs/`, where this
+note is; the change lands as one merge, which is the second tools commit, so its own list must name it. The rule's
+revision of 2026-11-04 makes the same correction in its item 10.)*
 
 **Decision D29 - admission and closures.** The frontend is admitted for `Broiler.VM.Profile.JavaScript.Compiler` only
 (I1, A2); I3 gains its subject, and its register row's "UNTIL SJL-3" is corrected by a dated note; K4's rows for
