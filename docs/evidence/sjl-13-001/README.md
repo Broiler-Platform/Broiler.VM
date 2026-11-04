@@ -17,6 +17,14 @@ part C's fifth row and its control K4 read every shape whose tree passes the tre
 and part A's class C6 and part B's class L2 admit a tree within the bound that the base refuses. `decision-rule-area.md`
 is not edited, and section 1's summaries of parts A to C describe it as filed.
 
+*(Added 2026-11-04.)* The rule is revised again, before any of its runs, by
+[`decision-rule-area-revised-2026-11-04.md`](decision-rule-area-revised-2026-11-04.md), on the owner's decision of
+2026-11-04 on registry revision 19, which JSD-0083's dated notes on decisions D12, D13 and D27 record. Revision 19
+mints no code for the three language rules coded 2104, so part A's kind (R) lists nothing. Two new codes, for EE0021
+and EX0024, are minted as defensive, which rule N7 and check E13 admit from a second tools commit. That commit also
+lets a refused source of the retained source corpus carry a compile request or more than one unit, and restates the
+mapping checker's controls R1 and R2. The base descends from both tools commits. Neither earlier rule file is edited.
+
 **Records:** [JSD-0083](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md),
 the area verdict, which records the owner's decisions D2 to D39 of 2026-10-26, with D1 a reading of the owner's words
 of 2026-10-25, and *(added 2026-10-27)* the owner's decisions D-asi and D-t24 of 2026-10-27, which add row P16b to

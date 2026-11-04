@@ -901,6 +901,67 @@ The plan's text read:
   R2 names them." (findings F1, F2 and F7: `ParseFor`'s site leaves the list, `Declares` joins it);
 - and its reason: "JSD-0080 D13 ("SJL-13 mints the new numbers"); every split row says so; JSD-0009's rule."
 
+*(Noted 2026-11-04: the owner's decision of 2026-11-04 on registry revision 19, which the owner named "Mixed fix". It
+is the owner's own dated choice, asked and answered that day, and not one taken under the direction of 2026-10-18.)*
+Step 1's first stage stopped on 2026-11-04, at the base `983d690`, before the registry commit. This decision's first
+sentence reads "**Revision 19, at step 1's registry commit**: one new code per meaning every `split` row leaves (the
+three language rules coded 2104, the rows the mapping found, and the non-language splits EX0013, EX0020, EX0024,
+EX0028, EX0030 and EE0021)." Its third bullet reads "Each new code has an enum member, a registry row with stage and
+reachability, a retained-corpus case (N7), the producer's mirror (N8) and a `LanguageErrors` class (EarlyError for
+language rules). **`Test262Run` grades each new code as it graded the code it left, except the three language rules
+coded 2104 (`await`, `using`, a logical assignment's target), which it grades as language early errors.**" For eight
+meanings, no new code could meet that bullet together with the mapping checker's check E13, rule N7 and the retained
+source corpus. Check E13 asks every new code to be reached as `source`, by a refused entry of the retained source
+corpus answered with its name. Rule N7 admits two defensive rows, `DefensiveCodes` = 1903 and 2303. The retained source
+corpus compiles one text under one goal, with no request.
+- **The three language rules.** Their 2104 sites in the binder are reached by no input, because `JsParser` refuses
+  each construct first. Probes run at the base on 2026-11-04, kept outside this repository, show it. `await` in a class
+  static block is refused with 2209, a `using` declaration outside a disposing list with 2101, and a logical
+  assignment to a call or to a parenthesised literal with 2205; `using` in an async arrow's body is admitted. The
+  binder's own remarks say the same (`JsBinder.Walks.cs`, at the `await` and `using` sites). The rows these rules
+  belong to map within meaning to 2209, 2101 and 2205, with 2104 only among their other codes.
+- **EE0021**, a template literal with 2^32 strings or more: nothing produces it.
+- **EX0024**, a construct the lowering has no arm for: the lowering's default arms, defensive.
+- **EX0013, EX0020 and EX0030**: reached only by eval code under a caller's scope chain, by two module units under one
+  key, or by a compile request. A retained refused source could carry none of these.
+
+The owner decided as follows.
+1. **Revision 19 mints no code for the three language rules.** Their rows keep their registry codes, 2209, 2101 and
+   2205, and 2104 stays among their other codes, at binder sites the parser never lets an input reach and that step 1
+   deletes (decision D20). This bullet's exception, "except the three language rules coded 2104 (...), which it grades
+   as language early errors", therefore grades nothing. Bundle `sjl-13-001`'s part A kind (R) lists nothing, by the
+   rule's revision of 2026-11-04 below. The wide path's 2104s at the base are the tokenizer's decorator refusals, of
+   inputs the test262 run skips, and not these rules.
+2. **EE0021 and EX0024 take new codes minted as defensive.** A dated revision of rule N7 admits them, in its list, its
+   register row with a dated note and its witness. A dated revision of check E13 admits them too: a new defensive code
+   passes only when the registry row says `defensive` with its reason, and the mapping maps to it only those two
+   catalogue rows and says it is defensive. Each revision has a control showing the widened rule still refuses what
+   it should.
+3. **EX0013, EX0020 and EX0030 take new codes with real source cases.** The retained source corpus gains the means for
+   a refused source to carry a compile request (eval code with its flags, or a manifest and output form) or more than
+   one unit (two module units under one key), and so do its producer and the `--checks` row that compiles its refused
+   module sources.
+4. **The mapping checker's controls R1 and R2 are restated** so that they hold at revision 19 and still at 18.
+
+Items 2 to 4 are made by a second tools commit, one merge before step 1's base, in decision D27's sense. It changes no
+behaviour of the compiler and mints no code: step 1's registry commit mints the codes and adds their cases. The rule's
+revision of 2026-11-04, `docs/evidence/sjl-13-001/decision-rule-area-revised-2026-11-04.md`, names that commit.
+- **Not taken: "All as defensive".** Every one of the eight meanings would take a new code minted as defensive, and
+  rule N7 and check E13 would admit all eight. The registry would then call unreachable two codes a composition or a
+  request reaches today: two module units under one key are refused with 2201, and the value form under the numeric
+  manifest with 2104.
+- **Not taken: "Fold into existing".** The eight meanings would stay under the codes they reach today (2104, 2302,
+  2103 and 2201), marked within meaning. That overturns this decision's finding, and the SJL-12 mapping's split rows,
+  that those codes are reached under meanings their registry rows do not publish.
+
+*Found after the decision, 2026-11-04, while the second tools commit was written, and not decided here.* EX0013 may
+have no source case under any request. Its site refuses eval code whose free name crosses more than 255 scope records
+to the evaluated program's boundary. Every eval unit is parsed with the default nesting bound of 64 levels, because
+`SliceParseOptions.Eval` fixes it and no public member raises it. Probes of thirteen nested shapes, kept outside this
+repository, found none that adds more than two records for each level of that bound. The means item 3 asks for can
+carry the request flags of eval code, but the bound stays where it is. Whether EX0013 is minted as defensive, reached by
+a public change to eval's parse options, or decided otherwise is the owner's choice, before the registry commit.
+
 **Decision D13 - test262 at step 1, and the floors** *(revised 2026-10-26, finding F20)*. Bundle `sjl-13-001`'s part
 A names its C1 kinds before any run, (R) the regrade, (G) the decorator's stage, (B) the admission walk and (F) a
 correction by row, and C3 (L) for the left-operand charge; no C2, no C5. **No floor is re-based unless a classified
@@ -913,6 +974,15 @@ The native run at SJL-12's after commit reports no unsupported variant, so the r
 the moves are foreseeable from the mapping and JSD-0080's decisions D13 and D18, and must be classified before the
 runs; the hosted workflow holds each form to its floor. The plan's text ended "The retained suite's floor moves only
 through new codes' classes, which D12 fixes." The native floor could not see the move it exists for (finding F20).
+
+*(Noted 2026-11-04: the owner's decision of 2026-11-04 on registry revision 19, recorded under decision D12.)* This
+decision names "(R) the regrade" among part A's C1 kinds. Revision 19 mints no code for the three language rules coded
+2104, so no variant is regraded. Kind (R) is expected to list nothing, as kinds (B) and (F) are, by the rule's
+revision of 2026-11-04. That expectation does not rest on the bytecode run at the base reporting no unsupported
+variant, because the skipped variants were never compiled. It rests on three facts. The parser refuses each of the
+three constructs first. The binder's remarks say its 2104 sites are reached by no source the parser admits. And every
+2104 the wide path reports over the parse corpus at the base is the tokenizer's refusal of a decorator, in test262's
+decorator files, which the run skips. No floor moves for a regrade.
 
 ### This family's request and cut-over
 
@@ -1013,6 +1083,20 @@ two rows of decision D23, the compile-measurement harness (decision D24), sub-po
 pattern (JSD-0080's decision D16, with its witness), the mapping checker's revision-19 checks, and the correction of
 `ParseCorpus.cs`'s stale remark. The reason: the base then runs every new row and sub-population, and precedes every
 change the rule judges; `JsCompiler.Requests` is public and parses through the library from step 1.
+
+*(Noted 2026-11-04: the owner's decision of 2026-11-04 on registry revision 19, recorded under decision D12.)* This
+decision names one tools commit, merged as `58b0c84` (Broiler-Platform/Broiler.VM#174). A **second tools commit**
+follows it, one merge before step 1's base, as the owner decided on 2026-11-04. It touches the slice compiler root,
+the architecture tests' named files (`ArchitectureRules.cs`, `DiagnosticRegistry.cs`,
+`DiagnosticRegistryRuleTests.cs`, `rules.register.json` and N7's witnesses), `eng/check-frontend-mapping.py` and its
+controls, the retained source corpus (`src/tests/corpus/js-1/source/`) and `docs/`. It never touches `eng/packages/`,
+`eng/test262-evidence.py`, any workflow, `SuiteFeatures.cs` or a product file of the compiler. It contains rule N7's
+and check E13's admission of a new defensive code for EE0021 and EX0024, with their controls and witness; the
+retained source corpus's refused requests, their producer and the `--checks` row that compiles them; and the
+restatement of the checker's controls R1 and R2. It changes no behaviour of the compiler and mints no code. The rule's
+revision of 2026-11-04 names it among "The commits", and the base descends from both tools commits. The reason: the
+registry commit may change neither the checker, nor rule N7, nor the source corpus's format, and it sits directly on
+the base (decision D35).
 
 **Decision D29 - admission and closures.** The frontend is admitted for `Broiler.VM.Profile.JavaScript.Compiler` only
 (I1, A2); I3 gains its subject, and its register row's "UNTIL SJL-3" is corrected by a dated note; K4's rows for
@@ -1552,6 +1636,11 @@ configuration; part H's population and controls; "Revisions"; "What this file do
    the lowering, the numeric admission and the binder read the shared tree (decision D19).
 4. **Registry revision 19** is minted at step 1's registry commit, one code per meaning a split row leaves, a meaning
    being a registry meaning group (decision D12); test262 regrades only the three language rules coded 2104.
+   *(Noted 2026-11-04: the owner's decision of 2026-11-04, recorded under decision D12, replaces the clause after the
+   semicolon. Revision 19 mints no code for the three language rules coded 2104, so test262 regrades nothing. EE0021
+   and EX0024 take new codes minted as defensive. EX0013, EX0020 and EX0030 take new codes with real source cases,
+   carried by the retained source corpus's refused requests. Whether EX0013 can be reached is open, as that note
+   records.)*
 5. **Corrections.** This family's are the rows section "The corrections step 1 makes" names, made at step 1;
    Broiler.JS's are SJL-14's.
 6. **The deletion lists** are X6's (decision D20). Broiler.JS's half is completed at SJL-14.1.
