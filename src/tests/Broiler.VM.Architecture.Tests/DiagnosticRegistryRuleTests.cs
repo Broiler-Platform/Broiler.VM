@@ -275,7 +275,9 @@ public sealed class DiagnosticRegistryRuleTests
         // DefensiveRows admits, one for the catalogue's EE0021 and one for its EX0024, which no
         // source reaches - nothing produces the first, and only the lowering's default arms answer
         // the second. The figures below that count the seam half's defensive rows change with them
-        // at step 1's registry commit, as the area rule's revision of 2026-11-04 allows.)
+        // at step 1's registry commit, as the area rule's revision of 2026-11-04 allows. Extended
+        // 2026-11-04, later, on the owner's decision "Defensive too": and one for its EX0013, eval
+        // code reachable only past the eval nesting bound no public request can raise.)
         //
         // THREE OF THE SIXTY-FIVE ARRIVED WITH THE EMITTED-CODE SECTIONS, and their entries are
         // where the shape of a native payload becomes a checkable fact rather than a plan: one
@@ -386,7 +388,9 @@ public sealed class DiagnosticRegistryRuleTests
         // are 2303 and the two new codes rule N7's DefensiveRows admits, for the catalogue's EE0021
         // and EX0024, which step 1's registry commit mints and adds to the list asserted here. The
         // finding about 2303 stands; the other two are defensive by the owner's decision of that
-        // day, which JSD-0083's note on decision D12 records.)
+        // day, which JSD-0083's note on decision D12 records. Extended 2026-11-04, later, on the
+        // owner's decision "Defensive too": the new codes are three, for EE0021, EX0024 and EX0013,
+        // where this note said "the two new codes".)
         Assert.Equal(
             [2303],
             Registry.Where(static row =>
@@ -457,7 +461,8 @@ public sealed class DiagnosticRegistryRuleTests
     /// <summary>
     /// Rule N7's second list (2026-11-04, SJL-13's second tools commit, on the owner's decision of
     /// that day on registry revision 19): a code revision 19 or later adds may be defensive only
-    /// when the mapping maps onto it exactly one catalogue row, EE0021 or EX0024.
+    /// when the mapping maps onto it exactly one catalogue row, EE0021, EX0024 or EX0013 (EX0013
+    /// added 2026-11-04, later, on the owner's decision "Defensive too"; it read "EE0021 or EX0024").
     /// </summary>
     /// <remarks>
     /// <b>The real registry and mapping, with one row added and the mapping's answer for it
@@ -472,7 +477,7 @@ public sealed class DiagnosticRegistryRuleTests
         ILookup<string, string> sourceCorpus,
         ILookup<int, string> mapped)
     {
-        Assert.Equal(["EE0021", "EX0024"], ArchitectureRules.DefensiveRows);
+        Assert.Equal(["EE0021", "EX0024", "EX0013"], ArchitectureRules.DefensiveRows);
         Assert.Equal(19, ArchitectureRules.DefensiveRowsRevision);
 
         // The real mapping maps rows onto registry codes, so the lookup the rule reads is not
@@ -498,19 +503,25 @@ public sealed class DiagnosticRegistryRuleTests
             .N7([.. Registry, row], corpus, sourceCorpus, lookup)
             .Where(static violation => violation.Contains("2299", StringComparison.Ordinal));
 
-        // Admitted: a new seam code onto which the mapping maps one of the two meanings.
+        // Admitted: a new seam code onto which the mapping maps one of the three meanings. (EX0013
+        // admitted from 2026-11-04, later, on the owner's decision "Defensive too"; until then it was
+        // the refused case of another meaning, which EX0028 now is.)
         Assert.Empty(Run(added, With(mapped, "EX0024")));
         Assert.Empty(Run(added, With(mapped, "EE0021")));
+        Assert.Empty(Run(added, With(mapped, "EX0013")));
 
         // Refused: both meanings under one code (each meaning takes its own new code, decision
         // D12; admitted until a later commit of the change that added the list, before any run),
         // another meaning, a second meaning beside an admitted one, no meaning at all, a row of an
         // earlier revision, a core-result row, and an admitted meaning with no reason.
         Assert.Contains(Run(added, With(mapped, "EE0021", "EX0024")), static violation => violation.Contains(
-            "the mapping maps onto it EE0021, EX0024, where the rule admits a new defensive code for one meaning, one of EE0021 and EX0024",
+            "the mapping maps onto it EE0021, EX0024, where the rule admits a new defensive code for one meaning, one of EE0021, EX0024 and EX0013",
             StringComparison.Ordinal));
-        Assert.Contains(Run(added, With(mapped, "EX0013")), static violation => violation.Contains(
-            "the mapping maps onto it EX0013, where the rule admits a new defensive code only for EE0021 and EX0024",
+        Assert.Contains(Run(added, With(mapped, "EX0013", "EX0024")), static violation => violation.Contains(
+            "the mapping maps onto it EX0013, EX0024, where the rule admits a new defensive code for one meaning",
+            StringComparison.Ordinal));
+        Assert.Contains(Run(added, With(mapped, "EX0028")), static violation => violation.Contains(
+            "the mapping maps onto it EX0028, where the rule admits a new defensive code only for EE0021, EX0024 and EX0013",
             StringComparison.Ordinal));
         Assert.Contains(Run(added, With(mapped, "EX0024", "EX0028")), static violation => violation.Contains(
             "the mapping maps onto it EX0024, EX0028", StringComparison.Ordinal));
@@ -529,7 +540,7 @@ public sealed class DiagnosticRegistryRuleTests
         var witnessMeanings = new[]
             {
                 (Code: 2105, Row: "EX0028"),
-                (Code: 2106, Row: "EX0013"),
+                (Code: 2106, Row: "EX0020"),
                 (Code: 2108, Row: "EE0021"),
                 (Code: 2108, Row: "EX0024"),
             }
@@ -544,7 +555,7 @@ public sealed class DiagnosticRegistryRuleTests
             StringComparison.Ordinal));
         Assert.Contains(violations, static violation => violation.Contains(
             "registry row 2106 claims to be unreachable and is not one of the rows this rule admits as unreachable: " +
-            "it is not in its list of codes, and the mapping maps onto it EX0013",
+            "it is not in its list of codes, and the mapping maps onto it EX0020, where the rule admits a new defensive code only for",
             StringComparison.Ordinal));
         Assert.Contains(violations, static violation => violation.Contains(
             "registry row 2107 claims to be unreachable and is not one of the rows this rule admits as unreachable: " +

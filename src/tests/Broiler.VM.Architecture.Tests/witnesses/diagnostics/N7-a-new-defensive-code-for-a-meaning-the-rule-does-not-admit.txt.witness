@@ -2,10 +2,13 @@
 #
 # Added 2026-11-04, at SJL-13's second tools commit, with the rule's second list (the owner's decision
 # of that day on registry revision 19). From revision 19 a new embedder-seam code may claim to be
-# unreachable only when the front end's mapping maps onto it exactly one catalogue row, EE0021 or EX0024.
+# unreachable only when the front end's mapping maps onto it exactly one catalogue row, EE0021, EX0024 or
+# EX0013 (EX0013 added 2026-11-04, later, on the owner's decision "Defensive too").
 # The rule's test reads this file with the mapping it states here, since the mapping is a second file:
 # 2105 holds the catalogue's EX0028, a BigInt literal wider than the format, which a source reaches;
-# 2106 holds EX0013, eval code deeper than the scope-depth ceiling, which is not one of the two; and
+# 2106 holds EX0020, two modules presented under one module key, which a refused request of the retained
+# source corpus reaches (2106 held EX0013, "eval code deeper than the scope-depth ceiling, which is not one
+# of the two", until the owner's decision "Defensive too" of 2026-11-04 admitted EX0013); and
 # the mapping maps nothing onto 2107. 2108 holds both EE0021 and EX0024, one code for two meanings,
 # where each takes its own (decision D12; added in a later commit of the change that added this
 # witness, before any run). Each is the escape hatch the list exists to keep shut, reached through a
@@ -15,6 +18,6 @@
 #
 # code|name|half|reason|stage|reachability|case|since
 2105|BigIntWiderThanTheFormat|embedder-seam|-|parser|defensive|no source reaches it, says this witness, for a meaning a source does reach|19
-2106|EvalScopeDeeperThanTheCeiling|embedder-seam|-|lowering|defensive|no source reaches it, says this witness, for a meaning the rule does not admit|19
+2106|TwoModulesUnderOneKey|embedder-seam|-|lowering|defensive|no source reaches it, says this witness, for a meaning the rule does not admit|19
 2107|SomethingNothingMapsOnto|embedder-seam|-|lowering|defensive|no source reaches it, says this witness, for a code no catalogue row is mapped onto|19
 2108|TwoMeaningsUnderOneDefensiveCode|embedder-seam|-|lowering|defensive|no source reaches it, says this witness, for two meanings held by one code|19

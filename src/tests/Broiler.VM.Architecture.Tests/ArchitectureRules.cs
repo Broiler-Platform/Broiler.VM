@@ -1116,8 +1116,23 @@ internal static class ArchitectureRules
     /// holds, and this list says which meanings may be unreachable. The mapping checker's check E13
     /// holds the same two rows in <c>DEFENSIVE_ROWS</c>, and each list names the other.
     /// </para>
+    /// <para>
+    /// <b>EX0013 joined the list on 2026-11-04, later, on the owner's further decision of that day,
+    /// "Defensive too"</b> (JSD-0083's further dated note on decision D12), in a later commit of the
+    /// change that added the list, before any run. EX0013 is eval code whose free name crosses more
+    /// than 255 scope records to the evaluated program's boundary, and it is reachable only past the
+    /// eval nesting bound no public request can raise: every eval unit is parsed within the default
+    /// bound of 64 levels, which <c>SliceParseOptions.Eval</c> fixes. The list read
+    /// <c>["EE0021", "EX0024"]</c>, and the paragraphs above, which say "two" and name those two,
+    /// now read for all three. One meaning to one code holds for EX0013 as for the others; the
+    /// mapping checker's <c>DEFENSIVE_ROWS</c> names the same three.
+    /// </para>
     /// </remarks>
-    internal static readonly string[] DefensiveRows = ["EE0021", "EX0024"];
+    internal static readonly string[] DefensiveRows = ["EE0021", "EX0024", "EX0013"];
+
+    /// <summary>The meanings <see cref="DefensiveRows"/> names, as a refusal states them.</summary>
+    private static string DefensiveRowsList =>
+        string.Join(", ", DefensiveRows[..^1]) + " and " + DefensiveRows[^1];
 
     /// <summary>The first registry revision whose codes <see cref="DefensiveRows"/> may admit.</summary>
     internal const int DefensiveRowsRevision = 19;
@@ -1215,9 +1230,9 @@ internal static class ArchitectureRules
                                 ? "the mapping maps no catalogue row onto it"
                                 : meanings.All(meaning => DefensiveRows.Contains(meaning, StringComparer.Ordinal))
                                     ? $"the mapping maps onto it {string.Join(", ", meanings)}, where the rule " +
-                                      $"admits a new defensive code for one meaning, one of {string.Join(" and ", DefensiveRows)}"
+                                      $"admits a new defensive code for one meaning, one of {DefensiveRowsList}"
                                     : $"the mapping maps onto it {string.Join(", ", meanings)}, where the " +
-                                      $"rule admits a new defensive code only for {string.Join(" and ", DefensiveRows)}");
+                                      $"rule admits a new defensive code only for {DefensiveRowsList}");
                 }
 
                 if (row.Case.Trim().Length < 20)
