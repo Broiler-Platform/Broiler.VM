@@ -78,10 +78,15 @@ SJL-9.4: it read "but three", before `Broiler.ECMAScript.Intl` joined the list)*
   `.Intl` ([JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md), decisions
   D8 and D9; SJL-9.4) *(added 2026-11-03)*;
 - `Broiler.Unicode.Algorithms`, the Unicode area's code package, which all four declare at
-  `0.1.0-preview.5`, published to nuget.org from Broiler.Unicode `b802014` on 2026-10-17; they declared
-  it at `0.1.0-preview.4`, from Broiler.Unicode `6e14f93`, from the Unicode cut-over (JSD-0075, on
-  [JSD-0074](decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md)) until then
-  *(added: JSC-308; until JSC-310 it read "and not yet on nuget.org"; corrected: JSC-311)*;
+  `0.1.0-preview.6`, published to nuget.org from Broiler.Unicode `ccef653c` and admitted on 2026-10-31; they declared
+  it at `0.1.0-preview.5`, published to nuget.org from Broiler.Unicode `b802014` on 2026-10-17, until then, and at
+  `0.1.0-preview.4`, from Broiler.Unicode `6e14f93`, from the Unicode cut-over (JSD-0075, on
+  [JSD-0074](decisions/0074-unicode-moves-to-broiler-unicode-under-the-owner-conditions.md)) before that
+  *(added: JSC-308; until JSC-310 it read "and not yet on nuget.org"; corrected: JSC-311; corrected 2026-11-04, at
+  SJL-9.4, [JSC-324](roadmap.corrections.md#jsc-324): it read "which all four declare at `0.1.0-preview.5`, published to
+  nuget.org from Broiler.Unicode `b802014` on 2026-10-17; they declared it at `0.1.0-preview.4`, from Broiler.Unicode
+  `6e14f93`, from the Unicode cut-over (JSD-0075, on JSD-0074) until then", which the move to `0.1.0-preview.6` on
+  2026-10-31 left stale)*;
 - `Broiler.Unicode.Segmentation`, its optional segmentation package, which `.Intl` alone declares, at
   the same version and from the same commit, so that a composition that declines the Intl surface
   carries none of it (rule I3) *(added: JSC-308)*.
