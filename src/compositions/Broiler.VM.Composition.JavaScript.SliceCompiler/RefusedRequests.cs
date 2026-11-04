@@ -61,6 +61,21 @@ internal sealed record RefusedRequest(string Name, SliceSourceDiagnosticCode Cod
         : JsCompiler.Compile([], [Modules[0]]);
 
     /// <summary>
+    /// Compiles the entry's first unit alone under the entry's own manifest, in the default form and
+    /// with no backend: which the row holds must not reach the entry's code either, so that an entry
+    /// whose request differs in manifest and form is a case of the form it asks for and not of its
+    /// manifest alone (added 2026-11-04, in a later commit of the change that added this type).
+    /// </summary>
+    internal JsCompilation CompileFirstUnitUnderItsManifest()
+    {
+        var request = new JsCompileRequest(Request.Manifest);
+
+        return Scripts.Count != 0
+            ? JsCompiler.Compile([Scripts[0]], [], request)
+            : JsCompiler.Compile([], [Modules[0]], request);
+    }
+
+    /// <summary>
     /// The files the entry is retained as: each unit's text under its file name, and the request file
     /// last, whose text names every other file and its SHA-256.
     /// </summary>
@@ -118,6 +133,13 @@ internal sealed record RefusedRequest(string Name, SliceSourceDiagnosticCode Cod
         files.Add((Name + ".request", request.ToString()));
         return files;
     }
+
+    /// <summary>
+    /// The manifest's row for the entry, as the corpus producer writes it: its name, its request
+    /// file's SHA-256, the code it is answered with and the kind <c>request</c>.
+    /// </summary>
+    internal static string ManifestRow(string name, string requestText, SliceSourceDiagnosticCode code) =>
+        $"refused|{name}|{Sha256(requestText)}|{code}|request";
 
     /// <summary>The SHA-256 of a retained text, as the manifest records it.</summary>
     internal static string Sha256(string text) =>

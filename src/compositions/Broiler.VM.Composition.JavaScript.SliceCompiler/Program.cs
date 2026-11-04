@@ -342,9 +342,7 @@ internal static class Program
                 File.WriteAllText(Path.Combine(refused, file), text);
             }
 
-            manifest.Append("refused|").Append(request.Name).Append('|')
-                .Append(Sha256(System.Text.Encoding.UTF8.GetBytes(files[^1].Text))).Append('|')
-                .Append(request.Code).Append("|request").Append(Eol);
+            manifest.Append(RefusedRequest.ManifestRow(request.Name, files[^1].Text, request.Code)).Append(Eol);
         }
 
         File.WriteAllText(Path.Combine(root, "source.manifest"), manifest.ToString());
@@ -356,7 +354,7 @@ internal static class Program
     /// and their repository form is pinned to LF, so a producer emitting the platform's newline
     /// would write a file that differs from the one a fresh checkout holds.
     /// </remarks>
-    private static string Normalise(string source) =>
+    internal static string Normalise(string source) =>
         source.Replace("\r\n", "\n", StringComparison.Ordinal).TrimEnd('\n') + "\n";
 
     /// <summary>
