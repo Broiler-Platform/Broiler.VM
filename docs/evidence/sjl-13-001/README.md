@@ -28,6 +28,15 @@ mapping checker's controls R1 and R2. The base descends from both tools commits.
 code, for EX0013, is minted as defensive too, by that revision's dated item 12, so EX0020 and EX0030 alone take
 source cases from the refused requests.
 
+*(Added 2026-11-08.)* The rule is revised a third time, before any of its runs, by
+[`decision-rule-area-revised-2026-11-08.md`](decision-rule-area-revised-2026-11-08.md), on the owner's decision of
+2026-11-08 on the registry commit's file list ("Revise rule + rebuild"), which JSD-0083's dated note of that day on
+decision D12 records. The registry commit's list names every path that commit changes, and in each what it may change,
+now including the assurance artefacts the generator writes for that tree, the profile family's API baseline (rule
+N10), the producer of the retained source corpus's refused sources, the code of the slice lowering's two default arms
+(EX0024's defensive code, the only narrowing of "What does not change"), the lane's CLI acceptance table, and the
+comments and help text that name a renumbered code. No earlier rule file is edited.
+
 **Records:** [JSD-0083](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md),
 the area verdict, which records the owner's decisions D2 to D39 of 2026-10-26, with D1 a reading of the owner's words
 of 2026-10-25, and *(added 2026-10-27)* the owner's decisions D-asi and D-t24 of 2026-10-27, which add row P16b to

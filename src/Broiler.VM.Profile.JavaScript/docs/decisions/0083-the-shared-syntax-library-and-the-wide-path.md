@@ -982,6 +982,50 @@ change, before step 1's base, and the rule's revision of 2026-11-04 records it i
   site gives it today. That keeps a meaning under a code whose registry row does not publish it, which is the finding
   the mapping recorded when it marked EX0013's row `split`, as "Fold into existing" would have for all eight.
 
+*(Noted 2026-11-08: the owner's decision of 2026-11-08 on the registry commit's file list, which the owner named
+"Revise rule + rebuild". It is the owner's own dated choice, asked and answered that day, and not one taken under the
+direction of 2026-10-18.)* This decision's fourth bullet begins "**The registry commit also changes the code at each
+`JsParser` or binder site that serves one rule alone and whose code revision 19 changes**" and ends "**It also changes
+the codes and texts the slice compiler's `--checks` rows pin where revision 19 changes them** (`BinderChecks.cs`,
+`BigIntChecks.cs`, `SourceFrontEndChecks.cs`), so that the lane passes on the branch." Bundle `sjl-13-001`'s area rule
+gives the registry commit's list, which ends "and nothing else outside `docs/`", and the rule's revision of 2026-11-04
+reads it in its items 4 and 9. Step 1's first stage built the registry commit on a local branch that was never pushed,
+and its independent verifier found on 2026-11-08 that the commit changed paths the list does not admit: the assurance
+artefacts the generator writes for the changed sources; the profile family's API baseline, which rule N10 holds to the
+new members; `SliceSourcePrograms.cs`, the producer of the retained source corpus's refused sources; and the code of the
+slice lowering's two default arms, which revision 19 moves from 2104 to 2304, EX0024's defensive code, so that the
+meaning has one code. The lane's CLI acceptance table, `src/tests/cli/expected.txt`, pins answers revision 19
+renumbers, and the first stage changed it in a later commit, so the lane did not pass at the registry commit, against
+this bullet's "so that the lane passes on the branch". The comments and the polyglot CLI's help text that name a
+renumbered code were also brought to revision 19 in a later commit. The branch and its logs are kept outside this
+repository. The owner decided as follows.
+1. **The area rule is revised once more**, before any run it judges, by a new dated file,
+   `docs/evidence/sjl-13-001/decision-rule-area-revised-2026-11-08.md`, filed on the default branch. The registry
+   commit's list names every path that commit changes, and in each path what it may change: the paths the rule and its
+   revision of 2026-11-04 already admit, and the assurance artefacts the generator writes for that tree,
+   `src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt` (rule N10), `SliceSourcePrograms.cs`, the code of the
+   slice lowering's two default arms, `src/tests/cli/expected.txt`, and the comments and help text that name a
+   renumbered code. The rule's "What does not change" is narrowed by the slice arms' renumbering alone.
+2. **This bullet is extended accordingly.** Its words "so that the lane passes on the branch" now hold for the lane's
+   CLI acceptance table too, whose renumbered rows the registry commit changes, and the registry commit changes, beside
+   the sites and rows this bullet names, the paths the rule's revision of 2026-11-08 lists, and no other. The sites the
+   bullet names, its first sentence and the bullets before and after it are unchanged. Of the files the bullet names,
+   `SourceFrontEndChecks.cs` pins nothing revision 19 changes, so the registry commit leaves it as it is, as the
+   revision's item 1 says.
+3. **Step 1's branch is built again** from the default branch once the revision has merged, from the first stage's
+   content, with the CLI table's rows and the comments and help text that name renumbered codes in the registry commit,
+   so that the lane passes at the registry commit. The first stage's branch is kept unchanged as the reference. The
+   lane passes at every commit of the rebuilt branch but the admission commit, where rule N37 fails alone until the
+   commit after it collects the package baseline's bundle again at the admission's tree, as SJL-9.4's admission commit
+   `c4beaf1` failed it until `4842f8d`; the area rule sets no condition on the admission commit. The owner accepted that exception on 2026-11-08 ("Accept, as precedent", asked and answered that day; Broiler-Platform/Broiler.VM#189's `3008a99` failed rule N37 in the same way until `908e942`). The alternative not taken, "One commit for both", would have folded the admission and the baseline into one commit whose bundle names a tree, not a commit.
+- **Not taken: "Record as finding".** The registry commit would have stayed as built, and the bundle would have
+  recorded the finding; parts B to J, whose commits would fail the rule's condition on the registry commit, would be
+  void.
+- **Not taken: "Trim the commit".** The registry commit would have been rebuilt to the filed list alone, the other
+  paths moved to later commits. The architecture tests and the lane would then fail at the registry commit, and the
+  slice lowering's default arms would keep 2104 until a later commit, so EX0024's meaning would have two codes in
+  between.
+
 **Decision D13 - test262 at step 1, and the floors** *(revised 2026-10-26, finding F20)*. Bundle `sjl-13-001`'s part
 A names its C1 kinds before any run, (R) the regrade, (G) the decorator's stage, (B) the admission walk and (F) a
 correction by row, and C3 (L) for the left-operand charge; no C2, no C5. **No floor is re-based unless a classified
