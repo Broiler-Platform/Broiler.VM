@@ -2925,7 +2925,7 @@ merge before step 1's base and is named by its merge when it lands.
   the CLI table's rows and the comments and help text in the registry commit, so that the lane passes at the registry
   commit. It passes at every later commit too but the admission commit, where rule N37 fails alone until the commit
   after it collects the package baseline's bundle again, as SJL-9.4's admission commit `c4beaf1` failed it until
-  `4842f8d`. The first stage's branch is kept unchanged as the reference.
+  `4842f8d`. The owner accepted that exception on 2026-11-08 ("Accept, as precedent", asked and answered that day; Broiler-Platform/Broiler.VM#189's `3008a99` failed rule N37 in the same way until `908e942`). The alternative not taken, "One commit for both", would have folded the admission and the baseline into one commit whose bundle names a tree, not a commit. The first stage's branch is kept unchanged as the reference.
 - **Nothing else moves**: no code, package, pin, dataset, notice, root assembly, closure or public API.
 
 This change meets no clause, and no other ledger's row moves. SJL-13 stays `In progress`, every clause unmet. Nothing is

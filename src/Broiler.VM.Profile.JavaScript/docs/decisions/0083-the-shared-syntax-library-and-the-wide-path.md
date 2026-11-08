@@ -1017,7 +1017,7 @@ repository. The owner decided as follows.
    so that the lane passes at the registry commit. The first stage's branch is kept unchanged as the reference. The
    lane passes at every commit of the rebuilt branch but the admission commit, where rule N37 fails alone until the
    commit after it collects the package baseline's bundle again at the admission's tree, as SJL-9.4's admission commit
-   `c4beaf1` failed it until `4842f8d`; the area rule sets no condition on the admission commit.
+   `c4beaf1` failed it until `4842f8d`; the area rule sets no condition on the admission commit. The owner accepted that exception on 2026-11-08 ("Accept, as precedent", asked and answered that day; Broiler-Platform/Broiler.VM#189's `3008a99` failed rule N37 in the same way until `908e942`). The alternative not taken, "One commit for both", would have folded the admission and the baseline into one commit whose bundle names a tree, not a commit.
 - **Not taken: "Record as finding".** The registry commit would have stayed as built, and the bundle would have
   recorded the finding; parts B to J, whose commits would fail the rule's condition on the registry commit, would be
   void.

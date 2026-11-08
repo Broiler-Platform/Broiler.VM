@@ -44,7 +44,7 @@ registry commit itself, so that the lane passes at the registry commit. The admi
 the lane: rule N37 fails there alone, until the commit after it collects the package baseline's bundle again at the
 admission's tree, as SJL-9.4's admission commit `c4beaf1` failed it until `4842f8d`. So the lane passes at every
 commit of the branch but the admission commit. The area rule sets no condition on the admission commit, and this
-revision admits nothing for it.
+revision admits nothing for it. The owner accepted that exception on 2026-11-08 ("Accept, as precedent", asked and answered that day; Broiler-Platform/Broiler.VM#189's `3008a99` failed rule N37 in the same way until `908e942`). The alternative not taken, "One commit for both", would have folded the admission and the baseline into one commit whose bundle names a tree, not a commit.
 
 1. **"The commits", the registry commit, its list.** The rule reads: "It changes `registry.txt`,
    `frontend-mapping.tsv`, `SliceSourceDiagnosticCode`, the emission constants of the codes revision 19 renumbers in
