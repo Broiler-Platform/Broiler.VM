@@ -40,7 +40,11 @@ has been taken, so this revision is not written after any of them. It admits pat
 **What the owner decided.** The rule is revised once more, on the default branch, before any run it judges, so that the
 registry commit's list names exactly the kinds of file that commit must touch. Step 1's branch is then built again from
 the new default branch, with the CLI table's rows and the comments and help text that name renumbered codes in the
-registry commit itself, so that every commit of the branch passes the lane.
+registry commit itself, so that the lane passes at the registry commit. The admission commit after it does not pass
+the lane: rule N37 fails there alone, until the commit after it collects the package baseline's bundle again at the
+admission's tree, as SJL-9.4's admission commit `c4beaf1` failed it until `4842f8d`. So the lane passes at every
+commit of the branch but the admission commit. The area rule sets no condition on the admission commit, and this
+revision admits nothing for it.
 
 1. **"The commits", the registry commit, its list.** The rule reads: "It changes `registry.txt`,
    `frontend-mapping.tsv`, `SliceSourceDiagnosticCode`, the emission constants of the codes revision 19 renumbers in
@@ -64,7 +68,7 @@ registry commit itself, so that every commit of the branch passes the lane.
    - `src/Broiler.VM.Profile.JavaScript/docs/diagnostics/registry.txt` and
      `src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv`;
    - `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceDiagnostics.cs`, for `SliceSourceDiagnosticCode`'s new
-     members;
+     members, with their doc comments and the comment that heads them;
    - the binder's and the lowering's emission constants of the codes revision 19 renumbers, and the code at each binder
      site that serves one rule alone and whose code revision 19 changes:
      `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs`,
@@ -76,7 +80,12 @@ registry commit itself, so that every commit of the branch passes the lane.
      `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Modules.cs` and
      `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Statements.cs`;
    - `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs`, for the code at each site that serves one rule alone and
-     whose code revision 19 changes, as decision D12 names the sites;
+     whose code revision 19 changes, as decision D12 names the sites. At `BigIntLiteral` and `BigIntKey` that code
+     was not an argument, because each refused through an overload that supplied 2104: `BigIntLiteral` returned
+     `OutsideExpression`, and `BigIntKey` called `Refuse` with a span and a message. Each refusal is restated as a
+     call to `Refuse` with 2106, the suffix those overloads appended (" is not admitted by the declared feature
+     manifest") spelled out in its message, and `BigIntLiteral` itself returns the `JsNullLiteral` that
+     `OutsideExpression` returned, so that each code is 2106 and each message text at run time is unchanged;
    - the conformance root's grading and classification of the new codes:
      `src/compositions/Broiler.VM.Composition.JavaScript.Conformance/LanguageErrors.cs` and
      `src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Run.cs`;
@@ -96,26 +105,30 @@ registry commit itself, so that every commit of the branch passes the lane.
      files `src/tests/corpus/js-1/source/refused/refuse-the-value-form-under-the-numeric-manifest.request` and
      `src/tests/corpus/js-1/source/refused/refuse-two-modules-under-one-key.request`, and the slice compiler's refused
      requests, `src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/RefusedRequests.cs`, for the codes
-     they answer with; the corpus producer's mirror restates no seam code, so no path of it is named;
+     they answer with and the dated remark on them; the corpus producer's mirror restates no seam code, so no path of
+     it is named;
    - the codes and texts the slice compiler's `--checks` rows pin where revision 19 changes them:
      `src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/BinderChecks.cs` and
      `src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/BigIntChecks.cs`; revision 19 changes nothing
      that `SourceFrontEndChecks.cs` pins, so it is not named;
    - `src/tests/Broiler.VM.Architecture.Tests/DiagnosticRegistryRuleTests.cs`, for the assertions the revision of
-     2026-11-04 names in its item 9 and nothing else;
+     2026-11-04 names in its item 9, and the comments beside them that say what revision 19 changes there, and
+     nothing else;
    - `docs/evidence/sjl-13-001/corpus/stages.tsv`, new: the copy of the shared front end's stage table that the
      mapping's header names and the mapping checker reads, which the filed list admitted as a path under `docs/`.
 
    Admitted by this revision:
    - the assurance artefacts that the generator writes for the tree the registry commit makes, and nothing else they
-     could hold: `CODE-ASSURANCE.md`, `HUMAN_REVIEW.md` and `assurance.manifest.json`, and the fingerprint the
-     generator writes in an annotation line (`// Broiler-AI: ... Fingerprint=`) of a source file this list names, in
-     no other file;
+     could hold: `CODE-ASSURANCE.md`, `HUMAN_REVIEW.md` and `assurance.manifest.json`; and, in a source file this list
+     names and in no other file, what the generator writes there: the counts of the file header's generated block
+     (`Broiler Code Assurance`, "GENERATED - DO NOT EDIT MANUALLY") and the fingerprint in an annotation line
+     (`// Broiler-AI: ... Fingerprint=`);
    - `src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt`, for the members `SliceSourceDiagnosticCode` gains, as
      rule N10 requires, and nothing else;
    - `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourcePrograms.cs`, the producer of the retained source corpus's
-     refused sources, for the cases of the new codes, and nothing else; it is the only producer the cases need, and
-     the corpus producer's mirror and `RefusedRequests.cs` are named above;
+     refused sources, for the cases of the new codes and the comment that heads them, and nothing else; it is the
+     only producer the cases need: `RefusedRequests.cs` is named above, and the corpus producer's mirror is not
+     named, because it restates no seam code;
    - `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs`, for the code of the slice lowering's two
      default arms, the statement arm and the expression arm, which move from 2104 `ConstructOutsideManifest` to 2304
      `ConstructTheLoweringHasNoArmFor`, EX0024's one code, their message texts unchanged;
@@ -123,10 +136,20 @@ registry commit itself, so that every commit of the branch passes the lane.
      each with a dated note quoting what it read, and nothing else;
    - the comments and help text that name a code revision 19 renumbers, each with a dated note quoting what it read,
      and no code, message text or emission site with them: comments in `JsBinder.EarlyErrors.cs`,
-     `JsBinder.Walks.cs`, `JsCompiler.Classes.cs`, `BinderChecks.cs` and
-     `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Exceptions.cs`; one doc comment in `JsParser.cs`, which is
-     the only other line of `JsParser` the registry commit changes; and the polyglot CLI's help line for an arm64
-     refusal, with its dated source comment, in `src/compositions/Broiler.VM.Composition.PolyglotCli/Program.cs`.
+     `JsBinder.Walks.cs`, `JsCompiler.Classes.cs`, `BinderChecks.cs`, `RefusedRequests.cs` and
+     `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Exceptions.cs`; one doc comment in `JsParser.cs`, which,
+     with the code at the sites named above and the restated refusals of `BigIntLiteral` and `BigIntKey`, is every
+     line of `JsParser` the registry commit changes; and the polyglot CLI's help line for an arm64 refusal, with its
+     dated source comment, in `src/compositions/Broiler.VM.Composition.PolyglotCli/Program.cs`;
+   - in a path this list names, the comments beside the lines it changes that say what revision 19 changes there, and
+     no code with them. A comment that is added replaces nothing; a comment that is extended keeps what it read and
+     adds to it; a comment whose words are replaced carries a dated note quoting what it read. They are the comment
+     that heads `SliceSourceDiagnosticCode`'s new members and the members' doc comments; the comment that heads the
+     new cases in `SliceSourcePrograms.cs`; the comment that heads the new codes' classes in `LanguageErrors.cs`; the
+     comment on the grading in `Test262Run.cs`; the doc comment of the new constant in `BigIntChecks.cs`; the comment
+     that heads the renumbered rows in `BinderChecks.cs`; and, in `DiagnosticRegistryRuleTests.cs`, the comments
+     beside the assertions its admission names. A `--checks` row's name is not a code or text the row pins, and it
+     is left as it reads.
 
    The rule's next sentence, "If its parent is not the base commit, part B's run there is void and is taken again at a
    registry commit that meets this condition, before any after run of part B is seen.", is unchanged, and so is "Its
@@ -135,9 +158,9 @@ registry commit itself, so that every commit of the branch passes the lane.
 2. **"What step 1 changes", the bullet "What does not change".** Its last clause, "the slice path, its tokenizer and
    its census.", now reads "the slice path, its tokenizer and its census, except that the slice lowering's two default
    arms report 2304 `ConstructTheLoweringHasNoArmFor`, EX0024's defensive code, where they reported 2104 (decision
-   D12)." That renumbering is the only narrowing of "What does not change". The arms are defensive, as revision 19's
-   registry row for 2304 says: "no source reaches it: only the lowering's default arms answer it, for a construct the
-   front end admitted and no arm compiles".
+   D12)." That renumbering is the only narrowing of "What does not change". The arms are defensive under decision D12,
+   and the registry commit's row for 2304 says so: it marks the code defensive and states that no source reaches it,
+   and that only the lowering's default arms answer it, for a construct the front end admitted and no arm compiles.
 
 **What this revision does to parts A to J.** It changes no part's population, configuration, comparison, classes,
 controls or MET line. Each part reads it only through the condition "The commits" sets on the registry commit ("A part

@@ -1009,10 +1009,15 @@ repository. The owner decided as follows.
 2. **This bullet is extended accordingly.** Its words "so that the lane passes on the branch" now hold for the lane's
    CLI acceptance table too, whose renumbered rows the registry commit changes, and the registry commit changes, beside
    the sites and rows this bullet names, the paths the rule's revision of 2026-11-08 lists, and no other. The sites the
-   bullet names, its first sentence and the bullets before and after it are unchanged.
+   bullet names, its first sentence and the bullets before and after it are unchanged. Of the files the bullet names,
+   `SourceFrontEndChecks.cs` pins nothing revision 19 changes, so the registry commit leaves it as it is, as the
+   revision's item 1 says.
 3. **Step 1's branch is built again** from the default branch once the revision has merged, from the first stage's
    content, with the CLI table's rows and the comments and help text that name renumbered codes in the registry commit,
-   so that every commit of the branch passes the lane. The first stage's branch is kept unchanged as the reference.
+   so that the lane passes at the registry commit. The first stage's branch is kept unchanged as the reference. The
+   lane passes at every commit of the rebuilt branch but the admission commit, where rule N37 fails alone until the
+   commit after it collects the package baseline's bundle again at the admission's tree, as SJL-9.4's admission commit
+   `c4beaf1` failed it until `4842f8d`; the area rule sets no condition on the admission commit.
 - **Not taken: "Record as finding".** The registry commit would have stayed as built, and the bundle would have
   recorded the finding; parts B to J, whose commits would fail the rule's condition on the registry commit, would be
   void.

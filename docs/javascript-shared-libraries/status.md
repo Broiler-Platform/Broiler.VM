@@ -2910,8 +2910,8 @@ local branch that was never pushed and built the registry commit and the admissi
 2026-11-08 that the registry commit changed paths the area rule's list for that commit does not admit, and that the
 lane's CLI acceptance table, fixed only in a later commit, did not pass at the registry commit. As filed, a part whose
 commits fail that list's condition is void. The owner decided on 2026-11-08 ("Revise rule + rebuild", the owner's own
-dated choice). One branch in this repository, `sjl-13-rev3`, cut from `9775735`, which lands as one merge before step
-1's base, named by its merge when it lands.
+dated choice). The change is one branch in this repository, `sjl-13-rev3`, cut from `9775735`, which lands as one
+merge before step 1's base and is named by its merge when it lands.
 - **The records.** JSD-0083 gains a dated note on decision D12. Bundle `sjl-13-001`'s area rule is revised before any
   run it judges by [`decision-rule-area-revised-2026-11-08.md`](../evidence/sjl-13-001/decision-rule-area-revised-2026-11-08.md):
   the registry commit's list names every path that commit changes, and in each what it may change. Beside the paths
@@ -2922,8 +2922,10 @@ dated choice). One branch in this repository, `sjl-13-rev3`, cut from `9775735`,
   control changes. The alternatives not taken, "Record as finding" and "Trim the commit", are recorded with what each
   would have meant. The bundle's README names the revision. No earlier rule file is edited.
 - **Step 1's branch** is built again from the default branch after this merge, from the first stage's content, with
-  the CLI table's rows and the comments and help text in the registry commit, so that every commit of the branch passes
-  the lane. The first stage's branch is kept unchanged as the reference.
+  the CLI table's rows and the comments and help text in the registry commit, so that the lane passes at the registry
+  commit. It passes at every later commit too but the admission commit, where rule N37 fails alone until the commit
+  after it collects the package baseline's bundle again, as SJL-9.4's admission commit `c4beaf1` failed it until
+  `4842f8d`. The first stage's branch is kept unchanged as the reference.
 - **Nothing else moves**: no code, package, pin, dataset, notice, root assembly, closure or public API.
 
 This change meets no clause, and no other ledger's row moves. SJL-13 stays `In progress`, every clause unmet. Nothing is
