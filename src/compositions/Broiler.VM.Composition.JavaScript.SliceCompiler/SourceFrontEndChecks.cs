@@ -27,6 +27,7 @@ internal static class SourceFrontEndChecks
         yield return EverySourceTheManifestAdmitsCompiles();
         yield return EverySourceTheManifestExcludesIsRefusedByName();
         yield return EveryModuleEarlyErrorIsRefusedByName();
+        yield return EveryRefusedRequestIsRetainedAsTheProducerWritesIt();
         yield return TheLoweringIsDeterministic();
 
         // THE WIDE FRONT END'S HALF OF THE SAME CLAIM, beside the slice one's (stage JSB-1, SJL-12.6
@@ -347,12 +348,131 @@ internal static class SourceFrontEndChecks
     }
 
     /// <summary>
-    /// Every module-goal early error is refused by the wide front end, with its own code.
+    /// Every refused request is retained as the corpus producer writes it: each unit file and the
+    /// <c>.request</c> file beside <c>source.manifest</c> hold, byte for byte, what
+    /// <see cref="RefusedRequest.Files"/> gives, and the manifest holds the entry's row with that
+    /// request file's SHA-256 and the code the entry is answered with, and no other <c>request</c> row.
     /// </summary>
     /// <remarks>
+    /// <b>Added 2026-11-04, in a later commit of SJL-13's second tools commit, before any run.</b>
+    /// Rule N7 and the mapping checker's check E13 read the code an entry is answered with from the
+    /// manifest, and the row above compiles <see cref="RefusedRequests.All"/> from code; the producer
+    /// that writes one from the other runs only under <c>--write</c>. Without this row the three could
+    /// drift apart and every check still pass, and step 1's registry commit, which renumbers the
+    /// entries' answers, changes all three. The corpus is found as the wide lowering's row finds the
+    /// retained corpora: in the first directory above this process's own, or above the current one,
+    /// that holds it.
+    /// </remarks>
+    private static (string, bool, string) EveryRefusedRequestIsRetainedAsTheProducerWritesIt()
+    {
+        const string Name = "every refused request is retained as the corpus producer writes it";
+        var directory = SourceCorpusDirectory();
+
+        if (directory is null)
+        {
+            return (
+                Name,
+                false,
+                "no directory above this process's or the current one holds src/tests/corpus/js-1/source/source.manifest");
+        }
+
+        var failed = new List<string>();
+        var refused = Path.Combine(directory, "refused");
+        var rows = File.ReadAllText(Path.Combine(directory, "source.manifest"))
+            .Split('\n')
+            .Select(static line => line.TrimEnd('\r'))
+            .Where(static line => line.StartsWith("refused|", StringComparison.Ordinal) &&
+                line.EndsWith("|request", StringComparison.Ordinal))
+            .ToArray();
+        var written = new HashSet<string>(StringComparer.Ordinal);
+        var fileCount = 0;
+
+        foreach (var request in RefusedRequests.All)
+        {
+            var files = request.Files(Program.Normalise);
+
+            foreach (var (file, text) in files)
+            {
+                fileCount++;
+                var path = Path.Combine(refused, file);
+
+                if (!File.Exists(path))
+                {
+                    failed.Add($"{request.Name}: {file} is not retained beside the manifest");
+                }
+                else if (!File.ReadAllBytes(path).AsSpan().SequenceEqual(System.Text.Encoding.UTF8.GetBytes(text)))
+                {
+                    failed.Add($"{request.Name}: the retained {file} differs from what the producer writes");
+                }
+            }
+
+            var row = RefusedRequest.ManifestRow(request.Name, files[^1].Text, request.Code);
+            written.Add(row);
+
+            if (!rows.Contains(row, StringComparer.Ordinal))
+            {
+                failed.Add($"{request.Name}: source.manifest holds no row {row}");
+            }
+        }
+
+        foreach (var row in rows.Where(row => !written.Contains(row)))
+        {
+            failed.Add($"source.manifest's row {row} is not one the producer writes from RefusedRequests");
+        }
+
+        return (
+            Name,
+            failed.Count == 0,
+            failed.Count == 0
+                ? $"{written.Count} requests: {fileCount} files and {written.Count} manifest rows, each as the producer writes it"
+                : string.Join("; ", failed));
+    }
+
+    /// <summary>
+    /// The retained source corpus's directory, from the first directory above this process's own or
+    /// above the current one that holds its manifest, or <see langword="null"/> where none does.
+    /// </summary>
+    private static string? SourceCorpusDirectory()
+    {
+        foreach (var start in new[] { AppContext.BaseDirectory, Environment.CurrentDirectory })
+        {
+            for (var directory = new DirectoryInfo(start); directory is not null; directory = directory.Parent)
+            {
+                var candidate = Path.Combine(directory.FullName, "src", "tests", "corpus", "js-1", "source");
+
+                if (File.Exists(Path.Combine(candidate, "source.manifest")))
+                {
+                    return candidate;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Every module-goal early error, and every refused request, is refused by the wide front end,
+    /// with its own code.
+    /// </summary>
+    /// <remarks>
+    /// <para>
     /// A separate check from the one below rather than an extension of it, because the compiler
     /// differs: these sources are put to the wide front end, which is the only one with a module
     /// goal, and the two lists would otherwise be one list whose rows go to two compilers.
+    /// </para>
+    /// <para>
+    /// <b>The refused requests joined it on 2026-11-04</b>, at SJL-13's second tools commit, on the
+    /// owner's decision of that day on registry revision 19: sources of the retained corpus refused
+    /// only under a compile request or as more than one unit (<see cref="RefusedRequests"/>), each
+    /// compiled as a host compiles it, every unit under the request. Each is also compiled as a
+    /// single text would be, its first unit alone under the default request, and that compilation
+    /// must not be refused with the entry's code: a request or a unit the entry carries for nothing
+    /// would make it a case of something else. The row read "every module-goal early error is
+    /// refused with its own code" until then. In a later commit of the same change, before any run,
+    /// the first unit is also compiled alone under the entry's own manifest in the default form,
+    /// which must not reach the entry's code either: an entry whose request names both a manifest
+    /// and a form is then a case of the pair, not of the manifest.
+    /// </para>
     /// </remarks>
     private static (string, bool, string) EveryModuleEarlyErrorIsRefusedByName()
     {
@@ -380,11 +500,48 @@ internal static class SourceFrontEndChecks
             }
         }
 
+        var requests = RefusedRequests.All;
+
+        foreach (var request in requests)
+        {
+            var compiled = request.Compile();
+
+            if (compiled.Succeeded)
+            {
+                failed.Add($"{request.Name}: compiled under its request, and should not have");
+            }
+            else if (!compiled.Diagnostics.Any(diagnostic => diagnostic.Code == request.Code))
+            {
+                failed.Add(
+                    $"{request.Name}: expected {request.Code} and got " +
+                    string.Join(", ", compiled.Diagnostics.Select(diagnostic => diagnostic.Code)));
+            }
+
+            var alone = request.CompileFirstUnitAlone();
+
+            if (alone.Diagnostics.Any(diagnostic => diagnostic.Code == request.Code))
+            {
+                failed.Add(
+                    $"{request.Name}: its first unit alone, under the default request, is refused with " +
+                    $"{request.Code} too, so the request and the units it carries reach nothing");
+            }
+
+            var underItsManifest = request.CompileFirstUnitUnderItsManifest();
+
+            if (underItsManifest.Diagnostics.Any(diagnostic => diagnostic.Code == request.Code))
+            {
+                failed.Add(
+                    $"{request.Name}: its first unit alone, under its own manifest {request.Request.Manifest} " +
+                    $"in the default form, is refused with {request.Code} too, so the entry is a case of its " +
+                    "manifest and not of the request it carries");
+            }
+        }
+
         return (
-            "every module-goal early error is refused with its own code",
+            "every module-goal early error and refused request is refused with its own code",
             failed.Count == 0,
             failed.Count == 0
-                ? $"{SliceSourcePrograms.RefusedModules.Length} sources, each refused by name"
+                ? $"{SliceSourcePrograms.RefusedModules.Length} sources and {requests.Length} requests, each refused by name"
                 : string.Join("; ", failed));
     }
 

@@ -1,4 +1,4 @@
-// A FIXTURE of eng/check-frontend-mapping.py's controls: SliceSourceDiagnosticCode's shape, four members.
+// A FIXTURE of eng/check-frontend-mapping.py's controls: SliceSourceDiagnosticCode's shape, five members.
 namespace Fixture;
 
 public enum SliceSourceDiagnosticCode
@@ -7,4 +7,5 @@ public enum SliceSourceDiagnosticCode
     ConstructOutsideManifest = 2104,
     BigIntWiderThanTheFormat = 2105,
     AwaitOutsideItsFunction = 2211,
+    ConstructTheLoweringHasNoArmFor = 2304,
 }

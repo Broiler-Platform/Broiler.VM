@@ -1,0 +1,8 @@
+# A refused source of the retained source corpus that one text under one goal cannot carry
+# (src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/RefusedRequests.cs).
+# source.manifest names this file's SHA-256; each unit names its file, beside this one, and that file's SHA-256.
+# Units compile in the order listed, scripts before modules, the first module the root.
+answer|DuplicateLexicalDeclaration
+request|manifest=Wide|form=Bytecode|backend=-|source-text=kept
+unit|module|/main.mjs|goal=module,top-level-await=yes,nesting=64|refuse-two-modules-under-one-key.1.mjs|b5e3af850620010b0263a016788409fd508d0e4dc37e88bd2db29168d8dcf398
+unit|module|/main.mjs|goal=module,top-level-await=yes,nesting=64|refuse-two-modules-under-one-key.2.mjs|001abb6bb627a8b9e7a02f9a53887d5181dee5fd05fe9e0f020732e11ca57e93

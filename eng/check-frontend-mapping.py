@@ -67,10 +67,18 @@
 #       published-at-milestone list does not name the revision it states;
 #   E13 a code the registry adds at revision 19 or later (an embedder-seam row whose `since` is 19 or
 #       more) has no member of that name and number in SliceSourceDiagnosticCode; or its stage is not one
-#       of the half's four, or its reachability is not `source`, or its case is not a `refused` entry of
-#       the retained source corpus answered with its name (rule N7 admits no new defensive row); or the
+#       of the half's four; or its reachability is neither `source`, with a case that is a `refused`
+#       entry of the retained source corpus answered with its name, nor `defensive`, as below; or the
 #       mapping has no `registry` row for it whose `notes` names the code it left, as
-#       `left <code> <Name>` - a code of an earlier revision, under its registry name;
+#       `left <code> <Name>` - a code of an earlier revision, under its registry name. A new code may be
+#       `defensive` (added 2026-11-04, at SJL-13's second tools commit, on the owner's decision of that
+#       day on registry revision 19) only when the registry and the mapping both say so: its registry
+#       row states why no source reaches it, the mapping maps onto it exactly one catalogue row, which
+#       is in DEFENSIVE_ROWS (EE0021, EX0024 or EX0013, the meanings rule N7's DefensiveRows admits, in
+#       src/tests/Broiler.VM.Architecture.Tests/ArchitectureRules.cs; one code each, as decision D12
+#       gives each meaning its own), and the mapping's `registry` row for it says `defensive` in its
+#       `notes`. Until that day E13 refused every new defensive row. (EX0013 added 2026-11-04, later,
+#       on the owner's decision of that day, "Defensive too"; it read "EE0021 or EX0024".);
 #   E14 such a code has no class: it is missing from LanguageErrors.Classified, or Classify gives it no
 #       arm; or it is not graded as decision D12 grades it: a code whose registry row's `notes` says
 #       `a language rule` left 2104, is classed EarlyError, and is not among the codes Test262Run's
@@ -88,7 +96,9 @@
 # --controls <directory> runs this checker's own controls: the directory's controls.json names a
 # fixture (a small registry, mapping, catalogue and stage table copy, and the four files above, at
 # revision 19), which must pass, and edits of it, each of which must be refused by the checks it names;
-# and edits of this checkout's own mapping and registry. See that directory's README.md.
+# and edits of this checkout's own mapping and registry, which may state what they expect at each registry
+# revision (restated 2026-11-04, so that R1 and R2 hold at revision 19 as at 18). See that directory's
+# README.md.
 #
 # Exit status: 0 when nothing is refused, 1 when anything is, 2 when an input cannot be read.
 
@@ -138,6 +148,15 @@ DEFAULT_SOURCE_MANIFEST = "src/tests/corpus/js-1/source/source.manifest"
 SEAM_STAGES = ("tokenizer", "parser", "semantics", "lowering")
 LEFT = re.compile(r"\bleft (?P<code>\d{4}) (?P<name>[A-Za-z]+)\b")
 LANGUAGE_RULE = "a language rule"
+# The catalogue rows whose meaning a new code may hold as a defensive row (E13), and the only ones: rule
+# N7's DefensiveRows in ArchitectureRules.cs names the same three, and each list names the other. Added
+# 2026-11-04, on the owner's decision of that day on registry revision 19 (JSD-0083's note on D12).
+# EX0013 joined it later that day, on the owner's further decision, "Defensive too" (JSD-0083's further
+# note on D12): eval code reachable only past the eval nesting bound no public request can raise. The
+# tuple read ("EE0021", "EX0024"), and the comment "names the same two".
+DEFENSIVE_ROWS = ("EE0021", "EX0024", "EX0013")
+DEFENSIVE = "defensive"
+DEFENSIVE_REASON_LENGTH = 20
 CONSTRUCT_OUTSIDE_MANIFEST = "2104"
 EARLY_ERROR = "EarlyError"
 
@@ -716,6 +735,9 @@ def check_revision_19(header, revision, registry, registry_header, registry_rows
     unsupported = read_unsupported(source("test262-run", DEFAULT_TEST262_RUN))
     cases = read_source_cases(source("source-manifest", DEFAULT_SOURCE_MANIFEST))
     registry_row_of = {row["registry_code"]: row for row in registry_rows}
+    rows_onto = {}
+    for row in code_rows:
+        rows_onto.setdefault(row["registry_code"], []).append(row["row"])
 
     for code in new_codes:
         entry = registry[code]
@@ -727,13 +749,34 @@ def check_revision_19(header, revision, registry, registry_header, registry_rows
             refuse("E13", f"{where}: SliceSourceDiagnosticCode has no member {name} = {code}")
         if entry["stage"] not in SEAM_STAGES:
             refuse("E13", f"{where}: the stage {entry['stage']!r} is not one of {', '.join(SEAM_STAGES)}")
-        if entry["reachability"] != "source":
+        mapping_row = registry_row_of.get(code)
+        if entry["reachability"] == DEFENSIVE:
+            meanings = rows_onto.get(code, [])
+            admitted = ", ".join(DEFENSIVE_ROWS[:-1]) + " and " + DEFENSIVE_ROWS[-1]
+            if not meanings:
+                refuse("E13", f"{where}: defensive, and the mapping maps no catalogue row onto it; a new code "
+                              f"may be defensive only for {admitted} (rule N7's DefensiveRows)")
+            elif any(meaning not in DEFENSIVE_ROWS for meaning in meanings):
+                refuse("E13", f"{where}: defensive, and the mapping maps onto it {', '.join(meanings)}; a new code "
+                              f"may be defensive only for {admitted} (rule N7's DefensiveRows)")
+            elif len(meanings) != 1:
+                # One meaning to one code (made exact in a later commit of the change that added
+                # DEFENSIVE_ROWS, before any run): it admitted a code holding both.
+                refuse("E13", f"{where}: defensive, and the mapping maps onto it {', '.join(meanings)}; a new "
+                              f"defensive code holds one meaning, one of {admitted}, and each takes its own code "
+                              f"(decision D12)")
+            if len(entry["case"].strip()) < DEFENSIVE_REASON_LENGTH:
+                refuse("E13", f"{where}: defensive, and its case {entry['case']!r} states no reason why no source "
+                              f"reaches it")
+            if mapping_row is not None and DEFENSIVE not in mapping_row["notes"]:
+                refuse("E13", f"{where}: defensive in the registry, and the mapping's registry row (line "
+                              f"{mapping_row['line']}) does not say it is defensive")
+        elif entry["reachability"] != "source":
             refuse("E13", f"{where}: the reachability is {entry['reachability']!r}, and a new code is reached "
-                          f"from a case of the retained source corpus (rule N7 lists every defensive row)")
+                          f"from a case of the retained source corpus, or is defensive as E13 admits")
         elif cases.get(entry["case"]) != name:
             refuse("E13", f"{where}: the case {entry['case']!r} is not a refused entry of the retained source "
                           f"corpus answered with {name}")
-        mapping_row = registry_row_of.get(code)
         left = LEFT.search(mapping_row["notes"]) if mapping_row else None
         if mapping_row is None:
             refuse("E13", f"{where}: the mapping has no registry row for it")
@@ -794,17 +837,34 @@ def run_controls(directory):
             path = os.path.join(target, edit["file"])
             with open(path, encoding="utf-8", newline="") as handle:
                 text = handle.read()
-            if text.count(edit["old"]) != 1:
+            # An edit names the text it replaces ("old"), or, from 2026-11-04, a pattern ("pattern", one
+            # line, matched per line) for a text that differs between registry revisions, such as the
+            # revision line itself. Either must occur exactly once.
+            if "pattern" in edit:
+                text, count = re.subn(edit["pattern"], lambda _: edit["new"], text, flags=re.M)
+                if count != 1:
+                    raise Unreadable(f"the edit of {edit['file']} names a pattern that matches {count} times, "
+                                     f"not once: {edit['pattern'][:60]!r}")
+            elif text.count(edit["old"]) != 1:
                 raise Unreadable(f"the edit of {edit['file']} names a text that occurs "
                                  f"{text.count(edit['old'])} times, not once: {edit['old'][:60]!r}")
+            else:
+                text = text.replace(edit["old"], edit["new"])
             with open(path, "w", encoding="utf-8", newline="") as handle:
-                handle.write(text.replace(edit["old"], edit["new"]))
+                handle.write(text)
 
     def outcome(run):
         try:
             return run()[-1], None
         except Unreadable as error:
             return None, str(error)
+
+    # A control of this checkout's own records may state what it expects at each registry revision
+    # ("by-revision"), because what those records hold changes at the revision: R1 and R2 were written at
+    # revision 18 and restated on 2026-11-04 for revision 19. A revision a control names no expectation for
+    # cannot be judged, which is an input that cannot be read, never a pass.
+    real_revision, _, _ = read_registry_header(
+        os.path.join(ROOT, "src/Broiler.VM.Profile.JavaScript/docs/diagnostics/registry.txt"))
 
     fixture = os.path.join(directory, plan["fixture"])
     files = plan["files"]
@@ -827,33 +887,54 @@ def run_controls(directory):
     cases += [("real", control) for control in plan["real"]]
 
     for kind, control in cases:
+        # The expectation, and for a `real` control the edits, at this checkout's registry revision. An
+        # expectation may name its own edits (from 2026-11-04, made exact before any run): R1 edits the
+        # revision line at 18 and the revision-19 records at 19, so that it is never the plain check again.
+        expectation = control
+        if "by-revision" in control:
+            if real_revision not in control["by-revision"]:
+                print(f"{TOOL}: control {control['id']} states no expectation at registry revision "
+                      f"{real_revision}, so it cannot be judged")
+                return 2
+            expectation = control["by-revision"][real_revision]
+        edits = expectation.get("edits", control.get("edits", []))
+        absent = []
         with tempfile.TemporaryDirectory() as target:
             try:
                 if kind == "fixture":
-                    edited(fixture, names, control["edits"], target)
+                    edited(fixture, names, edits, target)
                     run = fixture_run(target)
                 else:
                     shutil.copyfile(os.path.join(ROOT, DEFAULT_MAPPING), os.path.join(target, "frontend-mapping.tsv"))
                     shutil.copyfile(os.path.join(ROOT, "src/Broiler.VM.Profile.JavaScript/docs/diagnostics/registry.txt"),
                                     os.path.join(target, "registry.txt"))
-                    edited(target, [], control["edits"], target)
+                    edited(target, [], edits, target)
                     sources = {key: os.path.join(target, value) for key, value in control.get("sources", {}).items()}
+                    absent = sorted(set(sources.values()))
                     run = real_run(target, sources)
             except (Unreadable, OSError) as error:
                 print(f"{TOOL}: control {control['id']} cannot be made: {error}")
                 return 2
             problems, unreadable = outcome(run)
-        expected = control["refused"]
+        expected = expectation.get("refused", [])
+        expect_unreadable = expectation.get("unreadable", False)
         if unreadable is not None:
             seen = "could not be read: " + unreadable
-            met = False
+            # An input that cannot be read is as stated only when the control expects it and the error
+            # names one of the paths the control itself left absent (from 2026-11-04, made exact before
+            # any run): any other unreadable input is not the one the control is about.
+            met = expect_unreadable and (not absent or any(path in unreadable for path in absent))
+            problems = []
         else:
             ids = sorted({problem.split(" ", 1)[0] for problem in problems})
             seen = "passed" if not problems else "refused at " + ", ".join(ids)
-            met = (not problems) if not expected else all(check_id in ids for check_id in expected)
+            met = not expect_unreadable and (
+                (not problems) if not expected else all(check_id in ids for check_id in expected))
         failures += 0 if met else 1
-        wanted = "to pass" if not expected else "to be refused at " + ", ".join(expected)
-        print(f"{TOOL}: control {control['id']} ({control['what']}): {seen}; "
+        wanted = ("to be unreadable" + (", naming a path it left absent" if absent else "") if expect_unreadable else
+                  "to pass" if not expected else "to be refused at " + ", ".join(expected))
+        at = f" at registry revision {real_revision}" if "by-revision" in control else ""
+        print(f"{TOOL}: control {control['id']} ({expectation.get('what', control['what'])}){at}: {seen}; "
               f"{'as stated' if met else 'NOT AS STATED'} ({wanted})")
         if problems and not met or (problems and os.environ.get("CHECK_FRONTEND_MAPPING_VERBOSE")):
             for problem in problems:

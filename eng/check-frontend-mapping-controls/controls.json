@@ -146,7 +146,7 @@
     },
     {
       "id": "C10",
-      "what": "a new defensive row",
+      "what": "a new defensive row, for EX0002's meaning, which E13 does not admit (read so since 2026-11-04)",
       "edits": [
         {
           "file": "registry.txt",
@@ -178,7 +178,7 @@
       "edits": [
         {
           "file": "frontend-mapping.tsv",
-          "old": "# stage-table-sha256: 40227b9122db8f373657a78d89016c6657529f7da9564d515523b7172f9f5d88\n",
+          "old": "# stage-table-sha256: bc613ba53d62df02b3e5754ee192a93b9cee6c2a91efa0b20c584e9f05c7e966\n",
           "new": ""
         }
       ],
@@ -264,33 +264,200 @@
         }
       ],
       "refused": []
+    },
+    {
+      "id": "C17",
+      "what": "a defensive new code whose mapping row does not say it is defensive (added 2026-11-04)",
+      "edits": [
+        {
+          "file": "frontend-mapping.tsv",
+          "old": ", defensive, as rule N7 admits for the catalogue's EX0024",
+          "new": ""
+        }
+      ],
+      "refused": [
+        "E13"
+      ]
+    },
+    {
+      "id": "C18",
+      "what": "a defensive new code that states no reason (added 2026-11-04)",
+      "edits": [
+        {
+          "file": "registry.txt",
+          "old": "|defensive|no source reaches it: the lowering's default arms answer a construct the front end admitted|19",
+          "new": "|defensive|unreachable|19"
+        }
+      ],
+      "refused": [
+        "E13"
+      ]
+    },
+    {
+      "id": "C19",
+      "what": "a defensive new code onto which the mapping also maps a meaning E13 does not admit (added 2026-11-04)",
+      "edits": [
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "code\tJSE9209\tEX0002\tBigIntTooWide\t2104\tnone\t2105\twithin-meaning\t2105 BigIntWiderThanTheFormat: a BigInt literal wider than the format's BigInt constant\t2104 split: the width refusal's code at the base, which revision 19 renumbers\t-",
+          "new": "code\tJSE9209\tEX0002\tBigIntTooWide\t2104\tnone\t2304\twithin-meaning\t2304 ConstructTheLoweringHasNoArmFor: a construct the manifest admitted and the lowering has no arm for\t2104 split: the width refusal's code at the base, which revision 19 renumbers\t-"
+        }
+      ],
+      "refused": [
+        "E13"
+      ]
+    },
+    {
+      "id": "C20",
+      "what": "a defensive new code onto which the mapping maps two of the meanings E13 admits, EE0021 and EX0024, where each takes its own code (added 2026-11-04, before any run; it read \"both meanings E13 admits\" until E13 admitted EX0013, 2026-11-04, later)",
+      "edits": [
+        {
+          "file": "early-errors.tsv",
+          "old": "EX0024\tEX\tJSE9308\tConstructNotCompiled\t-\t2104\n",
+          "new": "EX0024\tEX\tJSE9308\tConstructNotCompiled\t-\t2104\nEE0021\tEE\tJSE1221\tTemplateStringCount\t-\t2104\n"
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "# catalogue-sha256: 545b38dcc2a09f993d14001441becee82656bf8b9ff41b9ce8cc12e15e3fcc8f",
+          "new": "# catalogue-sha256: e88b71381e537b5ffa5705ff032f1bdb04cb7166b2360c9797390caa84ef7c0e"
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "registry\t-\t-\tConstructNotCompiled\t-\t-\t2304",
+          "new": "registry\t-\t-\tConstructNotCompiled;TemplateStringCount\t-\t-\t2304"
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "code\tJSE9308\tEX0024\tConstructNotCompiled\t2104\t2104\t2304\twithin-meaning\t2304 ConstructTheLoweringHasNoArmFor: a construct the manifest admitted and the lowering has no arm for\t2104 split: the default arms' code at the base, which revision 19 renumbers\t-",
+          "new": "code\tJSE9308\tEX0024\tConstructNotCompiled\t2104\t2104\t2304\twithin-meaning\t2304 ConstructTheLoweringHasNoArmFor: a construct the manifest admitted and the lowering has no arm for\t2104 split: the default arms' code at the base, which revision 19 renumbers\t-\ncode\tJSE1221\tEE0021\tTemplateStringCount\t2104\tnone\t2304\twithin-meaning\t2304 ConstructTheLoweringHasNoArmFor: a construct the manifest admitted and the lowering has no arm for\t2104 split: the default arms' code at the base, which revision 19 renumbers\t-"
+        }
+      ],
+      "refused": [
+        "E13"
+      ]
+    },
+    {
+      "id": "C21",
+      "what": "a defensive new code onto which the mapping maps the catalogue's EX0013 in place of EX0024, which E13 admits (added 2026-11-04, later, on the owner's decision \"Defensive too\"; a fixture shape: E13 reads only which catalogue row the mapping maps onto the code)",
+      "edits": [
+        {
+          "file": "early-errors.tsv",
+          "old": "EX0024\tEX\tJSE9308\tConstructNotCompiled\t-\t2104\n",
+          "new": "EX0013\tEX\tJSE9203\tEvalScopeTooDeep\t-\t2104\n"
+        },
+        {
+          "file": "stages.tsv",
+          "old": "EX0024\tJSE9308\tengine\n",
+          "new": "EX0013\tJSE9203\tengine\n"
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "# catalogue-sha256: 545b38dcc2a09f993d14001441becee82656bf8b9ff41b9ce8cc12e15e3fcc8f",
+          "new": "# catalogue-sha256: 4cac009e0bc07461fb8d248d687dfebe4139ed9677ae26adddeee75809c3527d"
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "# stage-table-sha256: bc613ba53d62df02b3e5754ee192a93b9cee6c2a91efa0b20c584e9f05c7e966",
+          "new": "# stage-table-sha256: cd978cd48883b02adcab0da485de04646d152e3c04833e8ec006595b831379b2"
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "registry\t-\t-\tConstructNotCompiled\t-\t-\t2304",
+          "new": "registry\t-\t-\tEvalScopeTooDeep\t-\t-\t2304"
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "as rule N7 admits for the catalogue's EX0024",
+          "new": "as rule N7 admits for the catalogue's EX0013"
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "code\tJSE9308\tEX0024\tConstructNotCompiled\t2104\t2104\t2304",
+          "new": "code\tJSE9203\tEX0013\tEvalScopeTooDeep\t2104\tnone\t2304"
+        }
+      ],
+      "refused": []
+    },
+    {
+      "id": "C22",
+      "what": "a defensive new code onto which the mapping maps two of the meanings E13 admits, EX0013 and EX0024, where each takes its own code (added 2026-11-04, later, on the owner's decision \"Defensive too\"; a fixture shape, as C21 is)",
+      "edits": [
+        {
+          "file": "early-errors.tsv",
+          "old": "EX0024\tEX\tJSE9308\tConstructNotCompiled\t-\t2104\n",
+          "new": "EX0024\tEX\tJSE9308\tConstructNotCompiled\t-\t2104\nEX0013\tEX\tJSE9203\tEvalScopeTooDeep\t-\t2104\n"
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "# catalogue-sha256: 545b38dcc2a09f993d14001441becee82656bf8b9ff41b9ce8cc12e15e3fcc8f",
+          "new": "# catalogue-sha256: 2b70f69229a30327f8261e65bd3349f638c80343079a3cc1eb0e6a6dd7570a1d"
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "registry\t-\t-\tConstructNotCompiled\t-\t-\t2304",
+          "new": "registry\t-\t-\tConstructNotCompiled;EvalScopeTooDeep\t-\t-\t2304"
+        },
+        {
+          "file": "frontend-mapping.tsv",
+          "old": "code\tJSE9308\tEX0024\tConstructNotCompiled\t2104\t2104\t2304\twithin-meaning\t2304 ConstructTheLoweringHasNoArmFor: a construct the manifest admitted and the lowering has no arm for\t2104 split: the default arms' code at the base, which revision 19 renumbers\t-",
+          "new": "code\tJSE9308\tEX0024\tConstructNotCompiled\t2104\t2104\t2304\twithin-meaning\t2304 ConstructTheLoweringHasNoArmFor: a construct the manifest admitted and the lowering has no arm for\t2104 split: the default arms' code at the base, which revision 19 renumbers\t-\ncode\tJSE9203\tEX0013\tEvalScopeTooDeep\t2104\tnone\t2304\twithin-meaning\t2304 ConstructTheLoweringHasNoArmFor: a construct the manifest admitted and the lowering has no arm for\t2104 split: the default arms' code at the base, which revision 19 renumbers\t-"
+        }
+      ],
+      "refused": [
+        "E13"
+      ]
     }
   ],
   "real": [
     {
       "id": "R1",
-      "what": "this checkout's mapping and registry, stated at revision 19",
-      "edits": [
-        {
-          "file": "registry.txt",
-          "old": "# registry-revision: 18",
-          "new": "# registry-revision: 19"
+      "what": "this checkout's mapping and registry, with the revision-19 checks made to bite",
+      "edits": [],
+      "by-revision": {
+        "18": {
+          "what": "this checkout's mapping and registry, stated at revision 19",
+          "edits": [
+            {
+              "file": "registry.txt",
+              "pattern": "^# registry-revision: \\d+$",
+              "new": "# registry-revision: 19"
+            },
+            {
+              "file": "frontend-mapping.tsv",
+              "pattern": "^# registry-revision: \\d+$",
+              "new": "# registry-revision: 19"
+            }
+          ],
+          "refused": [
+            "E10",
+            "E11",
+            "E12"
+          ]
         },
-        {
-          "file": "frontend-mapping.tsv",
-          "old": "# registry-revision: 18",
-          "new": "# registry-revision: 19"
+        "19": {
+          "what": "this checkout's mapping and registry at revision 19, the stage table's digest changed and the owning decision removed",
+          "edits": [
+            {
+              "file": "frontend-mapping.tsv",
+              "pattern": "^# stage-table-sha256: [0-9a-f]{64}$",
+              "new": "# stage-table-sha256: 0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            {
+              "file": "registry.txt",
+              "pattern": "^# owning-decision: .*$",
+              "new": "#"
+            }
+          ],
+          "refused": [
+            "E11",
+            "E12"
+          ]
         }
-      ],
-      "refused": [
-        "E10",
-        "E11",
-        "E12"
-      ]
+      }
     },
     {
       "id": "R2",
-      "what": "this checkout's mapping and registry at revision 18, the four revision-19 inputs named where nothing is",
+      "what": "this checkout's mapping and registry, the four revision-19 inputs named where nothing is",
       "edits": [],
       "sources": {
         "enum": "absent.cs",
@@ -298,7 +465,14 @@
         "test262-run": "absent.cs",
         "source-manifest": "absent.manifest"
       },
-      "refused": []
+      "by-revision": {
+        "18": {
+          "refused": []
+        },
+        "19": {
+          "unreadable": true
+        }
+      }
     }
   ]
 }

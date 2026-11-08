@@ -2,6 +2,7 @@
 # kind|name|sha256|answer|retained
 # answer is the completion value an accepted source runs to, or the embedder-seam diagnostic a refused source is refused with
 # retained is `file` where the source text is beside this manifest, and `generated` where it is produced by a named member of SliceSourcePrograms
+# or, from 2026-11-04, `request` where the source is refused only under a compile request or as more than one unit: its `.request` file beside this manifest names the request and each unit's file and SHA-256, and the sha256 here is the request file's
 accepted|source-multiplication-binds-tighter|3553c468c86fade22a00dab4c3970537a6d2e1588fa7514a01b860de9a151ba1|7|file
 accepted|source-parentheses-regroup|5a7e0aea55b602ab4ec4826bec6026efb6a4a22891a6a1176b8a58b31eb56ed2|9|file
 accepted|source-subtraction-is-left-associative|2f4578508315e6d323520f2a65ffe165c10c84a4e173db88577c32e71384e7e8|5|file
@@ -66,3 +67,5 @@ refused|refuse-an-export-of-a-name-nothing-declares|52fa60171ca6b61c945ceaeae160
 refused|refuse-an-import-meta-in-a-script|b772e844d6d56e4494cf9a9946e48b51e006740b164ab0a764556ad61fe0e814|ImportMetaOutsideModuleGoal|file
 refused|refuse-an-import-attribute-nothing-can-honour|d2c84cde86753fea8278ecd644f952994b218f9cd24d7ca9163f1d31bc7eda88|UnsupportedImportAttribute|file
 refused|refuse-a-json-module-that-is-not-json|c0785545a92723ec4c477e3f5ddc897f3eca06a914ba2e160c610c7da75e262e|InvalidJsonModule|file
+refused|refuse-two-modules-under-one-key|833afa413cb176d6cee10da3650f6f476208fbe5541f3bf7aa3cc2a49ee84091|DuplicateLexicalDeclaration|request
+refused|refuse-the-value-form-under-the-numeric-manifest|1e817818656dff0b4175c111c58c943dfdb28a2dc400023cb1284ca71d5aed7c|ConstructOutsideManifest|request

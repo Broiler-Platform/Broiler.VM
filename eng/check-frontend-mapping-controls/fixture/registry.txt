@@ -9,3 +9,4 @@
 2104|ConstructOutsideManifest|embedder-seam|-|parser|source|refuse-a-function|2
 2105|BigIntWiderThanTheFormat|embedder-seam|-|parser|source|refuse-a-bigint-wider-than-the-format|19
 2211|AwaitOutsideItsFunction|embedder-seam|-|semantics|source|refuse-await-in-a-static-block|19
+2304|ConstructTheLoweringHasNoArmFor|embedder-seam|-|lowering|defensive|no source reaches it: the lowering's default arms answer a construct the front end admitted|19

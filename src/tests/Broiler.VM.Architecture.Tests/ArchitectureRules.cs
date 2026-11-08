@@ -1087,9 +1087,62 @@ internal static class ArchitectureRules
     internal static readonly int[] DefensiveCodes = [1903, 2303];
 
     /// <summary>
+    /// The catalogue rows whose meaning a code registry revision 19 or later adds may hold as a
+    /// defensive row, and the only ones.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Added 2026-11-04, at SJL-13's second tools commit, on the owner's decision of that day on
+    /// registry revision 19</b> (JSD-0083's dated note on decision D12). Revision 19 mints one new
+    /// code per meaning a split row of the front end's mapping leaves, and two of those meanings
+    /// have no source to reach them: the catalogue's EE0021, a template literal with 2^32 strings or
+    /// more, which nothing produces, and EX0024, a construct the lowering has no arm for, which only
+    /// the lowering's default arms answer. The owner decided that each takes a new code minted as
+    /// defensive, and this list is how that decision reaches the rule.
+    /// </para>
+    /// <para>
+    /// <b>Meanings and not numbers, because the numbers do not exist yet.</b> Step 1's registry
+    /// commit mints them, and it may not change this rule. So the list names the catalogue rows,
+    /// and a defensive row is admitted through it only when it is an embedder-seam row the registry
+    /// added at revision 19 or later and the mapping maps onto its code exactly one catalogue row,
+    /// which is on this list. A row the mapping maps nothing onto, a row one more meaning reaches,
+    /// a row that holds both listed meanings, and a row of an earlier revision are each refused,
+    /// exactly as a row outside <see cref="DefensiveCodes"/> was before. One meaning to one code,
+    /// because decision D12 gives each meaning a split row leaves its own new code, and the owner's
+    /// decision gives EE0021 and EX0024 new codes and not one between them (made exact on
+    /// 2026-11-04, in a later commit of the change that added this list, before any run: it read
+    /// "every catalogue row the mapping maps onto its code is on this list", which admitted one
+    /// code holding both). The excuse stays an edit to this test: the mapping says which meaning a code
+    /// holds, and this list says which meanings may be unreachable. The mapping checker's check E13
+    /// holds the same two rows in <c>DEFENSIVE_ROWS</c>, and each list names the other.
+    /// </para>
+    /// <para>
+    /// <b>EX0013 joined the list on 2026-11-04, later, on the owner's further decision of that day,
+    /// "Defensive too"</b> (JSD-0083's further dated note on decision D12), in a later commit of the
+    /// change that added the list, before any run. EX0013 is eval code whose free name crosses more
+    /// than 255 scope records to the evaluated program's boundary, and it is reachable only past the
+    /// eval nesting bound no public request can raise: every eval unit is parsed within the default
+    /// bound of 64 levels, which <c>SliceParseOptions.Eval</c> fixes. The list read
+    /// <c>["EE0021", "EX0024"]</c>, and the paragraphs above, which say "two" and name those two,
+    /// now read for all three. One meaning to one code holds for EX0013 as for the others; the
+    /// mapping checker's <c>DEFENSIVE_ROWS</c> names the same three.
+    /// </para>
+    /// </remarks>
+    internal static readonly string[] DefensiveRows = ["EE0021", "EX0024", "EX0013"];
+
+    /// <summary>The meanings <see cref="DefensiveRows"/> names, as a refusal states them.</summary>
+    private static string DefensiveRowsList =>
+        string.Join(", ", DefensiveRows[..^1]) + " and " + DefensiveRows[^1];
+
+    /// <summary>The first registry revision whose codes <see cref="DefensiveRows"/> may admit.</summary>
+    internal const int DefensiveRowsRevision = 19;
+
+    /// <summary>
     /// N7: every registry row is reachable from a named case. A <c>corpus</c> row names an entry
     /// of the retained corpus manifest that records that exact code; a <c>defensive</c> row is one
-    /// of <see cref="DefensiveCodes"/> and states why no artifact reaches it.
+    /// of <see cref="DefensiveCodes"/>, or, from registry revision 19, a new embedder-seam code
+    /// onto which the mapping maps exactly one catalogue row, one of <see cref="DefensiveRows"/>,
+    /// and states why no artifact reaches it.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -1124,7 +1177,8 @@ internal static class ArchitectureRules
     internal static IEnumerable<string> N7(
         IReadOnlyList<DiagnosticRegistryRow> registry,
         ILookup<int, string> corpus,
-        ILookup<string, string> sourceCorpus)
+        ILookup<string, string> sourceCorpus,
+        ILookup<int, string> mappedRows)
     {
         foreach (var row in registry)
         {
@@ -1162,11 +1216,23 @@ internal static class ArchitectureRules
 
             if (string.Equals(row.Reachability, "defensive", StringComparison.Ordinal))
             {
-                if (!DefensiveCodes.Contains(row.Code))
+                if (!DefensiveCodes.Contains(row.Code) && !AdmittedByMeaning(row, mappedRows))
                 {
+                    var meanings = mappedRows[row.Code].ToArray();
+
                     yield return
                         $"registry row {row.Code} claims to be unreachable and is not one of the " +
-                        "rows this rule admits as unreachable";
+                        "rows this rule admits as unreachable: it is not in its list of codes, and " +
+                        (row.Since < DefensiveRowsRevision ||
+                         !string.Equals(row.Half, "embedder-seam", StringComparison.Ordinal)
+                            ? $"it is not an embedder-seam row added at revision {DefensiveRowsRevision} or later"
+                            : meanings.Length == 0
+                                ? "the mapping maps no catalogue row onto it"
+                                : meanings.All(meaning => DefensiveRows.Contains(meaning, StringComparer.Ordinal))
+                                    ? $"the mapping maps onto it {string.Join(", ", meanings)}, where the rule " +
+                                      $"admits a new defensive code for one meaning, one of {DefensiveRowsList}"
+                                    : $"the mapping maps onto it {string.Join(", ", meanings)}, where the " +
+                                      $"rule admits a new defensive code only for {DefensiveRowsList}");
                 }
 
                 if (row.Case.Trim().Length < 20)
@@ -1198,6 +1264,21 @@ internal static class ArchitectureRules
                     "by a case, which is a stronger claim than this rule was told to expect";
             }
         }
+    }
+
+    /// <summary>
+    /// Whether a defensive row is one of the new codes <see cref="DefensiveRows"/> admits: an
+    /// embedder-seam row of revision 19 or later onto which the mapping maps exactly one catalogue
+    /// row, and that row on the list.
+    /// </summary>
+    private static bool AdmittedByMeaning(DiagnosticRegistryRow row, ILookup<int, string> mappedRows)
+    {
+        var meanings = mappedRows[row.Code].ToArray();
+
+        return string.Equals(row.Half, "embedder-seam", StringComparison.Ordinal) &&
+            row.Since >= DefensiveRowsRevision &&
+            meanings.Length == 1 &&
+            DefensiveRows.Contains(meanings[0], StringComparer.Ordinal);
     }
 
     /// <summary>
