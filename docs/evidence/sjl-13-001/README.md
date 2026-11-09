@@ -41,11 +41,13 @@ comments and help text that name a renumbered code. No earlier rule file is edit
 [`decision-rule-area-revised-2026-11-09.md`](decision-rule-area-revised-2026-11-09.md), on the owner's three decisions
 of 2026-11-09 ("Revise rule: bounded class", and "Correction row + class F" twice), which JSD-0083's dated notes of that
 day on decisions D11 and D15 record. Part B gains class N: for an input refused at both commits alone, it admits the
-place, or the code, or both, of the library's one diagnostic, where that code is the one the mapping gives for the
-library's message, each such input listed with both lists. Part A's kind (F) and part B's class F name two new rows of
-the correspondence, P37 (a `new` whose operand is a `new` with an argument list) and D64 (the module-request path's
-missing early errors), and class F admits the artifact bytes of P37's inputs. No accepted input's place moves, and no
-earlier rule file is edited.
+place, or the code, or both, of the library's one diagnostic, where that code is the registry_code of the mapping's
+`code` row for the library's message's shared code, each such input listed with both lists. Part A's kind (F) and
+part B's class F name two new rows of the correspondence, P37 (a `new` whose operand begins with a `new` with an
+argument list and goes on to another argument list) and D64 (the module-request path's missing early errors), and
+class F admits the artifact bytes of P37's inputs. No accepted input's place moves, and no earlier rule file is
+edited. The revision of 2026-11-08's renumbering, called above the only narrowing of "What does not change", is the
+only one of that revision; from 2026-11-09 that bullet has two more, row P37's tree and class N's one diagnostic.
 
 **Records:** [JSD-0083](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md),
 the area verdict, which records the owner's decisions D2 to D39 of 2026-10-26, with D1 a reading of the owner's words

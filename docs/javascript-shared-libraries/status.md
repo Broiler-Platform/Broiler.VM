@@ -2950,9 +2950,11 @@ before step 1's base and is named by its merge when it lands.
 - **The records.** Bundle `sjl-13-001`'s area rule is revised before any run it judges by
   [`decision-rule-area-revised-2026-11-09.md`](../evidence/sjl-13-001/decision-rule-area-revised-2026-11-09.md). Part
   B gains class N, which admits, for an input refused at both commits alone, the place, or the code, or both, of the
-  library's one diagnostic, where that code is the one the mapping gives for the library's message, each input listed
-  with both lists. The rule's sentence "no ordering, template or position class" is narrowed by N alone, and a
-  diagnostic whose code no mapping row gives stays a regression. The correspondence gains rows P37 and D64, two
+  library's one diagnostic, where that code is the registry_code of the mapping's `code` row for the library's
+  message's shared code, each input listed with both lists. The rule's sentence "no ordering, template or position
+  class" is narrowed by N alone, and a diagnostic with any other code stays a regression. The bullet "What does not
+  change" gains two narrowings beside EX0024's renumbering, which the entry above calls the only one: row P37's tree
+  and class N's one diagnostic. The correspondence gains rows P37 and D64, two
   corrections of Broiler.VM, which part A's kind (F) and part B's class F now name; class F admits the artifact bytes
   of P37's inputs. JSD-0083 gains dated notes on decisions D11 and D15, on its table of the corrections step 1 makes
   and on "What this rejects, and why". The alternatives not taken, "Library fix to D15 places", "Measure causes

@@ -50,7 +50,10 @@
   corrections step 1 makes, and how each is shown" and on "What this rejects, and why". Bundle `sjl-13-001`'s part B
   gains a bounded class N for the place and code of a refused input's one diagnostic, and the correspondence gains
   rows **P37** and **D64**, two corrections of this family that step 1 makes, which the rule's part A kind (F) and part
-  B class F name beside the rows above. No sub-area's verdict changes, and no clause of "Falsified if" is met.
+  B class F name beside the rows above. No sub-area's verdict changes, and no clause of "Falsified if" is met: its
+  first clause, a corpus input the classification does not explain, is read from runs the rule judges, and the
+  pre-check that found `T052945` and row D64's inputs is not one; rows P37 and D64 and class N are filed before any
+  such run, so the classification explains those inputs when it is first applied.
 
 **Date:** 2026-10-26.
 
@@ -129,6 +132,8 @@ review." This record reads it in two parts, as JSD-0080, JSD-0081 and JSD-0082 d
 - **Classes.** C1 to C5 are the classes of the programme's comparison templates
   ([`validation.md`](../../../../docs/javascript-shared-libraries/validation.md) section 4). R, R2, S1 and S3 to S8, F
   and L are the classes of part B of bundle `sjl-13-001`'s rule; (R), (G), (B) and (F) the kinds of its part A's C1.
+  *(Noted 2026-11-09: part B's classes also include L2, which the rule's revision of 2026-11-02 adds, and N, which
+  its revision of 2026-11-09 adds; the sentence above was left as it reads when each was added.)*
 - **Paths.** A line number is the line at `4cf9ca4` in this repository and at `d6795fc8` in Broiler.JS, as the
   correspondence gives them.
 
@@ -532,7 +537,7 @@ join the table, and the rule's revision of 2026-11-09 names them in both places:
 
 | Row | What step 1 corrects | How it is shown |
 |---|---|---|
-| P37 | a `new` whose operand is a `new` with an argument list, followed by a second argument list, which `JsParser` read with the second list as a call inside the operand | the parse corpus (part B's class F, its artifact bytes in B1 to B3): `T052945` |
+| P37 | a `new` whose operand begins with a `new` with an argument list and goes on to another argument list, at once or after property accesses or tagged templates, which `JsParser` read with that list as a call inside the operand | the parse corpus (part B's class F, its artifact bytes in B1 to B3): `T052945` |
 | D64 | the module-request path's missing early errors: `JsCompiler.Requests` never ran the binder, so it accepted a module the specification makes an early error | the parse corpus (part B's class F, an outcome move in B5): `T040801`, `T042027` and `T041820` among them |
 
 `T052945` is a test262 file and reaches row P37, but both readings of its `new` throw the TypeError it asserts, and
@@ -771,10 +776,10 @@ unpushed branch that is not evidence, that the library's first refusal often sta
 `JsParser`'s first diagnostic, or carries the code the mapping gives the library's diagnostic where `JsParser` gave
 another, and sometimes is a diagnostic `JsParser` reported after its first. The bullet is extended: that one
 diagnostic is read by part B's classes S7 and S8 where it is `JsParser`'s, and by part B's class N, which the rule's
-revision of 2026-11-09 adds, where it stands elsewhere or carries another code that the mapping gives the library's
-message. The reason's sentence holds where the library's refusal is detected at `JsParser`'s token; where it is not,
-class N lists the input. First-error stays this family's request, and no message text of a code whose meaning stays
-changes.
+revision of 2026-11-09 adds, where it stands elsewhere or carries another code, the registry_code of the mapping's
+`code` row for the library's message's shared code. The reason's sentence holds where the library's refusal is
+detected at `JsParser`'s token; where it is not, class N lists the input. First-error stays this family's request,
+and no message text of a code whose meaning stays changes.
 
 **Decision D14 - the limits** *(revised 2026-10-26, finding F18)*. **The tree-depth constant is derived at SJL-13.2e
 as JSD-0022 derived this family's**, with the stack it requires stated beside it; **the derivation must admit this
@@ -858,7 +863,7 @@ depends on them; full spans can carry all of them."
 twice, "Correction row + class F". They are the owner's own dated choices, asked and answered that day, and not ones
 taken under the direction of 2026-10-18.)* This decision's bullet "Diagnostic places" reads "For each refusal the
 library takes from this family's front end, its diagnostic's span begins where that front end anchors the diagnostic
-at the base" and ends "**No position class.**"; its reason reads "Part B compares each refused input's
+at the base" and holds the sentence "**No position class.**"; its reason reads "Part B compares each refused input's
 `code:line:column` list and admits no position class, so the places are fixed before any run". Bundle `sjl-13-001`'s
 area rule says, in its part B, "no ordering, template or position class: … and the library places every diagnostic
 where this family's front end placed it at the base, except the binder's report at no place, which class R2 admits
@@ -884,7 +889,8 @@ The owner decided as follows.
    This decision's "**No position class.**" now reads "**No position class but part B's class N**, which holds only inputs refused at
    both commits". The places stay fixed for every input accepted at both commits, and every outcome stays fixed: the
    reason's first sentence, that the lowering reads each anchor into the artifact, concerns accepted inputs, and class
-   N admits nothing for them. A diagnostic whose code no mapping row gives for its library message stays a regression.
+   N admits nothing for them. N's code is the registry_code of the mapping's `code` row for the library's message's
+   shared code; a diagnostic with any other code, or whose shared code has no `code` row, stays a regression.
 2. **"Correction row + class F" for `T052945`.** The correspondence's row P37 records `JsParser`'s reading of a `new`
    operand through `ParseCallChain` as a correction of Broiler.VM, and the rule's class F admits its inputs, their
    artifact bytes included. So "This family's adapter reproduces every anchor and offset `JsParser` gave … and every
@@ -1829,9 +1835,9 @@ configuration; part H's population and controls; "Revisions"; "What this file do
   F10).
   *(Noted 2026-11-09: the owner's decision "Revise rule: bounded class" of that day, recorded under decision D15,
   narrows this. Part B's class N admits the place, or the code, or both, of the one diagnostic of an input refused at
-  both commits, where that code is the one the mapping gives for the library's message, each input listed with both
-  lists. A position class for accepted inputs, or one that moves an outcome, is still rejected, and so are ordering
-  and template classes.)*
+  both commits, where that code is the registry_code of the mapping's `code` row for the library's message's shared
+  code, each input listed with both lists. A position class for accepted inputs, or one that moves an outcome, is
+  still rejected, and so are ordering and template classes.)*
 - **Passing the visible private names or the caller's lexical names at SJL-13**: each would move a run-time check to
   the parse (decision D16).
 - **One import-phase proposal flag**: SJL-14 would accept declaration forms Broiler.JS has no deferred namespace for
