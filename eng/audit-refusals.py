@@ -9,8 +9,15 @@ the two look identical from the outside and are not.
 
 IT ASKS BOTH DIRECTIONS, WHICH IS THE HALF A LIST CANNOT. A family this manifest declines must
 answer `2104:ConstructOutsideManifest` naming ITS OWN construct in every position it can appear in.
-A family the manifest admits must answer `2104` in NONE of them - which is what catches a construct
-admitted in the position its author tested and still refused one nesting level down.
+A family the manifest admits must answer `2104`, or any code that left it, in NONE of them - which is
+what catches a construct admitted in the position its author tested and still refused one nesting
+level down. Registry revision 19 gave three of 2104's meanings codes of their own: 2106 for a BigInt
+literal wider than the format, 2304 for a construct the lowering has no arm for, and 2307 for a
+compile request this build cannot serve. An admitted family that reaches the lowering's default arm
+now answers 2304 where it answered 2104, so an admitted case fails on any of the four (revised
+2026-11-08, at SJL-13.3's step 1: it read "A family the manifest admits must answer `2104` in NONE of
+them - which is what catches a construct admitted in the position its author tested and still
+refused one nesting level down.").
 
 Run it after admitting a family, with the host already built:
 
@@ -32,8 +39,19 @@ BINARY = os.path.join(
 
 REFUSAL = "2104:ConstructOutsideManifest"
 
+# 2104 and the codes registry revision 19 gave its other meanings: an admitted case answers none of
+# them. Matched as the CLI prints a code, number and name together.
+NOT_ADMITTED = (
+    REFUSAL,
+    "2106:BigIntWiderThanTheFormat",
+    "2304:ConstructTheLoweringHasNoArmFor",
+    "2307:CompileRequestNotServed",
+)
+
 # (name, source, expectation) or (name, source, expectation, "module")
-#   "admitted"             the host must not answer 2104 anywhere in its output
+#   "admitted"             the host must answer no code of NOT_ADMITTED anywhere in its output
+#                          (revised 2026-11-08, at SJL-13.3's step 1: it read "the host must not
+#                          answer 2104 anywhere in its output")
 #   "refused:<construct>"  the host must answer 2104 naming exactly that construct
 #   a fourth field of "module" reads the source under the module goal rather than the script goal,
 #   which is the only way to audit a position that exists only in a module - `import.meta` and
@@ -298,8 +316,10 @@ def answer(binary, source, directory, module=False):
 def judge(name, source, expected, given):
     """The complaint this case earns, or None."""
     if expected == "admitted":
-        if REFUSAL in given:
-            return f"{name}: admitted, and the host refused it against the manifest"
+        refused = [code for code in NOT_ADMITTED if code in given]
+
+        if refused:
+            return f"{name}: admitted, and the host refused it as {', '.join(refused)}"
 
         return None
 
