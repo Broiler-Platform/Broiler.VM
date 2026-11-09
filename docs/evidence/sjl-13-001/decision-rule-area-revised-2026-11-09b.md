@@ -51,7 +51,12 @@ pre-check found four things that the rule, as filed and as revised, does not set
   - `test/staging/sm/RegExp/7.8.5-01.js`: this family's tokenizer threw `ArgumentOutOfRangeException` on `/a[bc\`,
     which the test saw as an `EvalError`, where the library refuses the literal with 2006.
 
-  Read literally, part A records each as a finding the correspondence missed, and so as a regression.
+  Read literally, part A records each as a finding the correspondence missed, and so as a regression. The same
+  pre-check found two more files that fail at the base and pass after,
+  `test/staging/sm/async-functions/await-in-arrow-parameters.js` and
+  `test/staging/sm/expressions/destructuring-pattern-parenthesized.js`. Kind (F) already admits them, by rows T24f
+  and P15b, which the correspondence's F19 said no test262 file reaches; part A's "How it is read" expected kind (F)
+  to list nothing, and item 2 corrects that expectation.
 - **`T001070`** (`test/annexB/language/statements/for-in/bare-initializer.js`, `for (a = 0 in {});` at its line 15), in
   B1 and B2, in both variants. At the base `JsParser` parsed it, and the binder refused it with `2205:15:6`, the check
   `JsBinder.Walks.cs:1397` makes, of the catalogue's row EE0054 (the correspondence's B21), which the stage table assigns
@@ -102,20 +107,28 @@ and P, each added with a dated note, and its section "The rows by class" lists e
    `T052945` reaches row P37, but both readings of its `new` throw the TypeError it asserts, and the module tests row
    D64's inputs come from are compiled by the conformance root through `JsCompiler.Compile` after the request path,
    whose binder refuses them at the base." Its opening "Kinds (R), (B) and (F) are expected to list nothing:" now
-   reads "Kinds (R) and (B) are expected to list nothing, and kind (F) only the variants of the three test262 files rows
-   T33, P38 and P39 name:", and its clause "and no test262 file is expected to move its verdict by a correction step 1
-   makes (its F19, and rows P37 and D64):" now reads "and no other test262 file is expected to move its verdict by a
-   correction step 1 makes (its F19, and rows P37 and D64): `test/staging/sm/RegExp/7.8.5-01.js` (row T33),
-   `test/staging/sm/statements/arrow-function-in-for-statement-head.js` (row P38) and
-   `test/staging/sm/class/compPropNames.js` (row P39) fail at the base in both variants and both forms (the
-   correspondence's VT) and are expected to pass after;". The rest of the sentence is unchanged.
+   reads "Kinds (R) and (B) are expected to list nothing, and kind (F) only the variants of the five test262 files
+   named below, each with its row:", and its clause "and no test262 file is expected to move its verdict by a
+   correction step 1 makes (its F19, and rows P37 and D64):" now reads "and no other test262 file is expected to move
+   its verdict by a correction step 1 makes (its F19, as its note of 2026-11-09, later that day, reads it, and rows P37
+   and D64): `test/staging/sm/RegExp/7.8.5-01.js` (row T33),
+   `test/staging/sm/statements/arrow-function-in-for-statement-head.js` (row P38),
+   `test/staging/sm/class/compPropNames.js` (row P39),
+   `test/staging/sm/async-functions/await-in-arrow-parameters.js` (row T24f) and
+   `test/staging/sm/expressions/destructuring-pattern-parenthesized.js` (row P15b) fail at the base in both variants
+   and both forms (the correspondence's VT and its native report) and are expected to pass after;". The rest of the
+   sentence is unchanged. The revision of 2026-11-09 follows the sentence it revised with one of its own, "Kind (F) is
+   still expected to list nothing; a variant it lists is listed with its row, as before." That sentence holds of that
+   revision alone: from this revision kind (F) is expected to list the variants of those five files and no other, and
+   a variant it lists is still listed with its row.
 3. **Part B, class N: its kind (code) at a binder diagnostic of any row.** Class N, as the revision of 2026-11-09 adds
    it (its item 1), says "An input whose registry list leaves no r is not in N." It now says "An input whose registry
    list leaves no r is not in N, unless the registry commit's list holds a diagnostic of the binder, its check of a row
    of the stage table of whatever stage the table assigns that row, that stands at exactly the line and column of the
    after commit's one diagnostic: then the first such diagnostic in the list is r, and the input is N's of kind (code)
    alone, where that one diagnostic's code is neither r's nor one R or R2 pairs with r's (decision D15, as JSD-0083's
-   note of 2026-11-09, later that day, widens it); such an input is never of kind (place) or (place and code)." N's
+   note of 2026-11-09, later that day, widens it); such an input is never of kind (place) or (place and code), and
+   such a diagnostic is not removed by S3 when it is r." N's
    listing, "each listed with both lists, its kind, r and the stage that reported it at the registry commit (the parse
    or the binder), the library's message and the mapping row that gives its code", now ends "the library's message and
    the mapping row that gives its code, and, where r is such a binder diagnostic, r's row of the stage table and the
@@ -131,32 +144,34 @@ and P, each added with a dated note, and its section "The rows by class" lists e
    column, where the registry list leaves no other r, stays a regression. The pre-check's `T001070` is such an input
    of kind (code): r is `2205:15:6`, the binder's check of row EE0054 (`semantics`), and the after commit's one
    diagnostic is `2101:15:6`.
-4. **Part F, the tokenizers' agreement over the sources the library accepts.** Part F's configuration, as filed,
-   reads "for each input it takes SliceTokenizer's stream of the text, and the token stream the library's parse of the
-   text produced under the same goal with HTML-like comments off, as the slice path sets them". It now reads "for each
-   input whose text the library's parse accepts under the same goal with HTML-like comments off, as the slice path sets
-   them, it takes SliceTokenizer's stream of the text, and the token stream that parse produced", and the configuration
-   gains, after "each substitution's tokens token by token as above", the clause "; an input of the population that
-   the library's parse refuses under that request is not compared, and the row lists it by name with the library's
-   shared code and the registry code the mapping gives it". Its population, its field map, its control and
-   "admitted difference classes: none" are unchanged: a listed input is not compared, so no class admits it as
-   agreeing. Part F's MET line, "MET if and only if the row passes and the control fails as stated.", now reads "MET if
-   and only if the row passes over every input of the population that the library's parse accepts, it lists by name,
-   with the library's code, every input of the population that the library's parse refuses, and the control fails as
-   stated." So part F is met with such inputs listed, where as filed the check fails on them. Part F's "How it is
-   read" gains, after "An input the slice path refuses is not compared, because its refusal may come before the slice
-   tokenizer's stream is whole.", the sentences: "An input the slice path accepts and the library refuses is not
-   compared either: the library keeps no token stream for a source it refuses. The bundle lists each such input with
-   the library's code and its reason. The two the stage's pre-check found, `J000262` (`'use strict'; "\8";`) and
-   `J001009` (`'use strict'; "\08";`), break the specification's early error for a legacy octal or non-octal decimal
-   escape in strict code (section 12.9.4.1; the catalogue's EE0004, shared code JSE1204, which the mapping gives
-   2210), which the wide path reports at the base (the correspondence's VB, sub-population B1, `2210:1:15`) and the
-   library after. The slice path accepts both (VB's B4), because its parser keeps a directive's string with no strict
-   check (the catalogue's cell for the slice path on EE0004, in `docs/evidence/sjl-12-001/corpus/early-errors.tsv`).
-   That acceptance is a known defect of this family, left for the slice path's own change, which SJL-15 makes, and not
-   made at step 1 (decision D21, as JSD-0083's note of 2026-11-09, later that day, records it)." **Sub-population B4
-   and the census are unchanged**: step 1 changes neither the slice path nor its tokenizer, so part B's "sub-population
-   B4 and the census admit no class but R" holds as filed, and `J000262` and `J001009` stay accepted there.
+4. **Part F, the tokenizers' agreement over the sources the library accepts.** Part F's configuration, as filed, reads
+   "for each input it takes SliceTokenizer's stream of the text, and the token stream the library's parse of the text
+   produced under the same goal with HTML-like comments off, as the slice path sets them". It now reads "for each input
+   whose text the library's parse accepts under the same goal with HTML-like comments off, as the slice path sets them,
+   it takes SliceTokenizer's stream of the text, and the token stream that parse produced", and the configuration gains,
+   after "each substitution's tokens token by token as above", the clause "; an input of the population that the
+   library's parse refuses under that request is not compared, and the row lists it by name with the library's shared
+   code and the registry code the mapping gives it". Its population, its field map, its control and "admitted difference
+   classes: none" are unchanged: a listed input is not compared, so no class admits it as agreeing. Part F's MET line,
+   "MET if and only if the row passes and the control fails as stated.", now reads "MET if and only if the row passes
+   over every input of the population that the library's parse accepts, it lists by name, with the library's code, every
+   input of the population that the library's parse refuses, the bundle gives each such input its reason, the catalogue
+   row of the early error the library reports for it, and the control fails as stated." So part F is met with such
+   inputs listed, each with its reason, where as filed the check fails on them. Part F's "How it is read" gains, after
+   "An input the slice path refuses is not compared, because its refusal may come before the slice tokenizer's stream is
+   whole.", the sentences: "An input the slice path accepts and the library refuses is not compared either: the library
+   keeps no token stream for a source it refuses. The bundle lists each such input with the library's code and its
+   reason, the catalogue row of the early error the library reports for it. The two the stage's pre-check found,
+   `J000262` (`'use strict'; "\8";`) and `J001009` (`'use strict'; "\08";`), break the specification's early error for a
+   legacy octal or non-octal decimal escape in strict code (section 12.9.4.1; the catalogue's EE0004, shared code
+   JSE1204, which the mapping gives 2210), which the wide path reports at the base (the correspondence's VB,
+   sub-population B1, `2210:1:15`) and the library after. The slice path accepts both (VB's B4), because its parser
+   keeps a directive's string with no strict check (the catalogue's cell for the slice path on EE0004, in
+   `docs/evidence/sjl-12-001/corpus/early-errors.tsv`). That acceptance is a known defect of this family, left for the
+   slice path's own change, which SJL-15.4 makes, and not made at step 1 (decision D21, as JSD-0083's note of
+   2026-11-09, later that day, records it; the correspondence's hand-off H25)." **Sub-population B4 and the census are
+   unchanged**: step 1 changes neither the slice path nor its tokenizer, so part B's "sub-population B4 and the census
+   admit no class but R" holds as filed, and `J000262` and `J001009` stay accepted there.
 5. **"What step 1 changes": the texts.** The bullet "What does not change", as the revision of 2026-11-09 reads it
    (its item 7), holds the clause "every message text of a code whose meaning stays (decision D11);". It now reads "no
    code, place or stage by a message text, which is rendered from step 1 as JSD-0083's note of 2026-11-09, later that
@@ -205,8 +220,11 @@ texts is context, not a class:** "One true text per code" moves no code, place, 
   unchanged.
 - **Parts C, D, E, G, H, I and J** are unchanged. None of them reads a test262 verdict, class N or a row of class F;
   part G's reading admits a mutant whether it is accepted or refused with a code the registry holds, so a mutant of
-  the shape of row T33, P38 or P39 is read as any other; and part H's C1 would admit a vector by its row, should one
-  carry these rows.
+  the shape of row T33, P38 or P39 is read as any other. Row T33's correction is the wide path's alone: part G's
+  slice session runs through `SliceTokenizer`, which keeps the row's defect until SJL-15.4 (the correspondence's
+  hand-off H25), so a slice mutant that ends its text in such a literal reaches that defect at both commits, and
+  part G reads it as it reads any other mutant, as before this revision. And part H's C1 would admit a vector by its
+  row, should one carry these rows.
 - **"What step 1 changes":** the texts (item 5).
 - **"The commits"** is unchanged: the registry commit's list, as the revision of 2026-11-08 gives it, holds no path
   this revision needs, and this file is filed on the default branch before step 1's base.
@@ -216,13 +234,14 @@ texts is context, not a class:** "One true text per code" moves no code, place, 
   corrections, the library's places and codes, and the texts of D11's note; it admits no class, it reads no text, and
   it has no part that compares the two tokenizers, so the slice path's defect and part F's listing do not reach it.
 
-**What does not change.** Every other part, class and control; "The commits" and their conditions; and the revisions
-of 2026-11-02, 2026-11-04, 2026-11-08 and 2026-11-09, except that item 1 of this file quotes part A's kind (F) and part
-B's class F as the revision of 2026-11-09 reads them and changes their row lists further, item 2 a sentence the
-revisions of 2026-11-04 and 2026-11-09 changed, item 3 the class the revision of 2026-11-09 adds, and item 5 a bullet
-whose clauses the revisions of 2026-11-08 and 2026-11-09 changed; that revision's count of three narrowings of "What
-does not change" holds of that revision alone, and from this revision the bullet has the four item 5 names. The bytes
-of every input accepted at both commits but row P37's, and every outcome but those classes F, L and L2 admit, stay
+**What does not change.** Every other part, class and control; "The commits" and their conditions; and the revisions of
+2026-11-02, 2026-11-04, 2026-11-08 and 2026-11-09, except that item 1 of this file quotes part A's kind (F) and part B's
+class F as the revision of 2026-11-09 reads them and changes their row lists further, item 2 a sentence the revisions of
+2026-11-04 and 2026-11-09 changed, and says that the revision of 2026-11-09's own sentence after it, "Kind (F) is still
+expected to list nothing", holds of that revision alone, item 3 the class the revision of 2026-11-09 adds, and item 5 a
+bullet whose clauses the revisions of 2026-11-08 and 2026-11-09 changed; that revision's count of three narrowings of
+"What does not change" holds of that revision alone, and from this revision the bullet has the four item 5 names. The
+bytes of every input accepted at both commits but row P37's, and every outcome but those classes F, L and L2 admit, stay
 fixed. Ordering and template classes stay excluded. Sub-population B4 and the census admit no class but R.
 
 **Not taken.**
