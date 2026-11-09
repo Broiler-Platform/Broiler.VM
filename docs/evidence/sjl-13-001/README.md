@@ -232,6 +232,13 @@ registry commit mints revision 19 (JSD-0083 decision D12).
 - **`measurement/`**: part J's sub-bundle, with its own README and manifest.
 - **`vectors/`**: this family's run of the `syntax` vectors at the corpus revision its pin names, outside the rule
   (section 3). *(Added 2026-11-01.)*
+- **`corpus/`**: the copy of the shared front end's stage table, `stages.tsv`, that the front end's mapping names in
+  its header (`stage-table-copy`, with its digest `stage-table-sha256`) and the mapping checker's check E11 reads, as
+  Broiler.JS holds it at `238069ab` (`stage-table-commit`), the same file at `6f7284da` and `29061d65`; step 1's
+  registry commit `cbee7c4` added it. `corpus/stage-table-commit.txt` records where it comes from, from git reads alone,
+  and `corpus/hashes.txt` the digests of both files (the copy's SHA-256 is
+  `3c9c49d97162650a48acfeec33b3d1d084dddda6bf649ad648c2e5ff1f1ce6a6`), as bundle `sjl-12-001`'s `corpus/` records the
+  catalogue's copy. *(Added 2026-11-08.)*
 - **`inputs/`** and **`correspondence-runs/`** stay as committed with the rule.
 
 **No figure is quoted in this README until its bundle retains the log it comes from**, and then only in the
