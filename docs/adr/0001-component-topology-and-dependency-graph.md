@@ -2132,3 +2132,19 @@ data stays in the optional `Broiler.VM.Profile.JavaScript.Intl` assembly, as rul
 
 **What is not edited.** Every revision above stands as written, the 2026-10-12 sentence quoted here
 included, read with this revision.
+
+### 2026-11-08 - the shared syntax library, a product package edge of the compiler, SJL-13.3's step 1
+
+**What changes.** No project and no project edge. One package edge: `Broiler.VM.Profile.JavaScript.Compiler`
+references `Broiler.ECMAScript.Frontend`, the shared syntax library, which JSD-0083 (decision D29) admits for that
+project alone and rule I1's allow-list names at its pinned content and archive hashes. `graph.manifest.json` records
+the edge, and rule A7 holds it to the project file. The number of package edges stays the catalogue's, cited as
+`{graph:package-edges}`, as the revision of 2026-10-12 has it. The shared stream's other packages move to the same
+version, `0.1.0-preview.10`, with no edge added or removed.
+
+**What is now true.** The project set, the project-edge set, the packable set and the last budget sentence above are
+unchanged. Every root that carries the compiler carries the syntax library's assembly once the compiler calls it, which
+step 1's adapter does; the composition register's shared-assemblies column (`docs/compositions.md`, rules K2 and K4)
+names it from that change, when a trimmed publish keeps it. No compiler-free root carries it, as rule I3 holds.
+
+**What is not edited.** Every revision above stands as written, read with this revision.
