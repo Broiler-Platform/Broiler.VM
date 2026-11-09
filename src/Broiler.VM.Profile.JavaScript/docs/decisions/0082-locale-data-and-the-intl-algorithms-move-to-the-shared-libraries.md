@@ -775,9 +775,11 @@ space of the patterns before CLDR 42.
 - **This family's verdicts are not affected.** This family fails that file today, in both variants and both forms, at
   an assertion before the line row T12 reaches: `en-US-u-nu-arab` with fractional seconds asks for U+066B, the `arab`
   decimal separator, where this family writes the `latn` symbols this decision keeps (row T37). A local run of the
-  conformance root at the default branch's `f71edf6`, which is not evidence, gives that answer, and so do the hosted
-  reports bundle `sjl-12-001` retains (`after/hosted/wide-bytecode.report.gz` and `wide-native.report.gz`). The ruling
-  moves nothing of this family's DateTimeFormat, its data or its rules.
+  conformance root at the default branch's `f71edf6`, which is not evidence, gives that answer, and it is the only
+  answer at today's code. The hosted reports bundle `sjl-12-001` retains (`after/hosted/wide-bytecode.report.gz` and
+  `wide-native.report.gz`) give the same answer at SJL-12's after commit `1de3af6`, before SJL-9.4 moved this family's
+  Intl algorithms onto the library (`68cad8b`). The ruling moves nothing of this family's DateTimeFormat, its data or
+  its rules.
 
 **Decision D22 - the L2 form, and the gate of each library stage.** **A differential check against this family's
 code** (its code at its rule commit, beside the library, test-only, JIT only) over a declared population: every Intl
