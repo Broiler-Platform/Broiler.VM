@@ -49,11 +49,26 @@ class F admits the artifact bytes of P37's inputs. No accepted input's place mov
 edited. The revision of 2026-11-08's renumbering, called above the only narrowing of "What does not change", is the
 only one of that revision; from 2026-11-09 that bullet has two more, row P37's tree and class N's one diagnostic.
 
+*(Added 2026-11-09, later that day.)* The rule is revised a fifth time, before any of its runs, by
+[`decision-rule-area-revised-2026-11-09b.md`](decision-rule-area-revised-2026-11-09b.md), on the owner's four decisions
+of 2026-11-09's second round ("One true text per code", "Exempt and record", "Rows + class F" and "Widen N narrowly"),
+which JSD-0083's dated notes of that day on decisions D11, D15 and D21 record; the letter `b` orders it after the
+revision of the same date. Part A's kind (F) and part B's class F name three new rows of the correspondence, T33, P38
+and P39, corrections of this family that a test262 file reaches, so kind (F) is expected to list those files'
+variants. Class N's kind (code) also takes a binder diagnostic of a row of any stage, where no other r is and the
+library's one diagnostic stands at exactly its line and column, each such input listed with that row and its stage.
+Part F compares the sources the library accepts and lists those it refuses, with the library's code; the slice path's
+acceptance of strict `\8` and `\08` is a known defect of this family, so sub-population B4 and the census are
+unchanged. "What does not change" no longer says the message texts stay: each shared code renders one text that states
+its own condition, and no part of the rule reads a text. No earlier rule file is edited.
+
 **Records:** [JSD-0083](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md),
 the area verdict, which records the owner's decisions D2 to D39 of 2026-10-26, with D1 a reading of the owner's words
 of 2026-10-25, and *(added 2026-10-27)* the owner's decisions D-asi and D-t24 of 2026-10-27, which add row P16b to
 the correspondence and the answer of rows T24b and T24f where `;` or the end of input follows the literal, and
-*(added 2026-11-09)* the owner's decisions of 2026-11-09, which add rows P37 and D64 to the correspondence. Its input
+*(added 2026-11-09)* the owner's decisions of 2026-11-09, which add rows P37 and D64 to the correspondence, and
+*(added 2026-11-09, later that day)* the owner's decisions of that day's second round, which add rows T33, P38 and P39.
+Its input
 is [`correspondence.md`](correspondence.md), with
 [`correspondence-runs/`](correspondence-runs/):
 - `vm/` and `js/`: each engine's answer to every probe, its reports, logs and the programs a value probe ran;
