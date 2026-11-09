@@ -266,12 +266,12 @@
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.JsParser.NumberText",
       "milestone": "SJL-3.4",
-      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToString, behind JsParser.NumberKey"
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToString, behind JsFrontendAdapter.Key (revised 2026-11-09 at SJL-13's step 1, which deletes JsParser: it read \"behind JsParser.NumberKey\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.JsParser.TryBigIntValue",
       "milestone": "SJL-3.4",
-      "replacedBy": "Broiler.ECMAScript.Numbers.NumericLiterals.Evaluate, behind JsParser.BigIntValueOf"
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumericLiterals.Evaluate, behind JsAdmissionWalk.BigIntKey (revised 2026-11-09 at SJL-13's step 1, which deletes JsParser: it read \"behind JsParser.BigIntValueOf\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.DigitValue",

@@ -48,6 +48,15 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// 2026-11-08: it read "after its 2207", the code registry revision 19 left for 2219)</i>.
 /// </para>
 /// <para>
+/// <i>Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library,
+/// which reports its first refusal alone (JSD-0083 decision D11) and checks at the parse the rules the
+/// stage table assigns <c>syntax</c> (decisions D10 and D20). Rows whose list held a diagnostic after
+/// that refusal now hold the refusal alone (part B's classes S7 and S3 of the area rule's revision of
+/// 2026-11-09), rows whose one diagnostic the library places elsewhere hold its place (class N, kind
+/// (place)), and the imported name also declared keeps the binder's rule at the library's place and
+/// code (class R2). Each such row quotes what it read.</i>
+/// </para>
+/// <para>
 /// <b>The language rules the lowering coded 2207 and 2104 are the binder's too</b> (JSD-0080 decision
 /// D12): <c>return</c> in a class static block keeps its place beside another early error, where a
 /// binder refusal of the other, with the 2207 left to the lowering, lost it; and <c>await</c> outside
@@ -123,7 +132,10 @@ internal static class BinderChecks
             inFunction);
 
         // the cover grammar, __proto__ and regular-expression literals
-        yield return Refused("early error: a cover initialiser in an object literal", "({ a = 1 });", "2213@1:4");
+        // (revised 2026-11-09, at SJL-13.3's step 1: the library refuses the initialiser at its `=`, 1:6, where
+        // the binder refused the property at 1:4, with the same code; part B's class N, kind (place). The row
+        // read "2213@1:4".)
+        yield return Refused("early error: a cover initialiser in an object literal", "({ a = 1 });", "2213@1:6");
         yield return Refused("early error: __proto__ set twice", "({ __proto__: 1, __proto__: 2 });", "2214@1:18");
         yield return Refused("early error: a regular-expression pattern", "/(/;", "2215@1:1");
         yield return Refused("early error: regular-expression flags repeated", "/a/gg;", "2215@1:1");
@@ -147,14 +159,17 @@ internal static class BinderChecks
             "early error: return in a class static block",
             "class C { static { return; } }",
             "2219@1:20");
+        // (revised 2026-11-09, at SJL-13.3's step 1: the library refuses the `return` at the parse and stops
+        // there, so the binder's refusal after it is not reported; part B's classes S7 and S3. The two rows
+        // read "2219@1:20 2207@1:32" and "2219@1:20 2213@1:34".)
         yield return Refused(
             "early error: return in a class static block, and a break after it",
             "class C { static { return; } } break;",
-            "2219@1:20 2207@1:32");
+            "2219@1:20");
         yield return Refused(
             "early error: return in a class static block, and a cover initialiser after it",
             "class C { static { return; } } ({a=1});",
-            "2219@1:20 2213@1:34");
+            "2219@1:20");
         yield return Refused(
             "early error: return in a class static block's finally block is reported once",
             "class C { static { try {} finally { return; } } }",
@@ -188,10 +203,13 @@ internal static class BinderChecks
             "early error: await in a template substitution in parameters, with an operand the binder refuses",
             "async function g() { (a = `${await /a/gg}`) => a; }",
             "2101@1:30");
+        // (revised 2026-11-09, at SJL-13.3's step 1: the library reports its first refusal alone, so the
+        // parser's own 2102 for the body it stopped reading is gone; part B's class S7. The row read
+        // "2101@1:30 2102@1:47".)
         yield return Refused(
             "early error: await in a template substitution in parameters, before a function the binder refuses",
             "async function g() { (a = `${await 1}`) => a; function h() { break; } }",
-            "2101@1:30 2102@1:47");
+            "2101@1:30");
         yield return Refused(
             "early error: await in a template substitution in a parameter pattern, before a value the binder refuses",
             "async function g() { ({x = `${await 1}`} = /a/gg) => x; }",
@@ -221,7 +239,10 @@ internal static class BinderChecks
 
         // initialisers a declaration needs
         yield return Refused("early error: const without an initialiser", "const a;", "2203@1:7");
-        yield return Refused("early error: a destructuring declaration without an initialiser", "var [a];", "2102@1:5");
+        // (revised 2026-11-09, at SJL-13.3's step 1: the library refuses the missing `=` at the `;`, 1:8, where
+        // the binder refused the pattern at 1:5, with the same code; part B's class N, kind (place). The row read
+        // "2102@1:5".)
+        yield return Refused("early error: a destructuring declaration without an initialiser", "var [a];", "2102@1:8");
         yield return Refused(
             "early error: const without an initialiser in a for head",
             "for (const a; ;) {}",
@@ -261,18 +282,24 @@ internal static class BinderChecks
             "early error: a name imported twice",
             "import { a } from 'lib'; import { a } from 'lib';",
             "2201@1:35");
+        // (revised 2026-11-09, at SJL-13.3's step 1: the library reports the imported name a `var` redeclares
+        // under its row's code, 2202, at the `var`'s name, 1:30, where the binder's Declares reported 2201 at no
+        // place, the mapping's split of row EE0169, part B's class R2; and it reports a module's conflicting
+        // function or `var` at the later declaration's name, 1:26 and 1:17, where JsParser reported the
+        // declaration at 1:17 and the `var` at 1:8, with the same codes, class N, kind (place). The rows read
+        // "2201@0:0", "2201@1:17" and "2202@1:8".)
         yield return RefusedModule(
             "early error: a name imported and declared",
             "import { a } from 'lib'; var a;",
-            "2201@0:0");
+            "2202@1:30");
         yield return RefusedModule(
             "early error: a function declared twice in a module",
             "function f() {} function f() {}",
-            "2201@1:17");
+            "2201@1:26");
         yield return RefusedModule(
             "early error: a var and a function of one name in a module",
             "var f; function f() {}",
-            "2202@1:8");
+            "2202@1:17");
         yield return RefusedModule(
             "early error: a name exported twice",
             "var a; export { a }; export { a };",
@@ -309,10 +336,14 @@ internal static class BinderChecks
         // and what a construct the binder refuses holds is walked, as every refused construct is: the
         // value of a `return` in a static block, which the lowering lowered nothing of after its 2207,
         // is reported after it now that the 2207 is the binder's
+        // (revised 2026-11-09, at SJL-13.3's step 1: the library refuses the `return` at the parse and stops
+        // there, so the pattern's refusal after it is not reported; part B's classes S7 and S3. The row was
+        // named "early error in a static block's return value is reported after the 2207" and read
+        // "2219@1:20 2215@1:27".)
         yield return Refused(
-            "early error in a static block's return value is reported after the 2207",
+            "early error in a static block's return value is not reported after the 2219",
             "class A { static { return /(/; } }",
-            "2219@1:20 2215@1:27");
+            "2219@1:20");
     }
 
     /// <summary>

@@ -249,6 +249,19 @@ public sealed partial class JsCompiler
     /// binder admitted what it refuses - a defect of this assembly. The lowering says so, naming the
     /// place, rather than refusing the source a second time in a second stage or emitting bytes for
     /// a program the language rejects.
+    /// <para>
+    /// <i>(Added 2026-11-09, at SJL-13.3's step 1, JSD-0083 decision D20.)</i> <b>Where the rule is a
+    /// row the stage table assigns <c>syntax</c>, the front end that refuses it is the shared syntax
+    /// library</b>, before the binder runs, and the binder's copy of the check is deleted: a
+    /// <c>return</c> outside a function or in a static block, <c>await</c> outside an async unit, the
+    /// deletion of a private element, an update or assignment target that is not a reference, a
+    /// declaration's pattern leaf that is not a name, <c>new.target</c> and <c>import.meta</c> outside
+    /// their contexts, a destructuring declaration or a <c>const</c> with no initialiser, a
+    /// <c>using</c> declaration outside a list that disposes it, a <c>{ a = 1 }</c> entry outside a
+    /// pattern, and a name both imported and declared. Each assertion of those rules stays here as the
+    /// lowering's guard that the front end admitted the construct; its text still names the binder,
+    /// which is the stage the lowering cannot see past.
+    /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=A9BE31
     // Broiler-Falsified-If: the lowering refuses a source with a language early error rather than failing, or lowers past one

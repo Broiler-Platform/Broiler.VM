@@ -55,4 +55,14 @@
     <PackageReference Include="Broiler.ECMAScript.Frontend" />
   </ItemGroup>
 
+  <!--
+    THE DIAGNOSTIC MAPPING (JSD-0083, decision D11): the compiler maps the shared library's codes onto this
+    family's registry through the mapping file itself, embedded, so the file the mapping checker holds to the
+    registry, the catalogue and the stage table is the one the compiler reads.
+  -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\Broiler.VM.Profile.JavaScript\docs\diagnostics\frontend-mapping.tsv"
+                      LogicalName="Broiler.VM.Profile.JavaScript.Compiler.frontend-mapping.tsv" />
+  </ItemGroup>
+
 </Project>

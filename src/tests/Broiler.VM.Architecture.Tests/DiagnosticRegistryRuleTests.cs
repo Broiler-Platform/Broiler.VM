@@ -850,7 +850,18 @@ public sealed class DiagnosticRegistryRuleTests
         // reported by the binder before any unit is lowered. Its list of what it found, and the names it
         // tracks while it walks, are fields of the binder made for one unit, not statics a second unit
         // would read.
-        Assert.Equal(54, lowering.Length);
+        //
+        // THE FIFTY-FIFTH TO THE SIXTY-SECOND ARE THE WIDE PATH ON THE SHARED SYNTAX LIBRARY, added
+        // 2026-11-09 by SJL-13's step 1 (JSD-0083 decisions D7, D11, D15, D16, D18 and D20), which also
+        // deletes JsParser.cs, the wide parser, whole: the count read 54, and moves by nine added and one
+        // deleted. The nine are JsFrontend.cs, the request and the parse; JsFrontendAdapter.cs and its
+        // three parts, JsFrontendAdapter.Expressions.cs, JsFrontendAdapter.Functions.cs and
+        // JsFrontendAdapter.Modules.cs, the adapter from the shared tree; JsFrontendDiagnostics.cs and
+        // JsFrontendDiagnostics.Texts.cs, the mapping and the texts; JsAdmissionWalk.cs, the admission
+        // walk; and JsRegularExpressionValidator.cs, the validator the library is handed. Each is made
+        // per call or holds frozen tables in static read-only references, which this rule reads and
+        // correctly does not report.
+        Assert.Equal(62, lowering.Length);
         Assert.Contains(
             ArchitectureRules.N12([], filesScanned: 0),
             violation => violation.Contains(

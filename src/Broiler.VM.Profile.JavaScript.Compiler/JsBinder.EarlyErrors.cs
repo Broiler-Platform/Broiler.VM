@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   20
-// Annotated:        20/20
+// Relevant units:   19
+// Annotated:        19/19
 // Exempt:           1
-// Human-reviewed:   0/20
+// Human-reviewed:   0/19
 // IP risk:          None
 // Security risk:    High
-// Criteria:         5/3
+// Criteria:         4/3
 // Resource impact:  3/10 max
-// Unverified:       20
+// Unverified:       19
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -441,97 +441,23 @@ internal sealed partial class JsBinder
         target is JsIdentifier or JsMemberExpression or JsPrivateMemberExpression or JsSuperMemberExpression ||
         (target is JsCallExpression && !strict);
 
-    /// <summary>Refuses a regular-expression literal whose flags or pattern the language refuses.</summary>
-    /// <remarks>
-    /// <para>
-    /// <b>The flags first</b> (ES2026 IsValidRegularExpressionLiteral): drawn from <c>dgimsuyv</c>,
-    /// none twice, and not <c>u</c> with <c>v</c>. <b>Then the pattern, by the matcher's own
-    /// grammar</b>, which the format assembly holds so that this front end and the executor cannot
-    /// disagree about what a pattern is; its message is the refusal's.
-    /// </para>
-    /// <para>
-    /// A literal the lowering never lowers is not compiled at all, here either.
-    /// </para>
-    /// <para>
-    /// <b>The flags were not always an early error</b>: <c>/a/x</c> and <c>/a/gg</c> behind a
-    /// <c>false</c> branch were accepted, and <c>/a/v</c> - a flag the language has and the matcher
-    /// then did not - passed the front end and was refused only when the literal ran, as a
-    /// SyntaxError from the constructor. A flag outside <c>dgimsuyv</c>, a repeated flag, and
-    /// <c>u</c> with <c>v</c> became the language's SyntaxError in the lowering, and a well-formed
-    /// <c>v</c> an early SyntaxError naming the flag as unsupported (JSeal slice JSD-0031-later).
-    /// <b>A well-formed <c>v</c> is admitted</b> since phase F2 gave the matcher the flag's class
-    /// syntax, set operations and properties of strings; until then it was refused as unsupported,
-    /// under the reading of decision JSD-0031 section 12 (JSC-262). The checks moved here from the
-    /// lowering's <c>RefuseRegExpLiteralFlags</c> and <c>CompileRegExpLiteral</c> with SJL-12.6
-    /// item 2, unchanged.
-    /// </para>
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5C1ECC
-    // Broiler-Falsified-If: a literal the matcher compiles is refused, or one it refuses, or whose flags the language refuses, is admitted
-    // Broiler-Human:        PENDING
-    private void CheckRegExp(Context context, JsRegExpLiteral pattern)
-    {
-        if (context.Is(Frame.Silent))
-        {
-            return;
-        }
-
-        var flags = pattern.Flags;
-
-        for (var at = 0; at < flags.Length; at++)
-        {
-            if ("dgimsuyv".IndexOf(flags[at], System.StringComparison.Ordinal) < 0 ||
-                flags.IndexOf(flags[at], at + 1) >= 0)
-            {
-                Report(
-                    context,
-                    pattern.Span,
-                    SliceSourceDiagnosticCode.InvalidRegularExpression,
-                    "Invalid regular expression flags: " + flags);
-
-                return;
-            }
-        }
-
-        if (flags.Contains('v', System.StringComparison.Ordinal) &&
-            flags.Contains('u', System.StringComparison.Ordinal))
-        {
-            Report(
-                context,
-                pattern.Span,
-                SliceSourceDiagnosticCode.InvalidRegularExpression,
-                "Invalid regular expression flags: " + flags + " (u and v may not be combined)");
-
-            return;
-        }
-
-        try
-        {
-            _ = Format.JsRegExpMatcher.Compile(
-                pattern.Pattern,
-                flags.Contains('i', System.StringComparison.Ordinal),
-                flags.Contains('m', System.StringComparison.Ordinal),
-                flags.Contains('s', System.StringComparison.Ordinal),
-                flags.Contains('u', System.StringComparison.Ordinal),
-                flags.Contains('v', System.StringComparison.Ordinal));
-        }
-        catch (Format.JsRegExpSyntaxError failure)
-        {
-            Report(context, pattern.Span, SliceSourceDiagnosticCode.InvalidRegularExpression, failure.Message);
-        }
-    }
-
     /// <summary>
-    /// A module's declaration checks: its imports, its top-level declarations against each other and
-    /// against its imports, and its exports.
+    /// A module's export checks: an export name published twice, and a local export no declaration
+    /// and no import binds.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>The lowering's three passes, in its order and with its answers</b>: an import binding
-    /// <c>arguments</c> or <c>eval</c>, or a name imported twice; a function declared twice, a function or
-    /// a lexical name that is also a <c>var</c>, a lexical name declared twice, and a name both declared
-    /// and imported, which the lowering reported at no place, once for each declaration of it; an export
-    /// name published twice, and a local export no declaration and no import binds.
+    /// <b>The lowering's last pass, in its order and with its answers</b>. The checks of the imports
+    /// and the top-level declarations against each other are the shared library's refusals from
+    /// SJL-13.3's step 1, before the binder runs (JSD-0083, decision D20, the correspondence's B26 to
+    /// B31 and B34), so a module that reaches this check has none of them. <i>(Revised 2026-11-09: the
+    /// summary read "A module's declaration checks: its imports, its top-level declarations against each
+    /// other and against its imports, and its exports." and the paragraph "<b>The lowering's three
+    /// passes, in its order and with its answers</b>: an import binding <c>arguments</c> or
+    /// <c>eval</c>, or a name imported twice; a function declared twice, a function or a lexical name
+    /// that is also a <c>var</c>, a lexical name declared twice, and a name both declared and imported,
+    /// which the lowering reported at no place, once for each declaration of it; an export name
+    /// published twice, and a local export no declaration and no import binds.")</i>
     /// </para>
     /// <para>
     /// <b>The import attribute is not one of them</b>: an attribute no composition can honour is the
@@ -552,106 +478,51 @@ internal sealed partial class JsBinder
     /// which is why <see cref="ModuleDeclarations"/> lists every name a pattern binds.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=B0189E
-    // Broiler-Falsified-If: a module the lowering's declaration checks admitted is refused here, or one they refused is admitted, or a refusal's code, message or place differs from theirs
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=009A8E
+    // Broiler-Falsified-If: a module the lowering's export checks admitted is refused here, or one they refused is admitted, or a refusal's code, message or place differs from theirs
     // Broiler-Human:        PENDING
     private void CheckModule(System.Collections.Generic.IReadOnlyList<JsStatement> body)
     {
         var context = new Context(true, null, Frame.None, null);
         var imports = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
 
+        // EVERY NAME AN IMPORT BINDS, AND EVERY NAME THE MODULE DECLARES, are what an export clause
+        // may name; the checks of the imports and declarations against each other are the shared
+        // library's from SJL-13.3's step 1 (JSD-0083, decision D20, the correspondence's B26 to B31
+        // and B34), which refuses them before the binder runs.
         foreach (var statement in body)
         {
-            if (statement is not JsImportDeclaration import)
+            if (statement is JsImportDeclaration import)
             {
-                continue;
-            }
-
-            foreach (var specifier in import.Specifiers)
-            {
-                if (specifier.Local is "arguments" or "eval")
+                foreach (var specifier in import.Specifiers)
                 {
-                    Report(
-                        context,
-                        specifier.Span,
-                        SliceSourceDiagnosticCode.ReservedWordAsBinding,
-                        "`" + specifier.Local + "` is not a binding name in a module");
-
-                    continue;
-                }
-
-                if (!imports.Add(specifier.Local))
-                {
-                    Report(
-                        context,
-                        specifier.Span,
-                        SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
-                        "`" + specifier.Local + "` is imported twice");
+                    imports.Add(specifier.Local);
                 }
             }
         }
 
         var declared = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
-        var varNames = new System.Collections.Generic.HashSet<string>(Program.VarNames, System.StringComparer.Ordinal);
 
         foreach (var name in Program.VarNames)
         {
-            Declares(context, imports, declared, name);
+            Declares(declared, name);
         }
-
-        var declaredLexically = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
 
         foreach (var function in Program.Functions)
         {
-            if (!declaredLexically.Add(function.Name))
-            {
-                Report(
-                    context,
-                    function.Span,
-                    SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
-                    "`" + function.Name + "` is declared twice at this module's top level");
-            }
-
-            if (varNames.Contains(function.Name))
-            {
-                Report(
-                    context,
-                    function.Span,
-                    SliceSourceDiagnosticCode.VarAndLexicalCollision,
-                    "`" + function.Name + "` is declared both as a `var` and as a function");
-            }
-
-            Declares(context, imports, declared, function.Name);
+            Declares(declared, function.Name);
         }
 
         foreach (var declaration in ModuleDeclarations)
         {
-            if (!declaredLexically.Add(declaration.Name))
-            {
-                Report(
-                    context,
-                    declaration.Span,
-                    SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
-                    "`" + declaration.Name + "` is declared twice at this module's top level");
-            }
-
-            if (!declaration.IsClass && varNames.Contains(declaration.Name))
-            {
-                Report(
-                    context,
-                    declaration.Span,
-                    SliceSourceDiagnosticCode.VarAndLexicalCollision,
-                    "`" + declaration.Name + "` is declared both as a `var` and lexically");
-            }
-
-            Declares(context, imports, declared, declaration.Name);
+            Declares(declared, declaration.Name);
         }
 
         foreach (var statement in body)
         {
             if (statement is JsExportDeclaration { Kind: JsExportKind.Default, Default: not null })
             {
-                declared.Add(JsParser.DefaultBindingName);
+                declared.Add(JsModuleNames.DefaultBindingName);
             }
         }
 
@@ -693,33 +564,18 @@ internal sealed partial class JsBinder
         }
     }
 
-    /// <summary>
-    /// Declares one of a module's own names, unless an import already binds it, which is refused.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B1C0AA
+    /// <summary>Declares one of a module's own names.</summary>
+    /// <remarks>
+    /// A name both imported and declared was refused here until SJL-13.3's step 1, at no place; the shared
+    /// library refuses it first, at the declaration (JSD-0083, decision D20, the correspondence's B34).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=0CB9DE
     // Broiler-Human:        PENDING
-    private void Declares(
-        Context context,
-        System.Collections.Generic.HashSet<string> imports,
-        System.Collections.Generic.HashSet<string> declared,
-        string name)
+    private static void Declares(System.Collections.Generic.HashSet<string> declared, string name)
     {
-        if (name.Length == 0)
+        if (name.Length != 0)
         {
-            return;
+            declared.Add(name);
         }
-
-        if (imports.Contains(name))
-        {
-            Report(
-                context,
-                default,
-                SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
-                "`" + name + "` is both imported and declared in this module");
-
-            return;
-        }
-
-        declared.Add(name);
     }
 }

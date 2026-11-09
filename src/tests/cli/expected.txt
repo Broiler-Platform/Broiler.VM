@@ -217,7 +217,11 @@ dead-zone/a-lexical-binding-after-its-initialiser.js|0|5
 # anywhere else is still a character that begins no token, so a fix that skipped them everywhere
 # would pass the first row and fail this one.
 hashbang/at-the-very-start.js|0|3
-hashbang/on-the-second-line.js|3|2102:ExpectedToken
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# library refuses the `#` at 2:1 as a character that begins no token (JSE9101, registry code 2001),
+# where JsParser refused at 2:2 with 2102; part B's class N of the area rule's revision of 2026-11-09,
+# kind (place and code). The row read `hashbang/on-the-second-line.js|3|2102:ExpectedToken`.)
+hashbang/on-the-second-line.js|3|2001:UnexpectedCharacter
 
 # THE CLASS FAMILY, ADMITTED. Six rows for the six things a class is that a function is not: a
 # body with every member form in it, a `super` call through three levels, a `super` that resolves
@@ -355,8 +359,19 @@ runs/a-call-through-a-with-gets-the-object.js|0|the dispatcher true no receiver 
 # up: a directive, a class body, and the module goal.
 refused/a-with-in-strict-code.js|3|2101:UnexpectedToken
 refused/a-with-in-a-class-body.js|3|2101:UnexpectedToken
-refused/a-declaration-as-the-body-of-a-with.js|3|2101:UnexpectedToken
---module refused/a-declaration-as-the-body-of-a-with.js|3|the `with` statement is a syntax error in strict code
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# library's first refusal is the missing `;` at 8:28 (JSE9109, registry code 2102), where JsParser
+# refused the declaration at 8:24 with 2101; part B's class N of the area rule's revision of 2026-11-09,
+# kind (place and code). The row read
+# `refused/a-declaration-as-the-body-of-a-with.js|3|2101:UnexpectedToken`.)
+refused/a-declaration-as-the-body-of-a-with.js|3|2102:ExpectedToken
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; in
+# a module the library's first refusal is the missing `;` at 8:28 (JSE9109, registry code 2102), where
+# JsParser refused the strict `with` at 8:1 with 2101; part B's class N of the area rule's revision of
+# 2026-11-09, kind (place and code). The row read `--module
+# refused/a-declaration-as-the-body-of-a-with.js|3|the `with` statement is a syntax error in strict
+# code`.)
+--module refused/a-declaration-as-the-body-of-a-with.js|3|2102:ExpectedToken at 8:28
 
 # AND THE DEVIATION THE JOIN OF THE TWO BUNDLES PRODUCED, WHICH THIS ROW WAS PINNED TO OUTLIVE. A
 # generator with a NON-SIMPLE parameter list carries `BindsParameters`, which moves parameter
@@ -637,7 +652,12 @@ refused/a-name-two-switch-clauses-share.js|3|2201:DuplicateLexicalDeclaration
 refused/a-catch-parameter-the-handler-declares-again.js|3|2201:DuplicateLexicalDeclaration
 refused/a-parameter-the-body-declares-again.js|3|2201:DuplicateLexicalDeclaration
 refused/a-name-bound-twice-by-one-parameter-list.js|3|2201:DuplicateLexicalDeclaration
-refused/a-declaration-as-the-body-of-an-if.js|3|2101:UnexpectedToken
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# library's first refusal is the missing `;` at 8:15 (JSE9109, registry code 2102), where JsParser
+# refused the declaration at 8:11 with 2101; part B's class N of the area rule's revision of 2026-11-09,
+# kind (place and code). The row read
+# `refused/a-declaration-as-the-body-of-an-if.js|3|2101:UnexpectedToken`.)
+refused/a-declaration-as-the-body-of-an-if.js|3|2102:ExpectedToken
 refused/an-escaped-reserved-word-as-a-name.js|3|2209:ReservedWordAsBinding
 refused/a-using-await-in-a-static-block.js|3|2209:ReservedWordAsBinding
 
@@ -689,7 +709,12 @@ modules/an-invalid-json-module.mjs|3|2406:InvalidJsonModule
 # admits destructuring, generators, async functions and private names, and a program that writes
 # one of these is wrong about the LANGUAGE.
 refused/a-rest-element-with-a-comma-after-it.js|3|2205:InvalidAssignmentTarget
-refused/a-reserved-word-as-a-shorthand-property.js|3|2209:ReservedWordAsBinding
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# library's first refusal is the `}` at 8:15 (JSE9108, registry code 2101), where JsParser refused the
+# reserved word at 8:7 with 2209; part B's class N of the area rule's revision of 2026-11-09, kind
+# (place and code). The row read
+# `refused/a-reserved-word-as-a-shorthand-property.js|3|2209:ReservedWordAsBinding`.)
+refused/a-reserved-word-as-a-shorthand-property.js|3|2101:UnexpectedToken
 refused/a-restricted-name-as-a-pattern-target.js|3|2205:InvalidAssignmentTarget
 refused/a-suspension-in-a-parameter-list.js|3|2101:UnexpectedToken
 refused/a-private-name-as-a-property-key.js|3|2101:UnexpectedToken
@@ -753,12 +778,33 @@ runs/a-match-with-indices.js|0|[[2,4],null,[3,4]] / letter:undefined / true / 0,
 # and not `2205`: a binding is not an assignment target, and the comma is a position the grammar
 # has no production for.
 refused/a-rest-binding-element-with-a-comma-after-it.js|3|2101:UnexpectedToken
-refused/a-rest-binding-element-with-a-comma-after-it.js|3|a rest element is admitted only as the last element of a pattern
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# library refuses the `,` after the rest element at 5:13 (JSE9108, registry code 2101), where JsParser
+# refused the rest element at 5:6, with the same code; part B's class N of the area rule's revision of
+# 2026-11-09, kind (place). The row read `refused/a-rest-binding-element-with-a-comma-after-it.js|3|a
+# rest element is admitted only as the last element of a pattern`.)
+refused/a-rest-binding-element-with-a-comma-after-it.js|3|2101:UnexpectedToken at 5:13
 refused/a-rest-binding-property-with-a-comma-after-it.js|3|2101:UnexpectedToken
-refused/a-rest-binding-property-with-a-comma-after-it.js|3|a rest property is admitted only as the last entry of a pattern
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# library refuses the `,` after the rest property at 4:14 (JSE9108, registry code 2101), where JsParser
+# refused the rest property at 4:7, with the same code; part B's class N of the area rule's revision of
+# 2026-11-09, kind (place). The row read `refused/a-rest-binding-property-with-a-comma-after-it.js|3|a
+# rest property is admitted only as the last entry of a pattern`.)
+refused/a-rest-binding-property-with-a-comma-after-it.js|3|2101:UnexpectedToken at 4:14
 refused/a-rest-parameter-with-a-comma-after-it.js|3|2101:UnexpectedToken
-refused/a-rest-parameter-with-a-comma-after-it.js|3|a rest parameter is admitted only as the last parameter
-refused/an-arrow-rest-parameter-with-a-trailing-comma.js|3|a rest parameter is admitted only as the last parameter
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# library refuses the `,` after the rest parameter at 4:25 (JSE9108, registry code 2101), where JsParser
+# refused the rest parameter at 4:18, with the same code; part B's class N of the area rule's revision
+# of 2026-11-09, kind (place). The row read `refused/a-rest-parameter-with-a-comma-after-it.js|3|a rest
+# parameter is admitted only as the last parameter`.)
+refused/a-rest-parameter-with-a-comma-after-it.js|3|2101:UnexpectedToken at 4:25
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# library refuses the trailing `,` at 4:23 (JSE9108, registry code 2101), a diagnostic JsParser reported
+# after its first, the rest parameter at 4:16, with the same code; part B's class N of the area rule's
+# revision of 2026-11-09, kind (place). The row read
+# `refused/an-arrow-rest-parameter-with-a-trailing-comma.js|3|a rest parameter is admitted only as the
+# last parameter`.)
+refused/an-arrow-rest-parameter-with-a-trailing-comma.js|3|2101:UnexpectedToken at 4:23
 refused/an-arrow-rest-parameter-with-a-trailing-comma.js|3|!was expected
 
 # Under --slice a class static block is refused for the class the slice manifest does not admit,
@@ -834,13 +880,25 @@ runs/yield-and-await-as-labels.js|0|yield 0, yield 2, await, of
 
 # `??` beside `||` or `&&` needs parentheses around one side, where the line was read as though it
 # had them on the left.
-refused/a-coalesce-beside-an-or.js|3|2101:UnexpectedToken at 6:13
-refused/a-coalesce-beside-an-or.js|3|`??` cannot stand beside
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# library refuses the `??` itself at 6:15 (JSE9108, registry code 2101), where JsParser refused the
+# chain at 6:13 with the same code; part B's class N of the area rule's revision of 2026-11-09, kind
+# (place). The row read `refused/a-coalesce-beside-an-or.js|3|2101:UnexpectedToken at 6:13`.)
+refused/a-coalesce-beside-an-or.js|3|2101:UnexpectedToken at 6:15
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# same refusal as the row above, whose text is the one this family renders for the library's rule
+# (JSE9108, JSD-0083 decision D11); part B's class N of the area rule's revision of 2026-11-09, kind
+# (place). The row read `refused/a-coalesce-beside-an-or.js|3|`??` cannot stand beside`.)
+refused/a-coalesce-beside-an-or.js|3|`??` begins no expression
 runs/a-coalesce-mixed-with-parentheses.js|0|0 / fallback / 0 / last / 0
 
 # An arrow's `=>` stands on the line its parameters end on; its body may start on the next.
 refused/a-line-break-before-an-arrow.js|3|2101:UnexpectedToken at 4:3
-refused/a-line-break-before-an-arrow.js|3|must stand on the line its parameters end on
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# code and the place are the base's, so part B sees no difference; the text is the one this family
+# renders for the library's rule (JSD-0083 decision D11) (JSE9108). The row read
+# `refused/a-line-break-before-an-arrow.js|3|must stand on the line its parameters end on`.)
+refused/a-line-break-before-an-arrow.js|3|`=>` begins no expression
 runs/an-arrow-body-on-the-next-line.js|0|8 / 5 / -6
 
 # The gate's other families held before this date and had no fixture here: the strict-mode name
@@ -851,7 +909,12 @@ refused/a-restricted-name-as-a-function-name-under-its-directive.js|3|2209:Reser
 refused/a-future-reserved-word-as-a-class-name.js|3|2209:ReservedWordAsBinding at 3:7
 refused/eval-as-a-parameter-under-a-body-directive.js|3|2209:ReservedWordAsBinding at 3:27
 refused/a-unary-operand-of-exponentiation.js|3|2101:UnexpectedToken at 4:18
-refused/a-unary-operand-of-exponentiation.js|3|a unary operator cannot be applied directly to the base of `**`
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# code and the place are the base's, so part B sees no difference; the text is the one this family
+# renders for the library's rule (JSD-0083 decision D11) (JSE9108). The row read
+# `refused/a-unary-operand-of-exponentiation.js|3|a unary operator cannot be applied directly to the
+# base of `**``.)
+refused/a-unary-operand-of-exponentiation.js|3|`**` begins no expression
 dead-zone/a-read-before-the-initialiser-in-a-function-body.js|1|uncaught ReferenceError
 
 # JSP-4, THE ABSTRACT OPERATIONS UNDER THE LIBRARY, WHERE THEY WERE NEAR NEIGHBOURS OF THEMSELVES
@@ -902,7 +965,11 @@ runs/a-function-named-by-a-computed-key-or-a-field.js|0|computed / [sym] / arrow
 # codecs, whose values were taken from the specification's algorithms *(JSC-239)*.
 runs/annex-b-string-date-and-regexp-members.js|0|<a name="a&quot;b">x</a><big>x</big><blink>x</blink><b>x</b><tt>x</tt><font color="red">x</font><font size="7">x</font><i>x</i><a href="u">x</a><small>x</small><strike>x</strike><sub>x</sub><sup>x</sup> / true / trimEnd / 120 1999 / true / true b+ i 0
 runs/html-like-comments-in-a-script.js|0|1 / 5 / 7
---module refused/an-html-like-comment-in-a-module.mjs|3|2205:InvalidAssignmentTarget at 3:20
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# library refuses the update's operand at 3:23, where JsParser refused at 3:20, with the same code; part
+# B's class N of the area rule's revision of 2026-11-09, kind (place). The row read `--module
+# refused/an-html-like-comment-in-a-module.mjs|3|2205:InvalidAssignmentTarget at 3:20`.)
+--module refused/an-html-like-comment-in-a-module.mjs|3|2205:InvalidAssignmentTarget at 3:23
 runs/a-for-in-initialiser.js|0|1 / -1 / q / 0 / c
 runs/a-call-as-an-assignment-target.js|0|ReferenceError:f / ReferenceError:f / ReferenceError:f / ReferenceError:f / ReferenceError:f
 refused/a-call-as-an-assignment-target-in-strict-code.js|3|2205:InvalidAssignmentTarget at 9:1
@@ -982,7 +1049,13 @@ runs/bound-length-and-the-immutable-root.js|0|2 / 0 / 0 / 0 / 0 / Infinity / 0 /
 # A LABELLED FUNCTION OR AN ASYNC FUNCTION CANNOT BE A NESTED STATEMENT (2026-10-03), and in a `with`
 # body `let` before a line break is the identifier. The engine raises the two SyntaxErrors and
 # prints the run's value *(JSC-250)*.
-refused/a-labelled-function-as-a-loop-body.js|3|2101:UnexpectedToken at 4:15: a labelled function declaration cannot be the body of a `while`
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# library refuses the labelled function at the declaration, 4:29, where JsParser refused the loop's body
+# at 4:15, with the same code, and the text is the one this family renders for the library's rule; part
+# B's class N of the area rule's revision of 2026-11-09, kind (place). The row read
+# `refused/a-labelled-function-as-a-loop-body.js|3|2101:UnexpectedToken at 4:15: a labelled function
+# declaration cannot be the body of a `while``.)
+refused/a-labelled-function-as-a-loop-body.js|3|2101:UnexpectedToken at 4:29: a declaration is not a statement, so it cannot be the body of a label
 refused/an-async-function-as-a-with-body.js|3|2101:UnexpectedToken at 3:11
 runs/a-let-before-a-line-break-in-a-with-body.js|0|1 undefined 5
 
@@ -996,10 +1069,27 @@ runs/a-completion-value-with-no-prototype.js|0|[object Object]
 # NAMES AND PUNCTUATORS READ BY CONTEXT (2026-10-03), and the early errors the parser owed. The run's
 # values are the comparison engine's; it raises each refusal's SyntaxError *(JSC-253)*.
 runs/names-and-punctuators-read-by-context.js|0|2 / 4 / 2 / /re/g / 1e-7+1e+21+1.23e-18 / g / 0.3 / 99 / 9 / function
-refused/a-parenthesised-literal-as-an-assignment-target.js|3|2205:InvalidAssignmentTarget at 3:1: a parenthesised literal is not an assignment target
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# code and the place are the base's, so part B sees no difference; the text is the one this family
+# renders for the library's rule (JSD-0083 decision D11). The row read
+# `refused/a-parenthesised-literal-as-an-assignment-target.js|3|2205:InvalidAssignmentTarget at 3:1: a
+# parenthesised literal is not an assignment target`.)
+refused/a-parenthesised-literal-as-an-assignment-target.js|3|2205:InvalidAssignmentTarget at 3:1: the left-hand side of an assignment is not a reference
 refused/a-non-octal-decimal-literal-in-strict-code.js|3|2210:LegacyOctalInStrictCode at 4:1: a legacy octal literal is not admitted in strict code
-refused/let-before-await-in-an-async-function.js|3|2209:ReservedWordAsBinding at 5:5: `await` is not a binding name
---module refused/a-module-function-and-a-var-of-one-name.mjs|3|2202:VarAndLexicalCollision at 4:1: `f` is declared both as a `var` and as a function
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# library's first refusal is the missing `;` at 5:11 (JSE9109, registry code 2102), a diagnostic
+# JsParser reported after its first, 2209 at 5:5; part B's class N of the area rule's revision of
+# 2026-11-09, kind (place and code). The row read
+# `refused/let-before-await-in-an-async-function.js|3|2209:ReservedWordAsBinding at 5:5: `await` is not
+# a binding name`.)
+refused/let-before-await-in-an-async-function.js|3|2102:ExpectedToken at 5:11
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# library reports the collision at the function's name, 4:10, where JsParser reported it at 4:1, with
+# the same code, and the text is the one this family renders for the library's rule; part B's class N of
+# the area rule's revision of 2026-11-09, kind (place). The row read `--module
+# refused/a-module-function-and-a-var-of-one-name.mjs|3|2202:VarAndLexicalCollision at 4:1: `f` is
+# declared both as a `var` and as a function`.)
+--module refused/a-module-function-and-a-var-of-one-name.mjs|3|2202:VarAndLexicalCollision at 4:10: `f` is declared both lexically and as a `var`
 
 # DELEGATION, DELETION AND CATCH SCOPES (2026-10-03). The values are the comparison engine's but for
 # the last row's, which are the specification's *(JSC-254)*.
@@ -1021,8 +1111,18 @@ runs/keys-targets-and-a-live-set-walk.js|0|true set set / TypeError 1 / 1,2 / tr
 # binding name is read with 2101 UnexpectedToken, the code its catalogue row maps to; 2209 means a
 # reserved word, which `#a` is not. Place and message are unchanged. The row read
 # `refused/a-private-name-as-a-binding.js|3|2209:ReservedWordAsBinding at 3:5: `#a` is a private name and not a binding name`.)
-refused/a-private-name-as-a-binding.js|3|2101:UnexpectedToken at 3:5: `#a` is a private name and not a binding name
-refused/an-escaped-await-as-an-async-arrow-parameter.js|3|2209:ReservedWordAsBinding at 3:15: `await` is not a binding name
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# code and the place are the base's, so part B sees no difference; the text is the one this family
+# renders for the library's rule (JSD-0083 decision D11) (JSE9108). The row read
+# `refused/a-private-name-as-a-binding.js|3|2101:UnexpectedToken at 3:5: `#a` is a private name and not
+# a binding name`.)
+refused/a-private-name-as-a-binding.js|3|2101:UnexpectedToken at 3:5: `#a` begins no expression
+# (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
+# code and the place are the base's, so part B sees no difference; the text is the one this family
+# renders for the library's rule (JSD-0083 decision D11) (JSE1307). The row read
+# `refused/an-escaped-await-as-an-async-arrow-parameter.js|3|2209:ReservedWordAsBinding at 3:15: `await`
+# is not a binding name`.)
+refused/an-escaped-await-as-an-async-arrow-parameter.js|3|2209:ReservedWordAsBinding at 3:15: `await` is a reserved word here, and a unicode escape does not make it a name
 
 # THE LEGACY `caller` AND `arguments` (2026-10-04). The comparison engine wraps a script in a module
 # function, so its global code is a caller and its answers differ there; these are the values the

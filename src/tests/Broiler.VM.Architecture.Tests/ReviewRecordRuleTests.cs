@@ -1384,7 +1384,16 @@ public sealed class ReviewRecordRuleTests
         // JsCollator.cs and JsCollationData.cs, whose comparison, decoder and element lookup the shared
         // library's UcaCollator and UcaCollationData implement; JsRealm.Intl.cs and JsIntlTables.cs stay,
         // and call them. The count read 320 before.
-        Assert.Equal(318, AssuranceSources.Files.Count);
+        //
+        // AND THE WIDE PATH ON THE SHARED SYNTAX LIBRARY (SJL-13's step 1, 2026-11-09, JSD-0083 decisions D7,
+        // D11, D15, D16, D18 and D20) TOOK ONE AWAY AND ADDED NINE: JsParser.cs, the wide parser, whose parse
+        // the shared library's SyntaxParser makes; and the compiler's JsFrontend.cs, JsFrontendAdapter.cs and
+        // its three parts, JsFrontendDiagnostics.cs and JsFrontendDiagnostics.Texts.cs, JsAdmissionWalk.cs and
+        // JsRegularExpressionValidator.cs, which build its request, adapt its tree, map and render its
+        // diagnostics, make the admission walk and validate its regular expressions. Each is covered on the
+        // same terms as every other product file, and nothing in them has been read by a human. The count
+        // read 318 before.
+        Assert.Equal(326, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(
