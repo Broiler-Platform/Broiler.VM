@@ -37,10 +37,23 @@ N10), the producer of the retained source corpus's refused sources, the code of 
 (EX0024's defensive code, the only narrowing of "What does not change"), the lane's CLI acceptance table, and the
 comments and help text that name a renumbered code. No earlier rule file is edited.
 
+*(Added 2026-11-09.)* The rule is revised a fourth time, before any of its runs, by
+[`decision-rule-area-revised-2026-11-09.md`](decision-rule-area-revised-2026-11-09.md), on the owner's three decisions
+of 2026-11-09 ("Revise rule: bounded class", and "Correction row + class F" twice), which JSD-0083's dated notes of that
+day on decisions D11 and D15 record. Part B gains class N: for an input refused at both commits alone, it admits the
+place, or the code, or both, of the library's one diagnostic, where that code is the registry_code of the mapping's
+`code` row for the library's message's shared code, each such input listed with both lists. Part A's kind (F) and
+part B's class F name two new rows of the correspondence, P37 (a `new` whose operand begins with a `new` with an
+argument list and goes on to another argument list) and D64 (the module-request path's missing early errors), and
+class F admits the artifact bytes of P37's inputs. No accepted input's place moves, and no earlier rule file is
+edited. The revision of 2026-11-08's renumbering, called above the only narrowing of "What does not change", is the
+only one of that revision; from 2026-11-09 that bullet has two more, row P37's tree and class N's one diagnostic.
+
 **Records:** [JSD-0083](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md),
 the area verdict, which records the owner's decisions D2 to D39 of 2026-10-26, with D1 a reading of the owner's words
 of 2026-10-25, and *(added 2026-10-27)* the owner's decisions D-asi and D-t24 of 2026-10-27, which add row P16b to
-the correspondence and the answer of rows T24b and T24f where `;` or the end of input follows the literal. Its input
+the correspondence and the answer of rows T24b and T24f where `;` or the end of input follows the literal, and
+*(added 2026-11-09)* the owner's decisions of 2026-11-09, which add rows P37 and D64 to the correspondence. Its input
 is [`correspondence.md`](correspondence.md), with
 [`correspondence-runs/`](correspondence-runs/):
 - `vm/` and `js/`: each engine's answer to every probe, its reports, logs and the programs a value probe ran;
