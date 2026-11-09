@@ -238,7 +238,9 @@ registry commit mints revision 19 (JSD-0083 decision D12).
   registry commit `cbee7c4` added it. `corpus/stage-table-commit.txt` records where it comes from, from git reads alone,
   and `corpus/hashes.txt` the digests of both files (the copy's SHA-256 is
   `3c9c49d97162650a48acfeec33b3d1d084dddda6bf649ad648c2e5ff1f1ce6a6`), as bundle `sjl-12-001`'s `corpus/` records the
-  catalogue's copy. *(Added 2026-11-08.)*
+  catalogue's copy. *(Added 2026-11-08.)* *(Noted 2026-11-09: the bullet was first written on 2026-11-08, on a
+  branch that did not merge; it was written again on 2026-11-09, when step 1 was redone onto the area rule's revision
+  of 2026-11-09b, by the commit `5528d6a` that added the provenance files, after the registry commit `cbee7c4`.)*
 - **`inputs/`** and **`correspondence-runs/`** stay as committed with the rule.
 
 **No figure is quoted in this README until its bundle retains the log it comes from**, and then only in the
