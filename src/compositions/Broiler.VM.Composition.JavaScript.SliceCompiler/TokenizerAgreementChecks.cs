@@ -35,14 +35,21 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// format's Unicode tables, as the compiler's is, and a validator that admits every regular-expression literal,
 /// since the comparison reads tokens and not refusals. The library
 /// retains a stream for a parse it accepts and none for one it refuses, so an input the slice path accepts and the
-/// library refuses has no library stream to compare. <b>The row fails on such an input</b> and names it with the
-/// library's refusal: part F's population is every input the slice path accepts, and its rule admits no class of
-/// difference, so an input of the population the row cannot compare is not one that agrees. Over the parse corpus
-/// two inputs are such, each a string with a <c>\8</c> or <c>\08</c> escape in strict code, which the slice path
-/// admits and the specification refuses. <i>(Revised 2026-11-09, at the review of SJL-13.3's step 1: the row passed
-/// over such an input, "it is not compared, and the detail names each such input with the library's refusal, so that
-/// it stays in view", and its failing is a question for the owner, whose answer a dated revision of the rule would
-/// record.)</i>
+/// library refuses has no library stream to compare. <b>The row lists such an input and does not compare it</b>: its
+/// detail names each one with the library's shared code, the catalogue row the mapping gives that code and the
+/// registry code it maps to, and the row passes over every input the library's parse accepts (part F as the area
+/// rule's second revision of 2026-11-09 reads it, item 4; JSD-0083's note of that day on decision D21, "Exempt and
+/// record"). Over the parse corpus two inputs are such, <c>J000262</c> and <c>J001009</c>, each a string with a
+/// <c>\8</c> or <c>\08</c> escape in strict code, which the slice path admits and the specification refuses (the
+/// catalogue's EE0004, shared code JSE1204, registry code 2210): the slice path's known defect, handed on as H25. A
+/// shared code the mapping does not hold fails the row, since the input could then not be listed with its row.
+/// <i>(Revised 2026-11-09, at the review of SJL-13.3's step 1: the row passed over such an input, "it is not
+/// compared, and the detail names each such input with the library's refusal, so that it stays in view", and its
+/// failing is a question for the owner, whose answer a dated revision of the rule would record.)</i> <i>(Revised
+/// 2026-11-09, later that day, with the owner's decision "Exempt and record": it read "<b>The row fails on such an
+/// input</b> and names it with the library's refusal: part F's population is every input the slice path accepts, and
+/// its rule admits no class of difference, so an input of the population the row cannot compare is not one that
+/// agrees.")</i>
 /// </para>
 /// <para>
 /// <b>The population is read as the <c>--parse-corpus</c> mode reads it, without that mode's code</b>: the
@@ -216,7 +223,7 @@ internal static class TokenizerAgreementChecks
         var compared = 0;
         var tokens = 0;
         var templates = 0;
-        var refused = new List<string>();
+        var refused = new List<(string Id, string Code, string MessageId, int Line, int Column)>();
         var disagreements = new List<string>();
 
         foreach (var (id, module, text) in inputs)
@@ -230,9 +237,9 @@ internal static class TokenizerAgreementChecks
 
             var disagreement = Compare(text, module, ref tokens, ref templates, out var refusal);
 
-            if (refusal is not null)
+            if (refusal is { } first)
             {
-                refused.Add(id + " (" + refusal + ")");
+                refused.Add((id, first.Code, first.MessageId, first.Span.Line, first.Span.Column));
                 continue;
             }
 
@@ -254,14 +261,35 @@ internal static class TokenizerAgreementChecks
             $"SliceSourcePrograms.Accepted) compared, {tokens.ToString(CultureInfo.InvariantCulture)} tokens, each the same in " +
             "both streams by the field map: kind, cooked name and raw spelling, value, line, column, offset, end, " +
             $"line-terminator, legacy-octal and escaped flags; {templates.ToString(CultureInfo.InvariantCulture)} templates";
-        var uncompared = refused.Count == 0
-            ? string.Empty
-            : $"; {refused.Count.ToString(CultureInfo.InvariantCulture)} accepted by the slice path and refused by the library, " +
-              "so with no library stream to compare, which part F's population does not exempt: " + string.Join(", ", refused);
+        var mapping = ReadMapping(manifest);
+        var unmapped = new List<string>();
+        var listed = new List<string>();
+
+        foreach (var (id, code, messageId, line, column) in refused)
+        {
+            if (mapping is not null && mapping.TryGetValue(code, out var row))
+            {
+                listed.Add($"{id} ({code} {messageId}, catalogue row {row.Row}, registry code {row.Registry}, at {line}:{column})");
+            }
+            else
+            {
+                unmapped.Add($"{id} ({code} {messageId} at {line}:{column})");
+            }
+        }
+
+        var uncompared = (listed.Count == 0
+                ? "; no input the slice path accepts is refused by the library"
+                : $"; {listed.Count.ToString(CultureInfo.InvariantCulture)} accepted by the slice path and refused by the library, " +
+                  "listed and not compared, as part F's configuration lists them (the slice path's known defect, hand-off H25): " +
+                  string.Join(", ", listed)) +
+            (unmapped.Count == 0
+                ? string.Empty
+                : $"; {unmapped.Count.ToString(CultureInfo.InvariantCulture)} refused by the library under a shared code the " +
+                  "mapping does not hold, so not listed with a catalogue row: " + string.Join(", ", unmapped));
 
         return (
             Name,
-            disagreements.Count == 0 && refused.Count == 0,
+            disagreements.Count == 0 && unmapped.Count == 0,
             disagreements.Count == 0
                 ? agreed + uncompared
                 : $"{disagreements.Count.ToString(CultureInfo.InvariantCulture)} of {compared.ToString(CultureInfo.InvariantCulture)} " +
@@ -269,7 +297,7 @@ internal static class TokenizerAgreementChecks
     }
 
     /// <summary>The first disagreement between the two streams of one text, or null when they agree.</summary>
-    private static string? Compare(string text, bool module, ref int tokens, ref int templates, out string? refusal)
+    private static string? Compare(string text, bool module, ref int tokens, ref int templates, out SyntaxDiagnostic? refusal)
     {
         refusal = null;
         var slice = new SliceTokenizer(text).Tokenize();
@@ -284,8 +312,7 @@ internal static class TokenizerAgreementChecks
 
         if (result.Diagnostics.Count != 0)
         {
-            var first = result.Diagnostics[0];
-            refusal = $"{first.Code} {first.MessageId} at {first.Span.Line}:{first.Span.Column}";
+            refusal = result.Diagnostics[0];
             return null;
         }
 
@@ -888,6 +915,40 @@ internal static class TokenizerAgreementChecks
         }
 
         return Kinds.TryGetValue(token.Kind, out var kind) ? kind : null;
+    }
+
+    /// <summary>
+    /// The front end's mapping, read from the checkout the parse corpus's manifest stands in: each shared code's catalogue
+    /// row and registry code, from its <c>code</c> rows; null where the file is not there.
+    /// </summary>
+    private static Dictionary<string, (string Row, string Registry)>? ReadMapping(string manifest)
+    {
+        var root = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(manifest)))));
+        var path = root is null ? null : Path.Combine(root, "src", "Broiler.VM.Profile.JavaScript", "docs", "diagnostics", "frontend-mapping.tsv");
+
+        if (path is null || !File.Exists(path))
+        {
+            return null;
+        }
+
+        var rows = new Dictionary<string, (string Row, string Registry)>(StringComparer.Ordinal);
+
+        foreach (var line in File.ReadLines(path))
+        {
+            if (line.StartsWith('#'))
+            {
+                continue;
+            }
+
+            var cells = line.Split('\t');
+
+            if (cells.Length > 6 && string.Equals(cells[0], "code", StringComparison.Ordinal))
+            {
+                rows[cells[1]] = (cells[2], cells[6]);
+            }
+        }
+
+        return rows;
     }
 
     private static string? FindManifest()
