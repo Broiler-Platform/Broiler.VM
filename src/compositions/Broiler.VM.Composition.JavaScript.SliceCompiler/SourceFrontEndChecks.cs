@@ -47,6 +47,13 @@ internal static class SourceFrontEndChecks
             yield return row;
         }
 
+        // THE TWO TOKENIZERS' AGREEMENT ON THE SLICE PATH'S INPUTS (SJL-13's step 1, JSD-0083 decision D21;
+        // bundle sjl-13-001's part F): its own file, because it reads the shared library's token stream.
+        foreach (var row in TokenizerAgreementChecks.Run())
+        {
+            yield return row;
+        }
+
         yield return AnEarlyErrorNeverProducesBytes();
         yield return TheSourceFuzzGuidanceLoopIsWired();
         yield return EveryLineTerminatorInsideALiteralIsCountedOnce();

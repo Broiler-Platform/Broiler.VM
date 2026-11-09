@@ -255,6 +255,30 @@ internal static class ParseCorpus
         }
     }
 
+    /// <summary>
+    /// Every input of a manifest, each with its goal and its text, read and checked as a run of this mode
+    /// reads them; for the tokenizers-agreement row, whose population is sub-population B4's accepted
+    /// inputs (bundle <c>sjl-13-001</c>'s part F; added 2026-11-09 by SJL-13's step 1).
+    /// </summary>
+    internal static bool TryReadInputs(
+        string manifest,
+        out IReadOnlyList<(string Id, string Goal, string Text)> inputs,
+        out string failure)
+    {
+        var options = new Options(
+            manifest, string.Empty, 1, false, null,
+            new HashSet<string>(DefaultPopulations, StringComparer.Ordinal), null, null, null);
+
+        if (!TryLoad(options, out var loaded, out _, out _, out failure))
+        {
+            inputs = [];
+            return false;
+        }
+
+        inputs = loaded.Rows.Select(row => (row.Id, row.Goal, loaded.Texts[row.Index])).ToArray();
+        return true;
+    }
+
     /// <summary>Runs the mode over the arguments that follow <c>--parse-corpus</c>.</summary>
     internal static int Run(string[] args)
     {
