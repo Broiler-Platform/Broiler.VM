@@ -39,6 +39,13 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// 2104 suffix " is not admitted by the declared feature manifest" included.
 /// </para>
 /// <para>
+/// <b>One text per shared code, so not every base text survives.</b> Where the base rendered several
+/// sentences under one registry code at sites the library reports under one shared code (2101's
+/// unexpected-token sites, for one), the table keeps one of them, and the others' inputs now read it:
+/// the library names its condition and not the base's site, so the site's own sentence cannot be chosen.
+/// That departs from the sentence above as decision D11 states it (<i>added 2026-11-09</i>).
+/// </para>
+/// <para>
 /// <b>Nothing here is mutable</b> (rule N12): the table is read once into a frozen dictionary.
 /// </para>
 /// </remarks>

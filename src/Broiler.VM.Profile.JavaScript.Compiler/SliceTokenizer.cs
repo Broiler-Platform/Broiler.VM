@@ -462,10 +462,22 @@ public sealed class SliceTokenizer
     /// where only whitespace and comments precede it on its line, each running to the line's end.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// <b>The script goal of the wide surface admits them and a module never does</b>, which is the
     /// language's own split (JSP-7, JSC-239): a module's source is not web script text. Without them
     /// <c>x &lt;!-- y</c> was read as <c>x &lt; !(--y)</c> - a program the file does not contain -
     /// and a line opening with <c>--&gt;</c> was a decrement and a comparison.
+    /// </para>
+    /// <para>
+    /// <i>Noted 2026-11-09, at SJL-13.3's step 1 (JSD-0083 decision D20): the wide surface no longer
+    /// reads this tokenizer, so "The script goal of the wide surface admits them" describes the shared
+    /// syntax library's switch (<c>ParseSwitches.HtmlLikeComments</c>), which the compiler's requests set,
+    /// and not this member. Nothing in this repository sets this member any more: its only setters were
+    /// the wide compiler's two tokenizer passes, which step 1 deletes, and the slice front end leaves it
+    /// off. It stays because it is public (<c>docs/api/public-api.txt</c>), and taking a member out of the
+    /// public surface is a change of its own for SJL-13's records step to decide, not a deletion D20
+    /// lists.</i>
+    /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=582642
     // Broiler-Human:        PENDING
@@ -978,15 +990,17 @@ public sealed class SliceTokenizer
     /// requires would buy a program nobody can write and cost a rule nobody can see.
     /// </para>
     /// <para>
-    /// <b>It is reachable from the wide parser, and for one question only:</b> which word an
-    /// ESCAPED identifier would have been had it been spelled plainly. Asking the table rather than
-    /// writing a second list of reserved words in the parser is what keeps the answer one fact -
-    /// a word added here cannot be forgotten there.
+    /// <i>(Revised 2026-11-09, at SJL-13.3's step 1, JSD-0083 decision D20: a paragraph here read "It is
+    /// reachable from the wide parser, and for one question only: which word an ESCAPED identifier would
+    /// have been had it been spelled plainly. Asking the table rather than writing a second list of
+    /// reserved words in the parser is what keeps the answer one fact - a word added here cannot be
+    /// forgotten there."; the wide parser is deleted, this tokenizer is the table's only reader, and the
+    /// method, internal for that parser, is private.)</i>
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E5ABA7
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=15B2D3
     // Broiler-Human:        PENDING
-    internal static SliceTokenKind KeywordKind(string text) => text switch
+    private static SliceTokenKind KeywordKind(string text) => text switch
     {
         "var" => SliceTokenKind.Var,
         "let" => SliceTokenKind.Let,

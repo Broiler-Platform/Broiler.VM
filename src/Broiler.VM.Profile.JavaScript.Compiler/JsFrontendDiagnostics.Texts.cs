@@ -21,7 +21,9 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 
 /// <summary>
 /// The texts of <see cref="JsFrontendDiagnostics"/>: each shared code's sentence as this family rendered it at step 1's
-/// base, and its rendering with the library's arguments and the source's words (decision D11).
+/// base, and its rendering with the library's arguments and the source's words (decision D11). The base's sites that
+/// the comments beside the texts name are read at Broiler.VM <c>d82b07ad</c>, an ancestor of the base, where the
+/// catalogue's completeness report read them, and not at the base itself.
 /// </summary>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=88B6FF
 // Broiler-Falsified-If: a shared code whose rule this family refused at the base is rendered with a sentence other than one of that rule's base texts
@@ -36,7 +38,7 @@ internal static partial class JsFrontendDiagnostics
     /// <b>A code the table holds no sentence for renders its message identifier and arguments</b>, as the
     /// library reports them: no text of this family covers its rule, so none is borrowed for it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=30F3F9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CC93E7
     // Broiler-Falsified-If: a diagnostic whose shared code the table holds renders anything but that sentence with its placeholders filled, or a placeholder reads outside the source text
     // Broiler-Human:        PENDING
     private static string Render(SyntaxDiagnostic diagnostic, string source)
@@ -69,7 +71,9 @@ internal static partial class JsFrontendDiagnostics
             }
             else if (name == "tok")
             {
-                text.Append(arguments.Count != 0 && arguments[0].Length != 0 ? arguments[0] : EndOfSource);
+                // The token the library names, or, where it names none (a refusal of a node at its span), the
+                // source text the span covers; the end of the source only where the span stands there.
+                text.Append(arguments.Count != 0 && arguments[0].Length != 0 ? arguments[0] : Found(diagnostic.Span, source));
             }
             else if (name == "found")
             {
@@ -164,8 +168,8 @@ internal static partial class JsFrontendDiagnostics
     /// d82b07ad, and a comment beside each such text names its site there). Where that text held the source's own words, a
     /// placeholder takes their place: <c>{0}</c> and on are the library's arguments, <c>{found}</c> the source
     /// text the diagnostic's span covers, <c>{tok}</c> the first argument, and <c>{cp}</c> the code point the span
-    /// names. A code no site of this family refused renders its message identifier and arguments, as no text of
-    /// this family covers it.
+    /// names; <c>{tok}</c> falls back on <c>{found}</c> where the library names no token. A code no site of this
+    /// family refused renders its message identifier and arguments, as no text of this family covers it.
     /// </para>
     /// <para>
     /// <b>Nothing here is mutable</b> (rule N12): one frozen table, read by <see cref="Render"/> alone.

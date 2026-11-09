@@ -167,6 +167,14 @@ internal static class TemplateChecks
     /// the row is about; the refusal past the bound in each such shape is the row step 1 adds for it, "a left
     /// operand's spine is charged to the chain it begins" (bundle <c>sjl-13-001</c>'s part C, its fifth row).
     /// </para>
+    /// <para>
+    /// <i>Revised again 2026-11-09, at the review of SJL-13.3's step 1:</i> with the three sources above
+    /// compiling, the row no longer told the two charges apart, so it gains a pair past the bound: a chain of
+    /// 12,000 additions as the substitution of the last operand, and the same chain in parentheses there.
+    /// Both are refused with the tree-depth diagnostic, at places two columns apart, the width by which
+    /// <c>`${</c> is longer than <c>(</c>, so the charge is the same in both: each chain node is charged at
+    /// the same depth whether a substitution or a parenthesis holds it.
+    /// </para>
     /// </remarks>
     private static (string, bool, string) ASubstitutionIsChargedAsAParenthesisedOperandIs()
     {
@@ -176,12 +184,23 @@ internal static class TemplateChecks
             "var x = " + Chain(6_000) + " + `${" + Chain(6_000) + "}`;", SliceParseOptions.Script);
         var parenthesised = JsCompiler.Compile(
             "var x = " + Chain(6_000) + " + (" + Chain(6_000) + ");", SliceParseOptions.Script);
+        var deepSubstitution = JsCompiler.Compile("var x = 1 + `${" + Chain(12_000) + "}`;", SliceParseOptions.Script);
+        var deepParenthesis = JsCompiler.Compile("var x = 1 + (" + Chain(12_000) + ");", SliceParseOptions.Script);
+        var charged =
+            !deepSubstitution.Succeeded && !deepParenthesis.Succeeded &&
+            deepSubstitution.Diagnostics.Count == 1 && deepParenthesis.Diagnostics.Count == 1 &&
+            deepSubstitution.Diagnostics[0].Code == SliceSourceDiagnosticCode.NestingTooDeep &&
+            deepParenthesis.Diagnostics[0].Code == SliceSourceDiagnosticCode.NestingTooDeep &&
+            deepSubstitution.Diagnostics[0].Line == deepParenthesis.Diagnostics[0].Line &&
+            deepSubstitution.Diagnostics[0].Column == deepParenthesis.Diagnostics[0].Column + 2;
 
         return (
             "template: a substitution is charged toward the tree-depth bound as a parenthesised operand is",
-            within.Succeeded && past.Succeeded && parenthesised.Succeeded,
+            within.Succeeded && past.Succeeded && parenthesised.Succeeded && charged,
             $"4,000 and 4,000 {Outcome(within)}; 6,000 and 6,000 {Outcome(past)}; with a parenthesis in the " +
-                $"template's place {Outcome(parenthesised)} (expected all three compiled)");
+                $"template's place {Outcome(parenthesised)} (expected all three compiled); 12,000 in a substitution " +
+                $"{Outcome(deepSubstitution)}, in a parenthesis {Outcome(deepParenthesis)} (expected both refused " +
+                "with 2103, two columns apart)");
     }
 
     /// <summary>

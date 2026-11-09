@@ -47,6 +47,21 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// (JSD-0083 decision D12). <i>(Revised 2026-11-08: it ended at "2104 and 2207 (JSD-0080 decisions
 /// D12 and D13).")</i>
 /// </para>
+/// <para>
+/// <i>Noted 2026-11-09, at SJL-13.3's step 1 (JSD-0083 decision D20): the first paragraph's "After the
+/// parse, the wide path has one early-error stage, and this is it" and "The parser keeps its own checks
+/// until SJL-13 deletes it.", and the third paragraph's sentence from "The three language rules the
+/// lowering refused under the manifest's code are the binder's" to "while the parser refuses each of the
+/// three rules first under its own row's code (JSD-0083 decision D12)", no longer hold. Step 1 deletes
+/// <c>JsParser</c>, and the wide path parses through the shared syntax library, which makes at the parse
+/// the checks of every row the stage table assigns <c>syntax</c> and reports its first refusal before the
+/// binder runs (decisions D10, D11 and D20). So the binder is no longer the wide path's one early-error
+/// stage: it keeps the checks the correspondence marks "keep", B16 and B21 among them, whose rows the
+/// stage table does not assign <c>syntax</c>. The three language rules and the static block's
+/// <c>return</c> are the library's refusals, and the binder's checks of them are deleted (the
+/// correspondence's rows B05, B17, B14 and B04); <c>JsBinder.Walks.cs</c> notes each deletion where the
+/// check stood.</i>
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=BE330C
 // Broiler-Falsified-If: the binder refuses a unit the lowering lowered without a language early error, or admits one the lowering refused with one, or reports a code, a message or a place other than the lowering's
