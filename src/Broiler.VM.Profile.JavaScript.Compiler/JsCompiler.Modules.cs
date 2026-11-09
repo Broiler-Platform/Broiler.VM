@@ -47,7 +47,7 @@ public sealed partial class JsCompiler
     /// for the lifetime of the instance, and <c>globalThis.x</c> must not see it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6130F2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=83B37D
     // Broiler-Human:        PENDING
     private void CompileModule(JsProgramNode program, JsModuleUnit unit)
     {
@@ -59,7 +59,7 @@ public sealed partial class JsCompiler
             {
                 Refuse(
                     program.Span,
-                    SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                    SliceSourceDiagnosticCode.DuplicateModuleKey,
                     "two modules were presented under the key `" + key + "`");
 
                 return;

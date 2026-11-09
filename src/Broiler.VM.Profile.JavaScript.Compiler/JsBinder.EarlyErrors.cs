@@ -42,7 +42,10 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// the binder's</b> - <c>await</c> outside an async function, a logical assignment to a target that is
 /// neither a name nor a property, a <c>using</c> declaration outside a statement list that can dispose
 /// it - and so is <c>return</c> in a static block, each under the code the catalogue records for it,
-/// 2104 and 2207 (JSD-0080 decisions D12 and D13).
+/// 2104 and 2207 (JSD-0080 decisions D12 and D13), and from registry revision 19 under 2219 for the
+/// <c>return</c>, while the parser refuses each of the three rules first under its own row's code
+/// (JSD-0083 decision D12). <i>(Revised 2026-11-08: it ended at "2104 and 2207 (JSD-0080 decisions
+/// D12 and D13).")</i>
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=BE330C
@@ -160,7 +163,7 @@ internal sealed partial class JsBinder
     /// is the field's code and an ordinary function's is not, and an arrow's parameter list is not
     /// searched, which is what the lowering asked. One refusal per member, at its body.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7C49CF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=34250C
     // Broiler-Human:        PENDING
     private void RefuseArgumentsIn(JsClassMember member, Context context)
     {
@@ -177,7 +180,7 @@ internal sealed partial class JsBinder
                 Report(
                     context,
                     body.Span,
-                    SliceSourceDiagnosticCode.UnresolvableIdentifier,
+                    SliceSourceDiagnosticCode.ArgumentsInClassInitialiser,
                     "`arguments` names nothing inside a class field initialiser or a static block");
 
                 return;
@@ -194,7 +197,7 @@ internal sealed partial class JsBinder
     /// reads a name it does not declare through its caller, and the executor refuses one no class there
     /// declares before anything runs (JSeal V15-finish).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=60075F
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=45B84E
     // Broiler-Falsified-If: a private name a class around the reference declares is refused, or one none declares is admitted outside eval code whose caller is in a class
     // Broiler-Human:        PENDING
     private void ResolvePrivate(Context context, SliceSourceSpan span, string name)
@@ -215,7 +218,7 @@ internal sealed partial class JsBinder
         Report(
             context,
             span,
-            SliceSourceDiagnosticCode.UnresolvableIdentifier,
+            SliceSourceDiagnosticCode.UndeclaredPrivateName,
             "`" + name + "` is not declared by any class this expression is inside of");
     }
 
@@ -234,7 +237,7 @@ internal sealed partial class JsBinder
     /// one report rather than two (class S2 of the bundle's rule).
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=8DE4DF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=F93D14
     // Broiler-Human:        PENDING
     private void Referenced(Context context, string name)
     {
@@ -247,7 +250,7 @@ internal sealed partial class JsBinder
         Report(
             context,
             default,
-            SliceSourceDiagnosticCode.UnresolvableIdentifier,
+            SliceSourceDiagnosticCode.ArgumentsInClassInitialiser,
             "`arguments` names nothing inside a class field initialiser");
     }
 
@@ -463,7 +466,7 @@ internal sealed partial class JsBinder
     /// item 2, unchanged.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7B69FD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5C1ECC
     // Broiler-Falsified-If: a literal the matcher compiles is refused, or one it refuses, or whose flags the language refuses, is admitted
     // Broiler-Human:        PENDING
     private void CheckRegExp(Context context, JsRegExpLiteral pattern)
@@ -483,7 +486,7 @@ internal sealed partial class JsBinder
                 Report(
                     context,
                     pattern.Span,
-                    SliceSourceDiagnosticCode.UnexpectedToken,
+                    SliceSourceDiagnosticCode.InvalidRegularExpression,
                     "Invalid regular expression flags: " + flags);
 
                 return;
@@ -496,7 +499,7 @@ internal sealed partial class JsBinder
             Report(
                 context,
                 pattern.Span,
-                SliceSourceDiagnosticCode.UnexpectedToken,
+                SliceSourceDiagnosticCode.InvalidRegularExpression,
                 "Invalid regular expression flags: " + flags + " (u and v may not be combined)");
 
             return;
@@ -514,7 +517,7 @@ internal sealed partial class JsBinder
         }
         catch (Format.JsRegExpSyntaxError failure)
         {
-            Report(context, pattern.Span, SliceSourceDiagnosticCode.UnexpectedToken, failure.Message);
+            Report(context, pattern.Span, SliceSourceDiagnosticCode.InvalidRegularExpression, failure.Message);
         }
     }
 

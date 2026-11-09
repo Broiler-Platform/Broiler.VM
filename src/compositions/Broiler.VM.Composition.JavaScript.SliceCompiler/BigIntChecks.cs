@@ -40,6 +40,12 @@ internal static class BigIntChecks
     /// <summary>The embedder-seam code of a construct the manifest does not admit.</summary>
     private const int ConstructOutsideManifest = 2104;
 
+    /// <summary>
+    /// The embedder-seam code of a BigInt literal wider than the format's constant, which registry
+    /// revision 19 gave a number of its own (JSD-0083 decision D12); it was 2104's until then.
+    /// </summary>
+    private const int BigIntWiderThanTheFormat = 2106;
+
     /// <summary>The embedder-seam code of a malformed numeric literal.</summary>
     private const int MalformedNumericLiteral = 2003;
 
@@ -604,7 +610,7 @@ internal static class BigIntChecks
         }
 
         var first = compiled.Diagnostics[0];
-        var passed = (int)first.Code == ConstructOutsideManifest && first.Line == 1 && first.Column == 9 &&
+        var passed = (int)first.Code == BigIntWiderThanTheFormat && first.Line == 1 && first.Column == 9 &&
             first.Message.Contains("wider than 65536 bits", System.StringComparison.Ordinal);
 
         return (name, passed, first.ToString());

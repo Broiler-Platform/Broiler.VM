@@ -15,9 +15,9 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 318 |
 | Files carrying an annotation | 318 |
-| Code units | 11198 |
+| Code units | 11214 |
 | Relevant | 6370 |
-| Exempt by predicate | 4828 |
+| Exempt by predicate | 4844 |
 | Annotated | 6370 of 6370 (100%) |
 | Human reviewed | 0 of 6370 (0%) |
 | Unverified | 6370 |
@@ -32,7 +32,7 @@ figures below are the measurement of how far from that claim the component is.
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4828 |
+| EXEMPT | 4844 |
 
 ## IP risk
 
@@ -1999,7 +1999,7 @@ that the rule is reviewable in one place rather than in several hundred.
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
 | FieldDeclaringStorage | 870 |
-| EnumMemberOfADeclaredVocabulary | 1970 |
+| EnumMemberOfADeclaredVocabulary | 1986 |
 | DeclaredInSource | 63 |
 
 ## Per-unit exemptions
@@ -2081,7 +2081,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-11198 of them, exempt and relevant alike - with the fingerprint of its declaration.
+11214 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

@@ -26,7 +26,7 @@ public sealed partial class JsCompiler
 
     // ---- expressions ---------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E2A5C9
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0358BF
     // Broiler-Human:        PENDING
     private void CompileExpression(JsExpression expression)
     {
@@ -323,7 +323,7 @@ public sealed partial class JsCompiler
             default:
                 Refuse(
                     expression.Span,
-                    SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                    SliceSourceDiagnosticCode.ConstructTheLoweringHasNoArmFor,
                     "this expression is not admitted by the declared feature manifest");
 
                 Emit(JsOpcode.LoadUndefined);

@@ -262,7 +262,7 @@ public sealed partial class JsCompiler
     /// How many records lie between the cursor and the evaluated program's boundary record, when a
     /// free name at the cursor is one of the caller's.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8A484B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2EA187
     // Broiler-Human:        PENDING
     private bool TryEvalHops(out byte hops)
     {
@@ -279,7 +279,7 @@ public sealed partial class JsCompiler
         {
             Refuse(
                 default,
-                SliceSourceDiagnosticCode.NestingTooDeep,
+                SliceSourceDiagnosticCode.EvalScopeTooDeep,
                 "evaluated source nests deeper than the scope-depth ceiling");
 
             return false;

@@ -511,7 +511,7 @@ internal sealed partial class JsBinder
     /// <see cref="Frame.Silent"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=490B4A
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=5DEE14
     // Broiler-Falsified-If: a node that holds a function, a class, a block, a switch or a jump is left unvisited, a node of a kind the walk does not name passes it without failing, or an early error is found where the lowering lowered the node without refusing it
     // Broiler-Human:        PENDING
     private void Visit(System.Collections.Generic.List<Pending> pending, Pending visiting)
@@ -723,16 +723,18 @@ internal sealed partial class JsBinder
 
             // A `return` HAS SOMETHING TO RETURN FROM ONLY IN A FUNCTION'S OWN CODE, and a class
             // static block compiles to a function and is not one: the word is an early error there
-            // too, under the code the catalogue records for it (2207; JSD-0080 decisions D12 and
-            // D13). The lowering lowered nothing of the value after refusing either; the value is
-            // walked all the same, so what it holds is reported too.
+            // too, under the code the catalogue records for it (2218 outside a function and 2219 in
+            // a static block from registry revision 19, JSD-0083 decision D12; JSD-0080 decisions D12
+            // and D13). The lowering lowered nothing of the value after refusing either; the value is
+            // walked all the same, so what it holds is reported too. *(Revised 2026-11-08: it read
+            // "under the code the catalogue records for it (2207; JSD-0080 decisions D12 and D13)".)*
             case JsReturnStatement statement:
                 if (!context.Is(Frame.Body))
                 {
                     Report(
                         context,
                         statement.Span,
-                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        SliceSourceDiagnosticCode.ReturnOutsideFunction,
                         "`return` has nothing to return from outside a function");
                 }
                 else if (context.Is(Frame.StaticBlock))
@@ -740,7 +742,7 @@ internal sealed partial class JsBinder
                     Report(
                         context,
                         statement.Span,
-                        SliceSourceDiagnosticCode.IllegalBreak,
+                        SliceSourceDiagnosticCode.ReturnInStaticBlock,
                         "`return` has nothing to return from inside a class static block");
                 }
 
@@ -838,7 +840,7 @@ internal sealed partial class JsBinder
                     Report(
                         context,
                         expression.Span,
-                        SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+                        SliceSourceDiagnosticCode.UnexpectedToken,
                         "a private element cannot be deleted");
                 }
 
@@ -943,7 +945,7 @@ internal sealed partial class JsBinder
                     Report(
                         context,
                         expression.Span,
-                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        SliceSourceDiagnosticCode.MisplacedSuper,
                         "`super` is only admitted inside a method");
                 }
 
@@ -966,7 +968,7 @@ internal sealed partial class JsBinder
                     Report(
                         context,
                         expression.Span,
-                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        SliceSourceDiagnosticCode.MisplacedSuper,
                         "a `super` call is only admitted in the constructor of a class with a heritage");
                 }
 
@@ -1024,7 +1026,7 @@ internal sealed partial class JsBinder
                     Report(
                         context,
                         expression.Span,
-                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        SliceSourceDiagnosticCode.NewTargetOutsideFunction,
                         "`new.target` is only admitted inside a function");
                 }
 
@@ -1160,7 +1162,7 @@ internal sealed partial class JsBinder
         JsCompiler.UsingIn(list, out _) == JsUsing.None ? context : context.And(Frame.Disposing);
 
     /// <summary>One declaration statement's declarators, each with the early errors of its own.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=399BCD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=4D6564
     // Broiler-Human:        PENDING
     private void VisitDeclarators(
         System.Collections.Generic.List<Pending> pending, JsVariableStatement statement, Context context)
@@ -1176,7 +1178,7 @@ internal sealed partial class JsBinder
                 Report(
                     context,
                     declarator.Span,
-                    SliceSourceDiagnosticCode.ConstWithoutInitialiser,
+                    SliceSourceDiagnosticCode.ExpectedToken,
                     "a destructuring declaration needs an initialiser");
             }
             else if (declarator.Pattern is null &&
@@ -1222,7 +1224,7 @@ internal sealed partial class JsBinder
     /// written a second time sets the prototype twice; an entry in method form is a method, whose
     /// <c>super</c> resolves.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=84B66F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=99E76A
     // Broiler-Human:        PENDING
     private void VisitObject(
         System.Collections.Generic.List<Pending> pending, JsObjectLiteral literal, Context context)
@@ -1238,7 +1240,7 @@ internal sealed partial class JsBinder
                 Report(
                     context,
                     entry.Span,
-                    SliceSourceDiagnosticCode.UnexpectedToken,
+                    SliceSourceDiagnosticCode.CoverInitialiserOutsidePattern,
                     "`=` is not an object literal entry outside a destructuring assignment");
 
                 Push(pending, entry.Value, context);
@@ -1259,7 +1261,7 @@ internal sealed partial class JsBinder
                     Report(
                         context,
                         entry.Span,
-                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        SliceSourceDiagnosticCode.DuplicateProtoProperty,
                         "an object literal may set `__proto__` once");
                 }
 

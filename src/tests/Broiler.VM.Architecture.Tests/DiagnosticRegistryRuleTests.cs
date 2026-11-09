@@ -170,10 +170,16 @@ public sealed class DiagnosticRegistryRuleTests
         // already given, and no source is refused for it. One code covers every clause of a row that
         // disagrees with itself, the pool or the function table, and the retained `source-text-*`
         // entries tell the clauses apart. It is published at no milestone.
+        //
+        // Revision 19 is SIXTEEN SEAM CODES and no core code (SJL-13.3's step 1, JSD-0083 decision
+        // D12): one for each meaning a seam code was reached under without publishing it, which the
+        // front end's mapping recorded as a split row. Thirteen are reached by a retained source and
+        // three are defensive, and no code is given a changed meaning. It is published at no
+        // milestone.
         Assert.Equal(72, Vocabulary.Count);
-        Assert.Equal(30, SeamVocabulary.Count);
+        Assert.Equal(46, SeamVocabulary.Count);
         Assert.Equal(Vocabulary.Count + SeamVocabulary.Count, Registry.Count);
-        Assert.Equal(18, DiagnosticRegistry.Revision);
+        Assert.Equal(19, DiagnosticRegistry.Revision);
 
         // The two vocabularies live in two assemblies that cannot see each other, so the one thing
         // no compiler could catch is a number used in both. Nothing else in the build reads both
@@ -375,9 +381,10 @@ public sealed class DiagnosticRegistryRuleTests
         Assert.Equal(
             71,
             Registry.Count(static row => row.Reachability == "corpus"));
-        // Twenty-nine since revision 17, whose JSON module row names a retained `.json` source.
+        // Twenty-nine since revision 17, whose JSON module row names a retained `.json` source, and
+        // forty-two since revision 19, whose thirteen reachable rows each name a retained source.
         Assert.Equal(
-            29,
+            42,
             Registry.Count(static row => row.Reachability == "source"));
         // One seam row is defensive, and which one is the finding: the operand-stack ceiling
         // cannot be reached through this front end, because the parse depth bound refuses at about
@@ -392,7 +399,7 @@ public sealed class DiagnosticRegistryRuleTests
         // owner's decision "Defensive too": the new codes are three, for EE0021, EX0024 and EX0013,
         // where this note said "the two new codes".)
         Assert.Equal(
-            [2303],
+            [2303, 2304, 2305, 2306],
             Registry.Where(static row =>
                     row.Half == "embedder-seam" && row.Reachability == "defensive")
                 .Select(static row => row.Code));

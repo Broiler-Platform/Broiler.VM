@@ -44,7 +44,8 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// lowering's ceiling on parameters is not met beside it. <c>a: b: while (1) { continue a; }</c> stays
 /// refused as the lowering refused it. Code the lowering never lowers is walked silently, so an
 /// overridden function of sloppy eval code keeps the program accepted; a construct the binder refuses
-/// is walked into, so a static block's <c>return</c> value is reported after its 2207.
+/// is walked into, so a static block's <c>return</c> value is reported after its 2219 <i>(revised
+/// 2026-11-08: it read "after its 2207", the code registry revision 19 left for 2219)</i>.
 /// </para>
 /// <para>
 /// <b>The language rules the lowering coded 2207 and 2104 are the binder's too</b> (JSD-0080 decision
@@ -97,28 +98,36 @@ internal static class BinderChecks
         const EvalFlags inField =
             inFunction | EvalFlags.InMethod | EvalFlags.InClassFieldInitializer | EvalFlags.InClassBody;
 
+        // Registry revision 19 (JSD-0083 decision D12, at its registry commit) renumbers the codes these rows
+        // pin where a meaning took a code of its own: super 2212, a cover initialiser 2213, __proto__ twice 2214,
+        // a regular-expression literal 2215, arguments in a class initialiser 2216, an undeclared private name
+        // 2217, return outside a function 2218 and in a static block 2219 (each 2101, 2206 or 2207 until then),
+        // and at the two sites that serve one rule alone the delete of a private member 2101 (2205 until then)
+        // and a destructuring declaration without an initialiser 2102 (2203 until then); places and texts stay as
+        // they were.
+
         // super and return outside what admits them, in a script and in eval code
         yield return Refused(
             "early error: super member outside a method",
             "function f() { return super.x; }",
-            "2101@1:23");
+            "2212@1:23");
         yield return Refused(
             "early error: super call outside a derived constructor",
             "class A { constructor() { super(); } }",
-            "2101@1:27");
-        yield return Refused("early error: return outside a function", "return 1;", "2101@1:1");
+            "2212@1:27");
+        yield return Refused("early error: return outside a function", "return 1;", "2218@1:1");
         yield return Refused(
             "early error: super member in eval code outside a method",
             "super.x;",
-            "2101@1:1",
+            "2212@1:1",
             inFunction);
 
         // the cover grammar, __proto__ and regular-expression literals
-        yield return Refused("early error: a cover initialiser in an object literal", "({ a = 1 });", "2101@1:4");
-        yield return Refused("early error: __proto__ set twice", "({ __proto__: 1, __proto__: 2 });", "2101@1:18");
-        yield return Refused("early error: a regular-expression pattern", "/(/;", "2101@1:1");
-        yield return Refused("early error: regular-expression flags repeated", "/a/gg;", "2101@1:1");
-        yield return Refused("early error: regular-expression flags u and v", "/a/uv;", "2101@1:1");
+        yield return Refused("early error: a cover initialiser in an object literal", "({ a = 1 });", "2213@1:4");
+        yield return Refused("early error: __proto__ set twice", "({ __proto__: 1, __proto__: 2 });", "2214@1:18");
+        yield return Refused("early error: a regular-expression pattern", "/(/;", "2215@1:1");
+        yield return Refused("early error: regular-expression flags repeated", "/a/gg;", "2215@1:1");
+        yield return Refused("early error: regular-expression flags u and v", "/a/uv;", "2215@1:1");
 
         // break and continue targets
         yield return Refused("early error: break outside a loop or switch", "break;", "2207@1:1");
@@ -129,26 +138,27 @@ internal static class BinderChecks
             "a: b: while (1) { continue a; }",
             "2208@1:19");
 
-        // return in a class static block, under the lowering's 2207 (JSD-0080 decision D12): beside another
-        // early error it is reported in its place, as the base's lowering reported both - while the 2207
-        // was left to the lowering, a binder refusal of the other answered that alone - and once for a
-        // finally block the lowering compiled twice
+        // return in a class static block, under 2219, the lowering's 2207 until registry revision 19
+        // (JSD-0080 decision D12, JSD-0083 decision D12): beside another early error it is reported in its
+        // place, as the base's lowering reported both - while the 2207 was left to the lowering, a binder
+        // refusal of the other answered that alone - and once for a finally block the lowering compiled
+        // twice (revised 2026-11-08: it began "return in a class static block, under the lowering's 2207")
         yield return Refused(
             "early error: return in a class static block",
             "class C { static { return; } }",
-            "2207@1:20");
+            "2219@1:20");
         yield return Refused(
             "early error: return in a class static block, and a break after it",
             "class C { static { return; } } break;",
-            "2207@1:20 2207@1:32");
+            "2219@1:20 2207@1:32");
         yield return Refused(
             "early error: return in a class static block, and a cover initialiser after it",
             "class C { static { return; } } ({a=1});",
-            "2207@1:20 2101@1:34");
+            "2219@1:20 2213@1:34");
         yield return Refused(
             "early error: return in a class static block's finally block is reported once",
             "class C { static { try {} finally { return; } } }",
-            "2207@1:37");
+            "2219@1:37");
 
         // await outside an async function, under the lowering's 2104 (JSD-0080 decision D12), and the six sources
         // that reached it. A template substitution's own parse admitted an `await` into the parameters of an arrow
@@ -207,11 +217,11 @@ internal static class BinderChecks
         yield return Refused(
             "early error: delete of a private member",
             "class A { #x; m() { delete this.#x; } }",
-            "2205@1:21");
+            "2101@1:21");
 
         // initialisers a declaration needs
         yield return Refused("early error: const without an initialiser", "const a;", "2203@1:7");
-        yield return Refused("early error: a destructuring declaration without an initialiser", "var [a];", "2203@1:5");
+        yield return Refused("early error: a destructuring declaration without an initialiser", "var [a];", "2102@1:5");
         yield return Refused(
             "early error: const without an initialiser in a for head",
             "for (const a; ;) {}",
@@ -221,29 +231,29 @@ internal static class BinderChecks
         yield return Refused(
             "early error: an undeclared private name",
             "class A { m() { return this.#y; } }",
-            "2206@1:24");
+            "2217@1:24");
         yield return Refused(
             "early error: an undeclared private name in eval code outside a class",
             "this.#x;",
-            "2206@1:1",
+            "2217@1:1",
             inFunction);
         yield return Refused(
             "early error: arguments in a field initialiser",
             "class A { x = () => arguments; }",
-            "2206@1:11");
+            "2216@1:11");
         yield return Refused(
             "early error: arguments in a static block",
             "class A { static { arguments; } }",
-            "2206@1:11");
+            "2216@1:11");
         yield return Refused(
             "early error: arguments in eval code in a field initialiser, once for each reference",
             "arguments; arguments;",
-            "2206@0:0 2206@0:0",
+            "2216@0:0 2216@0:0",
             inField);
         yield return Refused(
             "early error: arguments in eval code in a field initialiser, read and written, once",
             "arguments += 1;",
-            "2206@0:0",
+            "2216@0:0",
             inField);
 
         // a module's declaration, collision and export checks
@@ -274,7 +284,7 @@ internal static class BinderChecks
         yield return Refused(
             "early errors are in source order",
             "break; function f() { return super.x; }",
-            "2207@1:1 2101@1:30");
+            "2207@1:1 2212@1:30");
         yield return Refused(
             "early errors stop at 64",
             string.Concat(Enumerable.Repeat("break; ", 70)),
@@ -302,7 +312,7 @@ internal static class BinderChecks
         yield return Refused(
             "early error in a static block's return value is reported after the 2207",
             "class A { static { return /(/; } }",
-            "2207@1:20 2101@1:27");
+            "2219@1:20 2215@1:27");
     }
 
     /// <summary>

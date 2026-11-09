@@ -2,6 +2,6 @@
 # (src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/RefusedRequests.cs).
 # source.manifest names this file's SHA-256; each unit names its file, beside this one, and that file's SHA-256.
 # Units compile in the order listed, scripts before modules, the first module the root.
-answer|ConstructOutsideManifest
+answer|CompileRequestNotServed
 request|manifest=Numeric|form=Value|backend=-|source-text=kept
 unit|script|main|goal=script,top-level-await=no,nesting=64|refuse-the-value-form-under-the-numeric-manifest.1.js|cb898749d76e51fdaf6c6636920ccdb4f415fc1cffd1e2497636b38cc2469807

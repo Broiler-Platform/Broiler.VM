@@ -109,6 +109,28 @@ internal static class LanguageErrors
         SliceSourceDiagnosticCode.UnexpectedToken => RefusalClass.EarlyError,
         SliceSourceDiagnosticCode.ExpectedToken => RefusalClass.EarlyError,
 
+        // ---- Registry revision 19's codes, each classed as the code it left (JSD-0083 D12). -----
+        //
+        // Each names a meaning one of the codes above or below was reached under without
+        // publishing it, so each takes that code's class and no other: a renumbering moves no
+        // verdict.
+        SliceSourceDiagnosticCode.NewTargetOutsideFunction => RefusalClass.EarlyError,
+        SliceSourceDiagnosticCode.MisplacedSuper => RefusalClass.EarlyError,
+        SliceSourceDiagnosticCode.CoverInitialiserOutsidePattern => RefusalClass.EarlyError,
+        SliceSourceDiagnosticCode.DuplicateProtoProperty => RefusalClass.EarlyError,
+        SliceSourceDiagnosticCode.InvalidRegularExpression => RefusalClass.EarlyError,
+        SliceSourceDiagnosticCode.ReturnOutsideFunction => RefusalClass.EarlyError,
+        SliceSourceDiagnosticCode.ReturnInStaticBlock => RefusalClass.EarlyError,
+        SliceSourceDiagnosticCode.DuplicateImportAttributeKey => RefusalClass.EarlyError,
+        SliceSourceDiagnosticCode.DuplicateModuleKey => RefusalClass.EarlyError,
+        SliceSourceDiagnosticCode.ArgumentsInClassInitialiser => RefusalClass.Divergence,
+        SliceSourceDiagnosticCode.UndeclaredPrivateName => RefusalClass.Divergence,
+        SliceSourceDiagnosticCode.BigIntWiderThanTheFormat => RefusalClass.OutsideManifest,
+        SliceSourceDiagnosticCode.ConstructTheLoweringHasNoArmFor => RefusalClass.OutsideManifest,
+        SliceSourceDiagnosticCode.CompileRequestNotServed => RefusalClass.OutsideManifest,
+        SliceSourceDiagnosticCode.TemplateTooManyStrings => RefusalClass.ImplementationLimit,
+        SliceSourceDiagnosticCode.EvalScopeTooDeep => RefusalClass.ImplementationLimit,
+
         // ---- Static semantics: the early-error rules the specification writes down. -----------
         SliceSourceDiagnosticCode.DuplicateLexicalDeclaration => RefusalClass.EarlyError,
         SliceSourceDiagnosticCode.VarAndLexicalCollision => RefusalClass.EarlyError,
@@ -233,6 +255,22 @@ internal static class LanguageErrors
             SliceSourceDiagnosticCode.ImportMetaOutsideModuleGoal,
             SliceSourceDiagnosticCode.UnsupportedImportAttribute,
             SliceSourceDiagnosticCode.InvalidJsonModule,
+            SliceSourceDiagnosticCode.NewTargetOutsideFunction,
+            SliceSourceDiagnosticCode.BigIntWiderThanTheFormat,
+            SliceSourceDiagnosticCode.MisplacedSuper,
+            SliceSourceDiagnosticCode.CoverInitialiserOutsidePattern,
+            SliceSourceDiagnosticCode.DuplicateProtoProperty,
+            SliceSourceDiagnosticCode.InvalidRegularExpression,
+            SliceSourceDiagnosticCode.ArgumentsInClassInitialiser,
+            SliceSourceDiagnosticCode.UndeclaredPrivateName,
+            SliceSourceDiagnosticCode.ReturnOutsideFunction,
+            SliceSourceDiagnosticCode.ReturnInStaticBlock,
+            SliceSourceDiagnosticCode.ConstructTheLoweringHasNoArmFor,
+            SliceSourceDiagnosticCode.TemplateTooManyStrings,
+            SliceSourceDiagnosticCode.EvalScopeTooDeep,
+            SliceSourceDiagnosticCode.CompileRequestNotServed,
+            SliceSourceDiagnosticCode.DuplicateImportAttributeKey,
+            SliceSourceDiagnosticCode.DuplicateModuleKey,
         };
 
     /// <summary>

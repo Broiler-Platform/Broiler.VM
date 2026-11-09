@@ -289,7 +289,10 @@ runs/a-private-method-and-accessor.js|0|95 205 206 / 2 true false / TypeError
 # manifest admits `super`, so a program that writes one where the language has nothing for it is
 # wrong about the LANGUAGE. Answering 2104 would say this profile declines a construct it
 # implements, and the conformance runner would stop scoring a case it can answer.
-refused/a-super-property-outside-a-method.js|3|2101:UnexpectedToken
+# (Revised 2026-11-08, at SJL-13.3's step 1: registry revision 19 gives a misplaced `super` its own
+# code, 2212 MisplacedSuper, a semantics code as 2101 is a parser one, and neither is 2104, so what
+# this row protects holds. The row read `refused/a-super-property-outside-a-method.js|3|2101:UnexpectedToken`.)
+refused/a-super-property-outside-a-method.js|3|2212:MisplacedSuper
 
 # AND ONE THAT STOPPED BEING A REFUSAL AT ALL. An assignment to an immutable binding - a `const`,
 # or the binding a named class expression gives its own body - was a compile-time 2204 here and is
@@ -643,7 +646,10 @@ refused/a-using-await-in-a-static-block.js|3|2209:ReservedWordAsBinding
 # language states, so it now carries the code every other language error carries. Nothing about the
 # refusal itself changed - the same source is refused at the same position - and what changed is
 # which column a conformance runner may put it in.
-refused/a-return-outside-a-function.js|3|2101:UnexpectedToken
+# (Revised 2026-11-08, at SJL-13.3's step 1: registry revision 19 gives `return` outside a function
+# its own code, 2218 ReturnOutsideFunction, still a language error and not 2104. The row read
+# `refused/a-return-outside-a-function.js|3|2101:UnexpectedToken`.)
+refused/a-return-outside-a-function.js|3|2218:ReturnOutsideFunction
 # WHAT A MODULE GOAL OWES BEYOND THE STATIC FORMS, and the first two rows are the two routes a
 # dynamic import has rather than two spellings of one. The `.mjs` row imports a module its own
 # artifact already carries, so the specifier is one this composition resolved before the bytes were
@@ -1011,7 +1017,11 @@ runs/a-strict-tail-call-at-any-depth.js|0|plain / conditional / true / comma / f
 # KEYS, TARGETS AND A LIVE SET WALK (2026-10-04), and the private-name and escaped-`await` early
 # errors of the same batch. The run's values are the comparison engine's *(JSC-256)*.
 runs/keys-targets-and-a-live-set-walk.js|0|true set set / TypeError 1 / 1,2 / true,true / 1,2,3,2
-refused/a-private-name-as-a-binding.js|3|2209:ReservedWordAsBinding at 3:5: `#a` is a private name and not a binding name
+# (Revised 2026-11-08, at SJL-13.3's step 1: registry revision 19 answers a private name where a
+# binding name is read with 2101 UnexpectedToken, the code its catalogue row maps to; 2209 means a
+# reserved word, which `#a` is not. Place and message are unchanged. The row read
+# `refused/a-private-name-as-a-binding.js|3|2209:ReservedWordAsBinding at 3:5: `#a` is a private name and not a binding name`.)
+refused/a-private-name-as-a-binding.js|3|2101:UnexpectedToken at 3:5: `#a` is a private name and not a binding name
 refused/an-escaped-await-as-an-async-arrow-parameter.js|3|2209:ReservedWordAsBinding at 3:15: `await` is not a binding name
 
 # THE LEGACY `caller` AND `arguments` (2026-10-04). The comparison engine wraps a script in a module

@@ -891,7 +891,7 @@ internal sealed class JsParser
     /// semicolon, which is the ordinary syntax error and not a refusal of a surface.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=61FAAA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=A541DE
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<JsImportAttribute> Attributes()
     {
@@ -950,7 +950,7 @@ internal sealed class JsParser
                 {
                     Refuse(
                         at,
-                        SliceSourceDiagnosticCode.DuplicateExportName,
+                        SliceSourceDiagnosticCode.DuplicateImportAttributeKey,
                         "the import attribute `" + key + "` is given twice");
 
                     break;
@@ -1820,7 +1820,9 @@ internal sealed class JsParser
     /// differently: <c>2104</c> says this profile declines a construct it could otherwise run, and
     /// would take every strict-mode <c>with</c> case out of both the pass and the fail column. The
     /// manifest admits <c>with</c>, so a program that writes one in strict code is wrong about the
-    /// LANGUAGE — which is <c>2101</c>, exactly as a <c>super</c> property outside a method is.
+    /// LANGUAGE — which is <c>2101</c>, a language error as a <c>super</c> property outside a method
+    /// is, which registry revision 19 codes 2212 (JSD-0083 decision D12). <i>(Revised 2026-11-08: it
+    /// read "which is <c>2101</c>, exactly as a <c>super</c> property outside a method is.")</i>
     /// </para>
     /// <para>
     /// <b>A function body, a class body and a module are all strict</b>, and the parser already
@@ -2339,7 +2341,7 @@ internal sealed class JsParser
 
     // ---- functions -----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=935033
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BE1949
     // Broiler-Human:        PENDING
     private JsFunctionNode ParseFunctionRest(
         SliceSourceSpan span, bool declaration, bool isAsync = false)
@@ -2383,7 +2385,7 @@ internal sealed class JsParser
             {
                 Refuse(
                     Span(),
-                    SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                    SliceSourceDiagnosticCode.UnexpectedToken,
                     "`" + Current.RawText + "` is a private name and not a binding name");
             }
 
@@ -4238,7 +4240,7 @@ internal sealed class JsParser
     /// setter is called with exactly one argument and a rest parameter would be asking for a count
     /// the caller never varies.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=804D03
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7D1C23
     // Broiler-Human:        PENDING
     private void ValidateAccessorParameters(
         bool isGetter,
@@ -4267,7 +4269,7 @@ internal sealed class JsParser
         {
             Refuse(
                 span,
-                SliceSourceDiagnosticCode.ExpectedToken,
+                SliceSourceDiagnosticCode.UnexpectedToken,
                 "a setter takes exactly one parameter");
 
             return;
@@ -5657,7 +5659,7 @@ internal sealed class JsParser
     /// unexpected token rather than as a construct outside the manifest is the point: the manifest
     /// is not what forbids it, the language is.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1619EC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=AED1F8
     // Broiler-Human:        PENDING
     private JsExpression ParseNewTarget(SliceSourceSpan span)
     {
@@ -5679,7 +5681,7 @@ internal sealed class JsParser
         {
             Refuse(
                 span,
-                SliceSourceDiagnosticCode.UnexpectedToken,
+                SliceSourceDiagnosticCode.NewTargetOutsideFunction,
                 "`new.target` names how a function was called and no function encloses this one");
 
             return new JsNullLiteral(span);
@@ -6386,24 +6388,27 @@ internal sealed class JsParser
     }
 
     /// <summary>A gated BigInt literal: its exact value, or a refusal at the literal.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7D90F2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=A25CC1
     // Broiler-Human:        PENDING
     private JsExpression BigIntLiteral(SliceSourceSpan span, SliceToken token)
     {
         if (!BigIntValueOf(token, out var value))
         {
-            return OutsideExpression(
+            Refuse(
                 span,
+                SliceSourceDiagnosticCode.BigIntWiderThanTheFormat,
                 "a BigInt literal wider than " +
                 (Format.JsFormat.CeilingBigIntConstantBytes * 8).ToString(System.Globalization.CultureInfo.InvariantCulture) +
-                " bits");
+                " bits is not admitted by the declared feature manifest");
+
+            return new JsNullLiteral(span);
         }
 
         return new JsBigIntLiteral(span, value);
     }
 
     /// <summary>A BigInt literal used as a property key: its exact decimal spelling.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F75A8B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=504B40
     // Broiler-Human:        PENDING
     private string BigIntKey(SliceToken token)
     {
@@ -6411,9 +6416,10 @@ internal sealed class JsParser
         {
             Refuse(
                 new SliceSourceSpan(token.Line, token.Column),
+                SliceSourceDiagnosticCode.BigIntWiderThanTheFormat,
                 "a BigInt literal wider than " +
                 (Format.JsFormat.CeilingBigIntConstantBytes * 8).ToString(System.Globalization.CultureInfo.InvariantCulture) +
-                " bits");
+                " bits is not admitted by the declared feature manifest");
 
             return string.Empty;
         }
@@ -6597,7 +6603,7 @@ internal sealed class JsParser
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=677E50
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=32DA7F
     // Broiler-Human:        PENDING
     private string BindingName()
     {
@@ -6609,7 +6615,7 @@ internal sealed class JsParser
         {
             Refuse(
                 Span(),
-                SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                SliceSourceDiagnosticCode.UnexpectedToken,
                 "`" + token.RawText + "` is a private name and not a binding name");
 
             Advance();
