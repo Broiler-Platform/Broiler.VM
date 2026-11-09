@@ -754,6 +754,31 @@ Broiler.JS's embedding carries native digits and symbols for its locales' defaul
 keys or tables Broiler.VM's data does not carry." Its reason: "Broiler.VM cannot grow. Broiler.JS passes non-latn
 tests today." That holds for digits only (F10).
 
+*(Noted 2026-11-09: the owner's ruling of 2026-11-09, "Follow CLDR, dated ruling", the owner's own dated choice, asked
+and answered that day at SJL-9.5.)* This decision's reason reads "Broiler.JS passes test262's
+`DateTimeFormat/prototype/format/numbering-system.js` at its base. That file asserts U+066B for `en-US-u-nu-arab` (row
+T37), and template T2 forbids losing it." SJL-9.5's third stage moved Broiler.JS's DateTimeFormat onto the shared Intl
+library, on a branch of Broiler.JS that has not merged, and its pre-check, which is not evidence, found that file
+passing at the stage's base and failing after, in UTC and in New York. The failing assertion is not row T37's: the file
+also expects `"〇二:三五:〇六 AM"` for `en-US-u-nu-hanidec` with two-digit hour, minute and second (its line 26), a plain
+space before the day period, where the library writes U+202F NARROW NO-BREAK SPACE, which is CLDR 48.2.0's own pattern
+(data row T12, data policy C5) and which part C's dates group of Broiler.JS's rule requires. The test asks for the plain
+space of the patterns before CLDR 42.
+- **The ruling.** Broiler.JS loses `test/intl402/DateTimeFormat/prototype/format/numbering-system.js` under data row
+  T12, and the file is listed by name, as Broiler.JS's corpus revision 36 ("Revision 36: follow CLDR", the owner's
+  decision of 2026-11-08) listed the vectors whose expected value the pinned CLDR contradicts. The reason's sentence
+  quoted above holds of row T37's assertions, which the library's symbols answer; the file's verdict is lost to row
+  T12's data. Broiler.JS's own records of the ruling, its bundle's rule revision among them, are made in Broiler.JS;
+  this note is this record's alone.
+- **Not taken: "Plain space like V8".** The library, or Broiler.JS's adapter over it, would have written U+0020 before
+  the day period, as V8 substitutes it for ICU's pattern, against the pinned data and part C's dates group.
+- **This family's verdicts are not affected.** This family fails that file today, in both variants and both forms, at
+  an assertion before the line row T12 reaches: `en-US-u-nu-arab` with fractional seconds asks for U+066B, the `arab`
+  decimal separator, where this family writes the `latn` symbols this decision keeps (row T37). A local run of the
+  conformance root at the default branch's `f71edf6`, which is not evidence, gives that answer, and so do the hosted
+  reports bundle `sjl-12-001` retains (`after/hosted/wide-bytecode.report.gz` and `wide-native.report.gz`). The ruling
+  moves nothing of this family's DateTimeFormat, its data or its rules.
+
 **Decision D22 - the L2 form, and the gate of each library stage.** **A differential check against this family's
 code** (its code at its rule commit, beside the library, test-only, JIT only) over a declared population: every Intl
 vector, every dataset input as a library call, and seeded random tags, numbers, dates and durations. It runs as
