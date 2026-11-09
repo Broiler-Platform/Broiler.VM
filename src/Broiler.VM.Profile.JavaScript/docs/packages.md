@@ -45,8 +45,10 @@ it read "but four", before `Broiler.ECMAScript.Frontend` joined it)*:
 - `Broiler.ECMAScript.Algorithms`, the shared JavaScript libraries' algorithms package, which
   `Broiler.VM.Profile.JavaScript` and `.Compiler` declare at `0.1.0-preview.10` since 2026-11-08, published to
   nuget.org from Broiler.JS `29061d65` with `0.1.0-preview.8`'s code, as the baseline's candidate pack does; they
-  declared it at `0.1.0-preview.9`, published to nuget.org from Broiler.JS `6f7284da`, from 2026-11-03; they
-  declared it at `0.1.0-preview.8`, published to nuget.org from Broiler.JS `3b4b6860`, from 2026-10-29, and at
+  declared it at `0.1.0-preview.9`, published to nuget.org from Broiler.JS `6f7284da` with `0.1.0-preview.8`'s
+  code, from 2026-11-03 *(revised 2026-11-08, at SJL-13.3's step 1: it read "declare at `0.1.0-preview.9` since
+  2026-11-03, published to nuget.org from Broiler.JS `6f7284da` with `0.1.0-preview.8`'s code, as the baseline's
+  candidate pack does")*; they declared it at `0.1.0-preview.8`, published to nuget.org from Broiler.JS `3b4b6860`, from 2026-10-29, and at
   `0.1.0-preview.7` from 2026-10-19, when they took decision D12 of
   [JSD-0078](decisions/0078-the-temporal-core-moves-to-the-shared-algorithms-library.md), published to nuget.org
   from Broiler.JS `5ddee40` *(revised 2026-11-03, JSC-323. It read "`Broiler.VM.Profile.JavaScript` and `.Compiler`
