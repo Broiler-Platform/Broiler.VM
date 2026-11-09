@@ -54,6 +54,21 @@
   first clause, a corpus input the classification does not explain, is read from runs the rule judges, and the
   pre-check that found `T052945` and row D64's inputs is not one; rows P37 and D64 and class N are filed before any
   such run, so the classification explains those inputs when it is first applied.
+- *(Added 2026-11-09, later that day.)* **The owner's four decisions of 2026-11-09's second round are recorded**, the
+  owner's own dated choices, asked and answered that day, in dated notes on decisions D11, D15 and D21, on the table
+  "The corrections step 1 makes, and how each is shown" and on "What this rejects, and why": "One true text per code",
+  "Exempt and record", "Rows + class F" and "Widen N narrowly". Each shared code renders one text that states its own
+  condition, and the texts `JsParser` gave each site retire. Bundle `sjl-13-001`'s part F compares the sources the
+  library accepts and lists those it refuses, and the slice path's acceptance of strict `\8` and `\08` is recorded as
+  a known defect of this family, handed with the slice path's half of row T33 to SJL-15.4 as hand-off H25. The
+  correspondence gains rows **T33**, **P38** and **P39**, three corrections of this family that step 1 makes and that a
+  test262 file reaches. Part B's class N takes, in its kind (code), a binder
+  diagnostic of a row of any stage at exactly the library's place. The rule's second revision of that day,
+  [`decision-rule-area-revised-2026-11-09b.md`](../../../../docs/evidence/sjl-13-001/decision-rule-area-revised-2026-11-09b.md),
+  carries the three rule changes. No sub-area's verdict changes. This record reads no clause of "Falsified if" as
+  met: its first clause is read from runs the rule judges, which the pre-check is not, and the rows and the widening
+  are filed before any; on its fourth, the note on decision D21 gives this record's reading, which is not the owner's
+  decision and which the owner is asked to confirm.
 
 **Date:** 2026-10-26.
 
@@ -117,7 +132,7 @@ review." This record reads it in two parts, as JSD-0080, JSD-0081 and JSD-0082 d
 - **Findings.** F1 to F32 are the correspondence's findings against the plan and the records, in its section "What the
   rows find against the plan and the records". S1 to S4 are the items the stage table's step reported.
 - **Hand-offs.** H1 to H24 are the rows of the correspondence's hand-off table, which this record carries (section
-  "The hand-offs").
+  "The hand-offs"). *(Noted 2026-11-09, later that day: H1 to H25, since H25 was added then.)*
 - **Steps.** A step of SJL-13 is named by its work package, SJL-13.0 to SJL-13.6. SJL-13.2's library is taken in six
   stages, one merge each: **a**, the skeleton and the request; **b**, the tokenizer; **c**, the tree and the parser;
   **d**, the diagnostics and the parse-time early errors; **e**, the limits, determinism and fuzzing; **f**, the
@@ -209,7 +224,9 @@ Broiler-Platform/Broiler.JS#1081, where the stage table has the same SHA-256):
   reserved word as an import specifier without `as` (D40).
 - **Corrections of this family that SJL-13 does not make**: the dynamic function's goals (P26, D61, H18), the
   top-level-`await` reading of an async arrow (P32 item 10, H19), `continue` to an outer label of a label set (D30,
-  H20), and the regular-expression validator's errors (R19, H21).
+  H20), and the regular-expression validator's errors (R19, H21). *(Noted 2026-11-09, later that day: and the slice
+  path's two defects that step 1 leaves, T33's exception and its acceptance of a strict directive's `\8` and `\08`,
+  H25.)*
 - **`JsParser` emits base codes of split rows**, at sites that serve one rule and at sites that serve several (section
   D-b, findings F1 and F2), and **its parse-stage lists are cascades**, not all errors (rows D04 and D05, finding F9).
 - **The binder's checks of `syntax` rows are listed member by member** (section D-d, finding F14), and Broiler.VM's
@@ -544,15 +561,43 @@ join the table, and the rule's revision of 2026-11-09 names them in both places:
 the conformance root compiles the module tests of row D64's inputs through `JsCompiler.Compile`, whose binder refuses
 them at the base; so part A's kind (F) is still expected to list nothing.
 
+*(Noted 2026-11-09, later that day: the owner's decision "Rows + class F" of that day's second round, recorded under
+decision D15.)* The note above ends "so part A's kind (F) is still expected to list nothing", and this section's
+second sentence reads "No test262 file reaches any of them". Three rows join the table, each reached by a test262 file
+that fails at the base, and the rule's second revision of 2026-11-09 names them in part A's kind (F) and part B's class
+F:
+
+| Row | What step 1 corrects | How it is shown |
+|---|---|---|
+| T33 | a regular-expression literal whose body ends with a backslash at the end of the text, on which this family's tokenizer threw `ArgumentOutOfRangeException` where it should report 2006 | test262 (part A's kind (F)): `test/staging/sm/RegExp/7.8.5-01.js` |
+| P38 | an arrow function's concise body in a `for` statement's head, which `JsParser` read with `in` admitted | test262 (part A's kind (F)): `test/staging/sm/statements/arrow-function-in-for-statement-head.js` |
+| P39 | a comma expression as a computed property name, which `JsParser` read as an Expression where the specification has an AssignmentExpression | test262 (part A's kind (F)): `test/staging/sm/class/compPropNames.js` |
+
+Two rows already in the table are reached by a test262 file too, which the same pre-check moved from failing at the
+base to passing: T24f by `test/staging/sm/async-functions/await-in-arrow-parameters.js` and P15b by
+`test/staging/sm/expressions/destructuring-pattern-parenthesized.js`, each failing at the base in the correspondence's
+VT (its F19, as its note of 2026-11-09, later that day, reads it). So part A's kind (F) is now expected to list the
+variants of those five files, each with its row, and nothing else, as the rule's second revision of 2026-11-09 says
+(its item 2); the sentences quoted above, "No test262 file reaches any of them" and "so part A's kind (F) is still
+expected to list nothing", no longer hold. Row T33's correction is the wide path's alone: the slice path keeps
+`SliceTokenizer` until SJL-15.4 (hand-off H25).
+
 **Corrections of this family that SJL-13 does not make**, each handed on and admitting nothing in either of SJL-13's
 bundles: P26 and D61, the dynamic function's goals (H18); P32's item 10, the top-level-`await` reading of an async
 arrow at a module's top level (H19); D30, `continue` to an outer label of a label set (H20); R19, the
-regular-expression validator's errors (H21, SJL-11.4).
+regular-expression validator's errors (H21, SJL-11.4). *(Noted 2026-11-09, later that day, with the owner's decisions
+"Rows + class F" and "Exempt and record" of that day's second round: two defects of the slice path that step 1 leaves
+join these, handed on as H25 to SJL-15.4, which rebuilds the slice path: `SliceTokenizer`'s exception on a
+regular-expression literal whose body ends with a backslash at the end of the text, the slice path's half of row T33,
+and `SliceParser`'s acceptance of a strict directive with a legacy octal or non-octal decimal escape, `\8` and `\08`
+(the catalogue's EE0004; decision D21's note of that day).)*
 
 ## The hand-offs
 
 H1 to H17 are the items earlier bundles and records labelled SJL-13, each reassigned with its source; H18 to H24 are
-what the correspondence hands to later work. Line numbers are at the heads the correspondence names.
+what the correspondence hands to later work. Line numbers are at the heads the correspondence names. *(Noted
+2026-11-09, later that day: H25, added then with the owner's decisions "Rows + class F" and "Exempt and record" of that
+day's second round, is one more, so H18 to H25 are what the correspondence hands on.)*
 
 | Hand-off | Source | What | Where it goes | Why |
 |---|---|---|---|---|
@@ -580,6 +625,7 @@ what the correspondence hands to later work. Line numbers are at the heads the c
 | H22 | the correspondence (the column "Correction of Broiler.JS" in every sub-area) | every correction of Broiler.JS this file classes | SJL-14's `corrections.md` (D45's K1 to K10), with the specific actions F23 to F28 name: the derived-constructor flag (R24), the direct-eval prefix and its skip sites (N25, N26), the two token re-scans (R36, T16), each entry point's request (R35), the bridged token facts (N18), and the tests that assert acceptance past the limits (R12, R13) | SJL-13 changes no Broiler.JS front end; the library corrects these when Broiler.JS parses with it (F28) |
 | H23 | the correspondence (rows T13, T12's .NET hexadecimal parses on the slice path; H2, H3) | the slice path's tokenizer defects (white space and `_` inside an escape's hexadecimal digits) | SJL-15.4, which removes `SliceTokenizer` (D60) | the slice path keeps `SliceTokenizer` until SJL-15 (F17 on part F) |
 | H24 | the correspondence (row R35, J1k) | Broiler.JS's opt-in tiering recompile parses a promoted function's text under the Script goal whatever goal the function was compiled under, and gets strictness by a `'use strict';` prefix | SJL-14's W1 (the bridge passes the function's goal and forced strictness at that site), or Broiler.JS's own backlog | behind a switch that is off by default; no probe reaches it (F26) |
+| H25 | the correspondence (row T33; the catalogue's slice-path cell on EE0004; `J000262`, `J001009`) *(added 2026-11-09, later that day)* | the slice path's defects that step 1 leaves: `SliceTokenizer`'s scan of a regular-expression literal whose body ends with a backslash at the end of the text, which throws `ArgumentOutOfRangeException` (T33), and `SliceParser`'s directive prologue, which keeps a string with a legacy octal or non-octal decimal escape in strict code with no early error (EE0004, JSE1204) | SJL-15.4, which rebuilds the slice path on the shared library and deletes `SliceParser` and `SliceTokenizer` (D60) | step 1 changes neither the slice path nor its tokenizer (decision D21's note of 2026-11-09, later that day; bundle `sjl-13-001`'s part F lists both inputs) |
 
 ## The owner's decisions of 2026-10-26
 
@@ -781,6 +827,31 @@ revision of 2026-11-09 adds, where it stands elsewhere or carries another code, 
 detected at `JsParser`'s token; where it is not, class N lists the input. First-error stays this family's request,
 and no message text of a code whose meaning stays changes.
 
+*(Noted 2026-11-09, later that day: the owner's decision "One true text per code" of that day's second round, the
+owner's own dated choice, asked and answered that day.)* This decision says "**This family renders every message text
+it renders today for a code whose meaning stays**, the 2104 suffix " is not admitted by the declared feature manifest"
+included (`Test262Families`, `SourceFrontEndChecks`)", and its note of 2026-11-09 ends "and no message text of a code
+whose meaning stays changes." Step 1's second stage, built again on its unpushed branch `sjl-13-3-step1c`, found in a
+local pre-check, which is not evidence, that the library's shared codes are coarser than `JsParser`'s sites, so that
+one text per code, taken from one site, states something false of another: JSE9103's text "a numeric separator that is
+not between two digits" was rendered for `1.5n`, `0b2n` and `08n`, and "a unicode escape that names no code point",
+the text JSE1316 and JSE9105 share, for `a\01` in a template. The owner decided that **each shared code renders one
+text that states its own condition**: where a code covers several of `JsParser`'s sites, its text is a general wording
+that is true of each, such as "an invalid BigInt literal". **The texts `JsParser` gave each site retire from step 1.**
+The change is this family's, in its table of texts; the library does not change. So the sentence quoted first now
+reads "This family renders, for each shared code, one text that states that code's condition", and the note's last
+clause reads "and the message texts are those this note gives". A text of a manifest refusal still ends with the
+suffix the sentence names, which states its condition. The top-level-`await` row of `SourceFrontEndChecks` still
+holds as this decision states it: a refusal there takes the code of the same construct in a non-async function, and
+with it that code's one text. The reason's "messages are not contract, but this family's tallies and checks read
+them" stands: each row of the slice compiler's `--checks` and of the lane's CLI acceptance table that pins a text
+moves in the commit of step 1 that moves it, with a dated note, as decision D12 asks of the table. No part of bundle
+`sjl-13-001`'s rule reads a text, as its second revision of 2026-11-09 shows part by part
+([`decision-rule-area-revised-2026-11-09b.md`](../../../../docs/evidence/sjl-13-001/decision-rule-area-revised-2026-11-09b.md), section "Message texts"), so the decision moves no code, place, stage or outcome and needs no class.
+- **Not taken: "Library finer conditions".** Broiler.JS's library would have split its shared codes or conditions as
+  finely as `JsParser`'s sites, in a new preview of the shared stream, `0.1.0-preview.11`, admitted here again, so
+  that each site's text could be kept.
+
 **Decision D14 - the limits** *(revised 2026-10-26, finding F18)*. **The tree-depth constant is derived at SJL-13.2e
 as JSD-0022 derived this family's**, with the stack it requires stated beside it; **the derivation must admit this
 family's bound on the stack `CompilationStack` declares**; if it cannot, the library is reworked (explicit stacks),
@@ -909,6 +980,38 @@ The owner decided as follows.
   row P37's shape, keeping the bytes and a known defect of this family on the wide path.
 - **Not taken: "Record as finding"** (for the module-request path). The outcome moves would have been recorded as a
   finding, and part B would not have been met.
+
+*(Noted 2026-11-09, later that day: the owner's decisions "Widen N narrowly" and "Rows + class F" of that day's second
+round, the owner's own dated choices, asked and answered that day.)* The note above says of class N, in its item 1,
+"Only for an input refused at both commits, the after commit's one diagnostic is admitted at the library's place, or
+under the code the mapping gives for the library's diagnostic, or both", and the rule's revision of 2026-11-09 says
+"An input whose registry list leaves no r is not in N.", r being taken only from the parse or from the binder's check
+of a row the stage table assigns `syntax`. Step 1's second stage, in its local pre-check on its unpushed branch
+`sjl-13-3-step1c`, which is not evidence, found `T001070` (`test/annexB/language/statements/for-in/bare-initializer.js`,
+`for (a = 0 in {});`), refused at the base by the binder alone with `2205:15:6`, the check `JsBinder.Walks.cs:1397`
+makes, of the catalogue's row EE0054, which the stage table assigns `semantics` (the correspondence's B21), and after by
+the library at the parse with `2101:15:6`, in sub-populations B1 and B2. No class admitted it.
+1. **"Widen N narrowly".** Class N's kind (code) also takes a binder diagnostic of a row of any stage the stage table
+   assigns, but only where the library's one diagnostic stands at exactly that diagnostic's line and column; each such
+   input is listed. This record reads the widening as applying only where the registry list leaves no other r, since
+   N's kinds (place) and (place and code) already admit any place where an r exists, so such an input is of kind
+   (code) alone, and is listed with r's row of the stage table and its stage. Nothing else widens: N's code is still
+   the registry_code of the mapping's `code` row for the library's message's shared code, and this decision's "No position class but part B's class N" is
+   unchanged. The rule's second revision of 2026-11-09, [`decision-rule-area-revised-2026-11-09b.md`](../../../../docs/evidence/sjl-13-001/decision-rule-area-revised-2026-11-09b.md), item 3, states it.
+   `T001070` is such an input.
+2. **"Rows + class F"**, for three test262 files that fail at the base and pass after because the library corrects
+   this family: the correspondence's rows **T33** (this family's tokenizer threw `ArgumentOutOfRangeException` on a
+   regular-expression literal whose body ends with a backslash at the end of the text, `/a[bc\`), **P38** (`JsParser`
+   read an arrow's concise body in a `for` statement's head with `in` admitted, `for (x => 0 in 1;;)`) and **P39** (it
+   read a computed property name as an Expression, `({[1, 2]: 3})`), each a correction of Broiler.VM, which part A's
+   kind (F) and part B's class F name from that revision, filed on the default branch before any run it judges.
+   No tree of an accepted input moves by them: the parse corpus holds each test file as an input accepted at both
+   commits, whose source the row names is a string the test compiles at run time.
+- **Not taken: "Correction row"** (for `T001070`). A row of the correspondence would have recorded the move of that
+  input's refusal from the binder's 2205 to the library's 2101 at the parse as a correction, which class F would have
+  admitted.
+- **Not taken: "Record as findings"** (for the three test262 files). Part A would have recorded each as a finding the
+  correspondence missed, and so as a regression, and would not have been met.
 
 **Decision D17 - proposal flags, the lexer extension, the switches** *(revised 2026-10-26, finding F16)*. Proposal
 flags off by default. This family admits none (the decorator is JSE7201, mapped to 2104 within meaning), and reports
@@ -1219,6 +1322,35 @@ and does not take `SliceToken`'s conventions. The reason: the milestone names it
 names. The plan's text read: "**A checks row added at step 1** compares the two tokenizers' streams over every input
 the slice path accepts (part F); no class." Compared fact by fact as written, it would fail on escaped identifiers,
 which `SliceToken` keeps by their cooked name (rows T31 and T32, finding F17).
+
+*(Noted 2026-11-09, later that day: the owner's decision "Exempt and record" of that day's second round, the owner's
+own dated choice, asked and answered that day.)* This decision reads "**A checks row added at step 1** compares the
+two tokenizers' streams over every input the slice path accepts (bundle `sjl-13-001`'s part F); no class." Step 1's
+second stage, in its local pre-check on its unpushed branch `sjl-13-3-step1c`, which is not evidence, found two inputs
+of that population which the slice path accepts and the library refuses: `J000262` (`'use strict'; "\8";`) and
+`J001009` (`'use strict'; "\08";`). The library's refusal is right: a legacy octal or non-octal decimal escape in strict
+code is an early error (the specification's section 12.9.4.1; the catalogue's EE0004, shared code JSE1204, which the
+mapping gives 2210), which the wide path reports at the base too (the correspondence's VB, sub-population B1,
+`2210:1:15`). The slice path accepts both (VB's B4), because its parser keeps a directive's string with no strict check
+(the catalogue's cell for the slice path on EE0004). The library keeps no token stream for a source it refuses, so the
+row cannot compare them. The owner decided:
+- **The row compares the inputs the library's parse accepts, and lists by name, with the library's code, each input
+  of its population that the library's parse refuses**; no class still. The rule's second revision of 2026-11-09,
+  [`decision-rule-area-revised-2026-11-09b.md`](../../../../docs/evidence/sjl-13-001/decision-rule-area-revised-2026-11-09b.md), item 4, states it, with part F's MET line.
+- **The slice path's acceptance of strict `\8` and `\08` is a known defect of this family**, left for the slice path's
+  own change, which SJL-15.4 makes, and not made at step 1; it is handed on as H25 (section "The hand-offs"), with the
+  slice path's half of the correspondence's row T33. So sub-population B4 of bundle `sjl-13-001`'s part B and its
+  census stay unchanged at step 1, and both inputs stay accepted there.
+
+This record's "Falsified if" names "The shared tokenizer disagreeing with the slice tokenizer on an input the slice path
+accepts." `J000262` and `J001009` do not meet that clause as this note reads it: the two paths differ there in an early
+error the specification states, which the library reports and the slice path omits, and that omission is the defect
+recorded above; no token of either input is compared, since the library keeps no stream for it. This reading is this
+record's, not part of the owner's decision, which settles the checks row and the record of the defect; the owner is
+asked to confirm it before the change that files it merges.
+- **Not taken: "Fix the slice path now".** The slice path would have been given the strict check of a directive's
+  escape at step 1, so that the two paths agree on both inputs; sub-population B4 and the census would then have moved
+  at step 1, which part B admits under no class but R.
 
 **Decision D23 - JS-2's concurrency and deep-nesting items on the wide path** *(revised 2026-10-26, finding F18)*.
 **Two `--checks` rows in the tools commit**, judged by part C at both commits, the deep-nesting row holding only sources
@@ -1838,6 +1970,13 @@ configuration; part H's population and controls; "Revisions"; "What this file do
   both commits, where that code is the registry_code of the mapping's `code` row for the library's message's shared
   code, each input listed with both lists. A position class for accepted inputs, or one that moves an outcome, is
   still rejected, and so are ordering and template classes.)*
+  *(Noted 2026-11-09, later that day: the owner's decision "Widen N narrowly" of that day's second round, recorded
+  under decision D15, narrows this once more, and no further. Class N's kind (code) also takes a binder diagnostic of
+  a row of any stage the stage table assigns, where the registry list leaves no other r and the library's one
+  diagnostic stands at exactly that diagnostic's line and column, each such input listed with that row and its stage.
+  A position class is still rejected wherever N does not reach. The other alternatives that day's decisions did not
+  take, "Library finer conditions", "Fix the slice path now", "Record as findings" and "Correction row", are recorded
+  under decisions D11, D21 and D15.)*
 - **Passing the visible private names or the caller's lexical names at SJL-13**: each would move a run-time check to
   the parse (decision D16).
 - **One import-phase proposal flag**: SJL-14 would accept declaration forms Broiler.JS has no deferred namespace for
