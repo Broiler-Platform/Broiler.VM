@@ -32,10 +32,15 @@ pre-check found three kinds of difference that part B, as filed and as revised, 
   both commits report their one diagnostic at another place than `JsParser`'s first, most often on the same line, or at
   the same place under another registry code. That code is the one the mapping gives for the library's diagnostic,
   most often EX0008's 2101 "unexpected token" where `JsParser`'s `Expect` reported 2102 for a missing token. A smaller
-  set reports, as its one diagnostic, one that the base reported after its first. Part B admits a code pair only under
-  R and R2, and its sentence "no ordering, template or position class" fixes every place to this family's at the base.
+  set reports, as its one diagnostic, one that the base reported after its first. Another set was refused at the
+  base by the binder alone, after a parse `JsParser` accepted, for a check of a row the stage table assigns `syntax`
+  (a name bound twice, a `var` that collides with a lexical name, an invalid assignment target); the library makes
+  that check at the parse and reports it at another place, most often later on the same line, or under another code.
+  Part B admits a code pair only under R and R2, and its sentence "no ordering, template or position class" fixes
+  every place to this family's at the base.
 - **One input accepted at both commits whose artifact bytes change:** `T052945`
-  (`test/staging/sm/class/superCallBadNewTargetPrototype.js`), whose line 27 holds `new new Proxy(inst, {get})()`.
+  (`test/staging/sm/class/superCallBadNewTargetPrototype.js`), whose line 27 holds `new new Proxy(inst, {get})()`
+  and whose line 30 holds `new new Proxy(defaultInst, {get})()`.
   `JsParser` reads it as `new ((new Proxy(…))())`: in `ParseMemberOnly`, a `new` operand goes to `ParseCallChain`,
   whose loop takes the second argument list as a call. The library reads it as the specification does,
   `new (new Proxy(…))()`. No row of the correspondence named this correction, so class F could not admit it.
@@ -65,19 +70,23 @@ with a dated note, and its section "The rows by class" lists each under "Correct
 
    "N the first refusal's place and code (decision D11; decision D15, as JSD-0083's note of 2026-11-09 on it bounds it)
    - an input refused at the base commit, at the registry commit and at the after commit, whose list at the after
-   commit holds exactly one diagnostic, the library's first refusal (decision D11), whose code is one that the
-   mapping's revision at the after commit gives for that diagnostic's library message, and whose two lists, at the
-   registry commit and at the after commit, S7 would admit, read with R, R2 and S's other kinds, but for that
-   diagnostic's place, its code, or both. Write r for the diagnostic of the registry commit's list that S7 keeps: of
-   that list's diagnostics that S3 and S6 do not remove, the one first in the source text, by line and then column, and
-   among several at one place the first in the list. The
-   input's kind is (place) when the after commit's diagnostic stands at another line or column than r, with r's code or
-   one R or R2 pairs with it; (code) when it stands at r's line and column, with a code that is neither r's nor one R or
-   R2 pairs with r's; and (place and code) when it stands at another line or column, with such a code. An input whose
-   registry list leaves no r is not in N. The library's message is read by one run of the after commit's front end over
-   that unit under this family's request, one process, retained. In B1 to B3 and B5 only; never an input accepted at
-   either commit, never an outcome that moves, never B4 or the census; each listed with both lists, its kind, the
-   library's message and the mapping row that gives its code"
+   commit holds exactly one diagnostic, the library's first refusal (decision D11), whose code equals the
+   registry_code of the mapping's `code` row, at the mapping's revision at the after commit, whose shared code is that
+   diagnostic's library message's, and whose two lists, at the registry commit and at the after commit, S7 would
+   admit, read with R, R2 and S's other kinds, but for that diagnostic's place, its code, or both. The library's
+   message is the shared code (JSEnnnn) and the condition identifier that one run of the after commit's front end over
+   that unit under this family's request reports for that diagnostic, one process, retained. Write r for the
+   diagnostic of the registry commit's list that the after commit's one diagnostic stands for: of that list's
+   diagnostics that S6 does not remove, and that S3 does not remove or that are the binder's check of a row the stage
+   table assigns `syntax` (a check the library makes at the parse from step 1; decisions D10 and D20), the one first
+   in the source text, by line and then column, and among several at one place the first in the list. A binder
+   diagnostic of a `syntax` row is thus r's candidate, and is not removed by S3 when it is r. The input's kind is
+   (place) when the after commit's diagnostic stands at another line or column than r, with r's code or one R or R2
+   pairs with it; (code) when it stands at r's line and column, with a code that is neither r's nor one R or R2 pairs
+   with r's; and (place and code) when it stands at another line or column, with such a code. An input whose registry
+   list leaves no r is not in N. In B1 to B3 and B5 only; never an input accepted at either commit, never an outcome
+   that moves, never B4 or the census; each listed with both lists, its kind, r and the stage that reported it at the
+   registry commit (the parse or the binder), the library's message and the mapping row that gives its code"
 
    It is called N because no class of this rule holds that letter (R, R2, S, F, L and L2 are part B's, C1 to C6 part
    A's), and because the letter before it, M, is SJL-14's class for Broiler.JS's message changes (decision D46), which
@@ -91,18 +100,22 @@ with a dated note, and its section "The rows by class" lists each under "Correct
      placed it at the base, with the code R or R2 gives it. N is the class for that one diagnostic when it stands
      elsewhere or carries another code. An input whose after diagnostic is r, its code read through R and R2, is S7's
      (and S8's, for two declared-name conflicts of one scope) and not N's. An input of N is listed with S's kinds too
-     where they apply (S3 for a suppressed diagnostic of the numeric admission, the binder or the lowering, S6 for a
-     lexical one).
+     where they apply (S3 for a suppressed diagnostic of the numeric admission, the binder or the lowering other than
+     r, S6 for a lexical one). Where the registry commit's list holds only the binder's diagnostics, as for an input
+     `JsParser` accepted and the binder refused, r is the first of them that checks a `syntax` row, and the input is
+     N's when the library reports that rule at another place or under another code.
    - **R and R2 are unchanged.** A code pair that R admits (a renumbering by revision 19, already present at the
      registry commit) or R2 admits (a consolidation at a site that serves several rules) is theirs. N's kinds (code) and
-     (place and code) take only a code that is neither r's nor one of those pairs, and only when the mapping gives it
-     for the library's message. R is still the only class between the base and the registry commit, and in B4 and the
-     census.
+     (place and code) take only a code that is neither r's nor one of those pairs, and only when it equals the
+     registry_code of the mapping's `code` row for the library's message's shared code. R is still the only class
+     between the base and the registry commit, and in B4 and the census.
    - **"Every other difference is a regression" is narrowed by N alone**, and only as item 4 says. A refused input whose
      after list holds more than one diagnostic, whose one diagnostic is not the library's (a refusal of the admission
      walk, the numeric admission, the binder or the lowering after a parse the library accepted), or whose registry list
-     leaves no r, is not in N. **A diagnostic whose code no mapping row gives for its library message stays a
-     regression**: N admits it under no kind, and neither does any other class.
+     leaves no r, is not in N. **A diagnostic whose code is not the registry_code of the mapping's `code` row for its
+     library message's shared code, or whose shared code has no `code` row, stays a regression**: N admits it under no
+     kind, and neither does any other class. A code that the row lists only among its `wide_codes`, `slice_codes` or
+     `other_codes` is not its registry_code, and is such a code.
 2. **Part B, the sentence "no ordering, template or position class".** It reads: "no ordering, template or position
    class: step 1 reorders no declaration, changes no template's reading, the adapter reproduces every anchor and offset,
    and the library places every diagnostic where this family's front end placed it at the base, except the binder's
@@ -126,7 +139,8 @@ with a dated note, and its section "The rows by class" lists each under "Correct
    part A's kind (F) names (T6, T7, T8, T13, T16, T24d to T24f, P05a, P15b, P31, D32, D40, P37 and D64) - an input whose
    outcome or first diagnostic moves between the registry commit and the after commit for that row's reason, or, by row
    P37 alone, an input accepted at both commits whose artifact bytes differ between them because the after commit
-   reads a `new` whose operand is a `new` with an argument list as the specification does; the corpus holds inputs of
+   reads as the specification does a `new` whose operand begins with a `new` with an argument list and goes on to
+   another argument list, at once or after property accesses or tagged templates; the corpus holds inputs of
    P15b, of P37 (in B1 to B3) and of D64 (in B5), and the others are shown by the correspondence's probes and part H's
    vectors; in B1 to B3 and B5 only; each listed with its row, and an input of P37 with the place of each such `new`
    and its bytes at both commits".
@@ -136,8 +150,9 @@ with a dated note, and its section "The rows by class" lists each under "Correct
    outside R, R2, S and F; any difference between the base and the registry commit outside R; and any difference in B4
    or the census outside R". They now read: "every other difference is a regression: any byte difference of an input
    accepted at both commits outside class F's row P37; a specifier list that differs for a B5 input accepted at both;
-   an outcome that moves outside F, L and L2; a diagnostic difference outside R, R2, S, F and N, a refused input's
-   diagnostic whose code no mapping row gives for its library message among them; any difference between the base and
+   an outcome that moves outside F, L and L2; a diagnostic difference outside R, R2, S, F and N, among them a refused
+   input's diagnostic whose code is not the registry_code of the mapping's `code` row for its library message's
+   shared code, or whose shared code has no `code` row; any difference between the base and
    the registry commit outside R; and any difference in B4 or the census outside R". The MET line, "every difference
    is in R, R2, S, F, L or L2 and is listed" as the revision of 2026-11-02 reads it, now reads "every difference is in
    R, R2, S, F, L, L2 or N and is listed".
@@ -146,8 +161,8 @@ with a dated note, and its section "The rows by class" lists each under "Correct
    class F lists; any other byte difference is NOT MET." "From the after commit a refused input's list holds the
    library's first refusal alone, and classes S7 and S8 name what that removes." now reads "From the after commit a
    refused input's list holds the library's first refusal alone, classes S7 and S8 name what that removes, and class N
-   names that refusal where it stands elsewhere than this family's first diagnostic at the base, or carries another
-   code." "read through R, R2, S and F" now reads "read through R, R2, S, F and N".
+   names that refusal where it stands elsewhere than r, or carries a code that is neither r's nor one R or R2 pairs
+   with it (item 1)." "read through R, R2, S and F" now reads "read through R, R2, S, F and N".
 6. **Part A, "How it is read".** Its sentence on the kinds, as the revision of 2026-11-04 reads it, ends "no input of
    the parse corpus reaches a BigInt refusal (the correspondence's F6), and no test262 file reaches a correction step 1
    makes (its F19)." That end now reads "no input of the parse corpus reaches a BigInt refusal (the correspondence's
@@ -160,21 +175,32 @@ with a dated note, and its section "The rows by class" lists each under "Correct
    fact the adapter reproduces, `JsParser`'s top-level-`await` rule included, and every diagnostic's place, which the
    library takes from this family's front end at the base, except the binder's report at no place (decision D15);" now
    reads "every anchor, source offset and computed fact the adapter reproduces, `JsParser`'s top-level-`await` rule
-   included, except the tree of a `new` whose operand is a `new` with an argument list, which the adapter builds as the
-   specification reads it (the correspondence's row P37); and every diagnostic's place, which the library takes from
-   this family's front end at the base, except the binder's report at no place and the one diagnostic of an input
-   refused at both commits that part B's class N lists (decision D15, as JSD-0083's note of 2026-11-09 on it bounds
-   it);". The bullet's other clauses, as the revision of 2026-11-08 reads its last one, are unchanged.
+   included, except the tree of a `new` of the shape the correspondence's row P37 names, a `new` whose operand begins
+   with a `new` with an argument list and goes on to another argument list, which the adapter builds as the
+   specification reads it; and every diagnostic's place, which the library takes from this family's front end at the
+   base, except the binder's report at no place and the one diagnostic of an input refused at both commits that part
+   B's class N lists (decision D15, as JSD-0083's note of 2026-11-09 on it bounds it);". The bullet's other clauses, as
+   the revision of 2026-11-08 reads its last one, are unchanged. The revision of 2026-11-08 says of its own change to
+   that last clause, "That renumbering is the only narrowing of "What does not change"." That sentence holds of that
+   revision alone: from this revision the bullet has three narrowings, that renumbering and the two exceptions this
+   item adds, row P37's tree and class N's one diagnostic.
+
+   A `new` whose operand begins with a `new` with an argument list and goes on to an optional chain,
+   `new new C(a)?.b`, is outside row P37 and this item: the specification's grammar does not admit it, and `JsParser`,
+   as read from its code at `31c4779`, takes the optional chain into the operand and accepts it, so its outcome would
+   move, and that move stays a regression. No input of the parse corpus holds it.
 
 **What this revision does to parts A to J, and to the records beside them.**
 - **Part A:** only kind (F)'s row list (item 3) and the expectation of "How it is read" (item 6). Its population,
-  configuration, completeness, comparison, other kinds and classes, and MET line are unchanged. Part A compares
-  verdicts and first diagnostics of re-run rows, not places, so class N has no counterpart there.
+  configuration, completeness, comparison, other kinds and classes, and MET line are unchanged. Part A admits no
+  class for a code or a place that moves as such: it compares verdicts, and reads first diagnostics only to name a
+  kind of C1. A verdict that moves because a code or a place moved, as class N admits in part B, stays a regression
+  of part A unless one of its existing kinds, (R), (G), (B) or (F), names it. So part A gains no counterpart to N.
 - **Part B:** items 1 to 5. Its population, configuration, completeness, control, comparison, and classes R, R2, S, L
-  and L2 are unchanged. The control is read so that its three changes stay unclassified, as it states: its changed
-  hash and its flipped outcome are taken on inputs of no row of class F, and its changed code ("a code revision 19 does
-  not give that input's rule") is one that no mapping row gives for that input's library diagnostic, which class N
-  does not take.
+  and L2 are unchanged. The control's three changes stay unclassified, as it states: the control is a copy of the
+  base report, changed, and compared with the base report, so only class R, the one class between the base and the
+  registry commit, could apply to it, and none of its three changes is a renumbering by revision 19. Classes F and N
+  compare the registry commit with the after commit, and never read the control.
 - **Parts C, D, E, F, G and I** are unchanged. Part C reads the after commit's accepted inputs, row P37's among them,
   only against each other. Part E's checker and controls are unchanged: class N reads the mapping, and adds no check to
   it. No fuel-parity twin of part I holds the text `new new`.
@@ -194,7 +220,9 @@ with a dated note, and its section "The rows by class" lists each under "Correct
 **What does not change.** Every other part, class and control; "The commits" and their conditions; and the revisions
 of 2026-11-02, 2026-11-04 and 2026-11-08, except that item 4 of this file quotes passages the revision of 2026-11-02
 changed and changes them further, item 6 a passage the revision of 2026-11-04 changed, and item 7 a bullet whose last
-clause the revision of 2026-11-08 changed and this file leaves as that revision reads it. The bytes of every
+clause the revision of 2026-11-08 changed and this file leaves as that revision reads it; that revision's sentence
+"That renumbering is the only narrowing of "What does not change"." holds of that revision alone, and from this
+revision the bullet has the three narrowings item 7 names. The bytes of every
 input accepted at both commits but row P37's, and every outcome but those classes F, L and L2 admit, stay fixed.
 Ordering and template classes stay excluded.
 
