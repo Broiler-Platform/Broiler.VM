@@ -112,8 +112,10 @@ internal static class BinderChecks
         // a regular-expression literal 2215, arguments in a class initialiser 2216, an undeclared private name
         // 2217, return outside a function 2218 and in a static block 2219 (each 2101, 2206 or 2207 until then),
         // and at the two sites that serve one rule alone the delete of a private member 2101 (2205 until then)
-        // and a destructuring declaration without an initialiser 2102 (2203 until then); places and texts stay as
-        // they were.
+        // and a destructuring declaration without an initialiser 2102 (2203 until then); places stay as they were.
+        // (Revised 2026-11-09, later that day, with JSD-0083's note of 2026-11-09, later that day, on decision D11: it ended "places and texts
+        // stay as they were"; from step 1 each refusal's text is its shared code's one text, and these rows pin
+        // codes and places, not texts.)
 
         // super and return outside what admits them, in a script and in eval code
         yield return Refused(

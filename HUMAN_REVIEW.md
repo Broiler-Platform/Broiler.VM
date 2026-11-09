@@ -584,7 +584,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a BigInt literal is admitted under a manifest that does not admit BigInt, or past the format's ceiling
 - `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.BigIntKey(NumericLiteral, out System.Numerics.BigInteger)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, Spec=none cited, `408D34`, PENDING
   - Falsified if: a BigInt wider than the format's constant ceiling is admitted, or one within it is refused
-- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.ModuleSpecifier(StringLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, Spec=none cited, `9D9D60`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.ModuleSpecifier(StringLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, Spec=none cited, `7D0C54`, PENDING
   - Falsified if: a module specifier holding a lone surrogate is admitted, or a well-formed one refused
 - `Broiler.VM.Profile.JavaScript.Compiler.JsArm64Assembler` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Assembler.cs` - Security=High, Spec=none cited, `ACB9B6`, PENDING
   - Falsified if: a word this type writes decodes as an instruction other than the one its method name states, or a branch it patched reaches an offset other than its bound label

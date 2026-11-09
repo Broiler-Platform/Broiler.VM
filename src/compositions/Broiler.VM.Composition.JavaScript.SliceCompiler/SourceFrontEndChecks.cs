@@ -224,10 +224,13 @@ internal static class SourceFrontEndChecks
             failed.Add("the second of two units: " + string.Join(" | ", second.Diagnostics));
         }
 
+        // (Revised 2026-11-09, later that day, at SJL-13.3's step 1, with JSD-0083's note of that day on decision D11,
+        // "One true text per code": the unnamed form's text is the one text of the library's shared code JSE9108; code
+        // and place are unchanged. The pinned form read "2101:UnexpectedToken at 1:9: `;` begins no expression".)
         var unnamed = JsCompiler.Compile("var x = ;", SliceParseOptions.Script);
 
         if (unnamed.Diagnostics.Count == 0 || unnamed.Diagnostics[0].SourceName.Length != 0 ||
-            unnamed.Diagnostics[0].ToString() != "2101:UnexpectedToken at 1:9: `;` begins no expression")
+            unnamed.Diagnostics[0].ToString() != "2101:UnexpectedToken at 1:9: no production admits `;` where it stands")
         {
             failed.Add("an unnamed unit: " + string.Join(" | ", unnamed.Diagnostics));
         }

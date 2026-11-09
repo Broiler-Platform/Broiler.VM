@@ -154,8 +154,13 @@ internal sealed class JsAdmissionWalk
         return false;
     }
 
-    /// <summary>A module specifier, refused where it holds a lone surrogate (EX0029, with the wide parser's text).</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=9D9D60
+    /// <summary>
+    /// A module specifier, refused where it holds a lone surrogate (EX0029, with its code's one text, JSE9309's).
+    /// <i>(Revised 2026-11-09, later that day, with JSD-0083's note of 2026-11-09, later that day, on decision D11: it read "with the wide
+    /// parser's text", which was the text of an export name's refusal, "an export name holds a lone surrogate, which is
+    /// not well-formed Unicode", and is false of a module specifier.)</i>
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=7D0C54
     // Broiler-Falsified-If: a module specifier holding a lone surrogate is admitted, or a well-formed one refused
     // Broiler-Human:        PENDING
     internal void ModuleSpecifier(StringLiteral specifier)
@@ -165,7 +170,7 @@ internal sealed class JsAdmissionWalk
             Refuse(
                 specifier,
                 SliceSourceDiagnosticCode.UnexpectedToken,
-                "an export name holds a lone surrogate, which is not well-formed Unicode");
+                "a module specifier holds a lone surrogate, which is not well-formed Unicode");
         }
     }
 

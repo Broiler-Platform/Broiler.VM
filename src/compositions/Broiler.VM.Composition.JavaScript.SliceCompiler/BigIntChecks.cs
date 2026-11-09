@@ -559,6 +559,15 @@ internal static class BigIntChecks
     /// A malformed literal is a malformed-literal refusal at the literal, under the manifest that
     /// admits BigInt and under the one that does not.
     /// </summary>
+    /// <remarks>
+    /// The row judges the code and the place and prints the refusal's text. <i>(Noted 2026-11-09, later that day, with
+    /// JSD-0083's note of that day on decision D11, "One true text per code": the printed text is the one text of the
+    /// library's shared code JSE9103, "an invalid numeric literal", for every literal here. At step 1's base the wide
+    /// parser printed one text per site: "a BigInt literal that is not an integer", "a BigInt literal with a leading
+    /// zero", "a numeric literal touching an identifier", "a numeric separator that is not between two digits" and "a
+    /// radix prefix with no digits"; from step 1's adapter commit until this note every literal printed "a numeric
+    /// separator that is not between two digits", which is false of most of them.)</i>
+    /// </remarks>
     private static (string, bool, string) MalformedLiteralIsRefusedAtItsPosition(
         string literal, string why, JsFeatureManifest manifest)
     {

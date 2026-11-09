@@ -33,17 +33,26 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// not map is a defect of the build, never a refusal with a guessed code.
 /// </para>
 /// <para>
-/// <b>The text is this family's</b>: the wide parser's, the binder's or the tokenizer's sentence for
-/// the rule, with the library's arguments where it named a word; the regular-expression validator's
-/// text travels as its argument (decision D7). A code whose meaning stays keeps the text it had, the
-/// 2104 suffix " is not admitted by the declared feature manifest" included.
+/// <b>The text is this family's</b>: for each shared code one sentence that states the code's own
+/// condition, with the library's arguments where it names a word; the regular-expression validator's
+/// text travels as its argument (decision D7). A manifest refusal's text ends with the 2104 suffix
+/// " is not admitted by the declared feature manifest". <i>(Revised 2026-11-09, later that day, with
+/// JSD-0083's note of 2026-11-09, later that day, on decision D11, "One true text per code": it read "the wide parser's, the binder's or the
+/// tokenizer's sentence for the rule, with the library's arguments where it named a word; [...] A code whose
+/// meaning stays keeps the text it had, the 2104 suffix " is not admitted by the declared feature manifest"
+/// included.")</i>
 /// </para>
 /// <para>
-/// <b>One text per shared code, so not every base text survives.</b> Where the base rendered several
-/// sentences under one registry code at sites the library reports under one shared code (2101's
-/// unexpected-token sites, for one), the table keeps one of them, and the others' inputs now read it:
-/// the library names its condition and not the base's site, so the site's own sentence cannot be chosen.
-/// That departs from the sentence above as decision D11 states it (<i>added 2026-11-09</i>).
+/// <b>One true text per shared code, so the base's per-site texts retire.</b> The library names its
+/// condition and not the base's site, so a site's own sentence cannot be chosen, and one site's sentence
+/// can be false of another's source under the same code. Each code's text in
+/// <c>JsFrontendDiagnostics.Texts.cs</c> is written to be true of every source the library refuses under
+/// it, a general wording where the code covers several of the base's sites. <i>(Revised 2026-11-09, later
+/// that day, with the same note: it read "<b>One text per shared code, so not every base text survives.</b>
+/// Where the base rendered several sentences under one registry code at sites the library reports under one
+/// shared code (2101's unexpected-token sites, for one), the table keeps one of them, and the others' inputs
+/// now read it [...]. That departs from the sentence above as decision D11 states it (added 2026-11-09)."; the
+/// owner's decision of that day, later, makes the departure the decision.)</i>
 /// </para>
 /// <para>
 /// <b>Nothing here is mutable</b> (rule N12): the table is read once into a frozen dictionary.

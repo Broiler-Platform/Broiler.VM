@@ -860,6 +860,11 @@ refused/a-legacy-octal-escape-in-a-class-element-name.js|3|2210:LegacyOctalInStr
 # untagged template must be cooked, so an octal escape in one is refused, where it was read as NUL
 # and a digit.
 runs/a-tagged-template-with-an-invalid-escape.js|0|undefined:\unicode / undefined:\xg / undefined:\u{110000} / undefined:\01 / undefined:\1 / 4 / \8 and \u{
+# (Noted 2026-11-09, later that day, at SJL-13.3's step 1, with JSD-0083's note of that day on decision D11, "One
+# true text per code": the row pins the code and the place, which do not move; the refusal's text is now the one text
+# of the library's shared code JSE1316, "a template that is not tagged holds an escape sequence that only a tagged
+# template admits". From step 1's adapter commit until this note it read "a unicode escape that names no code point",
+# which is false of an octal escape; at step 1's base the wide parser's text named the octal escape.)
 refused/an-octal-escape-in-an-untagged-template.js|3|2005:UnknownEscapeSequence at 5:13
 
 # A class body declares one constructor; a static method and a computed key named `constructor` are
@@ -889,7 +894,11 @@ refused/a-coalesce-beside-an-or.js|3|2101:UnexpectedToken at 6:15
 # same refusal as the row above, whose text is the one this family renders for the library's rule
 # (JSE9108, JSD-0083 decision D11); part B's class N of the area rule's revision of 2026-11-09, kind
 # (place). The row read `refused/a-coalesce-beside-an-or.js|3|`??` cannot stand beside`.)
-refused/a-coalesce-beside-an-or.js|3|`??` begins no expression
+# (Revised 2026-11-09, later that day, at SJL-13.3's step 1, with JSD-0083's note of that day on decision
+# D11, "One true text per code": the text is the one text of the library's shared code (JSE9108), which
+# states that code's own condition; the code and the place are unchanged, and the area rule reads no text.
+# The row read `refused/a-coalesce-beside-an-or.js|3|`??` begins no expression`.)
+refused/a-coalesce-beside-an-or.js|3|no production admits `??` where it stands
 runs/a-coalesce-mixed-with-parentheses.js|0|0 / fallback / 0 / last / 0
 
 # An arrow's `=>` stands on the line its parameters end on; its body may start on the next.
@@ -898,7 +907,11 @@ refused/a-line-break-before-an-arrow.js|3|2101:UnexpectedToken at 4:3
 # code and the place are the base's, so part B sees no difference; the text is the one this family
 # renders for the library's rule (JSD-0083 decision D11) (JSE9108). The row read
 # `refused/a-line-break-before-an-arrow.js|3|must stand on the line its parameters end on`.)
-refused/a-line-break-before-an-arrow.js|3|`=>` begins no expression
+# (Revised 2026-11-09, later that day, at SJL-13.3's step 1, with JSD-0083's note of that day on decision
+# D11, "One true text per code": the text is the one text of the library's shared code (JSE9108), which
+# states that code's own condition; the code and the place are unchanged, and the area rule reads no text.
+# The row read `refused/a-line-break-before-an-arrow.js|3|`=>` begins no expression`.)
+refused/a-line-break-before-an-arrow.js|3|no production admits `=>` where it stands
 runs/an-arrow-body-on-the-next-line.js|0|8 / 5 / -6
 
 # The gate's other families held before this date and had no fixture here: the strict-mode name
@@ -914,7 +927,11 @@ refused/a-unary-operand-of-exponentiation.js|3|2101:UnexpectedToken at 4:18
 # renders for the library's rule (JSD-0083 decision D11) (JSE9108). The row read
 # `refused/a-unary-operand-of-exponentiation.js|3|a unary operator cannot be applied directly to the
 # base of `**``.)
-refused/a-unary-operand-of-exponentiation.js|3|`**` begins no expression
+# (Revised 2026-11-09, later that day, at SJL-13.3's step 1, with JSD-0083's note of that day on decision
+# D11, "One true text per code": the text is the one text of the library's shared code (JSE9108), which
+# states that code's own condition; the code and the place are unchanged, and the area rule reads no text.
+# The row read `refused/a-unary-operand-of-exponentiation.js|3|`**` begins no expression`.)
+refused/a-unary-operand-of-exponentiation.js|3|no production admits `**` where it stands
 dead-zone/a-read-before-the-initialiser-in-a-function-body.js|1|uncaught ReferenceError
 
 # JSP-4, THE ABSTRACT OPERATIONS UNDER THE LIBRARY, WHERE THEY WERE NEAR NEIGHBOURS OF THEMSELVES
@@ -1055,7 +1072,12 @@ runs/bound-length-and-the-immutable-root.js|0|2 / 0 / 0 / 0 / 0 / Infinity / 0 /
 # B's class N of the area rule's revision of 2026-11-09, kind (place). The row read
 # `refused/a-labelled-function-as-a-loop-body.js|3|2101:UnexpectedToken at 4:15: a labelled function
 # declaration cannot be the body of a `while``.)
-refused/a-labelled-function-as-a-loop-body.js|3|2101:UnexpectedToken at 4:29: a declaration is not a statement, so it cannot be the body of a label
+# (Revised 2026-11-09, later that day, at SJL-13.3's step 1, with JSD-0083's note of that day on decision
+# D11, "One true text per code": the text is the one text of the library's shared code (JSE1410), which
+# states that code's own condition; the code and the place are unchanged, and the area rule reads no text.
+# The row read `refused/a-labelled-function-as-a-loop-body.js|3|2101:UnexpectedToken at 4:29: a declaration
+# is not a statement, so it cannot be the body of a label`.)
+refused/a-labelled-function-as-a-loop-body.js|3|2101:UnexpectedToken at 4:29: a labelled function declaration cannot be the body of a loop
 refused/an-async-function-as-a-with-body.js|3|2101:UnexpectedToken at 3:11
 runs/a-let-before-a-line-break-in-a-with-body.js|0|1 undefined 5
 
@@ -1075,7 +1097,12 @@ runs/names-and-punctuators-read-by-context.js|0|2 / 4 / 2 / /re/g / 1e-7+1e+21+1
 # `refused/a-parenthesised-literal-as-an-assignment-target.js|3|2205:InvalidAssignmentTarget at 3:1: a
 # parenthesised literal is not an assignment target`.)
 refused/a-parenthesised-literal-as-an-assignment-target.js|3|2205:InvalidAssignmentTarget at 3:1: the left-hand side of an assignment is not a reference
-refused/a-non-octal-decimal-literal-in-strict-code.js|3|2210:LegacyOctalInStrictCode at 4:1: a legacy octal literal is not admitted in strict code
+# (Revised 2026-11-09, later that day, at SJL-13.3's step 1, with JSD-0083's note of that day on decision
+# D11, "One true text per code": the text is the one text of the library's shared code (JSE1203), which
+# states that code's own condition; the code and the place are unchanged, and the area rule reads no text.
+# The row read `refused/a-non-octal-decimal-literal-in-strict-code.js|3|2210:LegacyOctalInStrictCode at 4:1:
+# a legacy octal literal is not admitted in strict code`.)
+refused/a-non-octal-decimal-literal-in-strict-code.js|3|2210:LegacyOctalInStrictCode at 4:1: a legacy octal literal, or a decimal literal with a leading zero, is not admitted in strict code
 # (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
 # library's first refusal is the missing `;` at 5:11 (JSE9109, registry code 2102), a diagnostic
 # JsParser reported after its first, 2209 at 5:5; part B's class N of the area rule's revision of
@@ -1116,13 +1143,23 @@ runs/keys-targets-and-a-live-set-walk.js|0|true set set / TypeError 1 / 1,2 / tr
 # renders for the library's rule (JSD-0083 decision D11) (JSE9108). The row read
 # `refused/a-private-name-as-a-binding.js|3|2101:UnexpectedToken at 3:5: `#a` is a private name and not
 # a binding name`.)
-refused/a-private-name-as-a-binding.js|3|2101:UnexpectedToken at 3:5: `#a` begins no expression
+# (Revised 2026-11-09, later that day, at SJL-13.3's step 1, with JSD-0083's note of that day on decision
+# D11, "One true text per code": the text is the one text of the library's shared code (JSE9108), which
+# states that code's own condition; the code and the place are unchanged, and the area rule reads no text.
+# The row read `refused/a-private-name-as-a-binding.js|3|2101:UnexpectedToken at 3:5: `#a` begins no
+# expression`.)
+refused/a-private-name-as-a-binding.js|3|2101:UnexpectedToken at 3:5: no production admits `#a` where it stands
 # (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
 # code and the place are the base's, so part B sees no difference; the text is the one this family
 # renders for the library's rule (JSD-0083 decision D11) (JSE1307). The row read
 # `refused/an-escaped-await-as-an-async-arrow-parameter.js|3|2209:ReservedWordAsBinding at 3:15: `await`
 # is not a binding name`.)
-refused/an-escaped-await-as-an-async-arrow-parameter.js|3|2209:ReservedWordAsBinding at 3:15: `await` is a reserved word here, and a unicode escape does not make it a name
+# (Revised 2026-11-09, later that day, at SJL-13.3's step 1, with JSD-0083's note of that day on decision
+# D11, "One true text per code": the text is the one text of the library's shared code (JSE1307), which
+# states that code's own condition; the code and the place are unchanged, and the area rule reads no text.
+# The row read `refused/an-escaped-await-as-an-async-arrow-parameter.js|3|2209:ReservedWordAsBinding at
+# 3:15: `await` is a reserved word here, and a unicode escape does not make it a name`.)
+refused/an-escaped-await-as-an-async-arrow-parameter.js|3|2209:ReservedWordAsBinding at 3:15: `await` is reserved inside an async function or a class static block, so it is not an identifier there, escaped or not
 
 # THE LEGACY `caller` AND `arguments` (2026-10-04). The comparison engine wraps a script in a module
 # function, so its global code is a caller and its answers differ there; these are the values the
