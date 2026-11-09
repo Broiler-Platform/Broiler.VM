@@ -41,8 +41,15 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// rule's second revision of 2026-11-09 reads it, item 4; JSD-0083's note of that day on decision D21, "Exempt and
 /// record"). Over the parse corpus two inputs are such, <c>J000262</c> and <c>J001009</c>, each a string with a
 /// <c>\8</c> or <c>\08</c> escape in strict code, which the slice path admits and the specification refuses (the
-/// catalogue's EE0004, shared code JSE1204, registry code 2210): the slice path's known defect, handed on as H25. A
-/// shared code the mapping does not hold fails the row, since the input could then not be listed with its row.
+/// catalogue's EE0004, shared code JSE1204, registry code 2210): the slice path's known defect, handed on as H25. The
+/// detail names H25 only for an input refused under JSE1204, and says whether those are exactly the two the rule
+/// names; an input refused under any other code is listed with no reason, since neither the rule nor this row gives
+/// one, and the bundle gives it its own. A shared code the mapping does not hold fails the row, since the input could
+/// then not be listed with its row. <i>(Revised 2026-11-09, later that day, at the review of SJL-13.3's step 1: the
+/// detail named every listed input "the slice path's known defect, hand-off H25", whatever its code, "as part F's
+/// configuration lists them", where the configuration asks the row to list them; and a run in which the library
+/// refused every input the slice front end accepts said "no input of the population was accepted by the slice front
+/// end".)</i>
 /// <i>(Revised 2026-11-09, at the review of SJL-13.3's step 1: the row passed over such an input, "it is not
 /// compared, and the detail names each such input with the library's refusal, so that it stays in view", and its
 /// failing is a question for the owner, whose answer a dated revision of the rule would record.)</i> <i>(Revised
@@ -198,6 +205,14 @@ internal static class TokenizerAgreementChecks
         return words;
     }
 
+    /// <summary>
+    /// The shared code of the library's refusals that hand-off H25 covers on the slice path (the catalogue's EE0004),
+    /// and the inputs the area rule's second revision of 2026-11-09 names under it.
+    /// </summary>
+    private const string HandedOnCode = "JSE1204";
+
+    private static readonly string[] HandedOnInputs = ["J000262", "J001009"];
+
     private static (string, bool, string) TheSharedAndSliceTokenizersAgree()
     {
         const string Name = "the shared and slice tokenizers agree on the slice path's inputs";
@@ -253,7 +268,9 @@ internal static class TokenizerAgreementChecks
 
         if (compared == 0)
         {
-            return (Name, false, "no input of the population was accepted by the slice front end, so nothing was compared");
+            return (Name, false, refused.Count == 0
+                ? "no input of the population was accepted by the slice front end, so nothing was compared"
+                : "no input the slice front end accepts was accepted by the library, so nothing was compared");
         }
 
         var agreed =
@@ -263,13 +280,23 @@ internal static class TokenizerAgreementChecks
             $"line-terminator, legacy-octal and escaped flags; {templates.ToString(CultureInfo.InvariantCulture)} templates";
         var mapping = ReadMapping(manifest);
         var unmapped = new List<string>();
+        var handedOn = new List<string>();
         var listed = new List<string>();
 
         foreach (var (id, code, messageId, line, column) in refused)
         {
             if (mapping is not null && mapping.TryGetValue(code, out var row))
             {
-                listed.Add($"{id} ({code} {messageId}, catalogue row {row.Row}, registry code {row.Registry}, at {line}:{column})");
+                var entry = $"{id} ({code} {messageId}, catalogue row {row.Row}, registry code {row.Registry}, at {line}:{column})";
+
+                if (string.Equals(code, HandedOnCode, StringComparison.Ordinal))
+                {
+                    handedOn.Add(entry);
+                }
+                else
+                {
+                    listed.Add(entry);
+                }
             }
             else
             {
@@ -277,11 +304,25 @@ internal static class TokenizerAgreementChecks
             }
         }
 
-        var uncompared = (listed.Count == 0
+        var namedByRule = handedOn.Count == HandedOnInputs.Length &&
+            refused.Where(static r => string.Equals(r.Code, HandedOnCode, StringComparison.Ordinal))
+                .Select(static r => r.Id).Order(StringComparer.Ordinal).SequenceEqual(HandedOnInputs, StringComparer.Ordinal);
+        var uncompared = (handedOn.Count + listed.Count == 0
                 ? "; no input the slice path accepts is refused by the library"
-                : $"; {listed.Count.ToString(CultureInfo.InvariantCulture)} accepted by the slice path and refused by the library, " +
-                  "listed and not compared, as part F's configuration lists them (the slice path's known defect, hand-off H25): " +
-                  string.Join(", ", listed)) +
+                : $"; {(handedOn.Count + listed.Count).ToString(CultureInfo.InvariantCulture)} accepted by the slice path and " +
+                  "refused by the library, which the row lists and does not compare, as part F's configuration asks") +
+            (handedOn.Count == 0
+                ? string.Empty
+                : $"; {handedOn.Count.ToString(CultureInfo.InvariantCulture)} under {HandedOnCode}, the slice path's known " +
+                  "defect handed on as H25" +
+                  (namedByRule
+                      ? ", the two inputs the rule names"
+                      : ", where the rule names " + string.Join(" and ", HandedOnInputs) + " and no other") +
+                  ": " + string.Join(", ", handedOn)) +
+            (listed.Count == 0
+                ? string.Empty
+                : $"; {listed.Count.ToString(CultureInfo.InvariantCulture)} under another code, for which neither the rule " +
+                  "nor this row gives a reason, so the bundle must give each its own: " + string.Join(", ", listed)) +
             (unmapped.Count == 0
                 ? string.Empty
                 : $"; {unmapped.Count.ToString(CultureInfo.InvariantCulture)} refused by the library under a shared code the " +

@@ -898,7 +898,11 @@ refused/a-coalesce-beside-an-or.js|3|2101:UnexpectedToken at 6:15
 # D11, "One true text per code": the text is the one text of the library's shared code (JSE9108), which
 # states that code's own condition; the code and the place are unchanged, and the area rule reads no text.
 # The row read `refused/a-coalesce-beside-an-or.js|3|`??` begins no expression`.)
-refused/a-coalesce-beside-an-or.js|3|no production admits `??` where it stands
+# (Revised 2026-11-09, later that day, at the review of SJL-13.3's step 1: the one text of the library's
+# shared code (JSE9108) is reworded so that it also reads as a sentence where the token is the end of
+# the source; the code and the place are unchanged, and the area rule reads no text. The row read
+# `refused/a-coalesce-beside-an-or.js|3|no production admits `??` where it stands`.)
+refused/a-coalesce-beside-an-or.js|3|the grammar admits no `??` at this point
 runs/a-coalesce-mixed-with-parentheses.js|0|0 / fallback / 0 / last / 0
 
 # An arrow's `=>` stands on the line its parameters end on; its body may start on the next.
@@ -911,7 +915,11 @@ refused/a-line-break-before-an-arrow.js|3|2101:UnexpectedToken at 4:3
 # D11, "One true text per code": the text is the one text of the library's shared code (JSE9108), which
 # states that code's own condition; the code and the place are unchanged, and the area rule reads no text.
 # The row read `refused/a-line-break-before-an-arrow.js|3|`=>` begins no expression`.)
-refused/a-line-break-before-an-arrow.js|3|no production admits `=>` where it stands
+# (Revised 2026-11-09, later that day, at the review of SJL-13.3's step 1: the one text of the library's
+# shared code (JSE9108) is reworded so that it also reads as a sentence where the token is the end of
+# the source; the code and the place are unchanged, and the area rule reads no text. The row read
+# `refused/a-line-break-before-an-arrow.js|3|no production admits `=>` where it stands`.)
+refused/a-line-break-before-an-arrow.js|3|the grammar admits no `=>` at this point
 runs/an-arrow-body-on-the-next-line.js|0|8 / 5 / -6
 
 # The gate's other families held before this date and had no fixture here: the strict-mode name
@@ -931,7 +939,11 @@ refused/a-unary-operand-of-exponentiation.js|3|2101:UnexpectedToken at 4:18
 # D11, "One true text per code": the text is the one text of the library's shared code (JSE9108), which
 # states that code's own condition; the code and the place are unchanged, and the area rule reads no text.
 # The row read `refused/a-unary-operand-of-exponentiation.js|3|`**` begins no expression`.)
-refused/a-unary-operand-of-exponentiation.js|3|no production admits `**` where it stands
+# (Revised 2026-11-09, later that day, at the review of SJL-13.3's step 1: the one text of the library's
+# shared code (JSE9108) is reworded so that it also reads as a sentence where the token is the end of
+# the source; the code and the place are unchanged, and the area rule reads no text. The row read
+# `refused/a-unary-operand-of-exponentiation.js|3|no production admits `**` where it stands`.)
+refused/a-unary-operand-of-exponentiation.js|3|the grammar admits no `**` at this point
 dead-zone/a-read-before-the-initialiser-in-a-function-body.js|1|uncaught ReferenceError
 
 # JSP-4, THE ABSTRACT OPERATIONS UNDER THE LIBRARY, WHERE THEY WERE NEAR NEIGHBOURS OF THEMSELVES
@@ -1096,7 +1108,13 @@ runs/names-and-punctuators-read-by-context.js|0|2 / 4 / 2 / /re/g / 1e-7+1e+21+1
 # renders for the library's rule (JSD-0083 decision D11). The row read
 # `refused/a-parenthesised-literal-as-an-assignment-target.js|3|2205:InvalidAssignmentTarget at 3:1: a
 # parenthesised literal is not an assignment target`.)
-refused/a-parenthesised-literal-as-an-assignment-target.js|3|2205:InvalidAssignmentTarget at 3:1: the left-hand side of an assignment is not a reference
+# (Revised 2026-11-09, later that day, at the review of SJL-13.3's step 1: the one text of the library's
+# shared code (JSE1329) is reworded so that it is true of every source the library refuses under that
+# code, `eval` and `arguments` in strict code among them; the code and the place are unchanged, and the
+# area rule reads no text. The row read
+# `refused/a-parenthesised-literal-as-an-assignment-target.js|3|2205:InvalidAssignmentTarget at 3:1: the
+# left-hand side of an assignment is not a reference`.)
+refused/a-parenthesised-literal-as-an-assignment-target.js|3|2205:InvalidAssignmentTarget at 3:1: the left-hand side of an assignment is not a valid assignment target (in strict code, neither `eval` nor `arguments` is one)
 # (Revised 2026-11-09, later that day, at SJL-13.3's step 1, with JSD-0083's note of that day on decision
 # D11, "One true text per code": the text is the one text of the library's shared code (JSE1203), which
 # states that code's own condition; the code and the place are unchanged, and the area rule reads no text.
@@ -1148,7 +1166,12 @@ runs/keys-targets-and-a-live-set-walk.js|0|true set set / TypeError 1 / 1,2 / tr
 # states that code's own condition; the code and the place are unchanged, and the area rule reads no text.
 # The row read `refused/a-private-name-as-a-binding.js|3|2101:UnexpectedToken at 3:5: `#a` begins no
 # expression`.)
-refused/a-private-name-as-a-binding.js|3|2101:UnexpectedToken at 3:5: no production admits `#a` where it stands
+# (Revised 2026-11-09, later that day, at the review of SJL-13.3's step 1: the one text of the library's
+# shared code (JSE9108) is reworded so that it also reads as a sentence where the token is the end of
+# the source; the code and the place are unchanged, and the area rule reads no text. The row read
+# `refused/a-private-name-as-a-binding.js|3|2101:UnexpectedToken at 3:5: no production admits `#a` where
+# it stands`.)
+refused/a-private-name-as-a-binding.js|3|2101:UnexpectedToken at 3:5: the grammar admits no `#a` at this point
 # (Revised 2026-11-09, at SJL-13.3's step 1: the wide path parses through the shared syntax library; the
 # code and the place are the base's, so part B sees no difference; the text is the one this family
 # renders for the library's rule (JSD-0083 decision D11) (JSE1307). The row read

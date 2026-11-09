@@ -116,11 +116,20 @@ internal static partial class JsFrontendDiagnostics
     }
 
     /// <summary>
-    /// The code point a span names, as U+ and four or more hexadecimal digits: a unicode escape's value,
-    /// or the span's first character.
+    /// The code point a span names, as U+ and four or more hexadecimal digits: where the span holds a backslash, the
+    /// value of the unicode escape its last backslash begins, or the backslash itself when no <c>\u</c> escape follows
+    /// it; otherwise the span's first character.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=13A715
-    // Broiler-Falsified-If: an escape's code point and the rendered one differ, or a span outside the source text is read
+    /// <remarks>
+    /// The library's tokenizer refuses a bad escape in an identifier at the identifier's start, so the span of such a
+    /// refusal begins with the <c>#</c> of a private name, or with the characters of the name before the escape, and
+    /// its last backslash is the escape's. <i>(Revised 2026-11-09, later that day, at the review of SJL-13.3's step 1:
+    /// the summary read "a unicode escape's value, or the span's first character", and the escape was read only where
+    /// the span began with it, so JSE1201's text named U+0023 for <c>#‍</c> and JSE9101's named the identifier's
+    /// first character for a backslash with no <c>u</c> after it inside an identifier.)</i>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=F0A9CF
+    // Broiler-Falsified-If: an escape's code point and the rendered one differ, a span that holds a backslash renders a character before it, or a span outside the source text is read
     // Broiler-Human:        PENDING
     private static string CodePoint(SourceSpan span, string source)
     {
@@ -129,6 +138,15 @@ internal static partial class JsFrontendDiagnostics
         if (at < 0 || at >= source.Length)
         {
             return EndOfSource;
+        }
+
+        var backslash = span.Length <= 0
+            ? -1
+            : source.LastIndexOf('\\', System.Math.Min(source.Length, at + span.Length) - 1, System.Math.Min(source.Length, at + span.Length) - at);
+
+        if (backslash >= 0)
+        {
+            at = backslash;
         }
 
         var value = -1;
@@ -184,296 +202,328 @@ internal static partial class JsFrontendDiagnostics
     /// refused renders its message identifier and arguments, as no text of this family covers it.")</i>
     /// </para>
     /// <para>
+    /// <b>Provenance.</b> A text's comment names its message identifier and where its wording came from. A text kept
+    /// from the base says where it was read ("curated", "observed" or a site at <c>d82b07ad</c>). A text written for
+    /// D11 says "written 2026-11-09 (D11)" and then quotes what the code rendered before, with that text's own
+    /// provenance, or says that it rendered its message identifier; a text written again later that day quotes the
+    /// wording it replaced as well. <i>(Revised 2026-11-09, later that day, at the review of SJL-13.3's step 1: a
+    /// written text's comment named no earlier wording, which stood only in a scratch list.)</i>
+    /// </para>
+    /// <para>
+    /// <b>The exception of decision D7.</b> JSE1315, a regular-expression literal the pattern grammar refuses, renders
+    /// <c>{0}</c>, the message the regular-expression validator gives, as decision D7 keeps it: its condition is the
+    /// validator's, so the validator's own words state it.
+    /// </para>
+    /// <para>
+    /// <i>(Noted 2026-11-09, later that day, at the review of SJL-13.3's step 1.)</i> Seven texts said "is not a
+    /// reference" of an assignment target, an update's operand or a destructuring target, which is false of
+    /// <c>eval</c> and <c>arguments</c> in strict code: they are references, and the library refuses them under the
+    /// same codes as targets that are not simple. JSE1324 and JSE1415, written that day, read "the operand of an update
+    /// operator is not a reference" and "the left-hand side of a <c>for … in</c> or <c>for … of</c> head is not a
+    /// reference", JSE1335 "a destructuring assignment target is not a reference", and JSE1325, JSE1329, JSE1330 and
+    /// JSE1331, kept from the base then, "the operand of an update operator is not a reference" and "the left-hand side
+    /// of an assignment is not a reference"; each now says the target "is not a valid assignment target (in strict
+    /// code, neither <c>eval</c> nor <c>arguments</c> is one)". JSE2202 read "a regular expression gives two capturing
+    /// groups that might both participate one name", and JSE9108 "no production admits <c>`{tok}`</c> where it
+    /// stands", which reads wrongly at the end of the source. The commit that wrote the texts of D11
+    /// (<c>b036f0f</c>) says of the 45 codes that rendered their message identifier that "none of the 45 is reported
+    /// by the library in this family today"; that is wrong: 40 of the 45 are codes of the library's rows; JSE1319,
+    /// JSE1320 and JSE1333 are reached by its parse, though no input of the parse corpus is refused first under one;
+    /// and the regular-expression rows are reached only through a validator's verdict, which today names only
+    /// <c>regexp.literal.invalid</c>. The file's falsifier read "a shared code whose rule this family refused at the
+    /// base is rendered with a sentence other than one of that rule's base texts" until that commit.
+    /// </para>
+    /// <para>
     /// <b>Nothing here is mutable</b> (rule N12): one frozen table, read by <see cref="Render"/> alone.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=ED4CFB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=376A1C
     // Broiler-Human:        PENDING
     private static readonly System.Collections.Frozen.FrozenDictionary<string, string> Texts =
         System.Collections.Frozen.FrozenDictionary.ToFrozenDictionary(
             new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.Ordinal)
             {
                 ["JSE1201"] = "a unicode escape in an identifier names {cp}, which may not start an identifier", // identifier.escape.invalid-start, curated
-                ["JSE1202"] = "a unicode escape in an identifier names a code point that may not continue an identifier", // identifier.escape.invalid-part, written 2026-11-09 (D11)
-                ["JSE1203"] = "a legacy octal literal, or a decimal literal with a leading zero, is not admitted in strict code", // strict.legacy-octal-literal, written 2026-11-09 (D11)
+                ["JSE1202"] = "a unicode escape in an identifier names a code point that may not continue an identifier", // identifier.escape.invalid-part, written 2026-11-09 (D11); before, "a unicode escape in an identifier names {cp}, which may not continue an identifier" (curated)
+                ["JSE1203"] = "a legacy octal literal, or a decimal literal with a leading zero, is not admitted in strict code", // strict.legacy-octal-literal, written 2026-11-09 (D11); before, "a legacy octal literal is not admitted in strict code" (observed)
                 ["JSE1204"] = "a legacy octal escape or `\\8` or `\\9` in a string literal is not admitted in strict code", // strict.legacy-octal-escape, observed
                 ["JSE1301"] = "`{0}` is not a binding name in strict code", // strict.binding.eval-or-arguments, observed
-                ["JSE1302"] = "`{0}` is reserved in strict code, so it is not an identifier there", // strict.reserved-word, written 2026-11-09 (D11)
-                ["JSE1303"] = "`{0}` is reserved in a module, so it is not an identifier there", // identifier.await.in-module, written 2026-11-09 (D11)
-                ["JSE1304"] = "`{0}` is not a binding name inside a generator", // identifier.yield.in-generator, written 2026-11-09 (D11)
-                ["JSE1305"] = "`{0}` is not a binding name inside an async function or a class static block", // identifier.await.in-async, written 2026-11-09 (D11)
-                ["JSE1306"] = "`{0}` is reserved inside a generator, so it is not an identifier there, escaped or not", // identifier.yield.in-generator, written 2026-11-09 (D11)
-                ["JSE1307"] = "`{0}` is reserved inside an async function or a class static block, so it is not an identifier there, escaped or not", // identifier.await.in-async, written 2026-11-09 (D11)
-                ["JSE1308"] = "`{0}` is reserved in strict code, so it is not an identifier there", // strict.reserved-word, written 2026-11-09 (D11)
-                ["JSE1309"] = "`{0}` is reserved in a module, so it is not an identifier there, escaped or not", // identifier.await.in-module, written 2026-11-09 (D11)
+                ["JSE1302"] = "`{0}` is reserved in strict code, so it is not an identifier there", // strict.reserved-word, written 2026-11-09 (D11); before, "`{0}` is not a binding name" (observed)
+                ["JSE1303"] = "`{0}` is reserved in a module, so it is not an identifier there", // identifier.await.in-module, written 2026-11-09 (D11); before, "`{0}` is not a binding name" (observed)
+                ["JSE1304"] = "`{0}` is not a binding name inside a generator", // identifier.yield.in-generator, written 2026-11-09 (D11); before, "`{0}` is not a binding name" (observed)
+                ["JSE1305"] = "`{0}` is not a binding name inside an async function or a class static block", // identifier.await.in-async, written 2026-11-09 (D11); before, "`{0}` is not a binding name" (observed)
+                ["JSE1306"] = "`{0}` is reserved inside a generator, so it is not an identifier there, escaped or not", // identifier.yield.in-generator, written 2026-11-09 (D11); before, "`{0}` is a reserved word here, and a unicode escape does not make it a name" (observed)
+                ["JSE1307"] = "`{0}` is reserved inside an async function or a class static block, so it is not an identifier there, escaped or not", // identifier.await.in-async, written 2026-11-09 (D11); before, "`{0}` is a reserved word here, and a unicode escape does not make it a name" (observed)
+                ["JSE1308"] = "`{0}` is reserved in strict code, so it is not an identifier there", // strict.reserved-word, written 2026-11-09 (D11); before, "`{0}` is a reserved word in strict code and is not a binding name" (observed)
+                ["JSE1309"] = "`{0}` is reserved in a module, so it is not an identifier there, escaped or not", // identifier.await.in-module, written 2026-11-09 (D11); before, "`{0}` is a reserved word here, and a unicode escape does not make it a name" (observed)
                 ["JSE1310"] = "`{0}` is a reserved word here, and a unicode escape does not make it a name", // identifier.reserved-word.escaped, observed
                 ["JSE1311"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
-                ["JSE1312"] = "`{0}` is a private name, which names a method only in a class body and not in an object literal", // object.method.private-name, written 2026-11-09 (D11)
-                ["JSE1313"] = "`{0} = …` in an object literal is a shorthand with an initialiser, which only a destructuring pattern admits", // expression.shorthand-initializer, written 2026-11-09 (D11)
+                ["JSE1312"] = "`{0}` is a private name, which names a method only in a class body and not in an object literal", // object.method.private-name, written 2026-11-09 (D11); before, "a private name belongs to a class body and cannot be a property key" (observed)
+                ["JSE1313"] = "`{0} = …` in an object literal is a shorthand with an initialiser, which only a destructuring pattern admits", // expression.shorthand-initializer, written 2026-11-09 (D11); before, "`=` is not an object literal entry outside a destructuring assignment" (d82b07ad's JsCompiler.Literals.cs:291)
                 ["JSE1314"] = "an object literal may set `__proto__` once", // object.proto.duplicate, d82b07ad's JsCompiler.Literals.cs:372
                 ["JSE1315"] = "{0}", // regexp.literal.invalid, curated
-                ["JSE1316"] = "a template that is not tagged holds an escape sequence that only a tagged template admits", // template.escape.invalid, written 2026-11-09 (D11)
-                ["JSE1317"] = "a template literal holds 2^32 or more strings, more than a template may hold", // template.too-many-strings, written 2026-11-09 (D11)
-                ["JSE1318"] = "a template that is not tagged holds an escape sequence that only a tagged template admits", // template.escape.invalid, written 2026-11-09 (D11)
-                ["JSE1319"] = "a template that is not tagged holds an escape sequence that only a tagged template admits", // template.escape.invalid, written 2026-11-09 (D11)
-                ["JSE1320"] = "a template that is not tagged holds an escape sequence that only a tagged template admits", // template.escape.invalid, written 2026-11-09 (D11)
-                ["JSE1321"] = "a parenthesised list must be an expression unless `=>` follows it on the same line", // cover.parenthesized-expression, written 2026-11-09 (D11)
+                ["JSE1316"] = "a template that is not tagged holds an escape sequence that only a tagged template admits", // template.escape.invalid, written 2026-11-09 (D11); before, "a unicode escape that names no code point" (observed)
+                ["JSE1317"] = "a template literal holds 2^32 or more strings, more than a template may hold", // template.too-many-strings, written 2026-11-09 (D11); before, its message identifier
+                ["JSE1318"] = "a template that is not tagged holds an escape sequence that only a tagged template admits", // template.escape.invalid, written 2026-11-09 (D11); before, "a unicode escape that names no code point" (observed)
+                ["JSE1319"] = "a template that is not tagged holds an escape sequence that only a tagged template admits", // template.escape.invalid, written 2026-11-09 (D11); before, its message identifier
+                ["JSE1320"] = "a template that is not tagged holds an escape sequence that only a tagged template admits", // template.escape.invalid, written 2026-11-09 (D11); before, its message identifier
+                ["JSE1321"] = "a parenthesised list must be an expression unless `=>` follows it on the same line", // cover.parenthesized-expression, written 2026-11-09 (D11); before, "an arrow function's `=>` must stand on the line its parameters end on" (observed)
                 ["JSE1322"] = "a tagged template has no reading inside an optional chain", // expression.optional-chain.tagged-template, observed
                 ["JSE1323"] = "`{0}` names a module's own metadata and this source was presented as a script", // meta.import-meta.outside-module, observed
-                ["JSE1324"] = "the operand of an update operator is not a reference", // assignment.target.invalid, written 2026-11-09 (D11)
-                ["JSE1325"] = "the operand of an update operator is not a reference", // assignment.target.invalid, curated
-                ["JSE1326"] = "in strict code, `delete` cannot be applied to a bare name or to a private member, parenthesised or not", // strict.delete.unqualified-or-private, written 2026-11-09 (D11)
-                ["JSE1327"] = "in strict code, `delete` cannot be applied to a bare name or to a private member, parenthesised or not", // strict.delete.unqualified-or-private, written 2026-11-09 (D11)
-                ["JSE1328"] = "an object or array literal on the left of `=` must be a valid destructuring pattern", // cover.assignment-pattern, written 2026-11-09 (D11)
-                ["JSE1329"] = "the left-hand side of an assignment is not a reference", // assignment.target.invalid, observed
-                ["JSE1330"] = "the left-hand side of an assignment is not a reference", // assignment.target.invalid, observed
-                ["JSE1331"] = "the left-hand side of an assignment is not a reference", // assignment.target.not-simple, observed
+                ["JSE1324"] = "the operand of an update operator is not a valid assignment target (in strict code, neither `eval` nor `arguments` is one)", // assignment.target.invalid, written 2026-11-09 (D11) and again later that day; it read "the operand of an update operator is not a reference"; before, "`{found}` is not the operand of an update in strict code" (curated)
+                ["JSE1325"] = "the operand of an update operator is not a valid assignment target (in strict code, neither `eval` nor `arguments` is one)", // assignment.target.invalid, written 2026-11-09 (D11), later that day; before, "the operand of an update operator is not a reference" (curated)
+                ["JSE1326"] = "in strict code, `delete` cannot be applied to a bare name or to a private member, parenthesised or not", // strict.delete.unqualified-or-private, written 2026-11-09 (D11); before, "`{0} {found}` is a syntax error in strict code: a bare name is a binding and `{0}` removes a property" (curated)
+                ["JSE1327"] = "in strict code, `delete` cannot be applied to a bare name or to a private member, parenthesised or not", // strict.delete.unqualified-or-private, written 2026-11-09 (D11); before, "`{0} {found}` is a syntax error in strict code: a bare name is a binding and `{0}` removes a property" (curated)
+                ["JSE1328"] = "an object or array literal on the left of `=` must be a valid destructuring pattern", // cover.assignment-pattern, written 2026-11-09 (D11); before, "a rest element is admitted only as the last element of a pattern" (observed)
+                ["JSE1329"] = "the left-hand side of an assignment is not a valid assignment target (in strict code, neither `eval` nor `arguments` is one)", // assignment.target.invalid, written 2026-11-09 (D11), later that day; before, "the left-hand side of an assignment is not a reference" (observed)
+                ["JSE1330"] = "the left-hand side of an assignment is not a valid assignment target (in strict code, neither `eval` nor `arguments` is one)", // assignment.target.invalid, written 2026-11-09 (D11), later that day; before, "the left-hand side of an assignment is not a reference" (observed)
+                ["JSE1331"] = "the left-hand side of an assignment is not a valid assignment target (in strict code, neither `eval` nor `arguments` is one)", // assignment.target.not-simple, written 2026-11-09 (D11), later that day; before, "the left-hand side of an assignment is not a reference" (observed)
                 ["JSE1332"] = "`{0}` is not the target of a destructuring assignment in strict code", // assignment.target.not-simple, observed
-                ["JSE1333"] = "the target of a rest property in a destructuring assignment cannot be an object or array pattern", // assignment.rest-property.nested-pattern, written 2026-11-09 (D11)
-                ["JSE1334"] = "an object or array literal that is a destructuring target must be a valid destructuring pattern", // cover.assignment-pattern, written 2026-11-09 (D11)
-                ["JSE1335"] = "a destructuring assignment target is not a reference", // assignment.target.not-simple, written 2026-11-09 (D11)
+                ["JSE1333"] = "the target of a rest property in a destructuring assignment cannot be an object or array pattern", // assignment.rest-property.nested-pattern, written 2026-11-09 (D11); before, its message identifier
+                ["JSE1334"] = "an object or array literal that is a destructuring target must be a valid destructuring pattern", // cover.assignment-pattern, written 2026-11-09 (D11); before, "an accessor is not an assignment target" (observed)
+                ["JSE1335"] = "a target in a destructuring assignment is not a valid assignment target (in strict code, neither `eval` nor `arguments` is one)", // assignment.target.not-simple, written 2026-11-09 (D11) and again later that day; it read "a destructuring assignment target is not a reference"; before, "the left-hand side of an assignment is not a reference" (observed)
                 ["JSE1401"] = "`{0}` is declared twice in one scope", // scope.lexical.duplicate, observed
                 ["JSE1402"] = "`{0}` is declared both lexically and as a `var`", // scope.lexical.var-collision, observed
                 ["JSE1403"] = "`{0}` is not a name a `let` or `const` declaration may bind", // declaration.let.bound-name, curated
                 ["JSE1404"] = "`{0}` is declared twice by one declaration", // scope.lexical.duplicate, d82b07ad's JsParser.cs:3998
                 ["JSE1405"] = "`{0} {found}` needs an initialiser", // declaration.const.missing-initializer, curated
-                ["JSE1406"] = "a labelled function declaration cannot be the body of an `if` statement", // statement.labelled-function, written 2026-11-09 (D11)
-                ["JSE1407"] = "a labelled function declaration cannot be the body of an `if` statement", // statement.labelled-function, written 2026-11-09 (D11)
-                ["JSE1408"] = "a labelled function declaration cannot be the body of an `if` statement", // statement.labelled-function, written 2026-11-09 (D11)
-                ["JSE1409"] = "a labelled function declaration cannot be the body of a loop", // statement.labelled-function, written 2026-11-09 (D11)
-                ["JSE1410"] = "a labelled function declaration cannot be the body of a loop", // statement.labelled-function, written 2026-11-09 (D11)
-                ["JSE1411"] = "a labelled function declaration cannot be the body of a loop", // statement.labelled-function, written 2026-11-09 (D11)
+                ["JSE1406"] = "a labelled function declaration cannot be the body of an `if` statement", // statement.labelled-function, written 2026-11-09 (D11); before, "a declaration is not a statement, so it cannot be the body of a label" (observed)
+                ["JSE1407"] = "a labelled function declaration cannot be the body of an `if` statement", // statement.labelled-function, written 2026-11-09 (D11); before, "a declaration is not a statement, so it cannot be the body of a label" (observed)
+                ["JSE1408"] = "a labelled function declaration cannot be the body of an `if` statement", // statement.labelled-function, written 2026-11-09 (D11); before, "a declaration is not a statement, so it cannot be the body of a label" (observed)
+                ["JSE1409"] = "a labelled function declaration cannot be the body of a loop", // statement.labelled-function, written 2026-11-09 (D11); before, "a declaration is not a statement, so it cannot be the body of a label" (observed)
+                ["JSE1410"] = "a labelled function declaration cannot be the body of a loop", // statement.labelled-function, written 2026-11-09 (D11); before, "a declaration is not a statement, so it cannot be the body of a label" (observed)
+                ["JSE1411"] = "a labelled function declaration cannot be the body of a loop", // statement.labelled-function, written 2026-11-09 (D11); before, "a declaration is not a statement, so it cannot be the body of a label" (observed)
                 ["JSE1412"] = "`{0}` is declared by this loop's head, so its body cannot declare it with `var`", // scope.lexical.var-collision, curated
-                ["JSE1413"] = "a labelled function declaration cannot be the body of a loop", // statement.labelled-function, written 2026-11-09 (D11)
-                ["JSE1414"] = "an object or array literal on the left of a `for … in` or `for … of` head must be a valid destructuring pattern", // cover.assignment-pattern, written 2026-11-09 (D11)
-                ["JSE1415"] = "the left-hand side of a `for … in` or `for … of` head is not a reference", // assignment.target.invalid, written 2026-11-09 (D11)
+                ["JSE1413"] = "a labelled function declaration cannot be the body of a loop", // statement.labelled-function, written 2026-11-09 (D11); before, "a declaration is not a statement, so it cannot be the body of a label" (observed)
+                ["JSE1414"] = "an object or array literal on the left of a `for … in` or `for … of` head must be a valid destructuring pattern", // cover.assignment-pattern, written 2026-11-09 (D11); before, "a rest element is admitted only as the last element of a pattern" (observed)
+                ["JSE1415"] = "the left-hand side of a `for … in` or `for … of` head is not a valid assignment target (in strict code, neither `eval` nor `arguments` is one)", // assignment.target.invalid, written 2026-11-09 (D11) and again later that day; it read "the left-hand side of a `for … in` or `for … of` head is not a reference"; before, "the left-hand side of an assignment is not a reference" (d82b07ad's JsCompiler.Names.cs:97)
                 ["JSE1416"] = "`{0}` is not a name a `let` or `const` declaration may bind", // declaration.let.bound-name, curated
                 ["JSE1417"] = "`{0}` is declared by this loop's head, so its body cannot declare it with `var`", // scope.lexical.var-collision, observed
                 ["JSE1418"] = "`{0}` is declared twice by one declaration", // scope.lexical.duplicate, d82b07ad's JsParser.cs:3998
-                ["JSE1419"] = "`continue` stands outside every loop", // jump.continue.no-iteration, written 2026-11-09 (D11)
-                ["JSE1420"] = "`break` with no label stands outside every loop and `switch`", // jump.break.no-target, written 2026-11-09 (D11)
+                ["JSE1419"] = "`continue` stands outside every loop", // jump.continue.no-iteration, written 2026-11-09 (D11); before, "`continue` names no enclosing loop" (curated)
+                ["JSE1420"] = "`break` with no label stands outside every loop and `switch`", // jump.break.no-target, written 2026-11-09 (D11); before, "`break` names no enclosing loop or switch" (curated)
                 ["JSE1421"] = "the `{0}` statement is a syntax error in strict code", // strict.with, observed
-                ["JSE1422"] = "a labelled function declaration cannot be the body of a `with` statement", // statement.labelled-function, written 2026-11-09 (D11)
+                ["JSE1422"] = "a labelled function declaration cannot be the body of a `with` statement", // statement.labelled-function, written 2026-11-09 (D11); before, "a labelled function declaration cannot be the body of a loop" (curated)
                 ["JSE1423"] = "`{0}` is declared twice in one scope", // scope.lexical.duplicate, observed
                 ["JSE1424"] = "`{0}` is declared both lexically and as a `var`", // scope.lexical.var-collision, observed
-                ["JSE1425"] = "a function declaration cannot be labelled in strict code", // strict.labelled-function, written 2026-11-09 (D11)
+                ["JSE1425"] = "a function declaration cannot be labelled in strict code", // strict.labelled-function, written 2026-11-09 (D11); before, "a declaration is not a statement, so it cannot be the body of a label" (observed)
                 ["JSE1426"] = "`{0}` is bound twice by one `catch` parameter", // scope.catch.duplicate, d82b07ad's JsParser.cs:3893
-                ["JSE1427"] = "`{0}` is the `catch` parameter, so the handler cannot declare it again lexically", // scope.catch.lexical-collision, written 2026-11-09 (D11)
+                ["JSE1427"] = "`{0}` is the `catch` parameter, so the handler cannot declare it again lexically", // scope.catch.lexical-collision, written 2026-11-09 (D11); before, "`{0}` is the `catch` parameter, so the handler cannot declare it again" (observed)
                 ["JSE1428"] = "`{0}` is bound by a destructuring `catch` parameter, so the handler cannot declare it with `var`", // scope.catch.var-collision, d82b07ad's JsParser.cs:3935
                 ["JSE1501"] = "`{0}` is bound twice by one parameter list", // scope.parameter.duplicate, curated
                 ["JSE1502"] = "`{0}` is bound twice by one parameter list", // scope.parameter.duplicate, curated
                 ["JSE1503"] = "`{0}` is bound twice by one parameter list", // scope.parameter.duplicate, curated
                 ["JSE1504"] = "`{0}` is not a function name in strict code", // strict.binding.eval-or-arguments, d82b07ad's JsParser.cs:2363
                 ["JSE1505"] = "a body cannot declare `use strict` over a parameter list that has a default, a rest parameter or a pattern in it", // function.use-strict.non-simple-parameters, d82b07ad's JsParser.cs:4120
-                ["JSE1506"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11)
-                ["JSE1507"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.property.outside-method, written 2026-11-09 (D11)
-                ["JSE1508"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.property.outside-method, written 2026-11-09 (D11)
+                ["JSE1506"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11); before, "`{0}` is a parameter of this function, so its body cannot declare it again" (observed)
+                ["JSE1507"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.property.outside-method, written 2026-11-09 (D11); before, "`super` is only admitted inside a method" (d82b07ad's JsCompiler.Calls.cs:535)
+                ["JSE1508"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.property.outside-method, written 2026-11-09 (D11); before, "`super` is only admitted inside a method" (d82b07ad's JsCompiler.Calls.cs:535)
                 ["JSE1509"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
                 ["JSE1510"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
                 ["JSE1511"] = "`{0}` is declared twice in one scope", // scope.lexical.duplicate, d82b07ad's JsParser.cs:3745
                 ["JSE1512"] = "`{0}` is declared both lexically and as a `var`", // scope.lexical.var-collision, d82b07ad's JsParser.cs:3757
                 ["JSE1513"] = "the label `{0}` is already in force here, so a statement inside it cannot declare it again", // jump.label.duplicate, d82b07ad's JsParser.cs:580
-                ["JSE1514"] = "`break` names a label that does not enclose it", // jump.break.undefined-label, written 2026-11-09 (D11)
-                ["JSE1515"] = "`continue` names a label that is not on a loop enclosing it", // jump.continue.undefined-label, written 2026-11-09 (D11)
+                ["JSE1514"] = "`break` names a label that does not enclose it", // jump.break.undefined-label, written 2026-11-09 (D11); before, "`break` names no enclosing loop or switch" (curated)
+                ["JSE1515"] = "`continue` names a label that is not on a loop enclosing it", // jump.continue.undefined-label, written 2026-11-09 (D11); before, "`continue` names no enclosing loop" (curated)
                 ["JSE1516"] = "a `yield` expression is not admitted in a function's parameters", // function.parameters.yield, observed
                 ["JSE1517"] = "an `await` expression is not admitted in a function's parameters", // function.parameters.await, observed
                 ["JSE1518"] = "a body cannot declare `use strict` over a parameter list that has a default, a rest parameter or a pattern in it", // function.use-strict.non-simple-parameters, d82b07ad's JsParser.cs:4120
-                ["JSE1519"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11)
-                ["JSE1520"] = "the parenthesised list before `=>` is not a valid parameter list", // cover.arrow-formal-parameters, written 2026-11-09 (D11)
+                ["JSE1519"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11); before, "`{0}` is a parameter of this function, so its body cannot declare it again" (d82b07ad's JsParser.cs:3851)
+                ["JSE1520"] = "the parenthesised list before `=>` is not a valid parameter list", // cover.arrow-formal-parameters, written 2026-11-09 (D11); before, "a rest element is admitted only as the last element of a pattern" (observed)
                 ["JSE1521"] = "a body cannot declare `use strict` over a parameter list that has a default, a rest parameter or a pattern in it", // function.use-strict.non-simple-parameters, d82b07ad's JsParser.cs:4120
-                ["JSE1522"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11)
+                ["JSE1522"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11); before, "`{0}` is a parameter of this function, so its body cannot declare it again" (curated)
                 ["JSE1523"] = "`{0}` is bound twice by one parameter list", // scope.parameter.duplicate, d82b07ad's JsParser.cs:4161
                 ["JSE1524"] = "a body cannot declare `use strict` over a parameter list that has a default, a rest parameter or a pattern in it", // function.use-strict.non-simple-parameters, d82b07ad's JsParser.cs:4120
-                ["JSE1525"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11)
+                ["JSE1525"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11); before, "`{0}` is a parameter of this function, so its body cannot declare it again" (d82b07ad's JsParser.cs:3851)
                 ["JSE1526"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
                 ["JSE1527"] = "a `yield` expression is not admitted in a function's parameters", // function.parameters.yield, observed
                 ["JSE1528"] = "a body cannot declare `use strict` over a parameter list that has a default, a rest parameter or a pattern in it", // function.use-strict.non-simple-parameters, d82b07ad's JsParser.cs:4120
-                ["JSE1529"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11)
+                ["JSE1529"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11); before, "`{0}` is a parameter of this function, so its body cannot declare it again" (curated)
                 ["JSE1530"] = "`{0}` is bound twice by one parameter list", // scope.parameter.duplicate, curated
                 ["JSE1531"] = "`{0}` is not a function name in strict code", // strict.binding.eval-or-arguments, d82b07ad's JsParser.cs:2363
                 ["JSE1532"] = "a body cannot declare `use strict` over a parameter list that has a default, a rest parameter or a pattern in it", // function.use-strict.non-simple-parameters, d82b07ad's JsParser.cs:4120
-                ["JSE1533"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11)
+                ["JSE1533"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11); before, "`{0}` is a parameter of this function, so its body cannot declare it again" (d82b07ad's JsParser.cs:3851)
                 ["JSE1534"] = "a `yield` expression is not admitted in a function's parameters", // function.parameters.yield, observed
-                ["JSE1535"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.property.outside-method, written 2026-11-09 (D11)
-                ["JSE1536"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.property.outside-method, written 2026-11-09 (D11)
+                ["JSE1535"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.property.outside-method, written 2026-11-09 (D11); before, "`super` is only admitted inside a method" (d82b07ad's JsCompiler.Calls.cs:535)
+                ["JSE1536"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.property.outside-method, written 2026-11-09 (D11); before, "`super` is only admitted inside a method" (d82b07ad's JsCompiler.Calls.cs:535)
                 ["JSE1537"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
                 ["JSE1538"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
                 ["JSE1539"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
                 ["JSE1540"] = "a `yield` expression is not admitted in a function's parameters", // function.parameters.yield, d82b07ad's JsParser.cs:4526
                 ["JSE1541"] = "an `await` expression is not admitted in a function's parameters", // function.parameters.await, d82b07ad's JsParser.cs:5191
                 ["JSE1542"] = "a body cannot declare `use strict` over a parameter list that has a default, a rest parameter or a pattern in it", // function.use-strict.non-simple-parameters, d82b07ad's JsParser.cs:4120
-                ["JSE1543"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11)
+                ["JSE1543"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11); before, "`{0}` is a parameter of this function, so its body cannot declare it again" (d82b07ad's JsParser.cs:3851)
                 ["JSE1544"] = "`{0}` is bound twice by one parameter list", // scope.parameter.duplicate, d82b07ad's JsParser.cs:4161
                 ["JSE1545"] = "`{0}` is not a function name in strict code", // strict.binding.eval-or-arguments, d82b07ad's JsParser.cs:2363
                 ["JSE1546"] = "a body cannot declare `use strict` over a parameter list that has a default, a rest parameter or a pattern in it", // function.use-strict.non-simple-parameters, d82b07ad's JsParser.cs:4120
-                ["JSE1547"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11)
+                ["JSE1547"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11); before, "`{0}` is a parameter of this function, so its body cannot declare it again" (curated)
                 ["JSE1548"] = "a `yield` expression is not admitted in a function's parameters", // function.parameters.yield, observed
                 ["JSE1549"] = "an `await` expression is not admitted in a function's parameters", // function.parameters.await, observed
-                ["JSE1550"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.property.outside-method, written 2026-11-09 (D11)
-                ["JSE1551"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.property.outside-method, written 2026-11-09 (D11)
+                ["JSE1550"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.property.outside-method, written 2026-11-09 (D11); before, "`super` is only admitted inside a method" (d82b07ad's JsCompiler.Calls.cs:535)
+                ["JSE1551"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.property.outside-method, written 2026-11-09 (D11); before, "`super` is only admitted inside a method" (d82b07ad's JsCompiler.Calls.cs:535)
                 ["JSE1552"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
                 ["JSE1553"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
                 ["JSE1554"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
                 ["JSE1555"] = "a class body declares one `{0}`, and this is a second", // class.constructor.duplicate, observed
                 ["JSE1556"] = "`{0}` is declared more than once by this class body", // class.private-name.duplicate, observed
                 ["JSE1557"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
-                ["JSE1558"] = "a class's `constructor` cannot be an accessor, a generator or an async method", // class.constructor.special-method, written 2026-11-09 (D11)
+                ["JSE1558"] = "a class's `constructor` cannot be an accessor, a generator or an async method", // class.constructor.special-method, written 2026-11-09 (D11); before, "the class definition declares `constructor`, so a field, an accessor, a generator or an async method cannot declare it again" (d82b07ad's JsParser.cs:3064)
                 ["JSE1559"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
                 ["JSE1560"] = "the class definition declares `prototype` on the constructor, so a static member cannot declare it again", // class.static-method.prototype, d82b07ad's JsParser.cs:3028
-                ["JSE1561"] = "a class field cannot be named `constructor`", // class.field.constructor, written 2026-11-09 (D11)
-                ["JSE1562"] = "a static class field cannot be named `prototype` or `constructor`", // class.static-field.prototype-or-constructor, written 2026-11-09 (D11)
+                ["JSE1561"] = "a class field cannot be named `constructor`", // class.field.constructor, written 2026-11-09 (D11); before, "the class definition declares `{0}`, so a field, an accessor, a generator or an async method cannot declare it again" (observed)
+                ["JSE1562"] = "a static class field cannot be named `prototype` or `constructor`", // class.static-field.prototype-or-constructor, written 2026-11-09 (D11); before, "the class definition declares `prototype` on the constructor, so a static member cannot declare it again" (d82b07ad's JsParser.cs:3028)
                 ["JSE1563"] = "`arguments` names nothing inside a class field initialiser or a static block", // class.initializer.arguments, d82b07ad's JsCompiler.Classes.cs:348
                 ["JSE1564"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
                 ["JSE1565"] = "`{0}` is a private name a class body reserves and cannot declare", // class.private-name.constructor, observed
                 ["JSE1566"] = "`{0}` is declared twice in one scope", // scope.lexical.duplicate, observed
                 ["JSE1567"] = "`{0}` is declared both lexically and as a `var`", // scope.lexical.var-collision, curated
                 ["JSE1568"] = "the label `{0}` is already in force here, so a statement inside it cannot declare it again", // jump.label.duplicate, observed
-                ["JSE1569"] = "`break` names a label that does not enclose it", // jump.break.undefined-label, written 2026-11-09 (D11)
-                ["JSE1570"] = "`continue` names a label that is not on a loop enclosing it", // jump.continue.undefined-label, written 2026-11-09 (D11)
+                ["JSE1569"] = "`break` names a label that does not enclose it", // jump.break.undefined-label, written 2026-11-09 (D11); before, "`break` names no enclosing loop or switch" (curated)
+                ["JSE1570"] = "`continue` names a label that is not on a loop enclosing it", // jump.continue.undefined-label, written 2026-11-09 (D11); before, "`continue` names no enclosing loop" (curated)
                 ["JSE1571"] = "`arguments` names nothing inside a class field initialiser or a static block", // class.initializer.arguments, d82b07ad's JsCompiler.Classes.cs:348
                 ["JSE1572"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
                 ["JSE1573"] = "`{0}` is a reserved word in a class static block", // class.static-block.await, observed
                 ["JSE1574"] = "a body cannot declare `use strict` over a parameter list that has a default, a rest parameter or a pattern in it", // function.use-strict.non-simple-parameters, d82b07ad's JsParser.cs:4120
                 ["JSE1575"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
                 ["JSE1576"] = "an `await` expression is not admitted in a function's parameters", // function.parameters.await, d82b07ad's JsParser.cs:5191
-                ["JSE1577"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11)
+                ["JSE1577"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11); before, "`{0}` is a parameter of this function, so its body cannot declare it again" (d82b07ad's JsParser.cs:3851)
                 ["JSE1578"] = "a body cannot declare `use strict` over a parameter list that has a default, a rest parameter or a pattern in it", // function.use-strict.non-simple-parameters, d82b07ad's JsParser.cs:4120
                 ["JSE1579"] = "an `await` expression is not admitted in a function's parameters", // function.parameters.await, d82b07ad's JsParser.cs:5191
                 ["JSE1580"] = "`{0}` is bound twice by one parameter list", // scope.parameter.duplicate, curated
                 ["JSE1581"] = "`{0}` is not a function name in strict code", // strict.binding.eval-or-arguments, d82b07ad's JsParser.cs:2363
-                ["JSE1582"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11)
-                ["JSE1583"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.property.outside-method, written 2026-11-09 (D11)
-                ["JSE1584"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.property.outside-method, written 2026-11-09 (D11)
+                ["JSE1582"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11); before, "`{0}` is a parameter of this function, so its body cannot declare it again" (observed)
+                ["JSE1583"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.property.outside-method, written 2026-11-09 (D11); before, "`super` is only admitted inside a method" (d82b07ad's JsCompiler.Calls.cs:535)
+                ["JSE1584"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.property.outside-method, written 2026-11-09 (D11); before, "`super` is only admitted inside a method" (d82b07ad's JsCompiler.Calls.cs:535)
                 ["JSE1585"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
                 ["JSE1586"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
-                ["JSE1587"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11)
-                ["JSE1588"] = "the head of an async arrow function is not a valid parameter list", // cover.async-arrow-head, written 2026-11-09 (D11)
+                ["JSE1587"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11); before, "`{0}` is a parameter of this function, so its body cannot declare it again" (d82b07ad's JsParser.cs:3851)
+                ["JSE1588"] = "the head of an async arrow function is not a valid parameter list", // cover.async-arrow-head, written 2026-11-09 (D11); before, "a rest parameter is admitted only as the last parameter" (observed)
                 ["JSE1589"] = "a `yield` expression is not admitted in a function's parameters", // function.parameters.yield, d82b07ad's JsParser.cs:4526
                 ["JSE1590"] = "an `await` expression is not admitted in a function's parameters", // function.parameters.await, d82b07ad's JsParser.cs:5191
-                ["JSE1591"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11)
+                ["JSE1591"] = "`{0}` is a parameter of this function, so its body cannot declare it again lexically", // scope.parameter.lexical-collision, written 2026-11-09 (D11); before, "`{0}` is a parameter of this function, so its body cannot declare it again" (observed)
                 ["JSE1592"] = "a body cannot declare `use strict` over a parameter list that has a default, a rest parameter or a pattern in it", // function.use-strict.non-simple-parameters, d82b07ad's JsParser.cs:4120
                 ["JSE1601"] = "`{0}` is declared twice in one scope", // scope.lexical.duplicate, observed
                 ["JSE1602"] = "`{0}` is declared both lexically and as a `var`", // scope.lexical.var-collision, d82b07ad's JsParser.cs:3757
-                ["JSE1603"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.outside-method, written 2026-11-09 (D11)
+                ["JSE1603"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.outside-method, written 2026-11-09 (D11); before, "`super` is only admitted inside a method" (d82b07ad's JsCompiler.Calls.cs:535)
                 ["JSE1604"] = "`{0}` names how a function was called and no function encloses this one", // meta.new-target.outside-function, observed
                 ["JSE1605"] = "the label `{0}` is already in force here, so a statement inside it cannot declare it again", // jump.label.duplicate, d82b07ad's JsParser.cs:580
-                ["JSE1606"] = "`break` names a label that does not enclose it", // jump.break.undefined-label, written 2026-11-09 (D11)
-                ["JSE1607"] = "`continue` names a label that is not on a loop enclosing it", // jump.continue.undefined-label, written 2026-11-09 (D11)
+                ["JSE1606"] = "`break` names a label that does not enclose it", // jump.break.undefined-label, written 2026-11-09 (D11); before, "`break` names no enclosing loop or switch" (curated)
+                ["JSE1607"] = "`continue` names a label that is not on a loop enclosing it", // jump.continue.undefined-label, written 2026-11-09 (D11); before, "`continue` names no enclosing loop" (curated)
                 ["JSE1608"] = "`{0}` is not declared by any class this expression is inside of", // class.private-name.undeclared, d82b07ad's JsCompiler.Classes.cs:420
                 ["JSE1609"] = "`{0}` is declared twice in one scope", // scope.lexical.duplicate, observed
                 ["JSE1610"] = "`{0}` is declared both lexically and as a `var`", // scope.lexical.var-collision, curated
                 ["JSE1611"] = "`{0}` is exported twice", // module.export.duplicate, d82b07ad's JsCompiler.Modules.cs:477
                 ["JSE1612"] = "`{0}` is exported and this module declares no such binding", // module.export.undeclared, d82b07ad's JsCompiler.Modules.cs:523
-                ["JSE1613"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.outside-method, written 2026-11-09 (D11)
+                ["JSE1613"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.outside-method, written 2026-11-09 (D11); before, "`super` is only admitted inside a method" (d82b07ad's JsCompiler.Calls.cs:535)
                 ["JSE1614"] = "`{0}` names how a function was called and no function encloses this one", // meta.new-target.outside-function, observed
                 ["JSE1615"] = "the label `{0}` is already in force here, so a statement inside it cannot declare it again", // jump.label.duplicate, curated
-                ["JSE1616"] = "`break` names a label that does not enclose it", // jump.break.undefined-label, written 2026-11-09 (D11)
-                ["JSE1617"] = "`continue` names a label that is not on a loop enclosing it", // jump.continue.undefined-label, written 2026-11-09 (D11)
+                ["JSE1616"] = "`break` names a label that does not enclose it", // jump.break.undefined-label, written 2026-11-09 (D11); before, "`break` names no enclosing loop or switch" (curated)
+                ["JSE1617"] = "`continue` names a label that is not on a loop enclosing it", // jump.continue.undefined-label, written 2026-11-09 (D11); before, "`continue` names no enclosing loop" (curated)
                 ["JSE1618"] = "`{0}` is not declared by any class this expression is inside of", // class.private-name.undeclared, d82b07ad's JsCompiler.Classes.cs:420
                 ["JSE1619"] = "an export name holds a lone surrogate, which is not well-formed Unicode", // module.export-name.ill-formed, observed
                 ["JSE1620"] = "`{0}` is imported twice", // scope.lexical.duplicate, d82b07ad's JsCompiler.Modules.cs:150
                 ["JSE1621"] = "the import attribute `{0}` is given twice", // module.import-attribute.duplicate-key, observed
                 ["JSE1622"] = "a string names no local binding, so it is exported only with `from`", // module.export.string-local-name, observed
-                ["JSE1623"] = "`{0}` is a reserved word, so it names no local binding to export", // module.export.reserved-local-name, written 2026-11-09 (D11)
-                ["JSE2201"] = "a regular expression has 2^32 - 1 or more capturing groups", // regexp.pattern.too-many-groups, written 2026-11-09 (D11)
-                ["JSE2202"] = "a regular expression gives two capturing groups that might both participate one name", // regexp.group-name.duplicate, written 2026-11-09 (D11)
-                ["JSE2203"] = "a quantifier's minimum is greater than its maximum", // regexp.quantifier.out-of-order, written 2026-11-09 (D11)
-                ["JSE2204"] = "a regular-expression modifier names a flag twice", // regexp.modifiers.repeated-flag, written 2026-11-09 (D11)
-                ["JSE2205"] = "a regular-expression modifier group with `-` names no flag on either side", // regexp.modifiers.empty, written 2026-11-09 (D11)
-                ["JSE2206"] = "a regular-expression modifier names a flag to add twice", // regexp.modifiers.repeated-flag, written 2026-11-09 (D11)
-                ["JSE2207"] = "a regular-expression modifier names a flag to remove twice", // regexp.modifiers.repeated-flag, written 2026-11-09 (D11)
-                ["JSE2208"] = "a regular-expression modifier both adds and removes one flag", // regexp.modifiers.added-and-removed, written 2026-11-09 (D11)
-                ["JSE2209"] = "a named backreference names no capturing group", // regexp.backreference.undefined-group-name, written 2026-11-09 (D11)
-                ["JSE2210"] = "a backreference's number is greater than the number of capturing groups", // regexp.backreference.group-number-too-large, written 2026-11-09 (D11)
-                ["JSE2211"] = "a character class range has a class escape as an endpoint", // regexp.class.range-endpoint-is-class, written 2026-11-09 (D11)
-                ["JSE2212"] = "a character class range's first character is greater than its last", // regexp.class.range-out-of-order, written 2026-11-09 (D11)
-                ["JSE2213"] = "a character class range has a class escape as an endpoint", // regexp.class.range-endpoint-is-class, written 2026-11-09 (D11)
-                ["JSE2214"] = "a character class range's first character is greater than its last", // regexp.class.range-out-of-order, written 2026-11-09 (D11)
-                ["JSE2215"] = "a capturing group's name begins with a code point that cannot start an identifier", // regexp.group-name.invalid-start, written 2026-11-09 (D11)
-                ["JSE2216"] = "a capturing group's name begins with a code point that cannot start an identifier", // regexp.group-name.invalid-start, written 2026-11-09 (D11)
-                ["JSE2217"] = "a capturing group's name holds a code point that cannot continue an identifier", // regexp.group-name.invalid-part, written 2026-11-09 (D11)
-                ["JSE2218"] = "a capturing group's name holds a code point that cannot continue an identifier", // regexp.group-name.invalid-part, written 2026-11-09 (D11)
-                ["JSE2219"] = "a Unicode property escape names a property that does not exist", // regexp.property.unknown-name, written 2026-11-09 (D11)
-                ["JSE2220"] = "a Unicode property escape names a value its property does not have", // regexp.property.unknown-value, written 2026-11-09 (D11)
-                ["JSE2221"] = "a Unicode property escape names neither a binary property nor a General_Category value", // regexp.property.unknown-lone-name, written 2026-11-09 (D11)
-                ["JSE2222"] = "a property of strings is admitted only with the `v` flag", // regexp.property.of-strings-outside-v-mode, written 2026-11-09 (D11)
-                ["JSE2223"] = "a negated Unicode property escape names a property of strings", // regexp.property.negated-strings, written 2026-11-09 (D11)
-                ["JSE2224"] = "a negated character class may contain strings", // regexp.class.negated-may-contain-strings, written 2026-11-09 (D11)
-                ["JSE2225"] = "a negated character class may contain strings", // regexp.class.negated-may-contain-strings, written 2026-11-09 (D11)
-                ["JSE2226"] = "a character class range's first character is greater than its last", // regexp.class.range-out-of-order, written 2026-11-09 (D11)
-                ["JSE8101"] = "a braced quantifier has no atom to repeat", // regexp.quantifier.braced-without-atom, written 2026-11-09 (D11)
-                ["JSE8102"] = "in Unicode mode, a character class range cannot have a class escape as an endpoint", // regexp.class.range-endpoint-is-class, written 2026-11-09 (D11)
-                ["JSE8103"] = "a character class range's first character is greater than its last", // regexp.class.range-out-of-order, written 2026-11-09 (D11)
-                ["JSE8104"] = "in Unicode mode, a character class range cannot have a class escape as an endpoint", // regexp.class.range-endpoint-is-class, written 2026-11-09 (D11)
-                ["JSE8105"] = "a character class range's first character is greater than its last", // regexp.class.range-out-of-order, written 2026-11-09 (D11)
-                ["JSE1901"] = "the source given to `eval` is not a valid script", // eval.source.invalid, written 2026-11-09 (D11)
+                ["JSE1623"] = "`{0}` is a reserved word, so it names no local binding to export", // module.export.reserved-local-name, written 2026-11-09 (D11); before, "`{0}` is exported and this module declares no such binding" (d82b07ad's JsCompiler.Modules.cs:523)
+                ["JSE2201"] = "a regular expression has 2^32 - 1 or more capturing groups", // regexp.pattern.too-many-groups, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2202"] = "a regular expression gives one name to two capturing groups that might both participate", // regexp.group-name.duplicate, written 2026-11-09 (D11) and again later that day; it read "a regular expression gives two capturing groups that might both participate one name"; before, its message identifier
+                ["JSE2203"] = "a quantifier's minimum is greater than its maximum", // regexp.quantifier.out-of-order, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2204"] = "a regular-expression modifier names a flag twice", // regexp.modifiers.repeated-flag, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2205"] = "a regular-expression modifier group with `-` names no flag on either side", // regexp.modifiers.empty, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2206"] = "a regular-expression modifier names a flag to add twice", // regexp.modifiers.repeated-flag, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2207"] = "a regular-expression modifier names a flag to remove twice", // regexp.modifiers.repeated-flag, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2208"] = "a regular-expression modifier both adds and removes one flag", // regexp.modifiers.added-and-removed, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2209"] = "a named backreference names no capturing group", // regexp.backreference.undefined-group-name, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2210"] = "a backreference's number is greater than the number of capturing groups", // regexp.backreference.group-number-too-large, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2211"] = "a character class range has a class escape as an endpoint", // regexp.class.range-endpoint-is-class, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2212"] = "a character class range's first character is greater than its last", // regexp.class.range-out-of-order, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2213"] = "a character class range has a class escape as an endpoint", // regexp.class.range-endpoint-is-class, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2214"] = "a character class range's first character is greater than its last", // regexp.class.range-out-of-order, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2215"] = "a capturing group's name begins with a code point that cannot start an identifier", // regexp.group-name.invalid-start, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2216"] = "a capturing group's name begins with a code point that cannot start an identifier", // regexp.group-name.invalid-start, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2217"] = "a capturing group's name holds a code point that cannot continue an identifier", // regexp.group-name.invalid-part, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2218"] = "a capturing group's name holds a code point that cannot continue an identifier", // regexp.group-name.invalid-part, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2219"] = "a Unicode property escape names a property that does not exist", // regexp.property.unknown-name, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2220"] = "a Unicode property escape names a value its property does not have", // regexp.property.unknown-value, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2221"] = "a Unicode property escape names neither a binary property nor a General_Category value", // regexp.property.unknown-lone-name, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2222"] = "a property of strings is admitted only with the `v` flag", // regexp.property.of-strings-outside-v-mode, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2223"] = "a negated Unicode property escape names a property of strings", // regexp.property.negated-strings, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2224"] = "a negated character class may contain strings", // regexp.class.negated-may-contain-strings, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2225"] = "a negated character class may contain strings", // regexp.class.negated-may-contain-strings, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2226"] = "a character class range's first character is greater than its last", // regexp.class.range-out-of-order, written 2026-11-09 (D11); before, its message identifier
+                ["JSE8101"] = "a braced quantifier has no atom to repeat", // regexp.quantifier.braced-without-atom, written 2026-11-09 (D11); before, its message identifier
+                ["JSE8102"] = "in Unicode mode, a character class range cannot have a class escape as an endpoint", // regexp.class.range-endpoint-is-class, written 2026-11-09 (D11); before, its message identifier
+                ["JSE8103"] = "a character class range's first character is greater than its last", // regexp.class.range-out-of-order, written 2026-11-09 (D11); before, its message identifier
+                ["JSE8104"] = "in Unicode mode, a character class range cannot have a class escape as an endpoint", // regexp.class.range-endpoint-is-class, written 2026-11-09 (D11); before, its message identifier
+                ["JSE8105"] = "a character class range's first character is greater than its last", // regexp.class.range-out-of-order, written 2026-11-09 (D11); before, its message identifier
+                ["JSE1901"] = "the source given to `eval` is not a valid script", // eval.source.invalid, written 2026-11-09 (D11); before, its message identifier
                 ["JSE1902"] = "`{0}` names how a function was called and no function encloses this one", // meta.new-target.outside-function, observed
-                ["JSE1903"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.property.outside-method, written 2026-11-09 (D11)
+                ["JSE1903"] = "`super` is only admitted inside a method, a class field initialiser or a class static block", // super.property.outside-method, written 2026-11-09 (D11); before, "`super` is only admitted inside a method" (d82b07ad's JsCompiler.Calls.cs:535)
                 ["JSE1904"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
                 ["JSE1905"] = "`arguments` names nothing inside a class field initialiser", // class.initializer.arguments, d82b07ad's JsCompiler.Eval.cs:309
-                ["JSE1906"] = "a `var` in evaluated code names a binding the global scope declares lexically", // eval.var.global-lexical-collision, written 2026-11-09 (D11)
-                ["JSE1907"] = "a `var` in evaluated code names a binding an enclosing scope declares lexically", // eval.var.lexical-collision, written 2026-11-09 (D11)
-                ["JSE1908"] = "a `var` in evaluated code names a binding an enclosing scope declares lexically", // eval.var.lexical-collision, written 2026-11-09 (D11)
+                ["JSE1906"] = "a `var` in evaluated code names a binding the global scope declares lexically", // eval.var.global-lexical-collision, written 2026-11-09 (D11); before, its message identifier
+                ["JSE1907"] = "a `var` in evaluated code names a binding an enclosing scope declares lexically", // eval.var.lexical-collision, written 2026-11-09 (D11); before, its message identifier
+                ["JSE1908"] = "a `var` in evaluated code names a binding an enclosing scope declares lexically", // eval.var.lexical-collision, written 2026-11-09 (D11); before, its message identifier
                 ["JSE1909"] = "`{0}` is not declared by any class this expression is inside of", // class.private-name.undeclared, d82b07ad's JsCompiler.Classes.cs:420
-                ["JSE2001"] = "the parameters given to a function constructor are not a valid parameter list", // dynamic-function.parameters.invalid, written 2026-11-09 (D11)
-                ["JSE2002"] = "the body given to a function constructor is not a valid function body", // dynamic-function.body.invalid, written 2026-11-09 (D11)
-                ["JSE2003"] = "the source a function constructor assembles is not a valid function", // dynamic-function.source.invalid, written 2026-11-09 (D11)
-                ["JSE8106"] = "an HTML-like comment is not admitted in a module", // annexb.html-comment.module, written 2026-11-09 (D11)
-                ["JSE8107"] = "Unicode mode does not admit the pattern grammar of Annex B", // annexb.regexp.unicode-mode, written 2026-11-09 (D11)
-                ["JSE8301"] = "a function declaration cannot be labelled in strict code", // strict.labelled-function, written 2026-11-09 (D11)
+                ["JSE2001"] = "the parameters given to a function constructor are not a valid parameter list", // dynamic-function.parameters.invalid, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2002"] = "the body given to a function constructor is not a valid function body", // dynamic-function.body.invalid, written 2026-11-09 (D11); before, its message identifier
+                ["JSE2003"] = "the source a function constructor assembles is not a valid function", // dynamic-function.source.invalid, written 2026-11-09 (D11); before, its message identifier
+                ["JSE8106"] = "an HTML-like comment is not admitted in a module", // annexb.html-comment.module, written 2026-11-09 (D11); before, "`{found}` begins no expression" (curated)
+                ["JSE8107"] = "Unicode mode does not admit the pattern grammar of Annex B", // annexb.regexp.unicode-mode, written 2026-11-09 (D11); before, its message identifier
+                ["JSE8301"] = "a function declaration cannot be labelled in strict code", // strict.labelled-function, written 2026-11-09 (D11); before, "a declaration is not a statement, so it cannot be the body of a label" (curated)
                 ["JSE8302"] = "`{0}` is declared twice in one scope", // scope.lexical.duplicate, d82b07ad's JsParser.cs:3745
-                ["JSE8303"] = "a function declaration cannot be the body of an `if` statement in strict code", // annexb.if-function.strict, written 2026-11-09 (D11)
+                ["JSE8303"] = "a function declaration cannot be the body of an `if` statement in strict code", // annexb.if-function.strict, written 2026-11-09 (D11); before, "a declaration is not a statement, so it cannot be the body of an `if`" (observed)
                 ["JSE8304"] = "`{0}` is bound by a destructuring `catch` parameter, so the handler cannot declare it with `var`", // scope.catch.var-collision, d82b07ad's JsParser.cs:3935
-                ["JSE8305"] = "a `for … in` head cannot initialise its binding in strict code", // annexb.for-in-initializer.strict, written 2026-11-09 (D11)
-                ["JSE8306"] = "a call is not the target of a `for … in` or `for … of` head in strict code", // assignment.target.invalid, written 2026-11-09 (D11)
-                ["JSE7101"] = "`{0}` is not a name a `using` declaration may bind", // declaration.let.bound-name, written 2026-11-09 (D11)
+                ["JSE8305"] = "a `for … in` head cannot initialise its binding in strict code", // annexb.for-in-initializer.strict, written 2026-11-09 (D11); before, "a `for … in` or `for … of` head declares its binding and does not initialise it" (d82b07ad's JsParser.cs:1936)
+                ["JSE8306"] = "a call is not the target of a `for … in` or `for … of` head in strict code", // assignment.target.invalid, written 2026-11-09 (D11); before, "the left-hand side of an assignment is not a reference" (d82b07ad's JsParser.cs:4468)
+                ["JSE7101"] = "`{0}` is not a name a `using` declaration may bind", // declaration.let.bound-name, written 2026-11-09 (D11); before, "`{0}` is not a name a `let` or `const` declaration may bind" (curated)
                 ["JSE7102"] = "`{0}` is declared twice by one declaration", // scope.lexical.duplicate, d82b07ad's JsParser.cs:3998
-                ["JSE7103"] = "the `await using` head of this declaration is not well formed", // cover.await-using-declaration-head, written 2026-11-09 (D11)
-                ["JSE7104"] = "`{0}` is not a name an `await using` declaration may bind", // declaration.let.bound-name, written 2026-11-09 (D11)
+                ["JSE7103"] = "the `await using` head of this declaration is not well formed", // cover.await-using-declaration-head, written 2026-11-09 (D11); before, "`;` was expected and `{found}` was found" (curated)
+                ["JSE7104"] = "`{0}` is not a name an `await using` declaration may bind", // declaration.let.bound-name, written 2026-11-09 (D11); before, "`{0}` is not a name a `let` or `const` declaration may bind" (curated)
                 ["JSE7105"] = "`{0}` is declared twice by one declaration", // scope.lexical.duplicate, d82b07ad's JsParser.cs:3998
                 ["JSE7106"] = "a `{0}` declaration needs a block, a function body, a module or a loop head to be disposed at, and a script's or an eval's top level or a case clause is none", // using.declaration.no-disposal-scope, curated
                 ["JSE7107"] = "a `{0}` declaration needs a block, a function body, a module or a loop head to be disposed at, and a script's or an eval's top level or a case clause is none", // using.declaration.no-disposal-scope, curated
                 ["JSE7108"] = "a `{0}` declaration needs a block, a function body, a module or a loop head to be disposed at, and a script's or an eval's top level or a case clause is none", // using.declaration.no-disposal-scope, curated
                 ["JSE7201"] = "a decorator is not admitted by the declared feature manifest", // decorator.not-in-edition, curated
-                ["JSE7202"] = "an `accessor` class element is not admitted by the declared feature manifest", // decorator.auto-accessor.not-in-edition, written 2026-11-09 (D11)
+                ["JSE7202"] = "an `accessor` class element is not admitted by the declared feature manifest", // decorator.auto-accessor.not-in-edition, written 2026-11-09 (D11); before, "a class field ends with `;`, a line break or `}`" (curated)
                 ["JSE7301"] = "`import source` is not admitted by the declared feature manifest", // import-phase.source.not-in-edition, curated
-                ["JSE7302"] = "`import.source` is not admitted by the declared feature manifest", // import-phase.source-call.not-in-edition, written 2026-11-09 (D11)
+                ["JSE7302"] = "`import.source` is not admitted by the declared feature manifest", // import-phase.source-call.not-in-edition, written 2026-11-09 (D11); before, "`import.` is followed by `meta` and by nothing else" (curated)
                 ["JSE7303"] = "`import defer` is not admitted by the declared feature manifest", // import-phase.defer.not-in-edition, curated
-                ["JSE7304"] = "`import.defer` is not admitted by the declared feature manifest", // import-phase.defer-call.not-in-edition, written 2026-11-09 (D11)
-                ["JSE7401"] = "the source given to `eval` is not a valid script", // eval.source.invalid, written 2026-11-09 (D11)
+                ["JSE7304"] = "`import.defer` is not admitted by the declared feature manifest", // import-phase.defer-call.not-in-edition, written 2026-11-09 (D11); before, "`import.` is followed by `meta` and by nothing else" (curated)
+                ["JSE7401"] = "the source given to `eval` is not a valid script", // eval.source.invalid, written 2026-11-09 (D11); before, its message identifier
                 ["JSE7402"] = "`new.target` names how a function was called and no function encloses this one", // meta.new-target.outside-function, d82b07ad's JsParser.cs:5619
                 ["JSE7403"] = "`super` is only admitted inside a method", // super.property.outside-method, d82b07ad's JsCompiler.Calls.cs:535
                 ["JSE7404"] = "a `super` call is only admitted in the constructor of a class with a heritage", // super.call.outside-derived-constructor, d82b07ad's JsCompiler.Calls.cs:609
                 ["JSE9101"] = "the character {cp} begins no token this grammar defines", // syntax.character.unexpected, curated
                 ["JSE9102"] = "a block comment reaches the end of the source without closing", // syntax.comment.unterminated, observed
-                ["JSE9103"] = "an invalid numeric literal", // syntax.numeric-literal.invalid, written 2026-11-09 (D11)
+                ["JSE9103"] = "an invalid numeric literal", // syntax.numeric-literal.invalid, written 2026-11-09 (D11); before, "a numeric separator that is not between two digits" (observed)
                 ["JSE9104"] = "a string literal reaches the end of the line without closing", // syntax.string.unterminated, observed
-                ["JSE9105"] = "a string literal holds a `\\x` or `\\u` escape that is not well formed", // syntax.string.escape.invalid, written 2026-11-09 (D11)
+                ["JSE9105"] = "a string literal holds a `\\x` or `\\u` escape that is not well formed", // syntax.string.escape.invalid, written 2026-11-09 (D11); before, "a unicode escape that names no code point" (observed)
                 ["JSE9106"] = "a regular-expression literal reaches the end of the line without closing", // syntax.regexp.unterminated, observed
                 ["JSE9107"] = "a template literal reaches the end of the source without closing", // syntax.template.unterminated, observed
-                ["JSE9108"] = "no production admits `{tok}` where it stands", // syntax.token.unexpected, written 2026-11-09 (D11)
+                ["JSE9108"] = "the grammar admits no `{tok}` at this point", // syntax.token.unexpected, written 2026-11-09 (D11) and again later that day; it read "no production admits `{tok}` where it stands"; before, "`{tok}` begins no expression" (curated)
                 ["JSE9109"] = "`{0}` was expected and `{found}` was found", // syntax.token.missing, curated
                 ["JSE9110"] = "`{0}` is a module declaration and this source was presented as a script", // syntax.module-item.in-script, observed
                 ["JSE9201"] = "the source nests deeper than the {0} levels these parse options allow", // limit.nesting.too-deep, curated
                 ["JSE9202"] = "the source builds a tree deeper than the {0} levels this compiler walks", // limit.tree.too-deep, curated
                 ["JSE9203"] = "evaluated source nests deeper than the scope-depth ceiling", // limit.eval-scope.too-deep, d82b07ad's JsCompiler.Eval.cs:282
-                ["JSE9204"] = "a function declares more locals than the artifact format admits", // limit.locals.too-many, written 2026-11-09 (D11)
+                ["JSE9204"] = "a function declares more locals than the artifact format admits", // limit.locals.too-many, written 2026-11-09 (D11); before, "evaluated source declares too many bindings" (d82b07ad's JsCompiler.Eval.cs:394)
                 ["JSE9205"] = "the constant pool is full: an artifact of this format holds at most 65,535 distinct constants - numbers, strings, BigInts and names together - and this one needs more", // limit.constants.too-many, d82b07ad's JsCompiler.Emission.cs:199
-                ["JSE9206"] = "the program needs a deeper operand stack than the artifact format admits", // limit.operand-stack.too-deep, written 2026-11-09 (D11)
+                ["JSE9206"] = "the program needs a deeper operand stack than the artifact format admits", // limit.operand-stack.too-deep, written 2026-11-09 (D11); before, "the program needs an operand stack of {maximumHeight} and the format admits {JavaScriptFormat.CeilingOperandStack}" (d82b07ad's SliceSourceCompiler.cs:340)
                 ["JSE9301"] = "{0} is not admitted by the declared feature manifest", // engine.manifest.construct-not-admitted, curated
-                ["JSE9302"] = "a `const` binding is assigned to", // engine.constant.assigned, written 2026-11-09 (D11)
-                ["JSE9303"] = "a name has no binding and no global object to resolve it on", // engine.name.unresolvable, written 2026-11-09 (D11)
+                ["JSE9302"] = "a `const` binding is assigned to", // engine.constant.assigned, written 2026-11-09 (D11); before, "`{reference.Name}` is a constant and cannot be assigned" (d82b07ad's SliceStaticSemantics.cs:736)
+                ["JSE9303"] = "a name has no binding and no global object to resolve it on", // engine.name.unresolvable, written 2026-11-09 (D11); before, "`{name}` reached the lowering with no resolution, which the validation stage should have refused" (d82b07ad's SliceSourceCompiler.cs:972)
                 ["JSE9304"] = "two modules were presented under the key `{0}`", // engine.module.duplicate-key, d82b07ad's JsCompiler.Modules.cs:62
                 ["JSE9305"] = "no composition of this profile can honour the import attribute `{0}`, so the module this clause decorates cannot be loaded", // engine.import-attribute.unsupported, d82b07ad's JsCompiler.Modules.cs:233
-                ["JSE9306"] = "a JSON module's source text is not JSON", // engine.json-module.invalid, written 2026-11-09 (D11)
+                ["JSE9306"] = "a JSON module's source text is not JSON", // engine.json-module.invalid, written 2026-11-09 (D11); before, "the JSON module `{0}` cannot be read: is not JSON:" (d82b07ad's JsCompiler.cs:959)
                 ["JSE9307"] = "`{found}` is only admitted inside an async function or an async generator", // engine.top-level-await.disabled, curated
-                ["JSE9308"] = "the compiler has no translation for this construct", // engine.construct.not-compiled, written 2026-11-09 (D11)
+                ["JSE9308"] = "the compiler has no translation for this construct", // engine.construct.not-compiled, written 2026-11-09 (D11); before, "this expression is not admitted by the declared feature manifest" (d82b07ad's JsCompiler.Expressions.cs:339)
                 ["JSE9111"] = "a unicode escape in an identifier that names no code point", // syntax.identifier.escape.invalid, observed
-                ["JSE9207"] = "a regular-expression pattern nests groups and classes deeper than this engine's bound", // limit.regexp.too-deep, written 2026-11-09 (D11)
-                ["JSE9208"] = "a JSON module nests deeper than this engine's bound", // limit.json-module.too-deep, written 2026-11-09 (D11)
+                ["JSE9207"] = "a regular-expression pattern nests groups and classes deeper than this engine's bound", // limit.regexp.too-deep, written 2026-11-09 (D11); before, its message identifier
+                ["JSE9208"] = "a JSON module nests deeper than this engine's bound", // limit.json-module.too-deep, written 2026-11-09 (D11); before, "the JSON module `{0}` cannot be read: is not JSON:" (d82b07ad's JsCompiler.cs:958)
                 ["JSE9209"] = "a BigInt literal wider than the format is not admitted by the declared feature manifest", // limit.bigint-literal.too-wide, curated
                 ["JSE9309"] = "a module specifier holds a lone surrogate, which is not well-formed Unicode", // engine.module-specifier.ill-formed, curated
-                ["JSE9310"] = "this build cannot serve the compile request", // engine.request.unsupported, written 2026-11-09 (D11)
+                ["JSE9310"] = "this build cannot serve the compile request", // engine.request.unsupported, written 2026-11-09 (D11); before, "the native output form is admitted by the `{0}` and `{1}` feature manifests, and every unit of an artifact has the one form" (d82b07ad's JsCompiler.Assembly.cs:456)
                 ["JSE9311"] = "`{0}` is not declared by any class this expression is inside of", // engine.dynamic-function.private-name, d82b07ad's JsCompiler.Classes.cs:420
                 ["JSE9112"] = "`return` has nothing to return from outside a function", // syntax.return.outside-function, d82b07ad's JsCompiler.Exceptions.cs:261
                 ["JSE9113"] = "`return` has nothing to return from inside a class static block", // syntax.return.in-static-block, d82b07ad's JsCompiler.Exceptions.cs:275
