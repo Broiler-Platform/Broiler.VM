@@ -563,25 +563,16 @@ verdict. Where a part turns on words the rule does not settle, the part says whi
 every such reading with the alternative not taken, for the owner to rule on. No test262 suite total is quoted: part A
 is decided per variant.
 
-**What task 7.3 took itself.** Everything it read or wrote is in [`after/judgement/`](after/judgement/), each folder
-with a `hashes.txt`, and [`base/rules-idle/`](base/rules-idle/). Its local runs were taken on 2026-11-10 between 21:39Z
-and 22:24Z on this family's local machine (four logical processors, Ubuntu 24.04.5 LTS), now with .NET SDK 10.0.404,
-installed again after the machine was replaced (task 7.2's runs used 10.0.401 and the hosted runs 10.0.403), from clean
-`git archive`s on a tmpfs, built in Release with `--disable-build-servers`, `MSBUILDDISABLENODEREUSE=1` and shared
-compilation off. Each ran behind a hard gate ([`after/judgement/gate.sh.txt`](after/judgement/gate.sh.txt), with
-[`run.sh.txt`](after/judgement/run.sh.txt)) that waits, with no time limit, for a one-minute load of at most 1.0 and no
-process whose executable (read from `/proc/<pid>/exe`, not a shell's command line) is `dotnet`, `testhost`,
-`VBCSCompiler`, `MSBuild` or a `Broiler.*` program; every run's folder keeps the gate's record, the machine before and
-after, the command, the exit and the wall time. No build left a compiler server or an MSBuild node (each gate log's
-`stop-servers` lines). The gate's first version waited by reading from `/dev/zero`, which spun a processor and held
-the load above 1.0; it was stopped, by its own process numbers, before any run behind it had started, and corrected.
-`<scratch>` and `<tmpfs>` in the records stand for the stage's scratch folder and its tmpfs work folder.
-
 ### The commits, and the conditions the rule's header sets
 
 [`after/judgement/commits/commit-conditions.txt`](after/judgement/commits/commit-conditions.txt) is the output of
-[`commit-conditions.sh.txt`](after/judgement/commits/commit-conditions.sh.txt), git reads alone, over this repository.
-Every condition holds, so no part is void.
+[`commit-conditions.sh.txt`](after/judgement/commits/commit-conditions.sh.txt), git reads alone, over this repository,
+and [`registry-diff-read.txt`](after/judgement/commits/registry-diff-read.txt) the output of
+[`registry-diff-read.py.txt`](after/judgement/commits/registry-diff-read.py.txt), taken at the review of task 7.3, a git
+read of every line the registry commit's diff changes, path by path. Every condition holds on these reads but one half
+of one: that the registry commit changes "in each path only what the list says" is shown by them for its source files
+and for the data files the table names, and rests for the rest on JSD-0087's section 1, which section 5's reading 11
+takes, with the alternative. On that reading no part is void.
 
 | Commit | Condition (the rule, as its revisions of 2026-11-04 and 2026-11-08 read it) | The git read, and what it shows |
 |---|---|---|
@@ -596,23 +587,48 @@ Every condition holds, so no part is void.
 | | descends from the rule commit, both tools commits, and `1de3af6`, bundle `sjl-12-001`'s after commit | yes, all four |
 | | the after commit is the only first-parent commit that carries step 1 | `git rev-list --first-parent df75f8c..a8d8398` is `a8d8398` alone; at the base the registry states revision 18, `JsParser.cs` is present and `JsFrontendAdapter.cs` and `JsAdmissionWalk.cs` are not |
 | Registry commit `cbee7c46ece7c9d7cf8a0c3f9a5a68418266672d` | the first commit of the branch the after commit merges, its parent the base | the branch's first commit (`git rev-list --reverse --first-parent a8d8398^2 ^df75f8c`) is `cbee7c4`, whose one parent is `df75f8c` |
-| | `git diff --name-only` between the base and it names exactly the paths the revision of 2026-11-08 lists (item 1) | the same paths, no more and no fewer. What each path's diff holds was not read again line by line here; JSD-0087's section 8 records the branch's verifier's reading of it |
+| | `git diff --name-only` between the base and it names exactly the paths the revision of 2026-11-08 lists (item 1) | the same paths, no more and no fewer |
+| | "in each path only what the list says" (the same item: a registry commit that "changes a named path in a way the list does not say, fails the condition") | [`registry-diff-read.txt`](after/judgement/commits/registry-diff-read.txt): in every C# file each changed line is a fingerprint or a count of the generated header, a comment (each replaced one beside a dated note, or kept and extended), a swap of one diagnostic code for another on an otherwise unchanged line, or one of the lines the list names (`JsParser`'s `BigIntLiteral` and `BigIntKey` restated as `Refuse` with 2106, the suffix spelled out and `BigIntLiteral` returning the `JsNullLiteral`; `SliceSourceDiagnosticCode`'s new members; `SliceSourcePrograms`' new cases; `LanguageErrors`' and `Test262Run`'s grading of the new codes; `BigIntChecks`' new constant; the polyglot CLI's help line; the registry test's assertions). Read by hand from the same diff: `registry.txt` gains revision 19's header lines and its sixteen rows; the API listing gains `SliceSourceDiagnosticCode`'s sixteen members and loses nothing; the CLI table's three rows each change a code with a dated note; the corpus manifest gains the eleven new sources and restates its two requests' rows with their new code and digest; the two requests change their answer; the new sources are one construct each; the assurance artefacts change counts, fingerprints and the rows of changed members. **Not read here**: that each code swap stands at a site decision D12 names, and the lines of `frontend-mapping.tsv` and of the stage table's new copy; they rest on JSD-0087's section 1 (section 5's reading 11) |
 | After commit `a8d8398bd59e7f5600cb0aa9e733ff8948859cf4` (#196) | the default-branch merge that lands step 1, one merge | parents `df75f8c` and `e0caa78`; the registry states revision 19 and `JsParser.cs` is absent |
 | Part A's runs | dispatched at the base and the after commit, the workflow and driver at the dispatched ref the base's | each `imported.txt` names its tested commit; the workflow's blob `740a70f8…` and the driver's `55f71ee3…` are the same at the base and at the after commit, the ref both dispatches ran from ([`completeness.txt`](after/judgement/parta/completeness.txt)) |
 | Parts B to J | taken locally from a clean checkout of each commit they name, after the merge | the 7.2 paragraphs above, with their deviations, and this section's runs |
+
+**What task 7.3 took itself.** Everything it read or wrote is in [`after/judgement/`](after/judgement/), each folder
+with a `hashes.txt`, and [`base/rules-idle/`](base/rules-idle/). Its local runs were taken on 2026-11-10 between 21:39Z
+and 22:24Z on this family's local machine (four logical processors, Ubuntu 24.04.5 LTS), now with .NET SDK 10.0.404,
+installed again after the machine was replaced (task 7.2's runs used 10.0.401 and the hosted runs 10.0.403), from clean
+`git archive`s on a tmpfs, built in Release with `--disable-build-servers`, `MSBUILDDISABLENODEREUSE=1` and shared
+compilation off. Each ran behind a hard gate ([`after/judgement/gate.sh.txt`](after/judgement/gate.sh.txt), with
+[`run.sh.txt`](after/judgement/run.sh.txt)) that waits, with no time limit, for a one-minute load of at most 1.0 and no
+process whose executable (read from `/proc/<pid>/exe`, not a shell's command line) is `dotnet`, `testhost`,
+`VBCSCompiler`, `MSBuild` or a `Broiler.*` program; every run's folder keeps the gate's record, the machine before and
+after, the command, the exit and the wall time. No build left a compiler server or an MSBuild node (each gate log's
+`stop-servers` lines). *(Corrected 2026-11-10, at the review of task 7.3: the retained gate's `stop_servers`, whose
+comment says it acts on "OUR build (by PID, children of nothing else we didn't start)", in fact matched any compiler
+server or MSBuild node on the machine and checked neither its parent nor its start. It never fired: every gate log
+under `after/judgement/` and `base/rules-idle/` reads "stop-servers: done, remaining:" with nothing before it, so no
+process was killed by it and no record changes. The retained copy is left as it ran; the gate used from the review on
+kills only a process whose environment carries the run's own tag, as
+[`classify-rerun.txt`](after/judgement/partb/classify-rerun.txt) records.)* The gate's first version waited by reading
+from `/dev/zero`, which spun a processor and held the load above 1.0; it was stopped, by its own process numbers,
+before any run behind it had started, and corrected.
+`<scratch>` and `<tmpfs>` in most of the records stand for the stage's scratch folder and its tmpfs work folder; some
+of task 7.3's scripts and command logs (`run.sh.txt`, `partb/tagged-run.sh.txt`, `partb/filter-tags.py.txt`, each
+`tagged-*/commands.log`, `base/rules-idle/partd-base.sh.txt` and its `logs/commands.log`) name the scratch folder's
+own path, as the earlier records of this bundle and of `sjl-12-001` do.
 
 ### The verdicts
 
 | Part | Verdict | What it reads |
 |---|---|---|
 | A, test262 in both forms | **MET** | [`after/judgement/parta/`](after/judgement/parta/): `completeness.txt`, `compare-wide-bytecode.log`, `compare-wide-native.log`, `changed-verdicts.tsv`, `kindF-gated/`; [`after/parta-rerun-pinned/`](after/parta-rerun-pinned/), [`after/parta-race-pinned/`](after/parta-race-pinned/) |
-| B, artifact identity | **MET** | [`after/judgement/partb/`](after/judgement/partb/): `part-b-classes.tsv.gz`, `part-b-summary.txt`, `part-b-classify.py`, `stage-tags-*.tsv.gz`, `binder-sites.tsv`; part B's run 1 at each commit; [`controls/partb/`](controls/partb/) |
+| B, artifact identity | **MET**, on readings 3, 6 and 11 of section 5 | [`after/judgement/partb/`](after/judgement/partb/): `part-b-classes.tsv.gz`, `part-b-summary.txt`, `part-b-classify.py`, `stage-tags-*.tsv.gz`, `binder-sites.tsv`; part B's run 1 at each commit; [`controls/partb/`](controls/partb/) |
 | C, determinism and the front end's gates | **MET**, on reading 2 of section 5 | [`after/judgement/partc/`](after/judgement/partc/); `after/local/checks.log.gz`, `base/local-idle/checks.log.gz`; [`controls/`](controls/) K1 to K4 |
 | D, the front end's rules | **MET** | [`after/rules/`](after/rules/), [`controls/i5/`](controls/i5/), [`after/n37/`](after/n37/), [`controls/n37/`](controls/n37/); the base, read: [`base/rules-idle/`](base/rules-idle/) |
 | E, the registry and its mapping | **MET** | `after/local/parte-mapping*.log`, [`controls/parte/`](controls/parte/) |
 | F, the two tokenizers | **MET** | `after/local/checks.log.gz`, [`controls/retake/`](controls/retake/) |
 | G, source fuzzing | **MET** | `after/local/fuzz-*.log`, `controls/partg-control-wide.log`, [`controls/retake/partg-again/`](controls/retake/partg-again/) |
-| H, the syntax vectors | **MET** | [`after/judgement/parth/part-h-vectors.tsv`](after/judgement/parth/part-h-vectors.tsv); `base/local/vectors-run.tsv.gz`, `after/local/vectors-run.tsv.gz`, `after/local/vectors-control.log` |
+| H, the syntax vectors | **MET**, on reading 7 of section 5 | [`after/judgement/parth/part-h-vectors.tsv`](after/judgement/parth/part-h-vectors.tsv); `base/local/vectors-run.tsv.gz`, `after/local/vectors-run.tsv.gz`, `after/local/vectors-control.log` |
 | I, the fuel-parity twins | **MET** | [`base/fuel-parity.log`](base/fuel-parity.log), [`after/fuel-parity.log`](after/fuel-parity.log), [`after/parti/`](after/parti/) |
 | J, the compile measurement (no gate clause, decision D24) | **NOT MET** | [`measurement/summary.txt`](measurement/summary.txt), `measurement/conditions.tsv`, `measurement/runs.tsv` |
 
@@ -640,7 +656,8 @@ C6 and is listed, and the native pair meets the same conditions" (the MET line a
   arrow parameters through four constructors and two evals, a parenthesised nested pattern), and asserts the
   SyntaxError the after commit gives.
   - **Their first diagnostics** were read by one-process re-runs, taken again here behind the hard gate
-    ([`kindF-gated/`](after/judgement/parta/kindF-gated/)): the conformance root built in Release from a clean archive
+    ([`kindF-gated/`](after/judgement/parta/kindF-gated/), with .NET SDK 10.0.404, section 5's reading 10): the
+    conformance root built in Release from a clean archive
     of each commit, one process per path at each commit in each form, under the wide manifest, fuel 100,000,000 and a
     wall clock of 5,000 ms, with `--expect` against each commit's retained pin (every log reads the pin's content
     digest and none `MissingSuiteRevision`). Each gives the hosted verdict again. At the base the first diagnostic each
@@ -662,7 +679,7 @@ C6 and is listed, and the native pair meets the same conditions" (the MET line a
 - **The floors** decide nothing here. The harness's floor lines are retained in the imported artifacts; the native
   floor's `atMost unsupported` row was not re-set at the after commit, which section 5 records as a finding.
 
-### Part B: MET
+### Part B: MET, on readings 3, 6 and 11 of section 5
 
 "MET if and only if all three runs are complete, the control is reported as stated, every difference is in R, R2, S, F,
 L, L2 or N and is listed, and B4 and the census show none but R" (as the revisions of 2026-11-02 and 2026-11-09 read it).
@@ -689,9 +706,14 @@ L, L2 or N and is listed, and B4 and the census show none but R" (as the revisio
   and run as part B's run 1, one process, one worker, behind the gate, and each report, its tags removed, **equals that
   commit's run 1 byte for byte**, row for row (`tagged-*/stripped-compared.txt`); the rows of every key that differs
   between two of the three runs are retained (`stage-tags-registry.tsv.gz`, `stage-tags-after.tsv.gz`), and the
-  classifier checks them against run 1 again. The binder's checks are named by their message
+  classifier checks them against run 1 again. The two whole tagged reports are not retained: their equality with run 1
+  can be checked from the bundle only against the digests `stripped-compared.txt` records for them. The binder's checks are named by their message
   ([`binder-sites.tsv`](after/judgement/partb/binder-sites.tsv)), each with its correspondence row and the stage the
-  stage table assigns it. Section 5's readings 4 and 5.
+  stage table assigns it. Section 5's readings 4 and 5. *(Corrected 2026-11-10, at the review of task 7.3: the
+  classifier's docstring named the comparison file wrongly, and its count of regressions read class REGRESSION alone,
+  so that a placeholder class it can give, `L?` or `L2?/F?`, would not have been counted; both are corrected, and the
+  corrected classifier, run again, writes both outputs byte for byte as retained
+  ([`classify-rerun.txt`](after/judgement/partb/classify-rerun.txt)). No difference has a placeholder.)*
 - **Between the base and the registry commit: 9,761 differences, every one class R**, in B1, B2, B3 and B5: refused at
   both, the same places, codes differing only by the pairs the mapping's revision at the registry commit gives (2101 to
   2215, 2212, 2213, 2214, 2218 and 2105, 2206 to 2217 and 2216, 2205 to 2101, 2102 to 2101, 2402 to 2407 and 2207 to
@@ -706,12 +728,12 @@ L, L2 or N and is listed, and B4 and the census show none but R" (as the revisio
 | S7 | 8,135 | the library's first refusal is r, and the registry commit's later parse diagnostics are gone |
 | S3 | 1,732 | the same, the removed diagnostics the binder's or the lowering's |
 | S3 with S5 | 124 | r is the binder's refusal of a regular-expression literal (row B25, 2215), reported after at the parse at the same place with the same code |
-| R2, and R2 with S7 | 533 and 166 | r at the same place under the code of a site that serves several rules, the library reporting its row's code (2102 to 2101, 2209 to 2101, 2201 and 2202) |
+| R2, and R2 with S7 | 533 and 166 | r at the same place under the code of a site that serves several rules, the library reporting its row's code: every one 2209 to 2101, under rows EX0008, EE0087 and EE0155; the mapping's other R2 pairs reach no difference |
 | S4 with S6 | 25 | the registry commit's tokenizer refused later in the text and stopped the unit; the library refuses earlier, at a syntax row |
-| N (place) | 9,762 (3 with S3) | the one diagnostic at another place than r, under r's code |
-| N (code) | 3,539 | at r's place under another code, most of them `Expect`'s 2102 where the library reports EX0008's 2101 |
+| N (place) | 9,765 (3 of them also S3) | the one diagnostic at another place than r, under r's code |
+| N (code) | 3,539 | at r's place under another code, most of them `Expect`'s 2102 where the library reports EX0008's 2101 (section 5's reading 6) |
 | N (place and code) | 1,573 | both |
-| N (code), widened | 6 | `T001070` in B1 and B2: r is the binder's 2205 for a for-in head (row B21, EE0054, `semantics`) at 15:6, where the library reports 2101 |
+| N (code), widened | 6 | `T001070` in B1 and B2: r is the binder's 2205 for a for-in head (row B21, EE0054, `semantics`) at 15:6, where the library reports 2101, as the revision of 2026-11-09b (item 3) names it |
 
   No difference is L or L2, S1 or S8, and none is left without a class. Every N row's code is the registry_code of the
   mapping's `code` row for the library's shared code; every N row is refused at all three commits, in B1 to B3 or B5.
@@ -738,8 +760,11 @@ both commits, the fifth passes at the after commit, and the four controls fail a
   four-hash comparison over its three runs finds compilations that differ (`controls/k2-*`). **K3** makes the two-goals
   row fail (`controls/k3-*`). **K4**, the library's height charge removed in a scratch copy packed into a scratch feed,
   the restore taking that pack (`controls/k4-restored.txt`): as configured, the whole `--checks` run stopped with a
-  stack overflow in the adapter before the fifth row; under the harness narrowed to the fifth row it fails, its sources
-  accepted (`controls/k4-row-*`). Reading 2 of section 5 takes that as the fifth row failing.
+  stack overflow in the adapter (`controls/logs/k4-checks.stderr.txt`) before any of this part's five rows printed: its
+  last line is "the lowering is deterministic", the check the harness runs just before the wide lowering's rows, which
+  are this part's first two, so the overflow came inside a wide-path compilation the output does not name. Under the
+  harness narrowed to the fifth row it fails, its sources accepted (`controls/k4-row-*`). Reading 2 of section 5 takes
+  that as the fifth row failing.
 - **Each revert** equals the made copy's digest (`controls/k-digests.txt`, `controls/k4-digests.txt`), and **each
   reverted copy passes**: every `--checks` row of the reverted copy after K1 to K3 (`controls/retake/k-reverted-checks-*`),
   and the whole `--checks` run of the reverted K4 copy with the published library restored (`controls/k4-reverted-*`).
@@ -812,7 +837,7 @@ stated" (the revision of 2026-11-09b).
   control's once the findings directory its own sessions wrote is left out, as `controls/retake/note.txt` explains.
 - The base's sessions are retained and not judged.
 
-### Part H: MET
+### Part H: MET, on reading 7 of section 5
 
 "MET if and only if every vector's verdict after is match or classified-divergence, every change is in C1 and is listed,
 and the control is reported."
@@ -856,8 +881,10 @@ effective-configuration line is identical; for every workload, D <= N."
 - **How it is read** (the rule's readings and its paragraph on part J): part J is not a gate clause of SJL-13 (decision
   D24); a NOT MET is recorded with its failing workloads, all six, and is not read as a finding that the library is
   slower; it decides no speed claim and nothing about another machine. A compiler server task 7.2 had started was alive,
-  idle, during the collection (`measurement/measurement-machine.txt`), against the rule's "no other build, test or run
-  on the machine"; the rule reads a failed clause as a NOT MET, not a re-run, so the verdict stands as taken.
+  idle, during the collection (`measurement/measurement-machine.txt`), against the configuration's "no other build,
+  test or run on the machine"; section 5's reading 9 takes that as not voiding the part. The rule's reading "a failed
+  condition is a NOT MET, not a re-run" is about the lanes' condition, which passed, and is not what decides this. Part
+  J is NOT MET on its third clause either way.
 
 ### Clause 8's publication, and the closures
 
@@ -880,11 +907,13 @@ dated answer, and the owner may rule otherwise.** Where the verdict turns on it,
    detail field (the failure at the base, none after). Not taken: the code of the source each test compiles at run time,
    which the conformance root does not report and which a run outside the one-process root would have to read. The
    verdict does not turn on it: kind (F) is decided by the verdicts and the row.
-2. **K4 "must still make the fifth row fail".** As configured, `--checks` under K4 died of a stack overflow before the
-   fifth row ran; the fifth row's FAIL is the adjunct's, the same library patch under a harness narrowed to that row.
-   Taken: the adjunct shows the fifth row failing under K4, and the configured run's death is the same defect seen
-   earlier. Not taken: only the configured run counts, so K4 did not make the fifth row fail and **part C is NOT MET**
-   until a dated revision names the adjunct. **Part C's verdict turns on this reading.**
+2. **K4 "must still make the fifth row fail".** As configured, `--checks` under K4 died of a stack overflow before any
+   of part C's five rows printed, inside a wide-path compilation the output does not name; the fifth row's FAIL is the
+   adjunct's, the same library patch under a harness narrowed to that row. Taken: the adjunct shows the fifth row
+   failing under K4, and the configured run's death is, by inference from the order of the checks and the overflow's
+   frames in the adapter, the same defect, the height charge removed, met earlier in the run; nothing in the output
+   names the input. Not taken: only the configured run counts, so K4 did not make the fifth row fail and **part C is
+   NOT MET** until a dated revision names the adjunct. **Part C's verdict turns on this reading.**
 3. **Class R's "unchanged between the registry commit and the after commit".** Taken: the renumbering is not undone
    (no after diagnostic carries the base's code at a renumbered place; none does). Not taken: the whole list unchanged;
    then the 1,868 keys whose lists R renumbers and that S or N also changes between the registry and the after commit
@@ -901,9 +930,16 @@ dated answer, and the owner may rule otherwise.** Where the verdict turns on it,
 6. **Which code pairs class N's "one R or R2 pairs with r's" reads.** Taken: between the registry and the after
    commit only R2's pairs, from the row of the library's shared code (the pair the mapping names "until the after
    commit"); class R's pairs are renumberings already made at the registry commit, each at the site that serves its
-   rule alone. Not taken: any pair the mapping gives, read for any row; then 3,474 rows where `Expect`'s 2102 meets
-   EX0008's 2101 (whose row pairs 2102 with 2101 for a setter's arity alone) and `T001070`'s six rows would be S7's,
-   not N's. Part B's verdict does not turn on it: both classes admit them.
+   rule alone. The rule's own example supports it: its revision of 2026-11-09b (item 3) makes `T001070` N's of kind
+   (code), "r is `2205:15:6` ... and the after commit's one diagnostic is `2101:15:6`", although 2205 to 2101 is one of
+   R's pairs, of row EX0008 at another site; read for any row, R's pairs would leave that example out of N. Not taken:
+   any pair the mapping gives, read for any row. Then 3,474 rows where `Expect`'s 2102 meets EX0008's 2101 (whose row
+   pairs 2102 with 2101 for a setter's arity alone) and `T001070`'s six rows would leave N, their codes being ones R
+   pairs with r's; and S7 would not take them either, for S7 reads r's code "through R and R2", and a pair R admits is
+   "a renumbering by revision 19, already present at the registry commit" (the revision of 2026-11-09, item 1), which
+   neither is at these sites: r carries 2102 and 2205 there at the registry commit. They would be regressions, and
+   **part B would be NOT MET**. **Part B's verdict turns on this reading too.** *(Corrected 2026-11-10, at the review
+   of task 7.3; see the corrections below.)*
 7. **Part H's "match (divergence no longer holds)".** Taken: the verdict is match, which the runner annotates because
    the vector carries a divergence field that no longer holds, as C1 foresees ("a divergence field that no longer holds
    is retired by the next corpus revision"). Not taken: a verdict of its own, neither match nor classified-divergence,
@@ -915,6 +951,23 @@ dated answer, and the owner may rule otherwise.** Where the verdict turns on it,
 9. **Idle compiler servers during parts I and J** (task 7.2's deviation): taken as not voiding either part, because no
    build, test or run was under way and the parts' readings are counts, answers, outcomes and hashes, or, for part J, a
    NOT MET the rule does not re-run. Not taken: void, and taken again.
+10. **"The local machine this file's header names", after the machine was replaced.** The rule's header names the
+   local machine "by its processor count, its SDK and its operating system". Task 7.3's own runs (part A's kind (F)
+   re-runs behind the gate, part D's base taken again, part B's stage-tagged runs) were taken on this family's machine
+   after it was replaced: four logical processors and Ubuntu 24.04.5 LTS as before, the .NET SDK installed again as
+   10.0.404, where task 7.2's runs used 10.0.401. Taken: it is the rule's local machine, each run recording its SDK.
+   Not taken: another machine; then part A's first diagnostics rest on task 7.2's pinned re-runs on 10.0.401 alone
+   (`after/parta-rerun-pinned/kindF-*.tsv`), part D's base on task 7.2's `partd-base` (with reading 9's idle server),
+   and part B's stages on scratch runs whose untagged reports equal run 1 byte for byte, which no machine changes. No
+   verdict turns on it: the 10.0.401 re-runs give the same verdicts and details, and part D's base is read, not judged.
+11. **The registry commit's "in each path only what the list says"** (the revision of 2026-11-08, item 1). The git
+   reads of section 4 show it for every C# file and for the registry, the API listing, the CLI table, the retained
+   corpus and the assurance artefacts. They do not show that each code swap stands at a site decision D12 names, nor
+   read the lines of `frontend-mapping.tsv` and of the stage table's copy. Taken: for those, JSD-0087's section 1, which
+   states that the commit "changed exactly the paths the area rule's revision of 2026-11-08 lists for it, and in each
+   only what that list allows", and the condition holds. Not taken: the condition is not shown until those lines are
+   read against the list; then part B, the one part that runs at the registry commit, would be void ("A part ... whose
+   commits fail those conditions, is void and is not judged") until they are. **Part B's verdict turns on it.**
 
 **Findings.**
 - **The native floor was not re-set.** The rule ("How it is read", part A, decision D13) says the native floor's
@@ -929,9 +982,30 @@ dated answer, and the owner may rule otherwise.** Where the verdict turns on it,
   scratch.
 
 **What step 2 (WP8) needs next.** Nothing here moves a pin or starts step 2. Bundle `sjl-13-002`'s rule takes this
-after commit as its base. Before its runs: the owner's ruling on readings 2, 3 and 7, on which parts C, B and H turn,
-and on the others; the native floor's row (finding 1); and, should the owner not take reading 2, a dated revision of
+after commit as its base. Before its runs: the owner's ruling on readings 2, 3, 6, 7 and 11, on which parts C, B, B, H
+and B turn, and on the others; the native floor's row (finding 1); and, should the owner not take reading 2, a dated revision of
 this rule that names K4's narrowed harness, or a K4 that reaches the fifth row. Part J's NOT MET is not a gate clause.
+
+**Corrections at the review of task 7.3** *(2026-11-10)*. No verdict moves; each passage above that changed read as
+quoted here.
+- Section 4's conditions read "Every condition holds, so no part is void.", and the registry commit's row ended "the
+  same paths, no more and no fewer. What each path's diff holds was not read again line by line here; JSD-0087's
+  section 8 records the branch's verifier's reading of it". JSD-0087 states the content in its section 1, not section
+  8; the lines are now read by git as far as section 4 says, and the rest is reading 11.
+- The verdict table and the headings read "**MET**" for parts B and H, without the readings their verdicts turn on.
+- Reading 6 ended "then 3,474 rows where `Expect`'s 2102 meets EX0008's 2101 (whose row pairs 2102 with 2101 for a
+  setter's arity alone) and `T001070`'s six rows would be S7's, not N's. Part B's verdict does not turn on it: both
+  classes admit them." S7 admits neither, as reading 6 now says.
+- Reading 2 read "As configured, `--checks` under K4 died of a stack overflow before the fifth row ran" and "Taken:
+  the adjunct shows the fifth row failing under K4, and the configured run's death is the same defect seen earlier.",
+  and part C said the configured run stopped "before the fifth row"; it stopped before any of
+  the part's rows.
+- Part B's table read "N (place) | 9,762 (3 with S3)", which left out the three rows also S3, and its R2 row named the
+  pairs "(2102 to 2101, 2209 to 2101, 2201 and 2202)", of which only 2209 to 2101 occurs.
+- Part J read "the rule reads a failed clause as a NOT MET, not a re-run, so the verdict stands as taken".
+- Section 4 read "`<scratch>` and `<tmpfs>` in the records stand for ...", which most records, not all, follow, and
+  "What task 7.3 took itself" came before the commits' conditions, which now open the section.
+- Readings 10 and 11 are new.
 
 ## 9. Exclusions
 

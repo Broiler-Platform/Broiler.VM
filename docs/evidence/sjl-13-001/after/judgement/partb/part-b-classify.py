@@ -9,7 +9,8 @@ Inputs (all retained in the bundle, paths relative to it):
                                                   for every key whose report row differs between two of the three
                                                   runs, the row as the stage-tagged runs of task 7.3 reported it: each
                                                   diagnostic code:line:column@stage#message (base64); the stripped
-                                                  rows equal run 1's byte for byte (stage-tags-compared.txt)
+                                                  rows equal run 1's byte for byte (tagged-registry/ and
+                                                  tagged-after/stripped-compared.txt)
   after/judgement/partb/binder-sites.tsv          the registry commit's binder messages, each with its correspondence
                                                   row (B01 to B34) and the stage table's stage
   corpus/stages.tsv                               the stage table copy the mapping names
@@ -309,5 +310,8 @@ with open(OUT / 'part-b-summary.txt', 'w', encoding='utf-8', newline='\n') as o:
     o.write('# census, base against after: %s\n' % '; '.join(census))
     o.write('# the control (controls/partb/part-b-control.tsv.gz against the base report): %d differences, %d unclassified\n' % (len(control_rows), sum(1 for r in control_rows if '\tunclassified\t' in r)))
     for r in control_rows: o.write('#   ' + r + '\n')
-    o.write('# regressions: %d\n' % sum(v for kk, v in tally.items() if kk[1] == 'REGRESSION'))
+    # Every class this script can give that the rule does not admit counts as a regression: REGRESSION, and the
+    # placeholders 'L?' and 'L2?/F?', which no difference may keep (corrected 2026-11-10, at the review of task 7.3;
+    # the count read only class REGRESSION, so a placeholder would have left it at 0; none is given).
+    o.write('# regressions: %d\n' % sum(v for kk, v in tally.items() if kk[1] not in ('R', 'S', 'F', 'L', 'L2', 'N')))
 print(open(OUT / 'part-b-summary.txt').read())

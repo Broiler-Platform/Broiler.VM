@@ -1,0 +1,22 @@
+# part-b-classify.py, corrected at the review of task 7.3 (2026-11-10), run again over the same inputs
+#
+# What changed in the script: its docstring names the comparison files that exist (tagged-registry/ and
+# tagged-after/stripped-compared.txt; it named a stage-tags-compared.txt that the bundle does not hold), and its
+# "# regressions" count reads every class the rule does not admit (anything but R, S, F, L, L2 and N), so that the
+# placeholders 'L?' and 'L2?/F?' would count as regressions; before, it read class REGRESSION alone. No difference
+# was or is given a placeholder.
+#
+# The run: behind the hard gate (the corrected gate of the review, whose stop_servers kills only a process carrying
+# the run's own tag), one process, the commit's tree at <repository> being this branch's working tree, the bundle
+# and git as inputs; <scratch> stands for the stage's scratch folder.
+#   gate:    2026-11-10T22:51:59Z gate classify-rerun PASS load1=0.23 procs=none checks=0
+#   machine: loadavg: 0.23 0.16 0.52 1/107 25588;nproc: 4;sdk: 10.0.404;os: Ubuntu 24.04.5 LTS
+#   command: cd docs/evidence/sjl-13-001 && python3 -I after/judgement/partb/part-b-classify.py <bundle> <repository> <scratch>/out
+#   exit:    0; wall=17.9s maxrss=1682MB
+#   servers: stop-servers: done, remaining:
+#
+# sha256 of the corrected script:  c610eacf8e274b06a8e6403c33f27c5618f3aee2fd6165c1431e6ffbe4ac3264
+# its output, against the retained files (the retained part-b-classes.tsv.gz decompressed):
+part-b-classes.tsv  run again c344b6bdd0d5e585333d9fe2173fb3ec51a0c1946c69b7c46248ee347a6bada4  retained c344b6bdd0d5e585333d9fe2173fb3ec51a0c1946c69b7c46248ee347a6bada4  identical
+part-b-summary.txt  run again 2ed0d6157232e33989f0d5dbf8fed3804d50831f90f98f2b1b4acf6162f60242  retained 2ed0d6157232e33989f0d5dbf8fed3804d50831f90f98f2b1b4acf6162f60242  identical
+# The retained outputs are therefore left as they are.
