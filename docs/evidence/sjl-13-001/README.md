@@ -162,6 +162,55 @@ later commit of the same stage: this paragraph first named the tasks "SJL-13.6's
 they are tasks 7.1 and 7.3 of step 1's evidence, which JSD-0087 places in SJL-13.3's work package 7, and the
 milestone's evidence work package is SJL-13.6.)*
 
+*(Added 2026-11-10, at task 7.2 of step 1's evidence, after the merge and before any part is judged.)* **Parts B to J
+are taken locally, with part A's one-process re-runs, and are retained here without being read.** Every run was taken
+on 2026-11-10 on this family's local machine (four logical processors, .NET SDK 10.0.401, Ubuntu 24.04.5 LTS), from a
+clean `git archive` of the commit it names extracted to a tmpfs, built in Release with `--disable-build-servers`: the
+base `df75f8cea79aa2452ca22892d47d8afa5a14c93f`, the registry commit `cbee7c46ece7c9d7cf8a0c3f9a5a68418266672d` (part
+B alone) and the after commit `a8d8398bd59e7f5600cb0aa9e733ff8948859cf4`. The drivers are kept outside this
+repository. Every folder's `logs/` (or the run's own records beside it) holds each run's command line, exit, wall
+time, peak memory and the machine's load before and after it, and the gate's record of the processes on the machine.
+**Not every run had the machine to itself.** Another agent's Broiler.JS builds and tests were running when some runs
+started (part B's run 1 at the registry and the after commits, the base's census, `--checks` and vectors, and several
+builds), and the gate's record of each run names every other process it saw; parts I and J, and part A's race, waited
+for no other dotnet or python process and a one-minute load of at most 1.0, and part A's re-runs for no other dotnet or
+python process. Where each part's output is:
+- **Part B:** run 1 of `--parse-corpus` (B1 to B5, one worker) at each commit, in `base/local/`, `registry/local/` and
+  `after/local/`; the census over the parse corpus's inputs and over the suite's `test/` at the base and the after
+  commit (`census-*.txt.gz`); the artifact bytes of every input whose hash differs between two of the three runs, at
+  each commit (`local/bytes/`), with the comparisons that chose them (`after/local/partb-keys/`); the control in
+  `controls/partb/`.
+- **Part C:** runs 2 and 3 at the after commit (`after/local/`); `--checks --verbose` at both commits
+  (`local/checks.log.gz`); the controls K1 to K4, their patches, outputs and revert checks, in `controls/`, with an
+  adjunct to K4 that narrows the harness to the fifth row.
+- **Part D:** the architecture tests at both commits after a Release build of the solution, with `BROILER_RULE_MESSAGES`
+  set to the bundle's `<side>/rules/rule-messages` (`base/rules/`, `after/rules/`); rule I5's two controls
+  (`controls/i5/`); rule N37's pristine consumer at the after commit (`after/n37/`, by bundle JS-10-016's procedure) and
+  its control without `Broiler.ECMAScript.Frontend` on the feed (`controls/n37/`).
+- **Part E:** the checker at the after commit, plain and against Broiler.JS (`after/local/parte-*.log`); its three
+  copies and the checker's own controls (`controls/parte/`).
+- **Part F:** the row's output in the after commit's `--checks` (`after/local/checks.log.gz`); its control
+  (`controls/partf-*`).
+- **Part G:** `--fuzz-wide` and the four `--fuzz` sessions at both commits (`local/fuzz-*`); the planted throws
+  (`controls/partg-*`).
+- **Part H:** the conformance root's vectors command on the pin at both commits, with its changed-vector control
+  (`local/vectors-*`).
+- **Part I:** `base/fuel-parity.log` and `after/fuel-parity.log`, with the run's record in `after/parti/`.
+- **Part J:** the sub-bundle [`measurement/`](measurement/README.md), with its own README and manifest, collected by
+  [`collect-measurement.py`](collect-measurement.py).
+- **Part A:** the comparisons of the imported reports taken again with their commands (`after/parta-comparisons/`);
+  each (c′) row's alone re-runs at both commits and each kind (F) path's first diagnostics (`after/parta-rerun/`);
+  the (e) runs of the rows whose re-runs differ (`after/parta-race/`).
+
+**Runs taken again.** In `controls/`, the first attempts of part F's control, of the reverted copy's `--checks` and of
+K4, which did not build what they named, are kept with the prefix `first-attempt-` and explained in
+`controls/first-attempt-note.txt`; none is read. Three other first attempts are kept outside this repository and
+replaced here: part D's first run, which built no product assembly before the architecture tests; N37's first run,
+which placed no admitted package on the consumer's feed; and part A's first re-runs, which extracted too little of the
+suite for the conformance root to score anything. The base's part G sessions were taken again from a second archive,
+the first having lacked the seed file (`base/local/fuzz-wide-first-attempt-refused.log`). Each folder's `hashes.txt`
+holds the SHA-256 of every other file in it. Nothing here is a verdict: task 7.3 reads these outputs under the rule.
+
 The home's clauses 1 to 3 are judged in Broiler.JS's bundle of the same name, under its own rule, which this bundle
 does not read.
 

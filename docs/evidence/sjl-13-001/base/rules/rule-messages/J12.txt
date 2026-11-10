@@ -1,0 +1,17 @@
+# what group J12's rules said about this checkout
+#
+# Reported, not judged. A rule with no lines said nothing, which is what a clean
+# checkout looks like; a rule that threw is recorded as throwing.
+
+[J12] 0 message(s)
+
+[J12-exempt] 8 message(s)
+    the register row for J12 is quoting a figure rather than stating it, so this rule did not read it: "THIS RULE IS RED AT THIS MILESTONE, WHICH IS THE CLAUSE WORKING"
+    the register row for J12 is quoting a figure rather than stating it, so this rule did not read it: "the rule names the other 41 one by one"
+    the register row for J12 is quoting a figure rather than stating it, so this rule did not read it: "Forty-four units are assessed High or Critical"
+    the register row for J12 is quoting a figure rather than stating it, so this rule did not read it: "eight edges"
+    the register row for J12 is quoting a figure rather than stating it, so this rule did not read it: "two composition roots"
+    the register row for J12 is quoting a figure rather than stating it, so this rule did not read it: "45 covered source files"
+    the register row for J12 is quoting a figure rather than stating it, so this rule did not read it: "48 artefacts"
+    the register row for A15 is quoting a figure rather than stating it, so this rule did not read it: "19 projects and 55 edges"
+

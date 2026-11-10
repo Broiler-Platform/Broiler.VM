@@ -1,0 +1,5 @@
+test/staging/sm/RegExp/7.8.5-01.js
+test/staging/sm/async-functions/await-in-arrow-parameters.js
+test/staging/sm/class/compPropNames.js
+test/staging/sm/expressions/destructuring-pattern-parenthesized.js
+test/staging/sm/statements/arrow-function-in-for-statement-head.js

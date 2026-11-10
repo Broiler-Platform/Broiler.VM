@@ -1,0 +1,10 @@
+check-frontend-mapping: mapping /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/out/controls/parte/control-1-second-registry-code.tsv
+check-frontend-mapping: catalogue Broiler.JS Broiler.ECMAScript/docs/frontend/early-errors.tsv at b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, copy SHA-256 7a9109b0db685df98a7327cd95b9337cc538337f834fe4f22692b249058aa4f1
+check-frontend-mapping: stage table Broiler.JS Broiler.ECMAScript/docs/frontend/stages.tsv at 238069ab8150858a112461b42b95c1f49c1f4eb1, copy SHA-256 3c9c49d97162650a48acfeec33b3d1d084dddda6bf649ad648c2e5ff1f1ce6a6
+check-frontend-mapping: registry revision 19
+check-frontend-mapping: refused: E2 JSE1201 has 2 mapping rows (lines 152, 153), mapping it to 2001, 2002: a shared code is mapped to two registry meanings
+check-frontend-mapping: refused: E8 line 153 (JSE1201, EE0001): lists 2001 beside its registry code, and other_codes does not say whether it is a split or another row's refusal
+check-frontend-mapping: refused: E4 line 153 (JSE1201, EE0001): marked within-meaning, and the meaning is not 2002's published meaning as its registry row quotes it
+check-frontend-mapping: refused: E6 line 153 (JSE1201, EE0001): reaches 2002 UnterminatedComment under a second meaning, identifier.escape.invalid-start, which 2002's published meaning does not cover, and is marked within-meaning, not split: a rule merged onto a registry row whose meaning does not cover it
+check-frontend-mapping: refused: E6 the condition identifier.escape.invalid-start is mapped to two registry meanings (2001 within-meaning, 2002 within-meaning)
+check-frontend-mapping: REFUSED: 5 problem(s)

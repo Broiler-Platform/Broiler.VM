@@ -1,0 +1,13 @@
+test/annexB/built-ins/RegExp/RegExp-leading-escape-BMP.js
+test/annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js
+test/staging/sm/Date/dst-offset-caching-1-of-8.js
+test/staging/sm/Date/dst-offset-caching-3-of-8.js
+test/staging/sm/Date/dst-offset-caching-5-of-8.js
+test/staging/sm/Date/dst-offset-caching-6-of-8.js
+test/staging/sm/Date/dst-offset-caching-7-of-8.js
+test/staging/sm/RegExp/7.8.5-01.js
+test/staging/sm/TypedArray/sort_large_countingsort.js
+test/staging/sm/async-functions/await-in-arrow-parameters.js
+test/staging/sm/class/compPropNames.js
+test/staging/sm/expressions/destructuring-pattern-parenthesized.js
+test/staging/sm/statements/arrow-function-in-for-statement-head.js

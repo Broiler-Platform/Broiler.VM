@@ -1,0 +1,19 @@
+# part A comparisons re-taken 2026-11-10T08:21:58Z on vm, df  6510 MiB free
+# tool: eng/compare-test262-forms.py at 1cf90acab23a5e58052b51d5043f839f4a4d5a7d, blob 48e3091a872921849bab1f903b46698be0c69e33 (base df75f8c: 48e3091a872921849bab1f903b46698be0c69e33; after: 48e3091a872921849bab1f903b46698be0c69e33)
+# input docs/evidence/sjl-13-001/base/hosted/wide-bytecode.report.gz at 1cf90acab23a5e58052b51d5043f839f4a4d5a7d: blob 85d936ad3b8656dddccb51d2fa9164858641f691, gz sha256 57d047d5b40125b77f10701c8f97bd111d257fc692b1903aeb02675e72e4fd4b
+# input docs/evidence/sjl-13-001/after/hosted/wide-bytecode.report.gz at 1cf90acab23a5e58052b51d5043f839f4a4d5a7d: blob c469f46292f9f17c41b3b1e9e9420bc5800c3eed, gz sha256 eccd438dfe2d7f123a97ad7b587ab7dd0476ffb7b69feaa64807025c41d9f257
+# input docs/evidence/sjl-13-001/base/hosted/wide-native.report.gz at 1cf90acab23a5e58052b51d5043f839f4a4d5a7d: blob 69c3b6c98045bda234e0408e4339b64b3bb1a5e2, gz sha256 e01ada42444e0b8dbd2ef5700362e8c9414e52f0679fc10d0d1a68b20054fbc7
+# input docs/evidence/sjl-13-001/after/hosted/wide-native.report.gz at 1cf90acab23a5e58052b51d5043f839f4a4d5a7d: blob 4d24736cb6f433e3b85acfe85a7073840040baf1, gz sha256 fe335b99f424beb75182bab4d597a55ff66863ae797c60225be741a6209f8f40
+# decompressed 767670073d70ef92be1f1bcac7a7d12a5dd3eb827f3f27ba0b04ac1843c6efb3  rep-retaken/after-bytecode.report
+# decompressed cd5b20ea7238e2caf9f517c3a5b659e5f584861faf6e258cfe6f832cda9a650d  rep-retaken/after-native.report
+# decompressed fc384eaf880115ee53e10519d1a8f68a9a6792f758c7cc822ca43164f493ca2a  rep-retaken/base-bytecode.report
+# decompressed 846f5cbc0cb472cfe3a3f1bbf985a8b8ddef3f251e4b036c7e564caf9f851ddf  rep-retaken/base-native.report
+2026-11-10T08:21:58Z cd /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/out/parta/retaken && python3 -I compare-test262-forms.py --same-form /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/rep-retaken/base-bytecode.report /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/rep-retaken/after-bytecode.report
+f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040  pin archive at the after commit
+# extracted for --exempt-guest-loads: the 13 test files of the native rows whose verdict or dimension differs (native-differing-paths.txt); missing: 0
+2026-11-10T08:22:00Z cd /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/out/parta/retaken && python3 -I compare-test262-forms.py --same-form --exempt-guest-loads --suite /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/suite-parta/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/rep-retaken/base-native.report /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/rep-retaken/after-native.report   (the suite: pin test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e at a8d8398bd59e7f5600cb0aa9e733ff8948859cf4, the files above)
+# diff against out/parta/compare-wide-bytecode.log, lines naming a report path and the exit line removed:
+  (none)
+# diff against out/parta/compare-wide-native.log, lines naming a report path and the exit line removed:
+  (none)
+2026-11-10T08:22:00Z done, df  6560 MiB free

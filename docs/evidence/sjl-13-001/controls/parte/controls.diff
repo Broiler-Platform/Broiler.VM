@@ -1,0 +1,8 @@
+152a153
+> code	JSE1201	EE0001	identifier.escape.invalid-start	2001	2001	2002	within-meaning	2001 UnexpectedCharacter: A character that begins no token this grammar defines.	-	-
+152c152
+< code	JSE1201	EE0001	identifier.escape.invalid-start	2001	2001	2001	within-meaning	2001 UnexpectedCharacter: A character that begins no token this grammar defines.	-	-
+---
+> code	JSE1201	EE0001	identifier.escape.invalid-start	2001	2001	2001	split	2001 UnexpectedCharacter: A character that begins no token this grammar defines.	-	-
+118d117
+<         SliceSourceDiagnosticCode.MisplacedSuper => RefusalClass.EarlyError,

@@ -1,0 +1,32 @@
+sub-bundle sjl-13-001/measurement
+evidence-class measurement
+decision docs/evidence/sjl-13-001/decision-rule-area.md part J, unchanged by its revisions of 2026-11-02, -04, -08, -09, -09b and -10
+collector docs/evidence/sjl-13-001/collect-measurement.py sha256=65037c12bf3e80ee00b7e42d880f6ce9dc0bd625681e14e4776eee8573deec21
+collected 2026-11-10T13:39:48Z
+arm-B-commit df75f8cea79aa2452ca22892d47d8afa5a14c93f (the base commit)
+arm-A-commit a8d8398bd59e7f5600cb0aa9e733ff8948859cf4 (the after commit)
+arm-A-again the arm A binaries, measured a second time under another lane name
+binary arm B Broiler.VM.Composition.JavaScript.SliceCompiler.dll sha256=19aefc376e7c8042eecb52b1268bf468be26565b7133704c12c460a0c5bcf8a8; every file of its output, binaries-b.sha256 sha256=2b41063727f5dc623e9a37631d9f930123636cdf120df6228d22dc9a58028589
+binary arm A Broiler.VM.Composition.JavaScript.SliceCompiler.dll sha256=128e7f684ffa0706757944e9c8bd5acc5f6ea65aaea5d486bc7a6fb8c2fe5a6f; every file of its output, binaries-a.sha256 sha256=6a4f5343fdb5a22303fd35891f732dab152986bf6dd13ec3b582bb2a195df36d
+root src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler, Release, under the JIT
+mode --measure-compile <workloads> --arm <lane> --runtime (the tools commit's)
+rid linux-x64
+sdk 10.0.401
+machine Linux-6.18.44-fc-v338-x86_64-with-glibc2.39 x86_64 cpus=4
+repetitions 7 retained per lane (docs/baselines.md rule 4), 3 warm-up excluded from Q (eng/compare-forms.py's default)
+order in each repetition r (from 0): the arms rotated by r from B, A, A-again; each arm one child, which compiles every workload and then its control, in the README's order
+form bytecode
+configuration-check every child is run with --runtime; its line starting runtime-identifier= is kept
+workload README.md sha256=61fe4579f278c639a97047925cbc1464d7a46a9cbde548fc51bae0659ee0f5e7
+workload classes.control.js sha256=0bac65e1ee577430a47f5193d06c43c27dbad090582ae66da74b79de9983e8c2
+workload classes.js sha256=69748bedfabac57dc3daf179d5b6ddc83acf23e463b85f45b198f8c090695e4e
+workload declarations.control.js sha256=30eb11e5b7c6c06778af17d2b1dd77abef80fde22ea93717bcba35040c67c3d9
+workload declarations.js sha256=97072a755a3b2862735f6ea2912b3af9ac5e8a3931e87372bb4332498db09b96
+workload expressions.control.js sha256=5fe31bf5c4359726756387b6c9785fd8f796c1347ec79268fb39b38ae4e5332c
+workload expressions.js sha256=6adf9165988ba2577ba338c66cae1bc2d003b555ff329970eef56409fab742e1
+workload literals.control.js sha256=6aadc858405e1dd35daff0cb98c419dd53ce364734af3171d7ec58ab21acea36
+workload literals.js sha256=1ac59f9aeb02bd13f4d71b5f0c914ab5cb98194bca5746ea9f2c2c9f9daefb0e
+workload module.control.js sha256=4d61875115bb26a7246e9365eb9523ca3f26423e33897267af433702c61e8f68
+workload module.js sha256=3ebd1dedbd4b22904911aecdf25ba9a6298228b046faa3ddd5ef49d83a0cf19b
+workload statements.control.js sha256=4db4f7f12cebd594fcd58a117a37ebb349b61ec18707f6b18b59b33723dbeb6c
+workload statements.js sha256=d8cba862db4b6dccf3b30ea6424d07441310dedda0ad5ca688b39287f9a4278e

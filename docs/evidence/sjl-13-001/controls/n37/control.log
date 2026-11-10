@@ -1,0 +1,7 @@
+CONTROL OF BUNDLE sjl-13-001 PART D, RULE N37: the pristine consumer restored at the candidate 0.1.0-preview.6.f9-candidate against a copy of the run's local feed /dev/shm/s13ev/w/feed-without-frontend, which holds the candidate pack, the previous set and every admitted package but Broiler.ECMAScript.Frontend; it must fail with the missing-package error
+  Determining projects to restore...
+/dev/shm/s13ev/wt-after-n37/samples/Broiler.VM.Sample.JavaScriptConsumer/Broiler.VM.Sample.JavaScriptConsumer.csproj : error NU1101: Unable to find package Broiler.ECMAScript.Frontend. No packages exist with this id in source(s): local-feed
+  Failed to restore /dev/shm/s13ev/wt-after-n37/samples/Broiler.VM.Sample.JavaScriptConsumer/Broiler.VM.Sample.JavaScriptConsumer.csproj (in 539 ms).
+
+exit code: 1
+NU1101 lines: 1; naming Broiler.ECMAScript.Frontend: 1; naming any other package: 0
