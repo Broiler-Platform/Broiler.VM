@@ -112,12 +112,26 @@ decisions D19, D20, D21 and D12.)*
 - **"The registry takes a new revision for any meaning change"** is revision 19, at step 1's first commit (decision
   D12).
 
+*(Noted 2026-11-10, at step 1's records, by [JSD-0087](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md).)* Step 1 is built on the branch `sjl-13-3-step1d`,
+which lands as one merge, bundle `sjl-13-001`'s after commit, its first parent the base: the registry commit, revision
+19, first; then the admission, the adapter with the deletions, the two `--checks` rows and one text per shared code.
+`JsParser`, the slice tokenizer's wide-only members, the binder's `CheckRegExp` and its checks of `syntax` rows are
+deleted, and the deleted types and members are registered in rule I5; bundle `sjl-13-001` defines EX-133 for the code
+that left this component's assurance coverage. Its runs are taken after the merge. The text above is left as written.
+
 ### SJL-13.4 — Admission and closures
 
 - The allow-list admits the frontend for `Broiler.VM.Profile.JavaScript.Compiler` only.
 - Rule `I3` proves that `JavaScript.ExecutionOnly` and `JavaScript.Android` do not carry it.
 - The composition register declares it for the compiler-bearing roots.
 - Notices are updated.
+
+*(Noted 2026-11-10, at step 1's records, by [JSD-0087](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md).)* The allow-list admits `Broiler.ECMAScript.Frontend`
+`0.1.0-preview.10` for `Broiler.VM.Profile.JavaScript.Compiler` alone, and the notices fold it into the shared stream's
+row (rule N38); rule I3's frontend clause has its subject from the admission. **The composition register does not yet
+declare it**: no commit of step 1's branch moved `docs/compositions.md`'s rows for the compiler-bearing roots, and no
+closure of a root carrying the library is retained, which rule K4 holds the rows to. JSD-0087 records it. The text above
+is left as written.
 
 ### SJL-13.5 — JS-2 closes
 
