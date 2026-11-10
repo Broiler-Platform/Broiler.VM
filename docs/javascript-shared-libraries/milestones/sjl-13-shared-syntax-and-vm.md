@@ -132,6 +132,21 @@ clause, not met. Section 5 names each reading the rule does not settle, with the
 parts B, C and H each turn on one of them. Step 1's half of clauses 4 to 6 is judged; the clauses wait on step 2 as
 well, under bundle `sjl-13-002`'s rule. The text above is left as written.
 
+*(Noted 2026-11-10, later still, at the review of task 7.3.)* The note above says "parts B, C and H each turn on one of
+them" and "Step 1's half of clauses 4 to 6 is judged". Part B turns on three readings, and the bundle judges, at step 1,
+every clause its rule names: clauses 4 to 7 and 9 and clause 8's rule `I3`, of which clauses 4 to 6 wait on step 2 as
+well. The readings section 5 of the bundle's README leaves to the owner, each with the reading taken and the
+alternative not taken, are: kind (F)'s "first diagnostic", read as the one-process run's report detail; control K4's
+"must still make the fifth row fail", met only by a harness narrowed to that row, on which part C turns; class R's
+"unchanged between the registry commit and the after commit", read as a renumbering not undone, on which part B turns;
+the stages and the library's messages, taken from stage-tagged scratch runs whose untagged reports equal part B's own;
+the one process class N names; the code pairs class N reads between the registry and the after commit, R2's alone, on
+which part B turns; part H's "match (divergence no longer holds)", read as a match, on which part H turns; one binder
+message that several sites share; the idle compiler servers during parts I and J; the machine, replaced and its SDK
+installed again, taken as the rule's local machine; and the registry commit's "in each path only what the list says",
+shown by git reads for all but the mapping's and the stage table's lines and the sites of its code swaps, which rest on
+JSD-0087, on which part B turns. No verdict moved at the review. The text above is left as written.
+
 ### SJL-13.4 — Admission and closures
 
 - The allow-list admits the frontend for `Broiler.VM.Profile.JavaScript.Compiler` only.

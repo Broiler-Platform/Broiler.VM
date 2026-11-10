@@ -3105,6 +3105,17 @@ work package 7, on the branch `sjl-13-evidence`, not yet merged, as JSD-0087 pla
 - **Findings.** The native floor's `atMost unsupported` row was not re-set in the after commit, as the rule and decision
   D13 say it should be; it decides no part. Two regular-expression vectors outside part H's population, of SJL-11's row
   S9b, match after where their divergence field no longer holds.
+- *(Added 2026-11-10, at the review of task 7.3.)* **What the review corrected.** No verdict moves. The bundle's README
+  now marks parts B and H, as it marked part C, by the readings their verdicts turn on. Part B turns on three: class
+  R's "unchanged", as above; the code pairs class N reads, which the bullet above lists without a part, for under the
+  alternative the rows it decides would fit no class (the rule's own example, `T001070`, supports the reading taken);
+  and a new reading, the registry commit's "in each path only what the list says", which git reads now show for its
+  source files and its data files but the mapping and the stage table's copy, and which rests for those, and for the
+  sites of its code swaps, on JSD-0087's own statement, the alternative leaving part B void until they are read. A
+  second new reading takes the machine, replaced and its SDK installed again at a later patch release, as the rule's
+  local machine; no verdict turns on it. The list of readings above is left as written. The sentence below, "clauses 4
+  to 6 wait on step 2 as well", reads with this: the bundle judges, at step 1, every clause its rule names, clauses 4
+  to 7 and 9 and clause 8's rule `I3`, and of them clauses 4 to 6 wait on step 2 as well.
 
 This change meets no clause: clauses 4 to 6 wait on step 2 as well, and no other ledger's row moves. No pin moves.
 SJL-13 stays `In progress`, every clause unmet. Nothing is accepted. Next:
