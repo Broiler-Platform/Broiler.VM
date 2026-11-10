@@ -334,6 +334,14 @@ rule**, whose runs are taken after the merge, and no figure of them is quoted he
   Conformance, Cli and PolyglotCli, with the bundle each row names, in the same commit, so that rule K4 holds at every
   commit. Until then the register does not declare the library for those roots. SJL-9.4 moved its rows on its branch
   before its merge; step 1 does not. Section "Where the plan, JSD-0083 and the code disagree" records it (item 4).
+  *(Noted 2026-11-10, after the merge, by the review of task 7.2 of step 1's evidence.)* This bullet reads "task 7.3's
+  records commit retains those closures in bundle `sjl-13-001` and moves `docs/compositions.md`'s shared-assemblies
+  cells" and "Until then the register does not declare the library for those roots." The closures and the four rows
+  moved earlier, together, at task 7.2: commit `2c087c4` of the evidence branch `sjl-13-evidence` retains the closures
+  published at the after commit in bundle `sjl-13-001`'s `after/publication/` and moves the four cells in the same
+  commit, its own, as that stage's brief ordered, so rule K4 held at every commit. From that commit the register
+  declares the library for SliceCompiler, Conformance, Cli and PolyglotCli; task 7.3's records commit reads the closures
+  and moves no cell. Neither the closures nor the move is a verdict.
 
 ## Readings
 
@@ -363,6 +371,10 @@ JSD-0083 wins over the plan, and the code follows JSD-0083, but where this list 
    published at the after commit, in task 7.3's records commit (section 10), so the after commit does not meet
    decision D29's K4 rows. Part D runs rule K4 there, which holds each row to the closures it names, so it does not
    show the gap; this item and section 10 record it.
+   *(Noted 2026-11-10, after the merge, by the review of task 7.2 of step 1's evidence.)* This item reads "They move
+   after the merge, with the closures published at the after commit, in task 7.3's records commit (section 10)". They
+   moved at task 7.2, in commit `2c087c4` of the evidence branch, with the closures in the same commit, as section 10's
+   note of this date records; the after commit itself still does not meet decision D29's K4 rows.
 5. **Decision D20 lists `SliceTokenizer`'s wide-only members** as "the structured-template mode, its nesting limit,
    `SliceTemplate`, `SliceSubstitution` and their tables"; the code deleted those and `TemplateScan`'s recording fields
    and the frames of `JsBinder.Frame` that only the deleted checks read, which section 6 names.
