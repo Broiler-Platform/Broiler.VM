@@ -1,0 +1,50 @@
+--- /dev/shm/s13ev/w/k-pristine/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/TokenizerAgreementChecks.cs	2026-11-10 07:05:18.000000000 +0000
++++ src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/TokenizerAgreementChecks.cs	2026-11-10 16:50:16.267852598 +0000
+@@ -213,6 +213,11 @@
+ 
+     private static readonly string[] HandedOnInputs = ["J000262", "J001009"];
+ 
++    // CONTROL OF BUNDLE sjl-13-001 PART F, TAKEN AGAIN (a scratch copy, never merged): the one input whose stream is shifted.
++    private const string ControlFInput = "T028379";
++
++    private static string? ControlFCurrent;
++
+     private static (string, bool, string) TheSharedAndSliceTokenizersAgree()
+     {
+         const string Name = "the shared and slice tokenizers agree on the slice path's inputs";
+@@ -250,6 +255,7 @@
+                 continue;
+             }
+ 
++            ControlFCurrent = id;
+             var disagreement = Compare(text, module, ref tokens, ref templates, out var refusal);
+ 
+             if (refusal is { } first)
+@@ -357,7 +363,26 @@
+             return null;
+         }
+ 
+-        var shared = result.Tokens;
++        // CONTROL OF BUNDLE sjl-13-001 PART F, TAKEN AGAIN (a scratch copy, never merged): the library stream's token
++        // kind shifted at one punctuator of one input before the comparison - the first Semicolon of input
++        // T028379's library stream becomes a Comma; the field map, every other token and every other input are untouched.
++        IReadOnlyList<Token> shared = result.Tokens;
++        if (string.Equals(ControlFCurrent, ControlFInput, StringComparison.Ordinal))
++        {
++            var shifted = shared.ToList();
++            var index = shifted.FindIndex(static token => token.Kind == TokenKind.Semicolon);
++            if (index < 0)
++            {
++                throw new InvalidOperationException("control of part F: the chosen input's library stream has no semicolon");
++            }
++            var field = typeof(Token).GetField("<Kind>k__BackingField", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
++                ?? throw new InvalidOperationException("control of part F: no backing field for Token.Kind");
++            object boxed = shifted[index];
++            field.SetValue(boxed, TokenKind.Comma);
++            shifted[index] = (Token)boxed;
++            Console.Error.WriteLine($"control of part F: input {ControlFInput}, library token {index} at {shifted[index].Line}:{shifted[index].Column} shifted from Semicolon to {shifted[index].Kind}");
++            shared = shifted;
++        }
+         var at = 0;
+ 
+         foreach (var token in slice)

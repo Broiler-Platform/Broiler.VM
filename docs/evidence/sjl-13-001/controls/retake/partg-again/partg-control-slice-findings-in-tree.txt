@@ -1,0 +1,5 @@
+# the files --fuzz retained inside the scratch tree, at src/tests/corpus/js-1/js-1-source-fuzz-findings (sha256, path)
+7777b390ca56a5e6b3f26ab02b7484537e18159f1ee67f6f84279aac9ea26252  src/tests/corpus/js-1/js-1-source-fuzz-findings/source-fuzz-seed1-iteration4.js
+26b3c5401cf2c0bc4e2d958a73b41f0cddeb09295ed3875e227f7d46e35215ce  src/tests/corpus/js-1/js-1-source-fuzz-findings/source-fuzz-seed2-iteration8.js
+ce3329da60ccd428e5dc9631b7c83e66307da31c91ba9e61c83c6fcbe105d62c  src/tests/corpus/js-1/js-1-source-fuzz-findings/source-fuzz-seed3-iteration0.js
+817f2cca107eba70d7280bb291ee7b3c9fc85637f71aaa64b16c8b30063e1c57  src/tests/corpus/js-1/js-1-source-fuzz-findings/source-fuzz-seed4-iteration6.js

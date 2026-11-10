@@ -1,0 +1,6 @@
+Added 2026-11-10, by the review of task 7.2 of step 1's evidence, before any part is judged.
+
+rule-messages-where.txt beside this note is kept as the run wrote it. It names the folder BROILER_RULE_MESSAGES was set
+to, a scratch folder outside this repository (.../sjl13-ev1/bundle/after/rule-messages), and says its files were
+"copied unchanged into docs/evidence/sjl-13-001/after/rule-messages". That destination is wrong: they were copied
+unchanged into docs/evidence/sjl-13-001/after/rules/rule-messages/, the folder beside this note, and nowhere else.

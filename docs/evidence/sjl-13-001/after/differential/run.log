@@ -1,0 +1,361 @@
+--- the-array-from-async.js
+    declared 19: V8 calls the async iterator return after a rejected next; the pinned spec propagates Await(nextResult) with ? and does not close
+    declared 41: V8 calls return when the step done getter throws; the pinned spec reads IteratorComplete with ? and does not close
+    FAIL: stale divergence node/20: both answered 'SyntaxError:return'
+--- the-array-length-and-receiver-writes.js
+    declared 17: the specification compares the mathematical len + insertCount - actualDeleteCount (2^53) with 2^53-1 and throws a TypeError; the comparison engine sums in doubles left to right, where 2^53-1 + 2 rounds to 2^53 and minus 1 falls back under the ceiling, so it splices
+--- the-array-species-and-spreading.js
+--- the-async-family.js
+--- the-async-module-siblings.mjs
+    FAIL: undeclared divergence node/11: host='B run,releasing,slow end,A run,C run,slow settled,A settled,B settled,C settled', comparison='B run,releasing,slow end,A run,slow settled,A settled,B settled,C run,C settled'
+--- the-asynchronous-iteration-family.js
+--- the-bigint-arithmetic-boundary.js
+--- the-bigint-literal-boundary.js
+--- the-bigint-public-surface.js
+--- the-bigint-typed-arrays.js
+    declared 27: %TypedArray%.prototype.subarray goes through TypedArraySpeciesCreate, whose content-type check (ES2026) makes a Float64Array species of a BigInt64Array a TypeError; V8 answers the Float64Array
+--- the-binary-species.js
+--- the-comparison-engine-catalogue.js
+--- the-detached-typed-array.js
+    declared 40: Reflect.set with a receiver other than the view: the comparison engine calls valueOf for a key that names no element ("1.5", 4), where ES2026 TypedArray [[Set]] answers true without converting and the pinned suite asserts no coercion (internals/Set/key-is-canonical-invalid-index-reflect-set.js)
+--- the-direct-eval-boundary.js
+    declared 22: a spread argument list does not make a call to the bare name `eval` indirect: the call is direct by the specification and by Test262 expressions/call/eval-spread.js, and the comparison engine evaluates it globally
+    declared 24: the same, with a second, ignored argument
+    declared 76: the comparison engine runs a .js file as CommonJS, whose top level is a function body where new.target parses; in a Script it is the SyntaxError this answers
+--- the-direct-eval-in-a-module.mjs
+--- the-disposal-stacks.js
+    declared 41: the SuppressedError that disposal combines two throws into is created with no own message, as the proposal's DisposeResources says; V8 gives it an implementation-chosen message
+    FAIL: undeclared divergence node/2: host='"Symbol.dispose Symbol.asyncDispose"', comparison='"nodejs.dispose nodejs.asyncDispose"'
+    FAIL: undeclared divergence node/5: host='true', comparison='false'
+    FAIL: undeclared divergence node/7: host='"function 3 SuppressedError"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/8: host='true', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/9: host='true', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/10: host='"SuppressedError||true/false/true"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/11: host='true', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/12: host='"message,error,suppressed"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/13: host='"false true/false/true true/false/true"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/14: host='true', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/15: host='"SuppressedError: boom"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/16: host='"[object Error]"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/17: host='false', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/18: host='"true undefined undefined"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/19: host='true', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/20: host='false', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/21: host='"function 0"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/22: host='throws TypeError', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/23: host='"adopt,constructor,defer,dispose,disposed,move,use"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/24: host='true', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/25: host='"DisposableStack [object DisposableStack]"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/26: host='"function undefined get disposed"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/27: host='"1,2,1,0,0"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/28: host='throws TypeError', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/29: host='throws TypeError', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/30: host='false', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/31: host='"cvba undefined true"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/32: host='1', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/33: host='"throws ReferenceError throws ReferenceError throws ReferenceError throws ReferenceError"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/34: host='"throws TypeError throws TypeError throws TypeError throws TypeError"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/35: host='throws TypeError', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/36: host='"1 11"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/37: host='"orig"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/38: host='true', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/39: host='"0:true"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/40: host='true', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/42: host='"a(b(c))"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/43: host='"true false 0 true"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/44: host='"0 1"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/45: host='"true false true"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/46: host='"2 true"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/47: host='"throws ReferenceError"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/48: host='"true true"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/49: host='true', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/50: host='"43210"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/51: host='"function [Symbol.dispose] 0 true/false/true"', comparison='throws TypeError'
+    FAIL: undeclared divergence node/52: host='"undefined 1"', comparison='throws TypeError'
+    FAIL: undeclared divergence node/53: host='undefined', comparison='throws TypeError'
+    FAIL: undeclared divergence node/54: host='"function 0"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/55: host='throws TypeError', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/56: host='"adopt,constructor,defer,disposeAsync,disposed,move,use"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/57: host='true', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/58: host='"[object AsyncDisposableStack] false"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/59: host='"throws TypeError throws TypeError throws TypeError throws TypeError"', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/60: host='true', comparison='throws ReferenceError'
+    FAIL: undeclared divergence node/61: host='dv|dvcba undefined true true', comparison='rejects ReferenceError AsyncDisposableStack is not defined'
+    FAIL: undeclared divergence node/62: host='rejected TypeError', comparison='rejects ReferenceError AsyncDisposableStack is not defined'
+    FAIL: undeclared divergence node/63: host='1 true', comparison='rejects ReferenceError AsyncDisposableStack is not defined'
+    FAIL: undeclared divergence node/64: host='SuppressedError r1(t2(r3))', comparison='rejects ReferenceError AsyncDisposableStack is not defined'
+    FAIL: undeclared divergence node/65: host='j1,dispose,j2', comparison='rejects ReferenceError AsyncDisposableStack is not defined'
+    FAIL: undeclared divergence node/66: host='j1,dispose', comparison='rejects ReferenceError AsyncDisposableStack is not defined'
+    FAIL: undeclared divergence node/67: host='0 1 true true', comparison='rejects ReferenceError AsyncDisposableStack is not defined'
+    FAIL: undeclared divergence node/68: host='inner undefined', comparison='rejects ReferenceError AsyncDisposableStack is not defined'
+    FAIL: undeclared divergence node/69: host='throws ReferenceError throws ReferenceError', comparison='rejects ReferenceError AsyncDisposableStack is not defined'
+    FAIL: undeclared divergence node/70: host='function [Symbol.asyncDispose] 0 undefined 1:undefined', comparison='rejects TypeError it[Symbol.asyncDispose] is not a function'
+    FAIL: undeclared divergence node/71: host='rejected RangeError', comparison='rejects TypeError it[Symbol.asyncDispose] is not a function'
+    FAIL: undeclared divergence node/72: host='rejected RangeError', comparison='rejects ReferenceError AsyncDisposableStack is not defined'
+--- the-eval-code-import-referrer.mjs
+    declared 9: V8 gives a function the Function constructor makes inside a promise job no referrer; the pinned HostEnqueuePromiseJob makes the queuing module the active one when the job runs, and CreateDynamicFunction fixes that as the function's [[ScriptOrModule]]
+--- the-eval-declarations-in-strict-code.js
+--- the-eval-declarations.js
+    declared 39: a catch clause's record is exempt from a direct eval's var conflict whatever the form of its parameter: the pinned ES2026 EvalDeclarationInstantiation (Annex B.3.4, normative-optional) conditions the exemption on the record only, and the comparison engine throws a SyntaxError for a destructured parameter
+    declared 62: EvalDeclarationInstantiation creates the function bindings before the var bindings, so the global object gains ord2 before ord1; the comparison engine creates them in source order
+    declared 66: every CanDeclareGlobalFunction and CanDeclareGlobalVar check precedes the first CreateGlobalVarBinding in EvalDeclarationInstantiation, so the TypeError for Infinity leaves gok1 absent; the comparison engine creates gok1 first
+    declared 77: the comparison engine runs a .js file as CommonJS, where a top-level let is local to the module function and no global lexical declaration collides with the indirect eval's var
+    declared 78: a parameter initialiser's direct eval that declares var arguments collides with the arguments object bound beside the parameters: Test262 eval-code/direct/func-decl-no-pre-existing-arguments-bindings-are-present-declare-arguments.js expects the SyntaxError, and the comparison engine throws none
+--- the-eval-super-and-private-names.js
+--- the-float16-surface.js
+    FAIL: node exited 1: '/dev/shm/s13ev/w/diff-wt/src/tests/differential/the-float16-surface.js:32\nvar half = new Float16Array(1);\n           ^\n\nReferenceError: Float16Array is not defined\n    at Object.<anonymous> (/dev/shm/s13ev/w/diff-wt/src/tests/differential/the-float16-surface.js:32:12)\n    at Module._compile (node:internal/modules/cjs/loader:1706:14)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:328:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)\n    at node:internal/main/run_main_module:36:49\n\nNode.js v22.22.0\n'
+--- the-follow-up-built-in-fixes.js
+    declared 24: V8 reads new.target's prototype before refusing a length past maxByteLength; the pinned AllocateArrayBuffer throws the RangeError at step 3.a, before OrdinaryCreateFromConstructor
+--- the-front-end-repairs.js
+--- the-general-surface.js
+--- the-generic-to-json-and-array-search.js
+--- the-intrinsic-to-string-fallbacks.js
+--- the-iterator-helpers.js
+    declared 100: Iterator.concat is ES2026 (the pinned edition, Test262 feature iterator-sequencing, a standard feature in the pinned features.txt) and the comparison engine predates it: it answers TypeError because the method is absent, which is the one direction of divergence where the pinned suite rather than the comparison is the oracle
+    declared 102: Iterator.concat is ES2026 (the pinned edition, Test262 feature iterator-sequencing, a standard feature in the pinned features.txt) and the comparison engine predates it: it answers TypeError because the method is absent, which is the one direction of divergence where the pinned suite rather than the comparison is the oracle
+    declared 103: Iterator.concat is ES2026 (the pinned edition, Test262 feature iterator-sequencing, a standard feature in the pinned features.txt) and the comparison engine predates it: it answers TypeError because the method is absent, which is the one direction of divergence where the pinned suite rather than the comparison is the oracle
+    FAIL: undeclared divergence node/35: host='"return,TypeError"', comparison='"TypeError"'
+    FAIL: undeclared divergence node/53: host='"return,RangeError"', comparison='"RangeError"'
+    FAIL: undeclared divergence node/91: host='"return,TypeError"', comparison='"TypeError"'
+    FAIL: undeclared divergence node/92: host='"return,TypeError"', comparison='"TypeError"'
+--- the-json-date-and-regexp-surface.js
+--- the-later-library-methods.js
+    declared 201: the upsert pair is ES2026 and the comparison engine predates it: this build has `Map.prototype.getOrInsert` and `getOrInsertComputed` and that engine answers `absent`, which is the one direction of divergence where the pinned suite rather than the comparison is the oracle
+    declared 202: the upsert pair is ES2026 and the comparison engine predates it: this build has `Map.prototype.getOrInsert` and `getOrInsertComputed` and that engine answers `absent`, which is the one direction of divergence where the pinned suite rather than the comparison is the oracle
+    declared 203: the upsert pair is ES2026 and the comparison engine predates it: this build has `Map.prototype.getOrInsert` and `getOrInsertComputed` and that engine answers `absent`, which is the one direction of divergence where the pinned suite rather than the comparison is the oracle
+    declared 256: `Math.sumPrecise` is ES2026 and the comparison engine predates it: this build has the member and that engine answers a TypeError about calling `undefined`
+    declared 257: the same: this build has the member and that engine answers a TypeError about calling `undefined`
+    declared 258: the same: this build has the member and that engine answers a TypeError about calling `undefined`
+    declared 259: the same: this build has the member and that engine answers a TypeError about calling `undefined`
+    declared 260: the same: this build has the member and that engine answers a TypeError about calling `undefined`
+    declared 261: the same: this build has the member and that engine answers a TypeError about calling `undefined`
+    declared 263: the same: this build has the member and that engine answers a TypeError about calling `undefined`
+    declared 265: the same, and this is the case that needs the exact final rounding rather than a loop of additions: this build has the member and that engine answers a TypeError about calling `undefined`
+    FAIL: host output differs from retained answers
+    FAIL: stale divergence node/36: both answered '1.2599210498948732'
+    FAIL: undeclared divergence node/254: host='"1.3369140625,0,NaN"', comparison='TypeError'
+    FAIL: undeclared divergence node/255: host='"65504,Infinity"', comparison='TypeError'
+--- the-line-terminators-in-literals.js
+--- the-mapped-arguments-object.js
+--- the-module-evaluation-errors.mjs
+--- the-module-goal.mjs
+    declared 52: what a host puts in `import.meta` is the HOST's and not the language's: the comparison engine populates it with a URL, a path and a resolver, and this profile hands the guest an empty extensible object because a composition of it has no filesystem to name and no scheme to resolve against. Every other property of the object - that it is ordinary, extensible, prototype-less, the same object twice, and writable by the guest - is asked by the cases around this one and agrees
+--- the-module-identity.mjs
+--- the-module-namespace-integrity.mjs
+    declared 14: V8 refuses a namespace receiver in OrdinarySet; the pinned spec defines { [[Value]]: V } on it and the namespace [[DefineOwnProperty]] answers SameValue, true for the export's current value
+--- the-module-scoped-eval.mjs
+--- the-numeric-operand-order.js
+--- the-object-integrity-paths.js
+    FAIL: undeclared divergence node/3: host='TypeError', comparison='"true/7"'
+--- the-parameter-environment.js
+    declared 43: a parameter initialiser's direct eval that declares var arguments collides with the arguments object bound beside the parameters, whatever the body declares: Test262 eval-code/direct/func-decl-fn-body-cntns-arguments-func-decl-declare-arguments.js expects the SyntaxError, and the comparison engine throws none
+    declared 62: a parameter list without expressions (ContainsExpression of formals is false) keeps one environment record for the parameters and the body's vars (pinned ES2026 FunctionDeclarationInstantiation, "If hasParameterExpressions is false ... Let varEnv be env"), so a body eval's var of a parameter name is that parameter; the comparison engine gives every non-simple list a separate body environment
+    declared 63: the same, with an object pattern of names
+    declared 64: the same, with nested array and object patterns of names
+--- the-proxy-and-its-invariants.js
+--- the-raw-json-values.js
+--- the-recursive-built-ins.js
+--- the-reference-key-and-exponent-edges.js
+    declared 13: node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k
+    declared 14: node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k
+    declared 15: node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k
+    declared 16: node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k
+    declared 17: node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k
+    declared 18: node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k
+    declared 19: node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k
+    declared 20: node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k
+    declared 22: node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k
+    declared 23: the same double conversion; the key converts once, before the right-hand side runs, so the pinned answer is kv
+    declared 38: node implements ECMA-402, whose %TypedArray%.prototype.toLocaleString passes the locales and options arguments to each element's toLocaleString; without ECMA-402 the ES2026 algorithm (Array.prototype.toLocaleString, which %TypedArray%.prototype.toLocaleString reuses) invokes it with no arguments, so the pinned answer records 0 arguments
+--- the-regexp-escape.js
+    FAIL: undeclared divergence node/1: host='"function"', comparison='"undefined"'
+    FAIL: undeclared divergence node/2: host='"1:escape"', comparison='TypeError'
+    FAIL: undeclared divergence node/3: host='"true,false,true"', comparison='TypeError'
+    FAIL: undeclared divergence node/4: host='""', comparison='TypeError'
+    FAIL: undeclared divergence node/5: host='"\\\\x66oo"', comparison='TypeError'
+    FAIL: undeclared divergence node/6: host='"\\\\x31st"', comparison='TypeError'
+    FAIL: undeclared divergence node/7: host='"_foo"', comparison='TypeError'
+    FAIL: undeclared divergence node/8: host='"\\\\x5a9"', comparison='TypeError'
+    FAIL: undeclared divergence node/9: host='"\\\\^\\\\$\\\\\\\\\\\\.\\\\*\\\\+\\\\?\\\\(\\\\)\\\\[\\\\]\\\\{\\\\}\\\\|\\\\/"', comparison='TypeError'
+    FAIL: undeclared divergence node/10: host='"\\\\x2c\\\\x2d\\\\x3d\\\\x3c\\\\x3e\\\\x23\\\\x26\\\\x21\\\\x25\\\\x3a\\\\x3b\\\\x40\\\\x7e\\\\x27\\\\x60\\\\x22"', comparison='TypeError'
+    FAIL: undeclared divergence node/11: host='"\\\\t\\\\n\\\\v\\\\f\\\\r"', comparison='TypeError'
+    FAIL: undeclared divergence node/12: host='"\\\\x20\\\\xa0\\\\u1680\\\\u2000\\\\u200a\\\\u202f\\\\u205f\\\\u3000\\\\ufeff"', comparison='TypeError'
+    FAIL: undeclared divergence node/13: host='"\\\\u2028\\\\u2029"', comparison='TypeError'
+    FAIL: undeclared divergence node/14: host='"\\\\ud800\\\\|\\\\udfff\\\\| d83d de00"', comparison='TypeError'
+    FAIL: undeclared divergence node/15: host='"e9 4e2d 200b 180e 5f"', comparison='TypeError'
+    FAIL: undeclared divergence node/16: host='"\\\\x61\\\\.b\\\\*c"', comparison='TypeError'
+    FAIL: undeclared divergence node/24: host='"\\\\x61\\\\.b"', comparison='TypeError'
+    FAIL: undeclared divergence node/25: host='true', comparison='TypeError'
+    FAIL: undeclared divergence node/26: host='true', comparison='TypeError'
+    FAIL: undeclared divergence node/27: host='true', comparison='TypeError'
+    FAIL: undeclared divergence node/28: host='true', comparison='TypeError'
+    FAIL: undeclared divergence node/29: host='"z-a^]\\\\"', comparison='TypeError'
+    FAIL: undeclared divergence node/30: host='true', comparison='TypeError'
+    FAIL: undeclared divergence node/31: host='true', comparison='TypeError'
+    FAIL: undeclared divergence node/32: host='true', comparison='TypeError'
+    FAIL: undeclared divergence node/33: host='true', comparison='TypeError'
+    FAIL: undeclared divergence node/34: host='true', comparison='TypeError'
+    FAIL: undeclared divergence node/35: host='true', comparison='TypeError'
+    FAIL: undeclared divergence node/36: host='60003', comparison='TypeError'
+--- the-regexp-guards-in-string-search.js
+    declared 35: the pinned language asks only an Object pattern for Symbol.replace (Test262 replaceAll/cstm-replaceall-on-number-primitive); the comparison engine still consults Number.prototype
+    declared 36: the same for Symbol.matchAll (Test262 matchAll/cstm-matchall-on-number-primitive): a primitive pattern is converted to a global RegExp and never dispatched
+--- the-regexp-protocols.js
+    declared 24: the pinned language asks only an Object pattern for Symbol.match (Test262 match/cstm-matcher-on-number-primitive); the comparison engine still consults Number.prototype
+    declared 25: the same for Symbol.search (Test262 search/cstm-search-on-string-primitive)
+    declared 26: the same for Symbol.replace (Test262 replace/cstm-replace-on-boolean-primitive)
+    declared 27: the same for Symbol.split (Test262 split/cstm-split-on-number-primitive)
+--- the-regexp-symbol-methods.js
+    declared 8: the pinned RegExp.prototype[Symbol.replace] decides globality from ToString(Get(rx, "flags")) (Test262 Symbol.replace/get-flags-err); the comparison engine answers as though it read the receiver's "global" property, which this RegExp-like object lacks
+    declared 13: the pinned flags getter reads unicodeSets before sticky (sec-get-regexp.prototype.flags); the comparison engine reads sticky first
+    declared 15: an own flags of "g" makes Symbol.replace and Symbol.match global in the pinned edition; the comparison engine answers as though it read the pattern's "global" getter
+    declared 16: an own flags of "" makes Symbol.replace non-global in the pinned edition, so one built-in exec of a g pattern runs and leaves lastIndex at 1; the comparison engine answers as though it read "global"
+    FAIL: undeclared divergence node/6: host='"q,r"', comparison='"q"'
+    FAIL: undeclared divergence node/18: host='RangeError', comparison='a'
+--- the-resizable-array-buffer.js
+    FAIL: undeclared divergence node/83: host='"false false true"', comparison='"true true true"'
+    FAIL: undeclared divergence node/84: host='"TypeError true"', comparison='undefined'
+    FAIL: undeclared divergence node/85: host='"TypeError false true 5"', comparison='undefined'
+    FAIL: undeclared divergence node/86: host='"TypeError false"', comparison='undefined'
+    FAIL: undeclared divergence node/87: host='false', comparison='true'
+    FAIL: undeclared divergence node/88: host='false', comparison='true'
+--- the-script-declarations.js
+    declared 2: the comparison engine runs a .js file as CommonJS, whose top-level declarations are a function's locals, so no global property exists; a Script's function declaration is a non-configurable global property (GlobalDeclarationInstantiation, CreateGlobalFunctionBinding)
+    declared 3: the comparison engine runs a .js file as CommonJS, whose top-level declarations are a function's locals, so no global property exists; a Script's var declaration is a non-configurable global property (CreateGlobalVarBinding)
+    declared 7: the comparison engine runs a .js file as CommonJS, whose top-level declarations are a function's locals, so the const is no global lexical declaration and the indirect eval's var is admitted; in a Script it is the SyntaxError EvalDeclarationInstantiation throws
+    declared 12: the comparison engine runs a .js file as CommonJS, whose top-level declarations are a function's locals, so the indirect eval creates a new configurable property; over a Script's non-configurable function binding CreateGlobalFunctionBinding changes only the value
+--- the-seam-between-generators-and-the-rest.js
+    FAIL: node exited 1: '/dev/shm/s13ev/w/diff-wt/src/tests/differential/the-seam-between-generators-and-the-rest.js:218\nPromise.resolve().then(function () { order.push("job"); });\n                                           ^\n\nTypeError: order.push is not a function\n    at /dev/shm/s13ev/w/diff-wt/src/tests/differential/the-seam-between-generators-and-the-rest.js:218:44\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n\nNode.js v22.22.0\n'
+--- the-settling-of-promises.js
+    declared 2: `Promise.try` is ES2026 and the comparison engine predates it: this build has it and that engine answers `undefined`
+    declared 17: the same, for the three cases that call it
+    declared 18: the same, for the three cases that call it
+    declared 19: the same, for the three cases that call it
+--- the-small-correctness-gaps.js
+    FAIL: node exited 1: '/dev/shm/s13ev/w/diff-wt/src/tests/differential/the-small-correctness-gaps.js:62\np(function () { var seen = "unset"; { using await = null; seen = await; } return String(seen); });\n                                            ^^^^^\n\nSyntaxError: Unexpected reserved word\n    at wrapSafe (node:internal/modules/cjs/loader:1638:18)\n    at Module._compile (node:internal/modules/cjs/loader:1680:20)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:328:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)\n    at node:internal/main/run_main_module:36:49\n\nNode.js v22.22.0\n'
+--- the-statement-and-object-surface.js
+--- the-string-normalization.js
+--- the-symbol-keyed-integrity.js
+--- the-unicode-lexical-grammar.js
+    FAIL: undeclared divergence node/17: host='9', comparison='SyntaxError'
+    FAIL: undeclared divergence node/18: host='1', comparison='SyntaxError'
+    FAIL: undeclared divergence node/35: host='9', comparison='SyntaxError'
+    FAIL: undeclared divergence node/38: host='1', comparison='SyntaxError'
+    FAIL: undeclared divergence node/41: host='"2172 0"', comparison='"2100 0"'
+    FAIL: undeclared divergence node/42: host='"2226 0"', comparison='"2154 0"'
+    FAIL: undeclared divergence node/69: host='"a"', comparison='SyntaxError'
+    FAIL: undeclared divergence node/70: host='"a"', comparison='SyntaxError'
+    FAIL: undeclared divergence node/76: host='true', comparison='false'
+    FAIL: undeclared divergence node/77: host='true', comparison='false'
+    FAIL: undeclared divergence node/78: host='true', comparison='false'
+    FAIL: undeclared divergence node/79: host='true', comparison='false'
+    FAIL: undeclared divergence node/87: host='false', comparison='true'
+    FAIL: undeclared divergence node/88: host='"1169 0"', comparison='"1169 3 A7CF A7D3 A7D5"'
+    FAIL: undeclared divergence node/89: host='"1169 0"', comparison='"1169 3 A7CF A7D3 A7D5"'
+    FAIL: undeclared divergence node/94: host='"1 2 3"', comparison='"null 0"'
+--- the-unicode-normalization-invariants-000000.js
+--- the-unicode-normalization-invariants-020000.js
+--- the-unicode-normalization-invariants-040000.js
+--- the-unicode-normalization-invariants-060000.js
+--- the-unicode-normalization-invariants-080000.js
+--- the-unicode-normalization-invariants-0A0000.js
+--- the-unicode-normalization-invariants-0C0000.js
+--- the-unicode-normalization-invariants-0E0000.js
+--- the-unicode-normalization-invariants-100000.js
+--- the-unicode-normalization-part0.js
+--- the-unicode-normalization-part1-1-of-4.js
+    FAIL: undeclared divergence node/1: host='part 1, file lines 93 to 4364: 4272 vectors, 85440 checks, 0 failing', comparison='part 1, file lines 93 to 4364: 4272 vectors, 85440 checks, 1 failing'
+    FAIL: case 2 missing: host=None, node='line 2432 c1 [a7f1] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+--- the-unicode-normalization-part1-2-of-4.js
+--- the-unicode-normalization-part1-3-of-4.js
+--- the-unicode-normalization-part1-4-of-4.js
+--- the-unicode-normalization-part2.js
+    FAIL: undeclared divergence node/1: host='part 2, file lines 17182 to 19117: 1936 vectors, 38720 checks, 0 failing', comparison='part 2, file lines 17182 to 19117: 1936 vectors, 38720 checks, 68 failing'
+    FAIL: case 2 missing: host=None, node='line 18102 c1 [61 315 300 5ae 1acf 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 3 missing: host=None, node='line 18103 c1 [61 1acf 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 4 missing: host=None, node='line 18104 c1 [61 315 300 5ae 1ad0 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 5 missing: host=None, node='line 18105 c1 [61 1ad0 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 6 missing: host=None, node='line 18106 c1 [61 315 300 5ae 1ad1 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 7 missing: host=None, node='line 18107 c1 [61 1ad1 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 8 missing: host=None, node='line 18108 c1 [61 315 300 5ae 1ad2 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 9 missing: host=None, node='line 18109 c1 [61 1ad2 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 10 missing: host=None, node='line 18110 c1 [61 315 300 5ae 1ad3 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 11 missing: host=None, node='line 18111 c1 [61 1ad3 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 12 missing: host=None, node='line 18112 c1 [61 315 300 5ae 1ad4 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 13 missing: host=None, node='line 18113 c1 [61 1ad4 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 14 missing: host=None, node='line 18114 c1 [61 315 300 5ae 1ad5 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 15 missing: host=None, node='line 18115 c1 [61 1ad5 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 16 missing: host=None, node='line 18116 c1 [61 315 300 5ae 1ad6 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 17 missing: host=None, node='line 18117 c1 [61 1ad6 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 18 missing: host=None, node='line 18118 c1 [61 315 300 5ae 1ad7 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 19 missing: host=None, node='line 18119 c1 [61 1ad7 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 20 missing: host=None, node='line 18120 c1 [61 315 300 5ae 1ad8 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 21 missing: host=None, node='line 18121 c1 [61 1ad8 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 22 missing: host=None, node='line 18122 c1 [61 315 300 5ae 1ad9 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 23 missing: host=None, node='line 18123 c1 [61 1ad9 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 24 missing: host=None, node='line 18124 c1 [61 315 300 5ae 1ada 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 25 missing: host=None, node='line 18125 c1 [61 1ada 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 26 missing: host=None, node='line 18126 c1 [61 315 300 5ae 1adb 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 27 missing: host=None, node='line 18127 c1 [61 1adb 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 28 missing: host=None, node='line 18128 c1 [61 315 300 5ae 1adc 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 29 missing: host=None, node='line 18129 c1 [61 1adc 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 30 missing: host=None, node='line 18130 c1 [61 59a 316 1dfa 1add 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 31 missing: host=None, node='line 18131 c1 [61 1add 59a 316 1dfa 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 32 missing: host=None, node='line 18132 c1 [61 315 300 5ae 1ae0 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 33 missing: host=None, node='line 18133 c1 [61 1ae0 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 34 missing: host=None, node='line 18134 c1 [61 315 300 5ae 1ae1 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 35 missing: host=None, node='line 18135 c1 [61 1ae1 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 36 missing: host=None, node='line 18136 c1 [61 315 300 5ae 1ae2 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 37 missing: host=None, node='line 18137 c1 [61 1ae2 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 38 missing: host=None, node='line 18138 c1 [61 315 300 5ae 1ae3 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 39 missing: host=None, node='line 18139 c1 [61 1ae3 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 40 missing: host=None, node='line 18140 c1 [61 315 300 5ae 1ae4 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 41 missing: host=None, node='line 18141 c1 [61 1ae4 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 42 missing: host=None, node='line 18142 c1 [61 315 300 5ae 1ae5 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 43 missing: host=None, node='line 18143 c1 [61 1ae5 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 44 missing: host=None, node='line 18144 c1 [61 59a 316 1dfa 1ae6 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 45 missing: host=None, node='line 18145 c1 [61 1ae6 59a 316 1dfa 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 46 missing: host=None, node='line 18146 c1 [61 315 300 5ae 1ae7 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 47 missing: host=None, node='line 18147 c1 [61 1ae7 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 48 missing: host=None, node='line 18148 c1 [61 315 300 5ae 1ae8 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 49 missing: host=None, node='line 18149 c1 [61 1ae8 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 50 missing: host=None, node='line 18150 c1 [61 315 300 5ae 1ae9 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 51 missing: host=None, node='line 18151 c1 [61 1ae9 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 52 missing: host=None, node='line 18152 c1 [61 315 300 5ae 1aea 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 53 missing: host=None, node='line 18153 c1 [61 1aea 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 54 missing: host=None, node='line 18154 c1 [61 345 35d 35c 1aeb 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 55 missing: host=None, node='line 18155 c1 [61 1aeb 345 35d 35c 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 56 missing: host=None, node='line 18704 c1 [61 59a 316 1dfa d803 defa 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 57 missing: host=None, node='line 18705 c1 [61 d803 defa 59a 316 1dfa 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 58 missing: host=None, node='line 18706 c1 [61 59a 316 1dfa d803 defb 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 59 missing: host=None, node='line 18707 c1 [61 d803 defb 59a 316 1dfa 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 60 missing: host=None, node='line 19080 c1 [61 315 300 5ae d839 dee3 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 61 missing: host=None, node='line 19081 c1 [61 d839 dee3 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 62 missing: host=None, node='line 19082 c1 [61 315 300 5ae d839 dee6 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 63 missing: host=None, node='line 19083 c1 [61 d839 dee6 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 64 missing: host=None, node='line 19084 c1 [61 315 300 5ae d839 deee 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 65 missing: host=None, node='line 19085 c1 [61 d839 deee 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 66 missing: host=None, node='line 19086 c1 [61 315 300 5ae d839 deef 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 67 missing: host=None, node='line 19087 c1 [61 d839 deef 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 68 missing: host=None, node='line 19088 c1 [61 315 300 5ae d839 def5 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 69 missing: host=None, node='line 19089 c1 [61 d839 def5 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+--- the-unicode-normalization-part3.js
+--- the-unicode-normalization-part4.js
+--- the-unicode-normalization-part5.js
+--- the-unicode-property-escapes.js
+    declared 16: the pinned edition admits every Script value PropertyValueAliases.txt lists, Hrkt and Katakana_Or_Hiragana included (UnicodeMatchPropertyValue); V8 refuses them
+    declared 46: WSpace is a UCD alias the specification's binary property table does not list, so UnicodeMatchProperty refuses it; V8 accepts it
+    FAIL: undeclared divergence node/55: host='"true,true"', comparison='TypeError'
+    FAIL: undeclared divergence node/62: host='"28 pairs, 0 missed"', comparison='"28 pairs, 28 missed: A7CE A7D2 A7D4 16EA0 16EA1 16EA2 16EA3 16EA4 16EA5 16EA6 16EA7 16EA8 16EA9 16EAA 16EAB 16EAC 16EAD 16EAE 16EAF 16EB0 16EB1 16EB2 16EB3 16EB4 16EB5 16EB6 16EB7 16EB8"'
+    FAIL: undeclared divergence node/63: host='"1414 pairs, 0 missed"', comparison='"1414 pairs, 28 missed: A7CE A7D2 A7D4 16EA0 16EA1 16EA2 16EA3 16EA4 16EA5 16EA6 16EA7 16EA8"'
+    FAIL: undeclared divergence node/64: host='"1414 pairs, 0 missed"', comparison='"1414 pairs, 28 missed: A7CE A7D2 A7D4 16EA0 16EA1 16EA2 16EA3 16EA4 16EA5 16EA6 16EA7 16EA8"'
+    FAIL: undeclared divergence node/65: host='"1414 pairs, 0 missed"', comparison='"1414 pairs, 28 missed: A7CE A7D2 A7D4 16EA0 16EA1 16EA2 16EA3 16EA4 16EA5 16EA6 16EA7 16EA8"'
+    FAIL: undeclared divergence node/66: host='"1414 pairs, 0 missed"', comparison='"1414 pairs, 28 missed: A7CE A7D2 A7D4 16EA0 16EA1 16EA2 16EA3 16EA4 16EA5 16EA6 16EA7 16EA8"'
+--- the-unwinding-through-finally.js
+    FAIL: node exited 1: '/dev/shm/s13ev/w/diff-wt/src/tests/differential/the-unwinding-through-finally.js:24\np(function () { var log = []; return run(log, function () { using a = r(log, "a", true); try { return 1; } finally { log.push("fin"); } }); });\n                                                                  ^\n\nSyntaxError: Unexpected identifier \'a\'\n    at wrapSafe (node:internal/modules/cjs/loader:1638:18)\n    at Module._compile (node:internal/modules/cjs/loader:1680:20)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:328:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)\n    at node:internal/main/run_main_module:36:49\n\nNode.js v22.22.0\n'
+--- the-using-declarations-in-a-module.mjs
+    FAIL: node exited 1: 'file:///dev/shm/s13ev/w/diff-wt/src/tests/differential/the-using-declarations-in-a-module.mjs:10\nusing a = { [Symbol.dispose]() { log.push("a"); print("2 " + log.join()); } };\n      ^\n\nSyntaxError: Unexpected identifier \'a\'\n    at compileSourceTextModule (node:internal/modules/esm/utils:346:16)\n    at ModuleLoader.moduleStrategy (node:internal/modules/esm/translators:107:18)\n    at #translate (node:internal/modules/esm/loader:546:20)\n    at afterLoad (node:internal/modules/esm/loader:596:29)\n    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:601:12)\n    at #createModuleJob (node:internal/modules/esm/loader:624:36)\n    at #getJobFromResolveResult (node:internal/modules/esm/loader:343:34)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:311:41)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:664:25)\n\nNode.js v22.22.0\n'
+--- the-using-declarations.js
+    FAIL: node exited 1: '/dev/shm/s13ev/w/diff-wt/src/tests/differential/the-using-declarations.js:42\np(function () { var log = []; { using a = r(log, "a"), b = r(log, "b"); using c = null; log.push("body"); } return log.join(); });\n                                      ^\n\nSyntaxError: Unexpected identifier \'a\'\n    at wrapSafe (node:internal/modules/cjs/loader:1638:18)\n    at Module._compile (node:internal/modules/cjs/loader:1680:20)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:328:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)\n    at node:internal/main/run_main_module:36:49\n\nNode.js v22.22.0\n'
+--- the-with-statement.js
+Report: /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/out/fx/differential/report.json

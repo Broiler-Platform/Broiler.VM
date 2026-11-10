@@ -1,0 +1,7 @@
+2026-11-10T17:09:37Z gate fx-build-cli-diff: idle (load 0.50 0.71 0.83 2/105 2024) after 0s
+2026-11-10T17:10:09Z fx-build-cli-diff: done: fx-build-cli-diff	rc=0	wall=31.9s	maxrss=701MB	started=2026-11-10T17:09:38Z	ended=2026-11-10T17:10:09Z
+2026-11-10T16:01:46Z gate_hard fx-differential-after: idle (load 0.67 0.87 0.83 1/115 2127) after 0s
+2026-11-10T16:01:46Z fx-differential-after: done: fx-differential-after	rc=1	wall=0.1s	maxrss=19MB	started=2026-11-10T16:01:46Z	ended=2026-11-10T16:01:46Z
+2026-11-10T17:10:40Z gate_hard fx-differential-after: waiting, load 1.51 1.08 0.96 1/112 2592; others: : 
+2026-11-10T17:11:40Z gate_hard fx-differential-after: idle (load 0.55 0.88 0.90 1/112 2637) after 60s
+2026-11-10T17:12:42Z fx-differential-after: done: fx-differential-after	rc=1	wall=62.1s	maxrss=203MB	started=2026-11-10T17:11:40Z	ended=2026-11-10T17:12:42Z

@@ -1,0 +1,12 @@
+Added 2026-11-10, by the review of task 7.2 of step 1's evidence, before any part is judged.
+
+This folder's transcript was not taken from a clean `git archive` of the after commit, as the bundle README's
+paragraph of task 7.2 first said of every run ("from a clean `git archive` of the commit it names extracted to a
+tmpfs, built in Release with `--disable-build-servers`"). Rule N37's pristine consumer (and its control without
+Broiler.ECMAScript.Frontend on the feed, in controls/n37/) ran from a detached worktree of the after commit
+a8d8398bd59e7f5600cb0aa9e733ff8948859cf4 on tmpfs, made with `git -C /home/user/Broiler.VM worktree add --detach`
+and removed with `git worktree remove` at the end; manifest.txt's `tree dirty` lines are the admitted packages the
+procedure places in eng/packages/ of that worktree, and nothing else. The collector's own `dotnet pack`, `dotnet
+restore` and `dotnet publish` calls pass no `--disable-build-servers`; the driver set MSBUILDDISABLENODEREUSE=1 and
+DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER=1 in their environment for this run (n37-redo.sh, after the first collection of
+the closures had left MSBuild nodes running). The drivers are kept outside this repository.

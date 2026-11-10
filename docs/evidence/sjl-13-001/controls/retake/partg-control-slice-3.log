@@ -1,0 +1,3 @@
+broiler-js-source-fuzz: seed 3, 2000 iterations, 58 seed sources of which 56 are drawn from, surface: the source tokenizer, parser and lowering
+broiler-js-source-fuzz: FINDING at iteration 0 of seed 3: the front end threw InvalidOperationException instead of answering
+broiler-js-source-fuzz: retained src/tests/corpus/js-1/source/../js-1-source-fuzz-findings/source-fuzz-seed3-iteration0.js

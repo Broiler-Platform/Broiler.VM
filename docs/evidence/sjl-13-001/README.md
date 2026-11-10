@@ -211,6 +211,127 @@ suite for the conformance root to score anything. The base's part G sessions wer
 the first having lacked the seed file (`base/local/fuzz-wide-first-attempt-refused.log`). Each folder's `hashes.txt`
 holds the SHA-256 of every other file in it. Nothing here is a verdict: task 7.3 reads these outputs under the rule.
 
+*(Added 2026-11-10, by the review of task 7.2 of step 1's evidence, before any part is judged.)* **What the review
+found in the paragraph above, and the runs it took again.** Nothing here is a verdict, and no earlier file is
+rewritten: the first outputs stay where they are, and what was taken again sits beside them.
+
+- **Where the publication is.** The list above names no folder for clause 8's publication. It is
+  [`after/publication/`](after/publication/README.md): every JavaScript root published and run under the JIT, trimming
+  and Native AOT at the after commit, with its closures, catalogs, `admitted-packages.json` and `mstat.sha256` (rules
+  I3, K4 and I7), collected by bundle sjl-7-001's `collect-area.py --only cutover-closures` with `NuGetAudit=false`.
+  Commit `2c087c4`, a commit of its own, retained it and moved `docs/compositions.md`'s four rows (SliceCompiler,
+  Conformance, Cli, PolyglotCli) to name `Broiler.ECMAScript.Frontend`, without a verdict. JSD-0087's section 10
+  placed that move in task 7.3's records commit; its dated note of this date records that it was made at task 7.2.
+- **Not every run came from a clean `git archive`.** The paragraph above says "Every run was taken ... from a clean
+  `git archive` of the commit it names extracted to a tmpfs, built in Release with `--disable-build-servers`". The
+  publication in `after/publication/` and rule N37's consumer and its control (`after/n37/`, `controls/n37/`) ran from
+  detached worktrees of the after commit (`git worktree add --detach`), as `after/publication/README.md` and
+  `after/n37/worktree-note.txt` say, and so does the differential cross-check below; the collectors' own `dotnet
+  publish`, `pack` and `restore` calls pass no `--disable-build-servers`. The first collection of the closures left
+  three MSBuild nodes running with node reuse, which this stage stopped at 13:35:22Z.
+- **The runs that started on a busy machine, one by one.** The rule's header asks that no other build, test or run be
+  on the machine while a run of this bundle is taken. The gate's records (`<side>/local/logs/gate.log`,
+  `controls/logs/runs/gate.log`) show these runs starting while it was not idle: at the base, `census-inputs-base`,
+  `census-test-base`, `checks-base`, `vectors-base` and `vectors-control-base` (another agent's dotnet processes);
+  `parse-corpus-registry-run1` and `parse-corpus-after-run1` (the same); `partd-base` (a one-minute load of 1.08 and
+  no other dotnet or python process, while this stage's own compiler server VBCSCompiler pid 5571, started at
+  14:58:55Z during part D's run at the after commit and stopped at 15:09:25Z, was alive and unseen by the gate);
+  `n37-control` (this stage's own three MSBuild nodes) and `fuzz-wide-base`, first attempts that are not read (N37's
+  control read is `n37-control-2`, which started idle); and the builds `build-sc-base`, `build-cf-base`, `build-cli-base`,
+  `build-sc-registry`, `build-sc-after`, `build-cf-after` and `build-cli-after`, which are no runs of the rule (their
+  binaries' digests are retained). The first seven are taken again below behind the hard gate; `partd-base` is not,
+  and is a deviation for task 7.3 to weigh.
+- **Parts I and J did not have the machine to themselves either.** The paragraph above says they "waited for no other
+  dotnet or python process". A compiler server this stage had started, VBCSCompiler pid 27893 (begun at 12:52:01Z,
+  three seconds after the closures collection started, and never stopped), was alive in `after/parti/machine.txt` and in
+  `measurement/measurement-machine.txt`: the gate matched only processes named dotnet or python, and did not see it.
+  It is recorded for task 7.3; part I and part J are not taken again. The machine records of part A's (e) race list no
+  compiler server; whether it was alive during part A's first re-runs is not recorded. The gate used for the runs below
+  also sees VBCSCompiler and MSBuild nodes.
+- **Part I's free disk at its end** is not in `after/parti/machine.txt`, which records it at the start only; the
+  nearest reading in this bundle is part J's start, 33 seconds after part I ended at 13:39:14Z:
+  `measurement/measurement-machine.txt` reads "disk:  6903 MiB free" at 13:39:47Z, the free disk part I's record gives
+  at its start.
+- **Part A's first re-runs ran on an unpinned suite.** Every log in `after/parta-rerun/logs/` and
+  `after/parta-race/logs/` reads `suite test262@unpinned` and the configuration failure `MissingSuiteRevision`: the
+  driver ran the conformance root on the extracted archive without `--expect`, so the root verified nothing against
+  the retained pin (bundle sjl-10-001's re-runs read "retained pin test262 tc39/test262@ccaac100..."). They are kept
+  and not read; the re-runs, kind (F) runs and race taken again with the pin are below.
+- **Control K4, as the rule configures it, never reached the fifth row.** `controls/k4-checks.log.gz` holds ten `ok`
+  lines, the last "the lowering is deterministic", and stops; the process ended with a stack overflow in
+  `JsFrontendAdapter.Expression` (`controls/logs/k4-checks.stderr.txt`, exit -6), and `k4-checks-named-rows.txt` is
+  empty. Which check overflowed is inferred from the order of the checks; the output does not print it. The fifth
+  row's FAIL is only in the adjunct `k4-row-*`, which runs the same library patch (`k4-row-library.patch` is
+  `k4.patch`) under a harness narrowed to that row (`k4-row-harness.patch`, `K4_ROW_ONLY`), a configuration the rule
+  does not name. Whether that meets the rule's "must still make the fifth row fail" (its revision of 2026-11-02, item
+  5), or needs a dated note, is task 7.3's to decide.
+- **Part F's first control did not shift the library stream.** `controls/partf-control.patch` maps the library's
+  Semicolon to the slice kind Comma in the row's kind map, for every semicolon of every input; the rule asks for "a
+  scratch copy of the after commit in which the library stream's token kinds are shifted at one punctuator before the
+  comparison; the row must fail naming that input". It is kept, and the control as the rule writes it is taken again
+  below.
+- **Part G's slice control's revert did not match.** `controls/k-digests.txt` reads `partg-slice reverted 572ed160...
+  DIFFERS-FROM-MADE`, and `controls/first-attempt-note.txt` says "Controls K1, K2, K3 and part G's two controls are not
+  affected" and is silent on it. The cause is the control's own output: `--fuzz` has no findings option and retains
+  its findings beside the source corpus it is given, at `<source>/../js-1-source-fuzz-findings/`, which for
+  `src/tests/corpus/js-1/source` is `src/tests/corpus/js-1/js-1-source-fuzz-findings/`, inside the scratch tree the
+  digest is taken over (`controls/partg-control-slice-1.log`). The control is taken again below, with the digest
+  taken with and without that directory.
+- **K2's patch** is bundle sjl-12-001's `controls/k2.patch`, reused unchanged as this stage's brief allows, so its
+  planted comment names "BUNDLE sjl-12-001 PART C"; it is no stale file.
+- **`BROILER_RULE_MESSAGES`** was not set to the bundle's `<side>/rules/rule-messages`, as the paragraph above says,
+  but to a scratch folder outside this repository, whose files were copied unchanged into `<side>/rules/rule-messages/`;
+  each `<side>/rules/rule-messages-where.txt` names that destination wrongly, and the note beside it,
+  `rule-messages-where-note.txt`, corrects it.
+- **The differential cross-check** (template T8), which the rule's "What this file does not decide" retains beside the
+  parts "as bundle `sjl-3-001` retained its own", was not taken at task 7.2: neither this stage's brief nor the plan's
+  row 7.2 names it. It is taken below.
+- **First attempts.** Beside the six the paragraph above names and part G's base sessions, an eighth was redone: the
+  first collection of the closures, whose Native AOT publishes failed on NU1903; `after/publication/README.md` records
+  it, and it is not retained.
+- **The hashes.** The paragraph above says "Each folder's `hashes.txt` holds the SHA-256 of every other file in it".
+  `base/` and `after/` hold no `hashes.txt` of their own, and the bundle's `README.md` and `collect-measurement.py` are
+  in none (`measurement/manifest.txt` names the collector's SHA-256). The two fuel-parity logs, `base/fuel-parity.log`
+  and `after/fuel-parity.log`, are now listed in `after/parti/hashes.txt` by their paths from that folder. Each folder
+  this review adds files to has them appended to its `hashes.txt`, the earlier lines unchanged.
+
+**Taken again by the review**, on 2026-11-10 between 15:46Z and 17:17Z, on the same machine, each run behind a gate
+that waits, with no fallback, for a one-minute load of at most 1.0 and no other dotnet, python, VBCSCompiler or MSBuild
+process (each folder's `logs/` holds the gate's record and every run's machine record; the builds, which are no runs
+of the rule, waited behind the earlier gate), from clean `git archive`s on a tmpfs built in Release with
+`--disable-build-servers` and without MSBuild node reuse, the differential's worktree below aside. At every run's start
+the gate saw no other such process. Each new folder's `hashes.txt` covers every other file in it.
+- **Part B's run 1 at the registry and the after commits** (`registry/local-idle/`, `after/local-idle/`): each report
+  is byte-identical to the first run 1's (`parse-corpus-run1-compared.txt`), so it is not retained twice.
+- **The base's census, `--checks`, vectors and vectors control** (`base/local-idle/`): both census outputs, the vectors
+  logs and both vectors reports are byte-identical to the first runs' (`compared.txt`); `--checks --verbose` holds the
+  same rows with the same verdicts, its text differing in elapsed times, machine addresses and per-form milliseconds
+  (`checks-verdicts-compared.txt`, `checks.diff.gz`).
+- **Part A's (c′) re-runs, kind (F) runs and (e) race, with the retained pin** (`after/parta-rerun-pinned/`,
+  `after/parta-race-pinned/`): the same procedure as the first, the conformance root now given `--expect` with the
+  retained pin `src/tests/conformance/pins/test262.pin` (one blob at both commits), so every log reads "retained pin
+  test262 tc39/test262@ccaac100..." and `suite test262@46d54f57...`, and none reports `MissingSuiteRevision`. Their rows
+  are set beside the first, unpinned ones in `after/parta-rerun-pinned/compared-with-unpinned.txt`; the race ran the
+  rows whose re-runs differ in these re-runs, which are four where the first had three.
+- **Part F's control as the rule writes it** (`controls/retake/`): the first Semicolon of input T028379's library
+  stream is made a Comma before the comparison, the kind map untouched (`partf-control.patch`); the row's output names
+  T028379 (`partf-checks-named-rows.txt`), and its revert matches the made digest (`k-digests.txt`).
+- **Part G's slice control** (`controls/retake/partg-again/`, with `controls/retake/note.txt`): the revert's digest
+  over the whole tree differs from the made one exactly as the first attempt's did (`572ed160...`), and with the
+  directory `src/tests/corpus/js-1/js-1-source-fuzz-findings/` that the sessions wrote left out, or removed, it equals
+  the made digest; that directory's four files are listed and kept. The reverted copy's `--checks` is in
+  `controls/retake/k-reverted-checks-*`.
+- **The differential cross-check** (`after/differential/`): `eng/run-differential.py` over every probe of
+  `src/tests/differential/`, against the retained answers and against Node v22.22.0, with the after commit's
+  command-line root built in a clean detached worktree of the after commit (the driver identifies its host's source
+  through git, and refused the first attempt from an archive, which ran no probe); `run.log`, `report.json.gz` and the
+  worktree's status before and after. Its one difference from the retained answers is case 36 of
+  `the-later-library-methods.js` (`1.2599210498948732` where the retained answer reads `1.2599210498948734`). It is a
+  cross-check without a rule, and nothing here reads it further.
+
+The first outputs these replace stay where they are and are not read where a run above was taken again; task 7.3
+reads the runs above in their place, and weighs the deviations this paragraph lists that were not taken again.
+
 The home's clauses 1 to 3 are judged in Broiler.JS's bundle of the same name, under its own rule, which this bundle
 does not read.
 

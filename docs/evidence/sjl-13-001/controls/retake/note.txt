@@ -1,0 +1,21 @@
+Added 2026-11-10, by the review of task 7.2 of step 1's evidence, before any part is judged.
+
+This folder holds the controls the review took again, from a new scratch copy of the after commit a8d8398 on tmpfs
+(k-archive.txt), each run behind a gate that waits, without a timeout fallback, for a one-minute load of at most 1.0
+and no other dotnet, python, VBCSCompiler or MSBuild process (logs/runs/, each run's machine record):
+  - part F's control as the rule writes it: partf-control.patch shifts the library stream's token kind at one
+    punctuator of one input before the comparison (the first Semicolon of input T028379's library stream becomes a
+    Comma), the row's kind map untouched; partf-checks-named-rows.txt and partf-checks.log.gz are its --checks, and
+    logs/partf-checks.stderr.txt names the token the patch shifted;
+  - part G's slice control (partg-control-slice.patch, the same throw as ../partg-control-slice.patch) and its four
+    --fuzz sessions;
+  - the reverted copy's build and --checks (k-reverted-checks-*).
+k-digests.txt records each revert. Its two partg-slice lines "left out" and "removed" named the findings directory
+wrongly (src/tests/corpus/js-1-source-fuzz-findings): --fuzz retains its findings at <source>/../js-1-source-fuzz-findings,
+and <source> is src/tests/corpus/js-1/source, so they land in src/tests/corpus/js-1/js-1-source-fuzz-findings/, and
+those two lines left nothing out (partg-control-slice-findings-in-tree.txt is empty for the same reason). Part G's
+slice control was therefore taken once more, alone, from another new scratch copy, with the directory named rightly:
+partg-again/. Its k-digests.txt reads the made digest 771df662..., the revert over the whole tree 572ed160...
+(DIFFERS-FROM-MADE, the same digest as ../k-digests.txt's first attempt), and the revert with that one directory left
+out, or removed, 771df662... (equal-to-made); partg-again/partg-control-slice-findings-in-tree.txt lists the four
+files the sessions retained there, which are the whole difference.

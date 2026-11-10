@@ -1,0 +1,12 @@
+fx-k-reverted-checks	before	2026-11-10T17:03:25Z	0.36 0.63 0.84 1/114 17108
+fx-k-reverted-checks	after	2026-11-10T17:08:54Z	0.89 0.79 0.87 1/115 1908
+fx-partf-checks	before	2026-11-10T16:52:56Z	0.87 1.08 1.01 1/112 30859
+fx-partf-checks	after	2026-11-10T16:58:29Z	0.89 0.96 0.98 1/113 15621
+fx-partg-control-slice-1	before	2026-11-10T17:00:46Z	0.47 0.89 0.96 1/117 16037
+fx-partg-control-slice-1	after	2026-11-10T17:00:46Z	0.47 0.89 0.96 1/117 16169
+fx-partg-control-slice-2	before	2026-11-10T17:01:16Z	0.36 0.83 0.94 1/119 16248
+fx-partg-control-slice-2	after	2026-11-10T17:01:16Z	0.36 0.83 0.94 1/119 16384
+fx-partg-control-slice-3	before	2026-11-10T17:01:47Z	0.22 0.74 0.90 1/118 16450
+fx-partg-control-slice-3	after	2026-11-10T17:01:47Z	0.22 0.74 0.90 1/118 16578
+fx-partg-control-slice-4	before	2026-11-10T17:02:17Z	0.13 0.67 0.87 1/118 16645
+fx-partg-control-slice-4	after	2026-11-10T17:02:17Z	0.13 0.67 0.87 1/118 16779

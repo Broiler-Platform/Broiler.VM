@@ -1,0 +1,6 @@
+worktree at a8d8398bd59e7f5600cb0aa9e733ff8948859cf4, status:
+(end of status)
+after the build: a8d8398bd59e7f5600cb0aa9e733ff8948859cf4, status (bin/ and obj/ are git-ignored):
+(end of status)
+after the run: a8d8398bd59e7f5600cb0aa9e733ff8948859cf4, status:
+(end of status)

@@ -1,0 +1,14 @@
+2026-11-10T16:16:03Z gate fx-build-cf-base: idle (load 0.74 1.16 1.02 1/117 18231) after 60s
+2026-11-10T16:16:13Z fx-build-cf-base: done: fx-build-cf-base	rc=0	wall=9.5s	maxrss=307MB	started=2026-11-10T16:16:04Z	ended=2026-11-10T16:16:13Z
+2026-11-10T16:13:55Z gate fx-build-sc-base: idle (load 0.70 0.92 0.91 1/118 17712) after 0s
+2026-11-10T16:14:33Z fx-build-sc-base: done: fx-build-sc-base	rc=0	wall=38.6s	maxrss=682MB	started=2026-11-10T16:13:55Z	ended=2026-11-10T16:14:33Z
+2026-11-10T16:16:44Z gate_hard fx-census-inputs-base: idle (load 0.84 1.16 1.03 1/120 18454) after 0s
+2026-11-10T16:16:46Z fx-census-inputs-base: done: fx-census-inputs-base	rc=0	wall=2.5s	maxrss=284MB	started=2026-11-10T16:16:44Z	ended=2026-11-10T16:16:46Z
+2026-11-10T16:17:16Z gate_hard fx-census-test-base: idle (load 0.52 1.05 1.00 1/120 20781) after 0s
+2026-11-10T16:17:34Z fx-census-test-base: done: fx-census-test-base	rc=0	wall=17.8s	maxrss=342MB	started=2026-11-10T16:17:17Z	ended=2026-11-10T16:17:34Z
+2026-11-10T16:18:05Z gate_hard fx-checks-base: idle (load 0.33 0.93 0.96 1/117 9464) after 0s
+2026-11-10T16:23:11Z fx-checks-base: done: fx-checks-base	rc=0	wall=305.7s	maxrss=895MB	started=2026-11-10T16:18:05Z	ended=2026-11-10T16:23:10Z
+2026-11-10T16:23:41Z gate_hard fx-vectors-base: idle (load 0.52 0.80 0.91 1/114 3362) after 0s
+2026-11-10T16:27:56Z fx-vectors-base: done: fx-vectors-base	rc=1	wall=255.7s	maxrss=888MB	started=2026-11-10T16:23:41Z	ended=2026-11-10T16:27:56Z
+2026-11-10T16:28:27Z gate_hard fx-vectors-control-base: idle (load 0.69 0.93 0.96 1/116 28745) after 0s
+2026-11-10T16:32:41Z fx-vectors-control-base: done: fx-vectors-control-base	rc=1	wall=253.7s	maxrss=903MB	started=2026-11-10T16:28:27Z	ended=2026-11-10T16:32:41Z

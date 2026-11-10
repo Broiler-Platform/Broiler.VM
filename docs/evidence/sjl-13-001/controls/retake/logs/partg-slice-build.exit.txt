@@ -1,0 +1,1 @@
+fx-build-k-partg-slice	rc=0	wall=15.7s	maxrss=387MB	started=2026-11-10T16:59:00Z	ended=2026-11-10T16:59:16Z
