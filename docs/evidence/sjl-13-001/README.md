@@ -66,6 +66,15 @@ states its own condition, and no part of the rule reads a text. That is a fourth
 revision it has the renumbering, row P37's tree, class N's one diagnostic and the texts. No earlier rule file is
 edited.
 
+*(Added 2026-11-10.)* The rule is revised a sixth time, before any of its runs, by
+[`decision-rule-area-revised-2026-11-10.md`](decision-rule-area-revised-2026-11-10.md), filed with step 1's records,
+on no owner's decision of its own: it writes into part D's MET line the reading of decision D20 that JSD-0083's dated
+note of that day records, accepted under the owner's standing direction of 2026-10-18. Rule I5 registers what step 1
+deleted that was declared, by type or member by member; the binder's checks of `syntax` rows that were statements
+inside members that stay (rows B03 to B07, B10 to B15, B17 to B20, B26 to B31 and B34) are named by row in I5's
+register paragraph and in JSD-0087, and are not registered, since those members are still declared. Part D's controls
+and every other part are unchanged, and no earlier rule file is edited.
+
 **Records:** [JSD-0083](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md),
 the area verdict, which records the owner's decisions D2 to D39 of 2026-10-26, with D1 a reading of the owner's words
 of 2026-10-25, and *(added 2026-10-27)* the owner's decisions D-asi and D-t24 of 2026-10-27, which add row P16b to

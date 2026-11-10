@@ -119,8 +119,10 @@
     "tokenizer's constructor that scanned a substitution, and the frames Async, Body, Disposing, Function and StaticBlock",
     "of JsBinder.Frame, which only the deleted checks read. The binder's checks of the rows the shared stage table assigns",
     "syntax were lines of members that stay (Bind, BindTree, Declares and the walks), which the library now refuses",
-    "before the binder runs. What stays as adapters is not here: JsFrontend, which builds the request and calls the",
-    "library; JsCompilerUnicode.Tables, the Unicode provider; JsRegularExpressionValidator; JsFrontendAdapter and its",
+    "before the binder runs; they are named here by the correspondence's rows, B03 to B07, B10 to B15, B17 to B20, B26",
+    "to B31 and B34 (B25 is CheckRegExp), and are not registered, since the members that held them are still declared",
+    "(bundle sjl-13-001's area rule as revised on 2026-11-10, part D). What stays as adapters is not here: JsFrontend,",
+    "which builds the request and calls the library; JsCompilerUnicode.Tables, the Unicode provider; JsRegularExpressionValidator; JsFrontendAdapter and its",
     "parts; JsFrontendDiagnostics and its texts, which map each shared code onto the registry and render it; and",
     "JsAdmissionWalk, which makes this family's BigInt and module-specifier refusals after the parse."
   ],

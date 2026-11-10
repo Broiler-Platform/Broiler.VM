@@ -1349,6 +1349,23 @@ second checks of `parser+lowering` rows such as `new.target`). Each is in X6 and
 missed live checks and dead copies, named EE0182, which has no member of its own, and gave no home to the members
 read outside `JsParser.cs` (findings F14 and F15).
 
+*(Noted 2026-11-10, at step 1's records, by [JSD-0087](0087-the-wide-path-parses-with-the-shared-syntax-library.md).)* The decision says "**every binder check of a row the stage
+table assigns `syntax`**, which the library now refuses before the binder runs, named in X6 member by member and
+registered in I5". Step 1 deleted every such check, but most were not members of their own. Of the binder, the members
+that went are `CheckRegExp` (B25) and `ResourceScoped`, the context the `using` check read, which rule I5 registers,
+and five members of the enumeration `JsBinder.Frame`, which only the deleted checks read and which rule I5's reader does
+not read; the checks of rows B03 to B07, B10 to B15, B17 to B20, B26 to B31 and B34 were statements inside `Bind`,
+`BindTree`, `Declares` and the walks, which stay. Rule I5 reads declared names, so a member that stays cannot be
+registered and a statement has no name it reads. This record reads "registered in I5" as holding of the checks that
+were members, and "member by member" for the others as naming each by its row: JSD-0087's section 6 and rule I5's
+register paragraph for SJL-13.3's step 1 name them so. The reading is this record's, taken under the owner's standing
+direction of 2026-10-18 ("Please do all recommended decisions and skip waiting for review") and recorded as accepted
+under it, not as the owner's own dated answer. Bundle `sjl-13-001`'s area rule writes it into part D's MET line, which
+asked that "I5 registers every member the verdict's deletion list gives step 1, the binder's checks of syntax rows
+among them, member by member (decision D20)", by its revision of 2026-11-10,
+[`decision-rule-area-revised-2026-11-10.md`](../../../../docs/evidence/sjl-13-001/decision-rule-area-revised-2026-11-10.md),
+filed before any of its runs. The deletions themselves do not change.
+
 **Decision D21 - "the shared tokenizer's behaviour must match the slice path's"** *(revised 2026-10-26, finding
 F17)*. **A checks row added at step 1** compares the two tokenizers' streams over every input the slice path accepts
 (bundle `sjl-13-001`'s part F); no class. It compares each fact where each tokenizer keeps it, by a field map the rule
