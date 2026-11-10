@@ -24,9 +24,10 @@ four roles are held by one person** (EX-30), and this record does not claim that
 SJL-13.3's step 1 with SJL-13.4's admission. SJL-13 started before SJL-12, SJL-3 and SJL-7, which it waits on, met their
 gates, and it may not meet its gate before they meet theirs; the ledger records both. **The owner's direction of
 2026-10-18**, "Please do all recommended decisions and skip waiting for review.", is read as JSD-0083 reads it: the
-choices this record makes within the records are its own, recorded below, and nothing here is accepted by it. This
-record takes no owner's decision of its own; the owner's decisions it applies are JSD-0083's, each recorded there by
-date, and the one reading it records as accepted under the direction is JSD-0083's note of 2026-11-10 on decision D21.
+choices this record makes within the records are its own, recorded below, and nothing in this record is accepted by
+it. This record takes no owner's decision of its own; the owner's decisions it applies are JSD-0083's, each recorded
+there by date, and the two readings accepted under the direction are recorded in JSD-0083's notes of 2026-11-10 on
+decisions D21 and D20, not here.
 
 ---
 
@@ -41,14 +42,20 @@ admission and the binder onto the shared tree and deletes the adapter and `JsSyn
 
 The evidence that judges it is bundle [`sjl-13-001`](../../../../docs/evidence/sjl-13-001/README.md), under the area
 rule SJL-13.1 committed before any of this code existed, as revised before any of its runs on 2026-11-02, 2026-11-04,
-2026-11-08, 2026-11-09 and, later that day, by
-[`decision-rule-area-revised-2026-11-09b.md`](../../../../docs/evidence/sjl-13-001/decision-rule-area-revised-2026-11-09b.md).
+2026-11-08, 2026-11-09, later that day by
+[`decision-rule-area-revised-2026-11-09b.md`](../../../../docs/evidence/sjl-13-001/decision-rule-area-revised-2026-11-09b.md),
+and on 2026-11-10, with step 1's records, by
+[`decision-rule-area-revised-2026-11-10.md`](../../../../docs/evidence/sjl-13-001/decision-rule-area-revised-2026-11-10.md),
+which changes part D's clause on rule I5 alone (section 6).
 Its runs are taken after the merge, at the base and the after commit (part A by the hosted workflow, parts B to J
 locally), and none is taken or quoted here.
 
 **The branch** is `sjl-13-3-step1d`, built on the default branch's `df75f8c` (Broiler-Platform/Broiler.VM#195, the
 merge that filed the rule's revision of 2026-11-09b). It lands in one merge: its after commit is that merge, and its
-base the merge's first parent. Its first commit is the registry commit, directly on the base (decision D35). Its
+base the merge's first parent. Its first commit is the registry commit, directly on the base (decision D35). **This
+holds only while the default branch is still `df75f8c` when the branch merges**: if anything lands on it first, the
+merge's first parent is not `df75f8c`, the registry commit is not directly on the base, and every commit this record
+names is stale, so the branch is not merged as it stands but built again on the new tip, with its records. Its
 commits, in order:
 
 | Commit | What it does |
@@ -67,7 +74,11 @@ commits, in order:
 | `b036f0f` | **One true text per code** (decision D11, the owner's decision of 2026-11-09) (section 4) |
 | `0467a1b` | Review fixes to the texts, to a span's code point and to the agreement row's detail |
 
-and then this record's change, the records of step 1 (section 10). **The branch was built three times.** Its first
+and then the records of step 1, which change no product source, in several commits (section 10): `bcdc9a3` (rule
+I5's register), `09e7f9d` (bundle `sjl-11-001`'s rule revision), `7b76d1f` (this record, JSC-326 and the dated notes
+on JSD-0083 and JSD-0081), `fc7959b` (bundle `sjl-13-001`'s README, its texts and EX-133) and `6ba54ed` (the ledger and
+the programme's documents), and the review fixes to those records that follow them. **The branch was built three
+times.** Its first
 build (`sjl-13-3-step1`) and its second (`sjl-13-3-step1b`, `sjl-13-3-step1c`) were never pushed, and each stopped on a
 question the owner then decided and the area rule recorded by a dated revision before any run; this branch is the
 third, the first two stages' commits redone onto `df75f8c` and the round of 2026-11-09 added. The earlier branches are
@@ -150,9 +161,12 @@ library does not change.
 - **`b036f0f`** changed the texts that, taken from one site, were false of another, and wrote a text for every code that
   had rendered its message identifier, from the catalogue's description of its row. **`0467a1b`** changed again the
   texts of the codes the library also refuses strict `eval` and `arguments` under as assignment targets, which "is not a
-  reference" did not state (JSE1324, JSE1325, JSE1329, JSE1330, JSE1331, JSE1335 and JSE1415 now say the target "is not a
-  valid assignment target (in strict code, neither `eval` nor `arguments` is one)"), reworded JSE2202 and JSE9108, and
-  made the code point a span names, for JSE1201 and JSE9101, the one its last backslash begins.
+  reference" did not state: JSE1324, JSE1325, JSE1329, JSE1330, JSE1331 and JSE1335, the codes of rows EE0028, EE0029,
+  EE0033, EE0034, EE0035 and EE0039, now say the target "is not a valid assignment target (in strict code, neither
+  `eval` nor `arguments` is one)". JSE1415, the code of row EE0054, which the binder's B21 refuses and the library does
+  not report today (its row is `semantics`), was given the same wording, so that the codes of an assignment target
+  agree. `0467a1b` also reworded JSE2202 and JSE9108, and made the code point a span names, for JSE1201 and JSE9101,
+  the one its last backslash begins.
 - **The codes that rendered their message identifier until `b036f0f`**, and gained a text there, are JSE1317, JSE1319,
   JSE1320, JSE1333, JSE1901, JSE1906, JSE1907, JSE1908, JSE2001 to JSE2003, JSE2201 to JSE2226, JSE7401, JSE8101 to
   JSE8105, JSE8107 and JSE9207. `b036f0f`'s message says of them that "none of the 45 is reported by the library in this
@@ -219,11 +233,16 @@ it and the milestone `SJL-13.3`.
   reads, so the substitution constructor is listed here and not registered. `SliceTokenizer` stays for the slice path
   and the census until SJL-15.4.
 - **The binder:** `CheckRegExp`, which left for the provider (decision D7); `ResourceScoped`, the context the
-  `using` check read; and the checks of `syntax` rows, the correspondence's B03 to B07, B10 to B15, B17 to B20, B25 to
-  B31 and B34, which were lines of members that stay, and the frames `Async`, `Body`, `Disposing`, `Function` and
-  `StaticBlock` of `JsBinder.Frame` that only those checks read. An enumeration's member is not a name rule I5's reader
-  reads, so the frames are listed here and not registered; `Bind`, `BindTree`, the binder's constructor and `Declares`
-  stay, with fewer parameters.
+  `using` check read; and the checks of `syntax` rows, the correspondence's B03 to B07, B10 to B15, B17 to B20, B26 to
+  B31 and B34 (B25 is `CheckRegExp`), which were lines of members that stay, and the frames `Async`, `Body`,
+  `Disposing`, `Function` and `StaticBlock` of `JsBinder.Frame` that only those checks read. An enumeration's member is
+  not a name rule I5's reader reads, so the frames are listed here and not registered; `Bind`, `BindTree`, the binder's
+  constructor and `Declares` stay, with fewer parameters. A check that was a line of a member that stays has no name
+  rule I5 can register, so those checks are named here and in the register's paragraph by their rows. Decision D20
+  said they are "named in X6 member by member and registered in I5", and part D's MET line asked the same; JSD-0083's
+  note of 2026-11-10 on decision D20 reads it for the checks that were not members, and the area rule's revision of
+  2026-11-10 writes that reading into part D before any run. Part D's control of "a re-added deleted binder member
+  that checked a syntax row" is `CheckRegExp`, row B25, whose catalogue row EE0019 the stage table assigns `syntax`.
 
 **What stays, and holds no parser:** the request, the providers, the adapter, the diagnostics and the admission walk of
 section 3, which build, hand over, adapt, map and render, and make this family's policy refusals. Rule I5's register
@@ -247,13 +266,15 @@ beside `JsFrontendAdapter.Expressions.cs`, `JsAdmissionWalk.cs` and `SliceTokeni
 ### 8. Evidence at this change
 
 Local pre-checks, on binaries built at each commit of the branch that changes product source and against answers taken
-at the base `df75f8c` on binaries built there, with the scripts and logs kept outside the tree; an independent verifier
-took them again from clean archives at the base, at the registry commit and at `0467a1b`. **They are not evidence of the
+at the base `df75f8c` on binaries built there, with the scripts and logs kept outside the tree. An independent verifier
+took the base again from a clean archive of `df75f8c`, with the parse corpus and the census again from a clean archive
+of the registry commit, and every pre-check again at `0467a1b` from a clean build. **They are not evidence of the
 rule**, whose runs are taken after the merge, and no figure of them is quoted here.
-- At each commit the stage checked (the base, the registry commit, the admission, the texts, the review fixes and
-  the head), the solution builds in Release with no warning and the writers change nothing; the architecture and
-  contract tests pass at each but the admission, where rule N37 alone fails until the baseline's commit (section 2).
-  The records' commits after `0467a1b` are checked the same way, and change no product source.
+- At each commit the stage checked (the base, the registry commit, the admission, each commit of the second round,
+  `795ebd3`, `b036f0f` and `0467a1b`, the last the head of the code), the solution builds in Release with no warning and
+  the writers change nothing; the architecture and contract tests pass at each but the admission, where rule N37 alone
+  fails until the baseline's commit (section 2). The records' commits after `0467a1b` are checked the same way, and
+  change no product source.
 - The mapping checker passes at revision 19, with `--broiler-js` and its controls.
 - The CLI acceptance table and the refusal audit answer as declared, the conformance root's js-3a and ingest-shape
   suites pass, and every `--checks` row passes at the head, the two new rows among them.
@@ -275,7 +296,8 @@ rule**, whose runs are taken after the merge, and no figure of them is quoted he
   here. **H3**: the review record's count moved in `c090c9a` the same way.
 - **N19**: the library's parse runs on the declared stack; the tree-depth bound is the library's, equal to
   `SliceParseOptions.MaximumTreeDepth` (decision D14).
-- **I5**: section 6. **K4 and I7**: section 10's last item.
+- **I5**: section 6, and part D's clause on it as the area rule's revision of 2026-11-10 reads it. **K4 and I7**:
+  section 10's last item.
 
 ### 10. Records
 
@@ -283,23 +305,35 @@ rule**, whose runs are taken after the merge, and no figure of them is quoted he
   PENDING. The parser's units that left this family's tree are the home's to cover: bundle `sjl-13-001` defines
   exclusion EX-133 (decision D31), as EX-125 and EX-127 to EX-132 did for the earlier areas.
 - **Correction entry.** [JSC-326](../roadmap.corrections.md#jsc-326).
-- **Dated notes**, each quoting what it reads: JSD-0083's status, and its decisions D11 (twice) and D21; JSD-0081's
+- **Dated notes**, each quoting what it reads: JSD-0083's status, and its decisions D11 (twice), D20 and D21; JSD-0081's
   decision D18 and its sub-area S's X2; the SJL-11 milestone's work package 11.4; the SJL-13 milestone's SJL-13.3 and
-  SJL-13.4; the programme roadmap's section 11; `inventory.md`'s parser row and `areas/frontend.md`'s wide path; bundle
-  `sjl-13-001`'s and bundle `sjl-11-001`'s READMEs; and rule I5's register.
+  SJL-13.4; the programme roadmap's section 11; `inventory.md`'s parser row and `areas/frontend.md`'s wide path;
+  `governance.md`'s row P15, whose range of seam codes revision 19 passes; `architecture.md`'s section 7, which named
+  `JsParser`'s copies; the profile's backends and parity records (JSC-326); bundle `sjl-13-001`'s and bundle
+  `sjl-11-001`'s READMEs; and rule I5's register.
 - **SJL-11's rule.** SJL-11.4 has not landed (Broiler.Regex's default branch is at its task 2.13, and SJL-11.4's
   landing branch is not cut), so decision D36's conditional applies, and
   [`decision-rule-area-revised-2026-11-10.md`](../../../../docs/evidence/sjl-11-001/decision-rule-area-revised-2026-11-10.md)
   revises bundle `sjl-11-001`'s rule before any of its runs, naming the provider's validator where its part B named
-  the binder's `CheckRegExp`.
+  the binder's `CheckRegExp`. A dated correction in it, in a later commit of the same change and before any run, gives
+  the code `CheckRegExp` reported at the base as 2101, `UnexpectedToken`, where its context paragraph said 2102.
+- **SJL-13's rule.** Bundle `sjl-13-001`'s rule is revised a sixth time, before any of its runs, by
+  [`decision-rule-area-revised-2026-11-10.md`](../../../../docs/evidence/sjl-13-001/decision-rule-area-revised-2026-11-10.md),
+  for part D's clause on rule I5 alone (section 6).
 - **Not done on this branch: the composition register and the closures.** JSD-0083's decision D29 and SJL-13.4 ask for
   "K4's rows for SliceCompiler, Conformance, Cli and PolyglotCli" and the notices; the notices moved at `26b436f`, but
   `docs/compositions.md`'s shared-assemblies cells do not name the library, and no closure of a root carrying it is
   retained. The admission commit left them for the cut-over, because a trimmed publish keeps the library's assembly only
   once the compiler calls it, and the cut-over did not take them. Rule K4 holds each register row to the closures the
-  current bundle retains, so the cells cannot move without closures published from this branch's tree. They are bundle
-  `sjl-13-001`'s part D's and the after commit's to settle; section "Where the plan, JSD-0083 and the code disagree"
-  records it.
+  bundle it names retains, and a closure must contain exactly the shared assemblies its row declares, so the cells
+  cannot move before closures that carry the library are retained. Neither part D nor the merge settles it: at the
+  after commit the four roots' rows still name bundle `sjl-9-001`'s closures, which do not carry the library, so rule
+  K4 passes there and the rows stay as they are. **They move after the merge**, in SJL-13.3's work package 7: task
+  7.2's collector publishes every root in three modes at the after commit, and task 7.3's records commit retains those
+  closures in bundle `sjl-13-001` and moves `docs/compositions.md`'s shared-assemblies cells for SliceCompiler,
+  Conformance, Cli and PolyglotCli, with the bundle each row names, in the same commit, so that rule K4 holds at every
+  commit. Until then the register does not declare the library for those roots. SJL-9.4 moved its rows on its branch
+  before its merge; step 1 does not. Section "Where the plan, JSD-0083 and the code disagree" records it (item 4).
 
 ## Readings
 
@@ -324,8 +358,11 @@ JSD-0083 wins over the plan, and the code follows JSD-0083, but where this list 
    the note, but for JSE1315, which keeps the validator's message under decision D7 (section 4).
 3. **The plan's commit 6.2** lists "every `packages.lock.json`"; this repository holds no lock file since `9d0f80e`, and
    rule I1 reads each project's restore metadata, so none moved.
-4. **The plan's commit 6.2 and decision D29** name `docs/compositions.md`'s rows for the four roots; neither the
-   admission nor the cut-over moved them, and no closure with the library is retained (section 10).
+4. **The plan's commit 6.2 and decision D29** name `docs/compositions.md`'s rows for the four roots; no commit of the
+   branch moves them, and no closure with the library is retained. They move after the merge, with the closures
+   published at the after commit, in task 7.3's records commit (section 10), so the after commit does not meet
+   decision D29's K4 rows. Part D runs rule K4 there, which holds each row to the closures it names, so it does not
+   show the gap; this item and section 10 record it.
 5. **Decision D20 lists `SliceTokenizer`'s wide-only members** as "the structured-template mode, its nesting limit,
    `SliceTemplate`, `SliceSubstitution` and their tables"; the code deleted those and `TemplateScan`'s recording fields
    and the frames of `JsBinder.Frame` that only the deleted checks read, which section 6 names.
@@ -333,11 +370,18 @@ JSD-0083 wins over the plan, and the code follows JSD-0083, but where this list 
 7. **JSD-0083's note of 2026-11-09, later that day, on decision D21** asked the owner to confirm its reading of "Falsified
    if"'s fourth clause; JSD-0083's note of 2026-11-10 records it as accepted under the owner's standing direction of
    2026-10-18, not as the owner's own dated answer.
+8. **Decision D20 and part D's MET line** asked that the binder's checks of `syntax` rows be "registered in I5" and
+   registered "member by member". Of those checks only `CheckRegExp` (B25) was a member of its own; the checks of rows
+   B03 to B07, B10 to B15, B17 to B20, B26 to B31 and B34 were lines of members that stay, which rule I5, reading
+   declared names, cannot register (section 6). JSD-0083's note of 2026-11-10 on decision D20 reads the decision for
+   them as named by row, accepted under the owner's standing direction of 2026-10-18 and not as the owner's own dated
+   answer, and the area rule's revision of 2026-11-10 writes that reading into part D's MET line before any run.
 
 ## Correction entries
 
 [JSC-326](../roadmap.corrections.md#jsc-326): the profile's plan sentence that named `JsParser.Parse` in the wide
-compile's order (`roadmap.backends.md`), and rule I5's register.
+compile's order (`roadmap.backends.md`), the parity record's sentence that named `JsParser.cs`'s primary-expression
+switch (`roadmap.parity.md`), and rule I5's register.
 
 ## Settling condition
 

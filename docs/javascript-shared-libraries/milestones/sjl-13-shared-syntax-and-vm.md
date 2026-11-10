@@ -117,7 +117,12 @@ which lands as one merge, bundle `sjl-13-001`'s after commit, its first parent t
 19, first; then the admission, the adapter with the deletions, the two `--checks` rows and one text per shared code.
 `JsParser`, the slice tokenizer's wide-only members, the binder's `CheckRegExp` and its checks of `syntax` rows are
 deleted, and the deleted types and members are registered in rule I5; bundle `sjl-13-001` defines EX-133 for the code
-that left this component's assurance coverage. Its runs are taken after the merge. The text above is left as written.
+that left this component's assurance coverage. Its runs are taken after the merge. The reading above of "Deleted:
+`JsParser`" says the binder's checks of `syntax` rows are deleted "member by member, each registered in rule I5
+(decision D20)". Most of those checks were lines of members that stay, which rule I5, reading declared names, cannot
+register: they are named by row in JSD-0087 and in rule I5's register paragraph, as JSD-0083's note of 2026-11-10 on
+decision D20 reads it, and bundle `sjl-13-001`'s area rule says the same for its part D by its revision of that day.
+The text above is left as written.
 
 ### SJL-13.4 — Admission and closures
 
@@ -128,10 +133,11 @@ that left this component's assurance coverage. Its runs are taken after the merg
 
 *(Noted 2026-11-10, at step 1's records, by [JSD-0087](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md).)* The allow-list admits `Broiler.ECMAScript.Frontend`
 `0.1.0-preview.10` for `Broiler.VM.Profile.JavaScript.Compiler` alone, and the notices fold it into the shared stream's
-row (rule N38); rule I3's frontend clause has its subject from the admission. **The composition register does not yet
-declare it**: no commit of step 1's branch moved `docs/compositions.md`'s rows for the compiler-bearing roots, and no
-closure of a root carrying the library is retained, which rule K4 holds the rows to. JSD-0087 records it. The text above
-is left as written.
+row (rule N38); rule I3's frontend clause has its subject from the admission. The bullet "The composition register
+declares it for the compiler-bearing roots." does not yet hold: no commit of step 1's branch moves
+`docs/compositions.md`'s rows for those roots, and no closure of a root carrying the library is retained, which rule K4
+holds the rows to. They move after the merge, in the records commit that retains the closures the collector publishes
+at the after commit. JSD-0087 records it. The text above is left as written.
 
 ### SJL-13.5 — JS-2 closes
 

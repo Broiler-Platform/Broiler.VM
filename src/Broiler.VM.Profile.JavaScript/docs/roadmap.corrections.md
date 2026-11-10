@@ -170,7 +170,7 @@ rather than a decision record.
 | [JSC-322](#jsc-322) | the records of the two admitted packages' version and identity: `Directory.Packages.props`, the allow-list, rule I1's witnesses, the feed's README and the notices rows | `Broiler.ECMAScript.Algorithms` and `Broiler.ECMAScript.Generation` move to `0.1.0-preview.9` as published on 2026-11-03, the algorithms package's code unchanged and the generator's gaining Broiler.JS's collation tailorings | the owner's publication of 2026-11-03; the admission procedure of `9d0f80e` |
 | [JSC-323](#jsc-323) | the package baseline's bundle and its account of the shared algorithms package's version; support section 9's bundle | The baseline is bundle JS-10-014's candidate pack, taken at the change that moved the shared packages to `0.1.0-preview.9`, and the two documents name it where they still named JS-10-011 or a version's commit wrongly | release gate 8 and rule N37 |
 | [JSC-324](#jsc-324) | the records of the profile's admission of `Broiler.ECMAScript.Intl` and of what its cut-over deleted: `packages.md`, `support.md`, `eng/packages/README.md`, ADR 0001, the notices row, the composition register, rule I5's register, and the programme's inventory and architecture documents | The profile references the shared Intl library from SJL-9.4, the package baseline is bundle JS-10-015's, `canonical-tz` is admitted, the register's rows carry the library, the code it replaced is gone and registered, and a stale Unicode version in `packages.md` is corrected | [JSD-0085](decisions/0085-the-profile-on-the-shared-intl-library.md), applying [JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md) |
-| [JSC-326](#jsc-326) | backends' sentence naming `JsParser.Parse` in the wide compile's order, and rule I5's register | From SJL-13.3's step 1 the wide path parses through the shared syntax library and `JsParser` is deleted, and rule I5 registers the types and members the step deleted | [JSD-0087](decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md), applying [JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md) |
+| [JSC-326](#jsc-326) | backends' sentence naming `JsParser.Parse` in the wide compile's order, parity's sentence naming `JsParser.cs`'s primary-expression switch, and rule I5's register | From SJL-13.3's step 1 the wide path parses through the shared syntax library and `JsParser` is deleted, and rule I5 registers the types and members the step deleted | [JSD-0087](decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md), applying [JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md) |
 
 *(Added 2026-10-25, with JSC-319's row.)* The index holds rows for JSC-01 to JSC-80 and for JSC-319. JSC-81 to
 JSC-318 are not indexed here, and each is found by its heading below. *(Added 2026-10-26, with JSC-320's row: the
@@ -14037,13 +14037,17 @@ package SJL-17.4, as [JSD-0086](decisions/0086-the-profile-collates-with-the-sha
 ### JSC-326
 
 **Where:** [`roadmap.backends.md`](roadmap.backends.md), the paragraph "Named precisely, the exit is the finished
-per-unit bytecode inside the assembly step", by a dated note beside it; and the records of what SJL-13.3's step 1
+per-unit bytecode inside the assembly step", by a dated note beside it; [`roadmap.parity.md`](roadmap.parity.md), the
+paragraph "What decided it is this document's own section 1 and not a measurement", by a dated note after it (added
+2026-11-10, later, in a review fix of the same change); and the records of what SJL-13.3's step 1
 deleted: rule I5's register (`retired-members.json`), its row in `rules.register.json` and its test's list of the
 files it reads. [JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md) is not edited but by its
 dated notes, and [JSD-0087](decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md) records the change.
 
 **What the plan said.** The backends paragraph: "`JsCompiler.Compile` runs the shared tokenizer, then
-`JsParser.Parse`, then the per-program compilation, and ends in `JsCompiler.Assemble`". Rule I5's register named, of
+`JsParser.Parse`, then the per-program compilation, and ends in `JsCompiler.Assemble`". The parity paragraph: "The
+change is one arm of the wide parser's primary-expression switch in
+`src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs`". Rule I5's register named, of
 the compiler, only `JsParser.NumberText`, `JsParser.TryBigIntValue`, `SliceTokenizer.DigitValue` and
 `JsJsonModule.Reader`, which earlier areas retired, and its register row named the milestones to SJL-17.4.
 
@@ -14052,7 +14056,8 @@ the compiler, only `JsParser.NumberText`, `JsParser.TryBigIntValue`, `SliceToken
 makes this family's BigInt and module-specifier refusals after a parse that reported nothing; and the adapter builds
 `JsSyntax` from the shared tree. `JsParser` is deleted, and `SliceTokenizer` serves only the slice path. The
 per-program compilation and the assembly step do not change at step 1, so the paragraph's point stands, and the note
-says so. Rule I5's register names `JsParser`, `SliceTemplate` and `SliceSubstitution` by type, and the slice
+says so. The parity paragraph records a change as it was made; its note says that the BigInt refusal it describes is
+the admission walk's from step 1, under the same code. Rule I5's register names `JsParser`, `SliceTemplate` and `SliceSubstitution` by type, and the slice
 tokenizer's wide-only members and the binder's `CheckRegExp` and `ResourceScoped` by member, with a paragraph for
 SJL-13.3's step 1 that also names what is deleted but not registered, and why; its register row names SJL-13.3's
 step 1 and JSD-0087, with a dated revision quoting what it read; and its test reads the files those members lived in

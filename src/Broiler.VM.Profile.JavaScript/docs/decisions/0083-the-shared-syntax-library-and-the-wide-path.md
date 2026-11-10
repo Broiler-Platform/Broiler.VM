@@ -71,10 +71,13 @@
   decision and which the owner is asked to confirm.
 - *(Added 2026-11-10.)* **Step 1's cut-over record is [JSD-0087](0087-the-wide-path-parses-with-the-shared-syntax-library.md)**, decision D3's second record: registry revision 19, the
   frontend's admission, the wide path on the library, the corrections step 1 makes and the deletion list, with
-  JSC-326 and bundle `sjl-13-001`'s exclusion EX-133. Three dated notes of that day extend this record: on decision
-  D11, that its texts were applied, and that JSE1315 keeps the validator's own message under decision D7; and on
+  JSC-326 and bundle `sjl-13-001`'s exclusion EX-133. Four dated notes of that day extend this record: on decision
+  D11, that its texts were applied, and that JSE1315 keeps the validator's own message under decision D7; on decision
+  D20, that the binder's checks of `syntax` rows that were lines of members that stay are named by row and not
+  registered in I5, which bundle `sjl-13-001`'s area rule writes into its part D by its revision of 2026-11-10; and on
   decision D21, that its reading of "Falsified if"'s fourth clause is accepted under the owner's standing direction of
-  2026-10-18. No sub-area's verdict, no row's class and no decision changes, and no clause of "Falsified if" is met.
+  2026-10-18. The readings on D20 and D21 are accepted under that direction, not answered by the owner. No sub-area's
+  verdict, no row's class and no decision's deletions change, and no clause of "Falsified if" is met.
 
 **Date:** 2026-10-26.
 
@@ -866,9 +869,10 @@ false of another site its code covers, it was written again as a general wording
 rendered their message identifier gained a text written from the catalogue's description of their row: JSE1317,
 JSE1319, JSE1320, JSE1333, JSE1901, JSE1906, JSE1907, JSE1908, JSE2001 to JSE2003, JSE2201 to JSE2226, JSE7401,
 JSE8101 to JSE8105, JSE8107 and JSE9207. `0467a1b` wrote again the texts of the codes the library also refuses strict
-`eval` and `arguments` under as assignment targets (JSE1324, JSE1325, JSE1329, JSE1330, JSE1331, JSE1335 and JSE1415),
-reworded JSE2202 and JSE9108, and made the code point a span names, for JSE1201 and JSE9101, the one its last
-backslash begins. Each changed or new text's comment quotes what the code rendered before, or says it rendered its
+`eval` and `arguments` under as assignment targets (JSE1324, JSE1325, JSE1329, JSE1330, JSE1331 and JSE1335), and gave
+JSE1415, the code of row EE0054, which the binder's B21 refuses and the library does not report today, the same
+wording, so that the codes of an assignment target agree; it reworded JSE2202 and JSE9108, and made the code point a
+span names, for JSE1201 and JSE9101, the one its last backslash begins. Each changed or new text's comment quotes what the code rendered before, or says it rendered its
 message identifier, and every pinned row that moved carries a dated note. **`b036f0f`'s message is wrong on the codes
 that gained a text**: it says that "none of the 45 is reported by the library in this family today". As the stage's
 verifier read them, every one of those codes but JSE1317, JSE1906, JSE1907, JSE1908 and JSE9207 is a code of the
@@ -1407,7 +1411,7 @@ asked to confirm it before the change that files it merges.
   escape at step 1, so that the two paths agree on both inputs; sub-population B4 and the census would then have moved
   at step 1, which part B admits under no class but R.
 
-*(Noted 2026-11-10, at step 1's records, by [JSD-0087](0087-the-wide-path-parses-with-the-shared-syntax-library.md).)* The note above ends: "This reading is this record's, not part of
+*(Noted 2026-11-10, at step 1's records, by [JSD-0087](0087-the-wide-path-parses-with-the-shared-syntax-library.md).)* The note above says: "This reading is this record's, not part of
 the owner's decision, which settles the checks row and the record of the defect; the owner is asked to confirm it
 before the change that files it merges." The change that filed it, the area rule's revision of 2026-11-09b, merged as
 `df75f8c` (Broiler-Platform/Broiler.VM#195), and the confirmation was still open after it, at step 1's verification.

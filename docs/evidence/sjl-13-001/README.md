@@ -130,19 +130,23 @@ taken.** Its branch, `sjl-13-3-step1d`, lands as one merge, which is the after c
 base, the default branch's `df75f8cea79aa2452ca22892d47d8afa5a14c93f` (Broiler-Platform/Broiler.VM#195, which filed the
 rule's second revision of 2026-11-09), and the branch's first commit, directly on it, is the registry commit,
 `cbee7c46ece7c9d7cf8a0c3f9a5a68418266672d`. Both are named here by all forty digits as the branch holds them; the merge
-keeps them, and the after commit is named when it lands. The branch's commits after the registry commit are the
+keeps them, and the after commit is named when it lands. This holds only while the default branch is still `df75f8c`
+when the branch merges: if anything lands on it first, the merge's first parent is not the base named here, and the
+branch is built again on the new tip, with these records, before it merges. The branch's commits after the registry
+commit are the
 admission, the package baseline, the cut-over and its two `--checks` rows, the texts and their review fixes, ending at
 `0467a1b991cec9b5b078fb7fecb354c98765f99f`, and then step 1's records, which change no product source;
 [JSD-0087](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md), the cut-over record, lists them. The local pre-checks the branch was built against, at the base and at its
 commits, are not evidence and are kept outside this repository; no figure of them is quoted here. Parts A to J are
 taken after the merge, at the base and the after commit: part A by the hosted workflow, dispatched for both, and parts
 B to J locally, with part B also at the registry commit. Nothing here is a verdict yet.
-- **One local pre-check broke the floor of free disk its stage had set.** During the second stage's whole-suite
-  test262 pre-check of 2026-11-09, on the branch's first build of its texts, the machine's free disk fell below the
-  floor that stage's instructions set for every run, while the suite was extracted; a scratch worktree
-  of the earlier, unpushed branch was removed to restore it, and that branch was kept. The run completed, and the
-  verifier's own runs, taken again from clean archives, stayed above the floor. The pre-check is no run of this rule
-  and decides nothing; it is recorded because the stage's own instructions asked that it be.
+- **One local pre-check broke the floor of free disk its stage had set.** During the whole-suite test262 pre-check
+  taken on 2026-11-09, near 19:27 UTC, by the stage that built the branch's second round, at `795ebd3`, the part F row
+  commit and the first commit of that round, the machine's free disk fell below the floor that stage's instructions
+  set for every run, while the suite was extracted; a scratch worktree of the earlier, unpushed branch was removed to
+  restore it, and that branch was kept. The run completed, and the verifier's and the fixer's own runs stayed above
+  the floor. The pre-check is no run of this rule and decides nothing; it is recorded because the stage's own
+  instructions asked that it be.
 
 The home's clauses 1 to 3 are judged in Broiler.JS's bundle of the same name, under its own rule, which this bundle
 does not read.
