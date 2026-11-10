@@ -34,6 +34,14 @@ binder reported 2102, `UnexpectedToken`. Rule I5 registers `CheckRegExp` as reti
 B rests on, that SJL-11.4 re-points "the binder's CheckRegExp", names a member that will not exist at this rule's
 admission commit, and the check SJL-11.4 re-points is the provider's.
 
+*(Corrected 2026-11-10, later, in a later commit of the change that files this revision, before any run of this rule:
+"at the base of step 1 the binder reported 2102, `UnexpectedToken`" reads "at the base of step 1 the binder reported
+2101, `UnexpectedToken`". The registry's row 2101 is `UnexpectedToken` and its row 2102 `ExpectedToken`; every report
+of `CheckRegExp` at the base, `df75f8c`, names `SliceSourceDiagnosticCode.UnexpectedToken`, and the front end's
+mapping's row for EE0019 records 2215 as the meaning that left 2101. The sentence is context and no part of the rule
+reads it: part B's two runs are both taken after step 1, and the code it keeps is 2215 at both, as item 2 says. The
+text above is kept as written, as this rule's revisions keep what they correct.)*
+
 ## What changed
 
 1. **The header's item "Part B reads bundle `sjl-12-001`'s parse corpus".** It reads: "**Part B reads bundle

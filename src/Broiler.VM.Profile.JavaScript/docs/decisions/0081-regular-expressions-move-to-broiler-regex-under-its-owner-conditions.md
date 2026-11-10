@@ -638,7 +638,7 @@ ends "If SJL-13's step 1 lands before SJL-11.4, SJL-11.4 re-points the provider'
 branch deletes `CheckRegExp`, and the provider is `JsRegularExpressionValidator`, which makes the checks `CheckRegExp`
 made, in its order and with its texts, over this family's matcher; the library reports its refusal at the literal's
 span under registry code 2215, `InvalidRegularExpression`, which revision 19 minted for the meaning `CheckRegExp`
-reported under 2102. So the check this decision has SJL-11.4 re-point onto Broiler.Regex's validate entry and the
+reported under 2101. So the check this decision has SJL-11.4 re-point onto Broiler.Regex's validate entry and the
 shared flag parser is `JsRegularExpressionValidator`, keeping that code and that span. Bundle `sjl-11-001`'s rule is
 revised by
 [`decision-rule-area-revised-2026-11-10.md`](../../../../docs/evidence/sjl-11-001/decision-rule-area-revised-2026-11-10.md),
