@@ -1,0 +1,52 @@
+# part B of bundle sjl-13-001, task 7.3: counts by step, class, kinds and sub-population (part-b-classes.tsv)
+base>registry	R	-	B1	3780
+base>registry	R	-	B2	1770
+base>registry	R	-	B3	4207
+base>registry	R	-	B5	4
+registry>after	F	D64	B5	19
+registry>after	F	P15b	B1	8
+registry>after	F	P37	B1	4
+registry>after	F	P37	B2	2
+registry>after	F	P37	B3	8
+registry>after	N	N(code)	B1	1094
+registry>after	N	N(code)	B2	525
+registry>after	N	N(code)	B3	1920
+registry>after	N	N(code) widened	B1	4
+registry>after	N	N(code) widened	B2	2
+registry>after	N	N(place and code)	B1	592
+registry>after	N	N(place and code)	B2	281
+registry>after	N	N(place and code)	B3	684
+registry>after	N	N(place and code)	B5	16
+registry>after	N	N(place)	B1	3566
+registry>after	N	N(place)	B2	1689
+registry>after	N	N(place)	B3	4396
+registry>after	N	N(place)	B5	111
+registry>after	N	N(place)+S3	B1	2
+registry>after	N	N(place)+S3	B2	1
+registry>after	S	R2	B1	300
+registry>after	S	R2	B2	143
+registry>after	S	R2	B3	88
+registry>after	S	R2	B5	2
+registry>after	S	R2+S7	B1	104
+registry>after	S	R2+S7	B2	22
+registry>after	S	R2+S7	B3	40
+registry>after	S	S3	B1	534
+registry>after	S	S3	B2	266
+registry>after	S	S3	B3	932
+registry>after	S	S3+S5	B1	72
+registry>after	S	S3+S5	B2	36
+registry>after	S	S3+S5	B3	16
+registry>after	S	S4+S6	B1	6
+registry>after	S	S4+S6	B2	3
+registry>after	S	S4+S6	B3	16
+registry>after	S	S7	B1	2932
+registry>after	S	S7	B2	1279
+registry>after	S	S7	B3	3852
+registry>after	S	S7	B5	72
+# keys renumbered between the base and the registry commit (class R): 9761; of them, whose renumbered code the after commit reports again at the base's place (reading 3: undone): 0
+# census, base against after: census-inputs.txt.gz: identical; census-test.txt.gz: identical
+# the control (controls/partb/part-b-control.tsv.gz against the base report): 3 differences, 3 unclassified
+#   T000001	B1	strict	bytecode	accepted|-|4cdd88289ea47863c9c749fd900ce4c8cc33e72b584eb00e09702f20d0dd7c0d	accepted|-|4cdd88289ea47863c9c749fd900ce4c8cc33e72b584eb00e09702f20d0dd7c0c	unclassified	
+#   T000001	B1	sloppy	bytecode	accepted|-|888fb626ecbb91ac80af6ade3b467ae336e6840c82cf73d37be5120e3bc6838c	refused|-|-	unclassified	
+#   T000741	B1	strict	bytecode	refused|2210:18:4|-	refused|2305:18:4|-	unclassified	
+# regressions: 0

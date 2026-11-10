@@ -1,0 +1,16 @@
+=== build-sc-tagged-registry before
+time: 2026-11-10T21:46:31Z
+loadavg: 0.98 1.44 0.87 2/107 21722
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 24147 MiB free
+procs-matching:
+=== build-sc-tagged-registry after (rc=0 started=2026-11-10T21:46:31Z)
+time: 2026-11-10T21:47:11Z
+loadavg: 6.62 2.88 1.38 2/112 23103
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 24139 MiB free
+procs-matching:

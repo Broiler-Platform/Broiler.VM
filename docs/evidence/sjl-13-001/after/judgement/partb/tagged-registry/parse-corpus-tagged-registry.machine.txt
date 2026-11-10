@@ -1,0 +1,16 @@
+=== parse-corpus-tagged-registry before
+time: 2026-11-10T21:50:15Z
+loadavg: 0.99 1.88 1.25 1/111 30844
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 24129 MiB free
+procs-matching:
+=== parse-corpus-tagged-registry after (rc=0 started=2026-11-10T21:50:16Z)
+time: 2026-11-10T21:59:45Z
+loadavg: 1.22 1.33 1.27 1/114 13526
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 24059 MiB free
+procs-matching:

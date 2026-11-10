@@ -1,0 +1,3 @@
+# part D at the base, taken again at task 7.3 behind the hard gate (logs/gate.log), against task 7.2's base run (base/rules/)
+rule-messages/: identical, file for file, to base/rules/rule-messages/ (diff -r)
+the test log's Passed and Failed lines, by test name: the same 393 tests with the same verdicts, every one Passed

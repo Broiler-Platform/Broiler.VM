@@ -1,0 +1,121 @@
+## the rule commit
+carries the rule: ef3f0567 adds docs/evidence/sjl-13-001/decision-rule-area.md, and faa8af78cddc32d460a7299f088b18b9e4407d7a is the merge that lands it (Merge pull request #172 from Broiler-Platform/claude/busy-lamport-m3yprr)
+the rule's blob at the rule commit, the after commit and HEAD: 6639d7bafc55b33e005329fff9b06fc17178a4ef 6639d7bafc55b33e005329fff9b06fc17178a4ef 6639d7bafc55b33e005329fff9b06fc17178a4ef
+## the tools commit 58b0c84edb20ccbfc386a40e2566ee29b2a55695
+yes: faa8af78cddc32d460a7299f088b18b9e4407d7a is an ancestor of 58b0c84edb20ccbfc386a40e2566ee29b2a55695
+git diff --name-only 58b0c84edb20ccbfc386a40e2566ee29b2a55695^1 58b0c84edb20ccbfc386a40e2566ee29b2a55695:
+  .github/workflows/broiler-vm-lane.yml
+  eng/check-frontend-mapping-controls/README.md
+  eng/check-frontend-mapping-controls/controls.json
+  eng/check-frontend-mapping-controls/fixture/LanguageErrors.cs.txt
+  eng/check-frontend-mapping-controls/fixture/SliceSourceDiagnostics.cs.txt
+  eng/check-frontend-mapping-controls/fixture/Test262Run.cs.txt
+  eng/check-frontend-mapping-controls/fixture/early-errors.tsv
+  eng/check-frontend-mapping-controls/fixture/frontend-mapping.tsv
+  eng/check-frontend-mapping-controls/fixture/registry.txt
+  eng/check-frontend-mapping-controls/fixture/source.manifest
+  eng/check-frontend-mapping-controls/fixture/stages.tsv
+  eng/check-frontend-mapping.py
+  src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/CompileMeasurement.cs
+  src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/ParseCorpus.cs
+  src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Program.cs
+  src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/SourceFrontEndChecks.cs
+  src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/WideFrontEndChecks.cs
+  src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/WideFuzzing.cs
+  src/tests/Broiler.VM.Architecture.Tests/CompilationStackRuleTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/rules.register.json
+  src/tests/Broiler.VM.Architecture.Tests/witnesses/N19-a-parsing-entry-point-off-the-declared-stack.cs.witness
+  never eng/packages/, eng/test262-evidence.py or a workflow but the lane's: 0 such paths
+yes: 58b0c84edb20ccbfc386a40e2566ee29b2a55695 is an ancestor of df75f8cea79aa2452ca22892d47d8afa5a14c93f
+## the second tools commit 9775735a2613ba471e31c881afe8ada706f2a90f
+the commit that files the rule's revision of 2026-11-04: ee832dd2489b5e4ccd6ec2b2c94a08defdea13fa
+yes: 58b0c84edb20ccbfc386a40e2566ee29b2a55695 is an ancestor of 9775735a2613ba471e31c881afe8ada706f2a90f
+yes: ee832dd2489b5e4ccd6ec2b2c94a08defdea13fa is an ancestor of 9775735a2613ba471e31c881afe8ada706f2a90f
+git diff --name-only 9775735a2613ba471e31c881afe8ada706f2a90f^1 9775735a2613ba471e31c881afe8ada706f2a90f:
+  docs/evidence/sjl-13-001/README.md
+  docs/evidence/sjl-13-001/decision-rule-area-revised-2026-11-04.md
+  docs/javascript-shared-libraries/status.md
+  eng/check-frontend-mapping-controls/README.md
+  eng/check-frontend-mapping-controls/controls.json
+  eng/check-frontend-mapping-controls/fixture/LanguageErrors.cs.txt
+  eng/check-frontend-mapping-controls/fixture/SliceSourceDiagnostics.cs.txt
+  eng/check-frontend-mapping-controls/fixture/Test262Run.cs.txt
+  eng/check-frontend-mapping-controls/fixture/early-errors.tsv
+  eng/check-frontend-mapping-controls/fixture/frontend-mapping.tsv
+  eng/check-frontend-mapping-controls/fixture/registry.txt
+  eng/check-frontend-mapping-controls/fixture/stages.tsv
+  eng/check-frontend-mapping.py
+  src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md
+  src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Program.cs
+  src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/RefusedRequests.cs
+  src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/SourceFrontEndChecks.cs
+  src/tests/Broiler.VM.Architecture.Tests/ArchitectureRules.cs
+  src/tests/Broiler.VM.Architecture.Tests/DiagnosticRegistry.cs
+  src/tests/Broiler.VM.Architecture.Tests/DiagnosticRegistryRuleTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/rules.register.json
+  src/tests/Broiler.VM.Architecture.Tests/witnesses/diagnostics/N7-a-new-defensive-code-for-a-meaning-the-rule-does-not-admit.txt.witness
+  src/tests/corpus/js-1/source/refused/refuse-the-value-form-under-the-numeric-manifest.1.js
+  src/tests/corpus/js-1/source/refused/refuse-the-value-form-under-the-numeric-manifest.request
+  src/tests/corpus/js-1/source/refused/refuse-two-modules-under-one-key.1.mjs
+  src/tests/corpus/js-1/source/refused/refuse-two-modules-under-one-key.2.mjs
+  src/tests/corpus/js-1/source/refused/refuse-two-modules-under-one-key.request
+  src/tests/corpus/js-1/source/source.manifest
+  never eng/packages/, eng/test262-evidence.py, a workflow, SuiteFeatures.cs or a product file of the compiler: 0 such paths
+yes: 9775735a2613ba471e31c881afe8ada706f2a90f is an ancestor of df75f8cea79aa2452ca22892d47d8afa5a14c93f
+## the base commit df75f8cea79aa2452ca22892d47d8afa5a14c93f
+the after commit's first parent: df75f8cea79aa2452ca22892d47d8afa5a14c93f
+yes: faa8af78cddc32d460a7299f088b18b9e4407d7a is an ancestor of df75f8cea79aa2452ca22892d47d8afa5a14c93f
+yes: 58b0c84edb20ccbfc386a40e2566ee29b2a55695 is an ancestor of df75f8cea79aa2452ca22892d47d8afa5a14c93f
+yes: 9775735a2613ba471e31c881afe8ada706f2a90f is an ancestor of df75f8cea79aa2452ca22892d47d8afa5a14c93f
+yes: 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f is an ancestor of df75f8cea79aa2452ca22892d47d8afa5a14c93f
+first-parent commits from the base to the after commit: a8d8398bd59e7f5600cb0aa9e733ff8948859cf4 
+at the base: registry # registry-revision: 18; JsParser.cs present: yes; JsFrontendAdapter.cs present: no; JsAdmissionWalk.cs present: no
+## the registry commit cbee7c46ece7c9d7cf8a0c3f9a5a68418266672d
+the after commit's second parent: e0caa783641ec986d35959a8d81911ad208ca84e; the branch's first commit: cbee7c46ece7c9d7cf8a0c3f9a5a68418266672d; its parent: df75f8cea79aa2452ca22892d47d8afa5a14c93f; its parents in all: df75f8cea79aa2452ca22892d47d8afa5a14c93f
+git diff --name-only df75f8cea79aa2452ca22892d47d8afa5a14c93f cbee7c46ece7c9d7cf8a0c3f9a5a68418266672d:
+  CODE-ASSURANCE.md
+  HUMAN_REVIEW.md
+  assurance.manifest.json
+  docs/evidence/sjl-13-001/corpus/stages.tsv
+  src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs
+  src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs
+  src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Assembly.cs
+  src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Classes.cs
+  src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Eval.cs
+  src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Exceptions.cs
+  src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Expressions.cs
+  src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Modules.cs
+  src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Statements.cs
+  src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+  src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs
+  src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceDiagnostics.cs
+  src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourcePrograms.cs
+  src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt
+  src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv
+  src/Broiler.VM.Profile.JavaScript/docs/diagnostics/registry.txt
+  src/compositions/Broiler.VM.Composition.JavaScript.Conformance/LanguageErrors.cs
+  src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Run.cs
+  src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/BigIntChecks.cs
+  src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/BinderChecks.cs
+  src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/RefusedRequests.cs
+  src/compositions/Broiler.VM.Composition.PolyglotCli/Program.cs
+  src/tests/Broiler.VM.Architecture.Tests/DiagnosticRegistryRuleTests.cs
+  src/tests/cli/expected.txt
+  src/tests/corpus/js-1/source/refused/refuse-a-bigint-literal-wider-than-the-format.js
+  src/tests/corpus/js-1/source/refused/refuse-a-capture-group-name-given-twice.js
+  src/tests/corpus/js-1/source/refused/refuse-a-cover-initialiser-outside-a-pattern.js
+  src/tests/corpus/js-1/source/refused/refuse-a-private-name-no-class-declares.js
+  src/tests/corpus/js-1/source/refused/refuse-a-return-in-a-static-block.js
+  src/tests/corpus/js-1/source/refused/refuse-a-return-outside-a-function.js
+  src/tests/corpus/js-1/source/refused/refuse-a-super-property-outside-a-method.js
+  src/tests/corpus/js-1/source/refused/refuse-an-import-attribute-given-twice.mjs
+  src/tests/corpus/js-1/source/refused/refuse-an-object-literal-setting-its-prototype-twice.js
+  src/tests/corpus/js-1/source/refused/refuse-arguments-in-a-class-field.js
+  src/tests/corpus/js-1/source/refused/refuse-new-target-outside-a-function.js
+  src/tests/corpus/js-1/source/refused/refuse-the-value-form-under-the-numeric-manifest.request
+  src/tests/corpus/js-1/source/refused/refuse-two-modules-under-one-key.request
+  src/tests/corpus/js-1/source/source.manifest
+the revision of 2026-11-08's list, path by path (item 1), against that diff: the same paths, no more and no fewer
+## the after commit a8d8398bd59e7f5600cb0aa9e733ff8948859cf4
+parents: df75f8cea79aa2452ca22892d47d8afa5a14c93f e0caa783641ec986d35959a8d81911ad208ca84e; Merge pull request #196 from Broiler-Platform/claude/busy-lamport-m3yprr
+at the after commit: registry # registry-revision: 19; JsParser.cs present: no

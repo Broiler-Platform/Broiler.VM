@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# Hard idle gate for SJL-13 task 7.3 (second attempt). Source it, then call:  gate <label> <logfile>
+# Waits, with no fallback and no timeout, until (1) the one-minute load average is 1.0 or less and
+# (2) no process other than the caller's own ancestors runs whose executable (/proc/PID/exe, not a
+# shell's command line) is dotnet, testhost, VBCSCompiler, MSBuild, or a Broiler.* apphost, and no
+# dotnet process's own argv names VBCSCompiler.dll, MSBuild.dll or testhost.dll.
+# It appends one record per check to <logfile>: time (UTC), load, and every matching process seen.
+
+gate_scan() {
+  local self=$$ out="" p exe base args
+  # ancestors of this shell are excluded (they are shells or the agent, never dotnet, but be safe)
+  local anc=" " q=$self
+  while [ -n "$q" ] && [ "$q" != 0 ] && [ "$q" != 1 ]; do anc="$anc$q "; q=$(awk '{print $4}' /proc/$q/stat 2>/dev/null); done
+  for p in /proc/[0-9]*; do
+    p=${p#/proc/}
+    case "$anc" in *" $p "*) continue;; esac
+    exe=$(readlink /proc/$p/exe 2>/dev/null) || continue
+    base=${exe##*/}
+    case "$base" in
+      dotnet|testhost|testhost.dll|VBCSCompiler|MSBuild|Broiler.*|ilc|crossgen*)
+        args=$(tr '\0' ' ' < /proc/$p/cmdline 2>/dev/null | cut -c1-160)
+        out="$out pid=$p exe=$exe args=[$args];";;
+    esac
+  done
+  printf '%s' "$out"
+}
+
+gate() {
+  local label=$1 log=$2 load procs n=0
+  while :; do
+    load=$(cut -d' ' -f1 /proc/loadavg)
+    procs=$(gate_scan)
+    if awk -v l="$load" 'BEGIN{exit !(l<=1.0)}' && [ -z "$procs" ]; then
+      printf '%s gate %s PASS load1=%s procs=none checks=%s\n' "$(date -u +%FT%TZ)" "$label" "$load" "$n" >> "$log"
+      return 0
+    fi
+    if [ $((n % 6)) -eq 0 ]; then
+      printf '%s gate %s WAIT load1=%s procs=%s\n' "$(date -u +%FT%TZ)" "$label" "$load" "${procs:-none}" >> "$log"
+    fi
+    n=$((n+1)); sleep 10
+  done
+}
+
+# Record a machine snapshot (for run records)
+machine_record() {
+  echo "time: $(date -u +%FT%TZ)"; echo "loadavg: $(cat /proc/loadavg)"; echo "nproc: $(nproc)"
+  echo "sdk: $(PATH=/root/.dotnet:$PATH DOTNET_ROOT=/root/.dotnet dotnet --version 2>/dev/null)"
+  echo "os: $(. /etc/os-release; echo $PRETTY_NAME)"; echo "disk: $(df -m / | awk 'NR==2{print $4}') MiB free"
+  echo "procs-matching:$(gate_scan)"
+}
+
+# Stop any compiler server or MSBuild node left by OUR build (by PID, children of nothing else we didn't start)
+stop_servers() {
+  local log=$1 p exe args
+  for p in /proc/[0-9]*; do
+    p=${p#/proc/}; exe=$(readlink /proc/$p/exe 2>/dev/null) || continue
+    case "${exe##*/}" in dotnet|VBCSCompiler|MSBuild)
+      args=$(tr '\0' ' ' < /proc/$p/cmdline 2>/dev/null)
+      case "$args" in *VBCSCompiler*|*MSBuild.dll*nodeReuse*|*MSBuild.dll*/nodemode*)
+        printf '%s stop-servers: killing own leftover pid=%s args=[%s]\n' "$(date -u +%FT%TZ)" "$p" "$(echo "$args"|cut -c1-200)" >> "$log"
+        kill "$p" 2>/dev/null;;
+      esac;;
+    esac
+  done
+  printf '%s stop-servers: done, remaining:%s\n' "$(date -u +%FT%TZ)" "$(gate_scan)" >> "$log"
+}

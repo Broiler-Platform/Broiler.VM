@@ -1,0 +1,16 @@
+=== build-cf-base before
+time: 2026-11-10T22:18:40Z
+loadavg: 0.88 1.57 1.49 1/110 7719
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23979 MiB free
+procs-matching:
+=== build-cf-base after (rc=0 started=2026-11-10T22:18:40Z)
+time: 2026-11-10T22:19:10Z
+loadavg: 3.92 2.26 1.72 1/110 8258
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23979 MiB free
+procs-matching:

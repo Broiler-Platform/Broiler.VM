@@ -1,0 +1,16 @@
+=== kindF-wide-bytecode-base-test_staging_sm_async-functions_await-in-arrow-parameters before
+time: 2026-11-10T22:22:11Z
+loadavg: 1.00 1.70 1.60 1/109 14741
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23978 MiB free
+procs-matching:
+=== kindF-wide-bytecode-base-test_staging_sm_async-functions_await-in-arrow-parameters after (rc=1 started=2026-11-10T22:22:12Z)
+time: 2026-11-10T22:22:13Z
+loadavg: 1.00 1.70 1.60 1/109 14947
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23978 MiB free
+procs-matching:

@@ -1,0 +1,16 @@
+=== kindF-wide-bytecode-after-test_staging_sm_RegExp_7.8.5-01 before
+time: 2026-11-10T22:22:09Z
+loadavg: 1.00 1.71 1.60 1/109 13819
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23978 MiB free
+procs-matching:
+=== kindF-wide-bytecode-after-test_staging_sm_RegExp_7.8.5-01 after (rc=0 started=2026-11-10T22:22:09Z)
+time: 2026-11-10T22:22:10Z
+loadavg: 1.00 1.70 1.60 3/109 14047
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23978 MiB free
+procs-matching:

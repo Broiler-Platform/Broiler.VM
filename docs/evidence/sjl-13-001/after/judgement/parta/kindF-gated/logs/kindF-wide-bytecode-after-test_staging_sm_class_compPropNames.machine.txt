@@ -1,0 +1,16 @@
+=== kindF-wide-bytecode-after-test_staging_sm_class_compPropNames before
+time: 2026-11-10T22:22:18Z
+loadavg: 1.00 1.69 1.59 1/109 17872
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23978 MiB free
+procs-matching:
+=== kindF-wide-bytecode-after-test_staging_sm_class_compPropNames after (rc=0 started=2026-11-10T22:22:19Z)
+time: 2026-11-10T22:22:20Z
+loadavg: 1.32 1.74 1.61 1/109 18188
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23978 MiB free
+procs-matching:

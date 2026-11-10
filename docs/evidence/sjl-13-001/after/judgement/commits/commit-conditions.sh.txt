@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# The conditions the area rule's "The commits" sets (as its revisions of 2026-11-04 and 2026-11-08 read them), each read
+# with git alone in a clone of Broiler.VM. Task 7.3 of step 1's evidence; kept with a .txt suffix so that nothing in
+# the repository reads it as a script. usage: bash commit-conditions.sh.txt <repository>
+cd "$1" || exit 2
+R=faa8af78cddc32d460a7299f088b18b9e4407d7a        # the rule commit (the merge of Broiler.VM#172)
+T=58b0c84edb20ccbfc386a40e2566ee29b2a55695        # the tools commit (the merge of Broiler.VM#174)
+T2=9775735a2613ba471e31c881afe8ada706f2a90f       # the second tools commit (the merge of Broiler.VM#192)
+B=df75f8cea79aa2452ca22892d47d8afa5a14c93f        # the base commit
+G=cbee7c46ece7c9d7cf8a0c3f9a5a68418266672d        # the registry commit
+A=a8d8398bd59e7f5600cb0aa9e733ff8948859cf4        # the after commit (the merge of Broiler.VM#196)
+S12=1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f      # bundle sjl-12-001's after commit in this repository
+anc() { if git merge-base --is-ancestor "$1" "$2"; then echo "yes: $1 is an ancestor of $2"; else echo "NO: $1 is not an ancestor of $2"; fi; }
+echo "## the rule commit"
+echo "carries the rule: $(git log --format=%h --diff-filter=A $R -- docs/evidence/sjl-13-001/decision-rule-area.md | tail -1) adds docs/evidence/sjl-13-001/decision-rule-area.md, and $R is the merge that lands it ($(git log -1 --format=%s $R))"
+echo "the rule's blob at the rule commit, the after commit and HEAD: $(git rev-parse $R:docs/evidence/sjl-13-001/decision-rule-area.md) $(git rev-parse $A:docs/evidence/sjl-13-001/decision-rule-area.md) $(git rev-parse HEAD:docs/evidence/sjl-13-001/decision-rule-area.md)"
+echo "## the tools commit $T"
+anc $R $T
+echo "git diff --name-only $T^1 $T:"; git diff --name-only $T^1 $T | sed 's/^/  /'
+git diff --name-only $T^1 $T | grep -vE '^(src/compositions/Broiler\.VM\.Composition\.JavaScript\.SliceCompiler/|docs/|eng/check-frontend-mapping-controls/)' | grep -vxE 'src/tests/Broiler\.VM\.Architecture\.Tests/(CompilationStackRuleTests\.cs|rules\.register\.json)|eng/check-frontend-mapping\.py|\.github/workflows/broiler-vm-lane\.yml|src/tests/Broiler\.VM\.Architecture\.Tests/witnesses/.*N19.*|CODE-ASSURANCE\.md|HUMAN_REVIEW\.md|assurance\.manifest\.json' | sed 's/^/  outside the list: /'
+echo "  never eng/packages/, eng/test262-evidence.py or a workflow but the lane's: $( (git diff --name-only $T^1 $T | grep -E '^(eng/packages/|eng/test262-evidence\.py)'; git diff --name-only $T^1 $T | grep '^\.github/workflows/' | grep -vx '.github/workflows/broiler-vm-lane.yml') | wc -l) such paths"
+anc $T $B
+echo "## the second tools commit $T2"
+REV4=$(git log --format=%H --diff-filter=A $A -- docs/evidence/sjl-13-001/decision-rule-area-revised-2026-11-04.md | tail -1)
+echo "the commit that files the rule's revision of 2026-11-04: $REV4"
+anc $T $T2; anc $REV4 $T2
+echo "git diff --name-only $T2^1 $T2:"; git diff --name-only $T2^1 $T2 | sed 's/^/  /'
+git diff --name-only $T2^1 $T2 | grep -vE '^(src/compositions/Broiler\.VM\.Composition\.JavaScript\.SliceCompiler/|src/tests/corpus/js-1/source/|src/Broiler\.VM\.Profile\.JavaScript/docs/|docs/|eng/check-frontend-mapping-controls/)' | grep -vxE 'src/tests/Broiler\.VM\.Architecture\.Tests/(ArchitectureRules|DiagnosticRegistry|DiagnosticRegistryRuleTests)\.cs|src/tests/Broiler\.VM\.Architecture\.Tests/rules\.register\.json|eng/check-frontend-mapping\.py|src/tests/Broiler\.VM\.Architecture\.Tests/witnesses/.*' | sed 's/^/  outside the list: /'
+echo "  never eng/packages/, eng/test262-evidence.py, a workflow, SuiteFeatures.cs or a product file of the compiler: $(git diff --name-only $T2^1 $T2 | grep -cE '^(eng/packages/|eng/test262-evidence\.py|\.github/workflows/|.*SuiteFeatures\.cs$|src/Broiler\.VM\.Profile\.JavaScript\.Compiler/)') such paths"
+anc $T2 $B
+echo "## the base commit $B"
+echo "the after commit's first parent: $(git rev-parse $A^1)"
+anc $R $B; anc $T $B; anc $T2 $B; anc $S12 $B
+echo "first-parent commits from the base to the after commit: $(git rev-list --first-parent $B..$A | tr '\n' ' ')"
+echo "at the base: registry $(git show $B:src/Broiler.VM.Profile.JavaScript/docs/diagnostics/registry.txt | grep -m1 'registry-revision:'); JsParser.cs present: $(git cat-file -e $B:src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs 2>/dev/null && echo yes || echo no); JsFrontendAdapter.cs present: $(git cat-file -e $B:src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.cs 2>/dev/null && echo yes || echo no); JsAdmissionWalk.cs present: $(git cat-file -e $B:src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs 2>/dev/null && echo yes || echo no)"
+echo "## the registry commit $G"
+echo "the after commit's second parent: $(git rev-parse $A^2); the branch's first commit: $(git rev-list --reverse --first-parent $A^2 ^$B | head -1); its parent: $(git rev-parse $G^1); its parents in all: $(git log -1 --format=%P $G)"
+echo "git diff --name-only $B $G:"; git diff --name-only $B $G | sed 's/^/  /'
+LIST='CODE-ASSURANCE.md HUMAN_REVIEW.md assurance.manifest.json docs/evidence/sjl-13-001/corpus/stages.tsv
+src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Assembly.cs src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Classes.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Eval.cs src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Exceptions.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Expressions.cs src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Modules.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Statements.cs src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceDiagnostics.cs
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourcePrograms.cs src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt
+src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv src/Broiler.VM.Profile.JavaScript/docs/diagnostics/registry.txt
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/LanguageErrors.cs src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Run.cs
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/BigIntChecks.cs src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/BinderChecks.cs
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/RefusedRequests.cs src/compositions/Broiler.VM.Composition.PolyglotCli/Program.cs
+src/tests/Broiler.VM.Architecture.Tests/DiagnosticRegistryRuleTests.cs src/tests/cli/expected.txt
+src/tests/corpus/js-1/source/refused/refuse-a-bigint-literal-wider-than-the-format.js src/tests/corpus/js-1/source/refused/refuse-a-capture-group-name-given-twice.js
+src/tests/corpus/js-1/source/refused/refuse-a-cover-initialiser-outside-a-pattern.js src/tests/corpus/js-1/source/refused/refuse-a-private-name-no-class-declares.js
+src/tests/corpus/js-1/source/refused/refuse-a-return-in-a-static-block.js src/tests/corpus/js-1/source/refused/refuse-a-return-outside-a-function.js
+src/tests/corpus/js-1/source/refused/refuse-a-super-property-outside-a-method.js src/tests/corpus/js-1/source/refused/refuse-an-import-attribute-given-twice.mjs
+src/tests/corpus/js-1/source/refused/refuse-an-object-literal-setting-its-prototype-twice.js src/tests/corpus/js-1/source/refused/refuse-arguments-in-a-class-field.js
+src/tests/corpus/js-1/source/refused/refuse-new-target-outside-a-function.js src/tests/corpus/js-1/source/refused/refuse-the-value-form-under-the-numeric-manifest.request
+src/tests/corpus/js-1/source/refused/refuse-two-modules-under-one-key.request src/tests/corpus/js-1/source/source.manifest'
+echo "the revision of 2026-11-08's list, path by path (item 1), against that diff: $(diff <(echo $LIST | tr ' ' '\n' | sort) <(git diff --name-only $B $G | sort) >/dev/null && echo 'the same paths, no more and no fewer' || echo DIFFERENT)"
+echo "## the after commit $A"
+echo "parents: $(git log -1 --format=%P $A); $(git log -1 --format=%s $A)"
+echo "at the after commit: registry $(git show $A:src/Broiler.VM.Profile.JavaScript/docs/diagnostics/registry.txt | grep -m1 'registry-revision:'); JsParser.cs present: $(git cat-file -e $A:src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs 2>/dev/null && echo yes || echo no)"

@@ -1,0 +1,16 @@
+=== build-sc-tagged-after before
+time: 2026-11-10T22:00:14Z
+loadavg: 0.98 1.27 1.25 1/113 14654
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 24059 MiB free
+procs-matching:
+=== build-sc-tagged-after after (rc=0 started=2026-11-10T22:00:14Z)
+time: 2026-11-10T22:00:48Z
+loadavg: 4.71 2.16 1.55 1/115 15222
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 24058 MiB free
+procs-matching:

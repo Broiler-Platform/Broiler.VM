@@ -1,0 +1,16 @@
+=== partd-base before
+time: 2026-11-10T22:16:27Z
+loadavg: 0.91 1.70 1.49 1/111 4887
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23982 MiB free
+procs-matching:
+=== partd-base after (rc=0 started=2026-11-10T22:16:28Z)
+time: 2026-11-10T22:17:04Z
+loadavg: 2.40 1.99 1.60 3/110 5275
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23979 MiB free
+procs-matching:

@@ -1,0 +1,18 @@
+"""Strip the stage tags from a tagged parse-corpus report and compare it, data row by data row, with the commit's own run 1.
+usage: strip-compare.py <tagged.tsv.gz> <run1.tsv.gz>"""
+import gzip, sys, re, collections
+tag = re.compile(r'@[^;#\t]*#[A-Za-z0-9+/=]*')
+def rows(p, strip):
+    out = []
+    for l in gzip.open(p, 'rt', encoding='utf-8', newline='\n'):
+        if l.startswith('#'): continue
+        out.append(tag.sub('', l) if strip else l)
+    return out
+a = rows(sys.argv[1], True); b = rows(sys.argv[2], False)
+tags = collections.Counter(m.group(0).split('#')[0] for l in gzip.open(sys.argv[1], 'rt') if not l.startswith('#') for m in tag.finditer(l))
+print('data rows: tagged', len(a), 'run1', len(b))
+print('stripped rows equal to run 1, in order:', a == b)
+if a != b:
+    import itertools
+    n = sum(1 for x, y in itertools.zip_longest(a, b) if x != y); print('rows that differ:', n)
+print('tags seen:', dict(sorted(tags.items())))

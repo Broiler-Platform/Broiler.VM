@@ -1,0 +1,16 @@
+=== kindF-wide-native-after-test_staging_sm_RegExp_7.8.5-01 before
+time: 2026-11-10T22:22:53Z
+loadavg: 0.95 1.61 1.57 1/106 23998
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23978 MiB free
+procs-matching:
+=== kindF-wide-native-after-test_staging_sm_RegExp_7.8.5-01 after (rc=0 started=2026-11-10T22:22:53Z)
+time: 2026-11-10T22:22:55Z
+loadavg: 0.96 1.60 1.57 1/106 24253
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23978 MiB free
+procs-matching:

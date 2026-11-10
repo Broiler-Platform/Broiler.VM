@@ -1,0 +1,9 @@
+# part A's comparisons, taken at task 7.3 on 2026-11-10T21:44:13Z (Python only; no build or run of the engine)
+# tool: eng/compare-test262-forms.py as the base commit df75f8cea79aa2452ca22892d47d8afa5a14c93f holds it, blob 48e3091a872921849bab1f903b46698be0c69e33, the same blob at the after commit (48e3091a872921849bab1f903b46698be0c69e33), copied out with git show
+# suite for --exempt-guest-loads: the pin archive src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz extracted whole, sha256 f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040, blob dab6824d08de4f3dc6787ce9fdebcce822b84e23 at the base and the after commit
+# input base/hosted/wide-bytecode.report.gz sha256 57d047d5b40125b77f10701c8f97bd111d257fc692b1903aeb02675e72e4fd4b, decompressed sha256 fc384eaf880115ee53e10519d1a8f68a9a6792f758c7cc822ca43164f493ca2a
+# input base/hosted/wide-native.report.gz sha256 e01ada42444e0b8dbd2ef5700362e8c9414e52f0679fc10d0d1a68b20054fbc7, decompressed sha256 846f5cbc0cb472cfe3a3f1bbf985a8b8ddef3f251e4b036c7e564caf9f851ddf
+# input after/hosted/wide-bytecode.report.gz sha256 eccd438dfe2d7f123a97ad7b587ab7dd0476ffb7b69feaa64807025c41d9f257, decompressed sha256 767670073d70ef92be1f1bcac7a7d12a5dd3eb827f3f27ba0b04ac1843c6efb3
+# input after/hosted/wide-native.report.gz sha256 fe335b99f424beb75182bab4d597a55ff66863ae797c60225be741a6209f8f40, decompressed sha256 cd5b20ea7238e2caf9f517c3a5b659e5f584861faf6e258cfe6f832cda9a650d
+2026-11-10T21:44:14Z python3 -I compare-test262-forms.py --same-form base/hosted/wide-bytecode.report after/hosted/wide-bytecode.report
+2026-11-10T21:44:14Z python3 -I compare-test262-forms.py --same-form --exempt-guest-loads --suite <the pin extracted> base/hosted/wide-native.report after/hosted/wide-native.report

@@ -1,0 +1,2 @@
+4285d5d0b492049e2d901226a966761f670b30fe761c17ebb1efbb4c3185ab80  commit-conditions.sh.txt
+7dacc7e1d3cdbf8ddb389a3b395cc45dbdaa7d92329886046085d573d3e27a6c  commit-conditions.txt

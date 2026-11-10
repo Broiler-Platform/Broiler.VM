@@ -1,0 +1,49 @@
+"""Apply the stage-tag patch to an extracted tree of the registry commit or the after commit.
+Each SliceSourceDiagnostic construction site prefixes its message with \\u0001TAG\\u0001; ParseCorpus's
+Listed() appends '@TAG#base64(message)' to each code:line:column. Nothing else changes; the run's
+stripped report must equal the commit's own report byte for byte (checked by the caller).
+usage: tagpatch.py <tree> <registry|after>"""
+import sys, re, pathlib
+tree = pathlib.Path(sys.argv[1]); which = sys.argv[2]
+C = tree / 'src/Broiler.VM.Profile.JavaScript.Compiler'
+def sub(path, old, new, count=1):
+    t = path.read_text(encoding='utf-8')
+    n = t.count(old)
+    if n != count: raise SystemExit(f'{path}: expected {count} of {old!r}, found {n}')
+    path.write_text(t.replace(old, new), encoding='utf-8')
+def tagsite(fname, old, tag):
+    sub(C / fname, old, old.replace('(code, message,', f'(code, "\\u0001{tag}\\u0001" + message,'))
+common = [
+    ('JsCompiler.Emission.cs', 'diagnostics.Add(new SliceSourceDiagnostic(code, message, span.Line, span.Column));', 'lowering'),
+    ('SliceParser.cs', 'diagnostics.Add(new SliceSourceDiagnostic(code, message, Current.Line, Current.Column));', 'slice-parser'),
+    ('SliceSourceCompiler.cs', 'diagnostics.Add(new SliceSourceDiagnostic(code, message, span.Line, span.Column));', 'slice-lowering'),
+    ('SliceStaticSemantics.cs', 'diagnostics.Add(new SliceSourceDiagnostic(code, message, span.Line, span.Column));', 'slice-semantics'),
+    ('SliceTokenizer.cs', 'diagnostics.Add(new SliceSourceDiagnostic(code, message, atLine, atColumn));', 'tokenizer'),
+]
+for f, old, tag in common: tagsite(f, old, tag)
+if which == 'registry':
+    tagsite('JsBinder.EarlyErrors.cs', 'found.Add(new SliceSourceDiagnostic(code, message, span.Line, span.Column));', 'binder')
+    tagsite('JsParser.cs', 'diagnostics.Add(new SliceSourceDiagnostic(code, message, span.Line, span.Column));', 'parser')
+else:
+    tagsite('JsBinder.EarlyErrors.cs', 'found.Add(new SliceSourceDiagnostic(code, message, span.Line, span.Column));', 'binder')
+    sub(C / 'JsAdmissionWalk.cs', 'new SliceSourceDiagnostic(code, message, node.Span.Line, node.Span.Column)',
+        'new SliceSourceDiagnostic(code, "\\u0001admission-walk\\u0001" + message, node.Span.Line, node.Span.Column)')
+    sub(C / 'JsFrontendDiagnostics.cs',
+        'return new SliceSourceDiagnostic(code, Render(diagnostic, source), diagnostic.Span.Line, diagnostic.Span.Column);',
+        'return new SliceSourceDiagnostic(code, "\\u0001library/" + diagnostic.Code + "/" + diagnostic.MessageId + "/" + diagnostic.Phase + "\\u0001" + Render(diagnostic, source), diagnostic.Span.Line, diagnostic.Span.Column);')
+# numeric admission: multi-line construction
+p = C / 'JsNumericAdmission.cs'; t = p.read_text(encoding='utf-8')
+m = re.search(r'diagnostics\.Add\(new SliceSourceDiagnostic\(\s*([^,]+),\s*([^,]+),', t)
+if not m: raise SystemExit('numeric site not found')
+t = t[:m.start(2)] + '"\\u0001numeric\\u0001" + ' + t[m.start(2):]
+p.write_text(t, encoding='utf-8')
+# ParseCorpus Listed
+P = tree / 'src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/ParseCorpus.cs'
+sub(P, '$"{(int)diagnostic.Code}:{diagnostic.Line}:{diagnostic.Column}")));',
+    '$"{(int)diagnostic.Code}:{diagnostic.Line}:{diagnostic.Column}") + Tagged(diagnostic.Message)));\n\n'
+    '    private static string Tagged(string message)\n    {\n'
+    '        if (message.Length < 2 || message[0] != \'\\u0001\') { return "@untagged#" + System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(message)); }\n'
+    '        var end = message.IndexOf(\'\\u0001\', 1);\n'
+    '        return "@" + message.Substring(1, end - 1) + "#" + System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(message.Substring(end + 1)));\n'
+    '    }')
+print('patched', which)

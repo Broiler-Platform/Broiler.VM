@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Part A's kind (F) rows run again alone behind the hard gate: the conformance root built in Release from a clean
+# archive of each commit; each path one process, under the wide manifest, each form, fuel 100,000,000 and a wall
+# clock of 5,000 ms, against the pinned suite extracted whole and verified with --expect against the commit's pin.
+S=<scratch>
+O=$S/parta/kindF-gated; mkdir -p $O/reports $O/logs; SUITE=<tmpfs>/suite/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+HL="-p:CreateHardLinksForCopyLocalIfPossible=true -p:CreateHardLinksForCopyFilesToOutputDirectoryIfPossible=true -p:CreateHardLinksForAdditionalFilesIfPossible=true"
+for side in base:df75f8cea79aa2452ca22892d47d8afa5a14c93f after:a8d8398bd59e7f5600cb0aa9e733ff8948859cf4; do
+  n=${side%%:*}; c=${side#*:}; W=<tmpfs>/kf-$n; rm -rf $W; mkdir -p $W/tree
+  git -C /home/user/vm-s13ev archive --format=tar $c | tar -x -C $W/tree
+  echo "$n commit $c archived $(date -u +%FT%TZ) files $(find $W/tree -type f | wc -l)" >> $O/archives.txt
+  $S/scripts/run.sh build-cf-$n $O/logs $W/tree -- dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj -c Release --disable-build-servers -nologo $HL
+  grep -E 'warning [A-Z]+[0-9]+' $O/logs/build-cf-$n.out.txt | sort -u > $O/logs/build-cf-$n-warnings.txt
+  BIN=$W/tree/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0
+  (cd $BIN && sha256sum *.dll) > $O/binaries-cf-$n.sha256
+done
+for form in bytecode native; do for p in test/staging/sm/RegExp/7.8.5-01.js test/staging/sm/async-functions/await-in-arrow-parameters.js test/staging/sm/class/compPropNames.js test/staging/sm/expressions/destructuring-pattern-parenthesized.js test/staging/sm/statements/arrow-function-in-for-statement-head.js; do for n in base after; do
+  W=<tmpfs>/kf-$n; BIN=$W/tree/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0
+  l=kindF-wide-$form-$n-$(echo ${p%.js} | tr '/' '_')
+  $S/scripts/run.sh $l $O/logs $W/tree -- dotnet $BIN/Broiler.VM.Composition.JavaScript.Conformance.dll --test262 $SUITE --manifest broiler.javascript.wide --test $p --report $O/reports/$l.report --fuel 100000000 --wall 5000 --form $form --expect $W/tree/src/tests/conformance/pins/test262.pin
+done; done; done
+rm -rf <tmpfs>/kf-base <tmpfs>/kf-after
+echo DONE > $O/DONE

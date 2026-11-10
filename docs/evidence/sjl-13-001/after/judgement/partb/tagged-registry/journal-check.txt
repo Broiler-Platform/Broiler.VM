@@ -1,0 +1,3 @@
+=== parse-corpus-tagged-registry journal: 1124200 lines
+begin 562100, end 562100
+report sha256 5b9c938e1879323e4a844e2aee86b382fbb9b1b72aeabcaa4154d8f5423bced4 (not retained: its rows of the differing keys are ../stage-tags-registry.tsv.gz)
