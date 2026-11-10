@@ -148,6 +148,17 @@ B to J locally, with part B also at the registry commit. Nothing here is a verdi
   the floor. The pre-check is no run of this rule and decides nothing; it is recorded because the stage's own
   instructions asked that it be.
 
+*(Added 2026-11-10, after the merge, at SJL-13.6's task 7.1, before any part is judged.)* **Step 1 merged** as
+Broiler-Platform/Broiler.VM#196, `a8d8398bd59e7f5600cb0aa9e733ff8948859cf4`, the after commit; its first parent is the base
+named above, `df75f8cea79aa2452ca22892d47d8afa5a14c93f`, and the branch's first commit is the registry commit named above,
+`cbee7c46ece7c9d7cf8a0c3f9a5a68418266672d`. Part A's two runs were dispatched from the default branch at the after
+commit, with `forms both`: the base run, workflow run 42772882742, tested `df75f8c`, and the after run, workflow run
+42775067652, tested `a8d8398`. Each run's artifact `test262-evidence` is imported unchanged, with the digest of its zip
+as downloaded, into [`base/hosted/`](base/hosted/imported.txt) and [`after/hosted/`](after/hosted/imported.txt); each
+`imported.txt` names the run, the tested commit, the workflow's and the driver's blobs at the dispatched ref, which are
+the base commit's, and the image. Nothing here reads or judges them yet: part A's comparisons, and parts B to J, which
+are taken locally, are recorded when they are retained, and the verdicts are SJL-13.6's task 7.3.
+
 The home's clauses 1 to 3 are judged in Broiler.JS's bundle of the same name, under its own rule, which this bundle
 does not read.
 
