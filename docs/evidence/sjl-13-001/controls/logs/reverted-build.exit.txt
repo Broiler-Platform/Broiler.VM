@@ -1,0 +1,1 @@
+build-k-reverted-redo	rc=0	wall=10.6s	maxrss=410MB	started=2026-11-10T14:02:45Z	ended=2026-11-10T14:02:55Z

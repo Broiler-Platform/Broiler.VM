@@ -1,0 +1,21 @@
+--- /dev/shm/s13ev/w/k4-NuGet.config.orig	2026-11-10 12:48:49.034368559 +0000
++++ NuGet.config	2026-11-10 12:48:49.052569525 +0000
+@@ -25,6 +25,7 @@
+ <configuration>
+   <packageSources>
+     <clear />
++    <add key="k4-scratch-feed" value="/dev/shm/s13ev/w/k4-feed" />
+     <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
+     <add key="broiler-shared" value="eng/packages" />
+   </packageSources>
+@@ -32,6 +33,10 @@
+     <clear />
+   </disabledPackageSources>
+   <packageSourceMapping>
++    <!-- CONTROL K4 OF BUNDLE sjl-13-001 (a scratch copy, never merged): the library from the scratch feed alone. -->
++    <packageSource key="k4-scratch-feed">
++      <package pattern="Broiler.ECMAScript.Frontend" />
++    </packageSource>
+     <clear />
+     <packageSource key="nuget.org">
+       <package pattern="*" />

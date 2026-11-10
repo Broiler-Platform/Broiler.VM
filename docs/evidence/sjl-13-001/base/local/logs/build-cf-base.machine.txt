@@ -1,0 +1,15 @@
+=== build-cf-base
+time: 2026-11-10T08:54:35Z
+loadavg: 5.53 6.32 5.53 2/209 16703
+nproc: 4
+os: Ubuntu 24.04.5 LTS; Linux 6.18.44-fc-v338 x86_64
+sdk: 10.0.401
+disk:  7865 MiB free
+other dotnet/python processes:
+  13520 dotnet          dotnet test Broiler.JS/Broiler.JavaScript.Vectors.Tests -c Release --no-build --filter Category=EngineCorpus --logger console;verbosity=detailed
+  13538 dotnet          /root/.dotnet/dotnet exec /root/.dotnet/sdk/10.0.401/vstest.console.dll --testAdapterPath:/root/.nuget/packages/coverlet.collector/10.1.0/build/net10.0/ --framework:.NETCoreApp,V
+  13551 dotnet          /root/.dotnet/dotnet exec --runtimeconfig /root/.dotnet/sdk/10.0.401/datacollector.runtimeconfig.json --depsfile /root/.dotnet/sdk/10.0.401/datacollector.deps.json /root/.dotnet/
+  13566 dotnet          /root/.dotnet/dotnet exec --runtimeconfig /home/user/js-rev37/Broiler.JS/Broiler.JavaScript.Vectors.Tests/bin/Release/net10.0/Broiler.JavaScript.Vectors.Tests.runtimeconfig.json 
+  13630 dotnet          dotnet exec /home/user/js-rev37/Broiler.JS/Broiler.JavaScript.Vectors.Tests/bin/Release/net10.0/Broiler.JavaScript.Vectors.Tests.dll --evaluate-vectors /tmp/tmpLP6ufE.tmp
+  13631 dotnet          dotnet exec /home/user/js-rev37/Broiler.JS/Broiler.JavaScript.Vectors.Tests/bin/Release/net10.0/Broiler.JavaScript.Vectors.Tests.dll --evaluate-vectors /tmp/tmpv2zYI7.tmp
+  13632 dotnet          dotnet exec /home/user/js-rev37/Broiler.JS/Broiler.JavaScript.Vectors.Tests/bin/Release/net10.0/Broiler.JavaScript.Vectors.Tests.dll --evaluate-vectors /tmp/tmpjCybo4.tmp

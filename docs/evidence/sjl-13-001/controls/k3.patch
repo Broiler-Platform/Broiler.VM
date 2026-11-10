@@ -1,0 +1,25 @@
+--- /dev/shm/s13ev/w/k-pristine/src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs	2026-11-10 07:05:18.000000000 +0000
++++ src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs	2026-11-10 12:25:09.916377653 +0000
+@@ -82,7 +82,12 @@
+     // Broiler-Human:        PENDING
+     internal static Parsed Parse(string text, SliceParseOptions options, bool forceStrict, bool admitsBigInt)
+     {
+-        var result = SyntaxParser.Parse(Request(text, options, forceStrict));
++        // CONTROL K3 OF BUNDLE sjl-13-001 PART C (a scratch copy, never merged): one parse request shared
++        // between concurrent compilations - each compilation publishes its request and parses whichever
++        // request was published last, so two compilations at once may parse under each other's goal.
++        ControlK3Shared = Request(text, options, forceStrict);
++        System.Threading.Thread.SpinWait(200_000);
++        var result = SyntaxParser.Parse(ControlK3Shared);
+ 
+         if (result.Diagnostics.Count != 0 || result.Tree is null)
+         {
+@@ -134,6 +139,8 @@
+     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=8B2805
+     // Broiler-Falsified-If: the caller's forced strictness does not force strict code, an eval unit's function flag does not admit new.target, a script's options admit top-level await, a module's nesting bound differs from its options', or a refused unit reports more than one parse diagnostic
+     // Broiler-Human:        PENDING
++    private static ParseRequest ControlK3Shared = null!;
++
+     private static ParseRequest Request(string text, SliceParseOptions options, bool forceStrict)
+     {
+         var flags = options.EvalFlags;

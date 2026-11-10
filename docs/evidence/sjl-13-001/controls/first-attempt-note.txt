@@ -1,0 +1,22 @@
+The first attempt of part F's control and of the reverted copy's --checks (controls-after.sh, 2026-11-10, 12:35Z to
+12:48Z) did not build what they named. controls-after.sh reverted each patch by copying the pristine file back with
+its original modification time (cp -p), which is older than the assemblies already built, so MSBuild's incremental
+build did not recompile a project whose only changed input was a reverted file:
+  - part F's control build recompiled the slice compiler (its patched TokenizerAgreementChecks.cs was new) but not the
+    compiler assembly, whose JsFrontend.cs had been reverted from control K3 with its old time, so part F's checks
+    ran with K3's shared parse request still compiled in: the two-goals row and the determinism row fail there as
+    well as the agreement row (first-attempt-partf-checks-named-rows.txt);
+  - the reverted copy's build recompiled nothing, so its --checks ran with control G's SliceTokenizer throw still
+    compiled in and stopped at the first slice check (first-attempt-k-reverted-checks.log.gz, exit 2).
+Controls K1, K2, K3 and part G's two controls are not affected: each was built after a patch whose file was newer
+than every assembly, and every file reverted before it belonged to a project that patch's build recompiled (the
+build logs name each project compiled). Both affected steps were taken again by controls-redo.sh, from a new clean
+archive, with every reverted file's time set to the time of the revert. The first attempt's files are kept here,
+renamed with the prefix first-attempt-, and are not read.
+
+Control K4's first attempt (controls-k4.sh, 2026-11-10, 12:48Z to 12:50Z) was stopped by this stage before its --checks
+ran (logs/stopped-own.txt in the stage's scratch logs): its scratch NuGet.config put the scratch feed's mapping before
+the <clear /> that opens packageSourceMapping, so the mapping was cleared and restore took the published
+Broiler.ECMAScript.Frontend 0.1.0-preview.10 from nuget.org (first-attempt-k4-restored.txt: the published package's
+SHA-256, c7fd1e1a..., not the scratch pack's, a111cd63...). Its files are kept with the prefix first-attempt-. K4 was
+taken again by the fixed script, which maps the library to the scratch feed after that <clear />.

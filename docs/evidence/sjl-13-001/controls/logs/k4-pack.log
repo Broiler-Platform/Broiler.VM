@@ -1,0 +1,7 @@
+  Determining projects to restore...
+  Restored /dev/shm/s13ev/w/k4-lib/Broiler.ECMAScript/Broiler.ECMAScript.Algorithms/Broiler.ECMAScript.Algorithms.csproj (in 912 ms).
+  Restored /dev/shm/s13ev/w/k4-lib/Broiler.ECMAScript/Broiler.ECMAScript.Frontend/Broiler.ECMAScript.Frontend.csproj (in 912 ms).
+  Broiler.ECMAScript.Algorithms -> /dev/shm/s13ev/w/k4-lib/Broiler.ECMAScript/Broiler.ECMAScript.Algorithms/bin/Release/net10.0/Broiler.ECMAScript.Algorithms.dll
+  Broiler.ECMAScript.Frontend -> /dev/shm/s13ev/w/k4-lib/Broiler.ECMAScript/Broiler.ECMAScript.Frontend/bin/Release/net10.0/Broiler.ECMAScript.Frontend.dll
+  Successfully created package '/dev/shm/s13ev/w/k4-feed/Broiler.ECMAScript.Frontend.0.1.0-preview.10.nupkg'.
+  Successfully created package '/dev/shm/s13ev/w/k4-feed/Broiler.ECMAScript.Frontend.0.1.0-preview.10.snupkg'.

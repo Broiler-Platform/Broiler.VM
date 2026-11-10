@@ -1,0 +1,8 @@
+=== k1-parse-corpus
+time: 2026-11-10T11:25:09Z
+loadavg: 0.34 0.81 0.98 1/106 3291
+nproc: 4
+os: Ubuntu 24.04.5 LTS; Linux 6.18.44-fc-v338 x86_64
+sdk: 10.0.401
+disk:  9906 MiB free
+other dotnet/python processes:

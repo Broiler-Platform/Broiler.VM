@@ -1,0 +1,8 @@
+=== build-k-partf-redo
+time: 2026-11-10T13:53:29Z
+loadavg: 0.45 0.89 1.10 1/136 4269
+nproc: 4
+os: Ubuntu 24.04.5 LTS; Linux 6.18.44-fc-v338 x86_64
+sdk: 10.0.401
+disk:  6898 MiB free
+other dotnet/python processes:

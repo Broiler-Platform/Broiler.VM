@@ -1,0 +1,13 @@
+--- /dev/shm/s13ev/w/redo-pristine.cs	2026-11-10 07:05:18.000000000 +0000
++++ src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/TokenizerAgreementChecks.cs	2026-11-10 13:51:59.191490119 +0000
+@@ -138,7 +138,9 @@
+         [TokenKind.RightBracket] = SliceTokenKind.CloseBracket,
+         [TokenKind.Dot] = SliceTokenKind.Dot,
+         [TokenKind.Ellipsis] = SliceTokenKind.DotDotDot,
+-        [TokenKind.Semicolon] = SliceTokenKind.Semicolon,
++        // CONTROL OF BUNDLE sjl-13-001 PART F (a scratch copy, never merged): the library's Semicolon read as
++        // the slice kind Comma, before the comparison.
++        [TokenKind.Semicolon] = SliceTokenKind.Comma,
+         [TokenKind.Comma] = SliceTokenKind.Comma,
+         [TokenKind.LessThan] = SliceTokenKind.LessThan,
+         [TokenKind.GreaterThan] = SliceTokenKind.GreaterThan,

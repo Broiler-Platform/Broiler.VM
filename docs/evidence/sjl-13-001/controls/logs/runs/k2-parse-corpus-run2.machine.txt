@@ -1,0 +1,8 @@
+=== k2-parse-corpus-run2
+time: 2026-11-10T11:50:47Z
+loadavg: 0.69 0.94 0.98 1/110 649
+nproc: 4
+os: Ubuntu 24.04.5 LTS; Linux 6.18.44-fc-v338 x86_64
+sdk: 10.0.401
+disk:  9849 MiB free
+other dotnet/python processes:

@@ -1,0 +1,1 @@
+k2-checks	rc=1	wall=330.8s	maxrss=838MB	started=2026-11-10T12:19:38Z	ended=2026-11-10T12:25:09Z

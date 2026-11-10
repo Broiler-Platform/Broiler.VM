@@ -1,0 +1,8 @@
+=== build-k-k2
+time: 2026-11-10T11:38:19Z
+loadavg: 0.38 0.77 0.92 1/109 18183
+nproc: 4
+os: Ubuntu 24.04.5 LTS; Linux 6.18.44-fc-v338 x86_64
+sdk: 10.0.401
+disk:  9874 MiB free
+other dotnet/python processes:

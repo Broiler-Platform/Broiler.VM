@@ -1,0 +1,6 @@
+total 212
+-rw-r--r-- 1 root root 174205 Nov 10 12:48 Broiler.ECMAScript.Frontend.0.1.0-preview.10.nupkg
+-rw-r--r-- 1 root root  39034 Nov 10 12:48 Broiler.ECMAScript.Frontend.0.1.0-preview.10.snupkg
+a111cd63f48e9ecfa54a5b6e59d4763c2c5f25feda7e7ee4a3203511541574c7  Broiler.ECMAScript.Frontend.0.1.0-preview.10.nupkg
+410aa1cf7dba0dd1a035a2a8fb0d11694c8028b7d634d1b3e3b718cbfa4ab865  Broiler.ECMAScript.Frontend.0.1.0-preview.10.snupkg
+the published package (restore's copy): c7fd1e1a3b0d290facbc466944fb3b68dea1c758ce2e1e2fe56268aaac5bf88a  /root/.nuget/packages/broiler.ecmascript.frontend/0.1.0-preview.10/broiler.ecmascript.frontend.0.1.0-preview.10.nupkg

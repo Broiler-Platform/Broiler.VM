@@ -1,0 +1,18 @@
+Stack overflow.
+Repeated 14162 times:
+--------------------------------
+   at Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Expression(Broiler.ECMAScript.Syntax.Expression)
+--------------------------------
+   at Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Declarators(Broiler.ECMAScript.Syntax.VariableDeclaration)
+   at Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Variables(Broiler.ECMAScript.Syntax.VariableDeclaration)
+   at Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Statement(Broiler.ECMAScript.Syntax.Statement)
+   at Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Prologue(System.Collections.Generic.IReadOnlyList`1<Broiler.ECMAScript.Syntax.Statement>, System.Collections.Generic.List`1<Broiler.VM.Profile.JavaScript.Compiler.JsStatement>)
+   at Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Function(Broiler.ECMAScript.Syntax.FunctionNode, Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan, System.String)
+   at Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Statement(Broiler.ECMAScript.Syntax.Statement)
+   at Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Prologue(System.Collections.Generic.IReadOnlyList`1<Broiler.ECMAScript.Syntax.Statement>, System.Collections.Generic.List`1<Broiler.VM.Profile.JavaScript.Compiler.JsStatement>)
+   at Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Program()
+   at Broiler.VM.Profile.JavaScript.Compiler.JsFrontend.Parse(System.String, Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions, Boolean, Boolean)
+   at Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.Run(System.Collections.Generic.IReadOnlyList`1<Broiler.VM.Profile.JavaScript.Compiler.JsScriptUnit>, System.Collections.Generic.IReadOnlyList`1<Broiler.VM.Profile.JavaScript.Compiler.JsModuleUnit>)
+   at Broiler.VM.Profile.JavaScript.Compiler.JsCompiler+<>c__DisplayClass75_0.<Compile>b__0()
+   at Broiler.VM.Profile.JavaScript.Compiler.CompilationStack+<>c__DisplayClass1_0`1[[System.__Canon, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]].<Run>b__0()
+   at System.Threading.Thread.StartCallback()

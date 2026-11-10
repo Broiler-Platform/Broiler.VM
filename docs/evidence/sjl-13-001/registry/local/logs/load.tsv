@@ -1,0 +1,8 @@
+identity-base-registry	before	2026-11-10T11:12:53Z	0.27 0.60 1.04 1/109 17490
+identity-base-registry	after	2026-11-10T11:13:01Z	0.38 0.62 1.04 1/105 17494
+identity-registry-after	before	2026-11-10T11:13:32Z	0.23 0.56 1.01 1/105 17543
+identity-registry-after	after	2026-11-10T11:13:40Z	0.29 0.56 1.01 1/105 17547
+parse-corpus-registry-run1	before	2026-11-10T09:45:00Z	5.39 6.63 6.05 6/215 13280
+parse-corpus-registry-run1	after	2026-11-10T09:55:16Z	5.56 6.31 6.25 3/131 1551
+partb-bytes-registry	before	2026-11-10T11:15:23Z	0.15 0.43 0.91 1/106 17818
+partb-bytes-registry	after	2026-11-10T11:15:26Z	0.22 0.44 0.91 1/106 17874

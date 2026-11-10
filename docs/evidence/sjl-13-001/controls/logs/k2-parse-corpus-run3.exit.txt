@@ -1,0 +1,1 @@
+k2-parse-corpus-run3	rc=0	wall=841.6s	maxrss=1666MB	started=2026-11-10T12:03:20Z	ended=2026-11-10T12:17:22Z

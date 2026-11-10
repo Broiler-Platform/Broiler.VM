@@ -1,0 +1,129 @@
+broiler-js-wide-fuzz: corpus parse-1 1c5342104766f14d0c17d950537e4ed078a0c438c3652f8c65bff8c6c347e9cc, mutator seed 1, 102 seeds, 16950 mutants, 25950 compilations, wall bound 20000 ms; surface: JsCompiler.Compile on the stack it declares, under each seed's goal and, for an eval-family seed, as eval code under each flag set the file names
+  T028068 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 189 accepted, 261 refused
+  T028332 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 324 accepted, 126 refused
+  T028417 script: 200 mutants, 116 accepted, 84 refused
+  T028433 script: 200 mutants, 73 accepted, 127 refused
+  T028439 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 162 accepted, 288 refused
+  T028578 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 270 accepted, 180 refused
+  T028608 module: 200 mutants, 154 accepted, 46 refused
+  T028621 script: 200 mutants, 129 accepted, 71 refused
+  T028630 script: 200 mutants, 104 accepted, 96 refused
+  T028653 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 324 accepted, 126 refused
+  T028678 script: 200 mutants, 121 accepted, 79 refused
+  T028680 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 270 accepted, 180 refused
+  T028697 script: 200 mutants, 100 accepted, 100 refused
+  T028699 script and eval code under E0,E2,E4,E5,E6,E7: 50 mutants, 203 accepted, 147 refused
+  T028759 script and eval code under E0,E2,E4,E5,E6,E7: 50 mutants, 209 accepted, 141 refused
+  T028881 module: 200 mutants, 125 accepted, 75 refused
+  T029109 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 198 accepted, 252 refused
+  T029149 script: 200 mutants, 130 accepted, 70 refused
+  T031685 module: 200 mutants, 98 accepted, 102 refused
+  T040205 script: 200 mutants, 105 accepted, 95 refused
+  T040230 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 207 accepted, 243 refused
+  T040422 script: 200 mutants, 138 accepted, 62 refused
+  T040477 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 243 accepted, 207 refused
+  T040480 script: 200 mutants, 88 accepted, 112 refused
+  T040519 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 252 accepted, 198 refused
+  T040532 script: 200 mutants, 133 accepted, 67 refused
+  T040533 script: 200 mutants, 130 accepted, 70 refused
+  T040540 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 153 accepted, 297 refused
+  T040805 module: 200 mutants, 97 accepted, 103 refused
+  T041019 script: 200 mutants, 125 accepted, 75 refused
+  T041025 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 232 accepted, 218 refused
+  T041073 script: 200 mutants, 135 accepted, 65 refused
+  T041119 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 252 accepted, 198 refused
+  T041594 module: 200 mutants, 150 accepted, 50 refused
+  T042051 script: 200 mutants, 82 accepted, 118 refused
+  T042073 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 288 accepted, 162 refused
+  T042342 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 234 accepted, 216 refused
+  T042354 script: 200 mutants, 137 accepted, 63 refused
+  T042359 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 144 accepted, 306 refused
+  T042380 script: 200 mutants, 90 accepted, 110 refused
+  T042383 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 189 accepted, 261 refused
+  T042391 script: 200 mutants, 98 accepted, 102 refused
+  T042392 script: 200 mutants, 142 accepted, 58 refused
+  T042422 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 198 accepted, 252 refused
+  T042479 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 270 accepted, 180 refused
+  T042480 script: 200 mutants, 110 accepted, 90 refused
+  T042895 module: 200 mutants, 140 accepted, 60 refused
+  T051809 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 198 accepted, 252 refused
+  T051821 script: 200 mutants, 106 accepted, 94 refused
+  T051922 script and eval code under E0,E1,E2,E3,E4,E5,E6,E7: 50 mutants, 243 accepted, 207 refused
+  T051967 script: 200 mutants, 133 accepted, 67 refused
+  V000003 script: 200 mutants, 86 accepted, 114 refused
+  V000004 script: 200 mutants, 152 accepted, 48 refused
+  V000005 script: 200 mutants, 114 accepted, 86 refused
+  V000006 script: 200 mutants, 118 accepted, 82 refused
+  V000007 script: 200 mutants, 88 accepted, 112 refused
+  V000008 script: 200 mutants, 134 accepted, 66 refused
+  V000009 script: 200 mutants, 133 accepted, 67 refused
+  V000010 script: 200 mutants, 85 accepted, 115 refused
+  V000011 script: 200 mutants, 122 accepted, 78 refused
+  V000012 script: 200 mutants, 116 accepted, 84 refused
+  V000013 script: 200 mutants, 124 accepted, 76 refused
+  V000014 script: 200 mutants, 89 accepted, 111 refused
+  V000015 script: 200 mutants, 117 accepted, 83 refused
+  V000016 script: 200 mutants, 87 accepted, 113 refused
+  V000017 script: 200 mutants, 96 accepted, 104 refused
+  V000018 script: 200 mutants, 128 accepted, 72 refused
+  V000019 script: 200 mutants, 89 accepted, 111 refused
+  V000020 script: 200 mutants, 119 accepted, 81 refused
+  V000021 script: 200 mutants, 108 accepted, 92 refused
+  V000022 script: 200 mutants, 88 accepted, 112 refused
+  V000023 script: 200 mutants, 106 accepted, 94 refused
+  V000024 script: 200 mutants, 134 accepted, 66 refused
+  V000025 script: 200 mutants, 128 accepted, 72 refused
+  V000026 script: 200 mutants, 122 accepted, 78 refused
+  V000027 script: 200 mutants, 141 accepted, 59 refused
+  V000028 script: 200 mutants, 149 accepted, 51 refused
+  V000033 script: 200 mutants, 89 accepted, 111 refused
+  V000042 script: 200 mutants, 126 accepted, 74 refused
+  V000043 script: 200 mutants, 145 accepted, 55 refused
+  V000046 script: 200 mutants, 104 accepted, 96 refused
+  V000055 script: 200 mutants, 92 accepted, 108 refused
+  V000057 script: 200 mutants, 146 accepted, 54 refused
+  V000062 script: 200 mutants, 126 accepted, 74 refused
+  V000063 script: 200 mutants, 126 accepted, 74 refused
+  V000066 script: 200 mutants, 106 accepted, 94 refused
+  J000010 module: 200 mutants, 39 accepted, 161 refused
+  J000012 module: 200 mutants, 28 accepted, 172 refused
+  J000390 module: 200 mutants, 57 accepted, 143 refused
+  J000536 module: 200 mutants, 48 accepted, 152 refused
+  J000574 module: 200 mutants, 31 accepted, 169 refused
+  J000640 module: 200 mutants, 70 accepted, 130 refused
+  J001002 module: 200 mutants, 50 accepted, 150 refused
+  J001042 module: 200 mutants, 61 accepted, 139 refused
+  J001125 module: 200 mutants, 30 accepted, 170 refused
+  J001306 module: 200 mutants, 39 accepted, 161 refused
+  J001358 module: 200 mutants, 47 accepted, 153 refused
+  J001779 module: 200 mutants, 34 accepted, 166 refused
+  J001788 module: 200 mutants, 31 accepted, 169 refused
+  J001810 module: 200 mutants, 77 accepted, 123 refused
+  J002124 module: 200 mutants, 34 accepted, 166 refused
+  J002181 module: 200 mutants, 127 accepted, 73 refused
+broiler-js-wide-fuzz: the seeds themselves, unmutated: 102 of 102 accepted
+broiler-js-wide-fuzz: answers over every compilation of a mutant
+     13377  accepted
+      3958  refused:ExpectedToken
+      3661  refused:UnexpectedToken
+      2096  refused:NestingTooDeep
+       952  refused:UnterminatedComment
+       473  refused:DuplicateLexicalDeclaration
+       331  refused:UnterminatedStringLiteral
+       293  refused:UnknownEscapeSequence
+       248  refused:MalformedNumericLiteral
+       198  refused:DuplicateExportName
+       121  refused:UnexpectedCharacter
+        70  refused:UnterminatedTemplateLiteral
+        62  refused:ReturnOutsideFunction
+        62  refused:UnterminatedRegularExpression
+        28  refused:InvalidAssignmentTarget
+         6  refused:ExportNameNotDeclared
+         4  refused:ReservedWordAsBinding
+         3  refused:ConstWithoutInitialiser
+         3  refused:IllegalContinue
+         2  refused:IllegalBreak
+         1  refused:ArgumentsInClassInitialiser
+         1  refused:UnsupportedImportAttribute
+broiler-js-wide-fuzz: elapsed 12.0 s; the slowest compilation 141 ms, at T028068 37 script
+broiler-js-wide-fuzz: no finding
