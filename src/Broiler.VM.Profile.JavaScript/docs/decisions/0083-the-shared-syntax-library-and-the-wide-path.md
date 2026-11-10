@@ -69,6 +69,12 @@
   met: its first clause is read from runs the rule judges, which the pre-check is not, and the rows and the widening
   are filed before any; on its fourth, the note on decision D21 gives this record's reading, which is not the owner's
   decision and which the owner is asked to confirm.
+- *(Added 2026-11-10.)* **Step 1's cut-over record is [JSD-0087](0087-the-wide-path-parses-with-the-shared-syntax-library.md)**, decision D3's second record: registry revision 19, the
+  frontend's admission, the wide path on the library, the corrections step 1 makes and the deletion list, with
+  JSC-326 and bundle `sjl-13-001`'s exclusion EX-133. Three dated notes of that day extend this record: on decision
+  D11, that its texts were applied, and that JSE1315 keeps the validator's own message under decision D7; and on
+  decision D21, that its reading of "Falsified if"'s fourth clause is accepted under the owner's standing direction of
+  2026-10-18. No sub-area's verdict, no row's class and no decision changes, and no clause of "Falsified if" is met.
 
 **Date:** 2026-10-26.
 
@@ -852,6 +858,38 @@ moves in the commit of step 1 that moves it, with a dated note, as decision D12 
   finely as `JsParser`'s sites, in a new preview of the shared stream, `0.1.0-preview.11`, admitted here again, so
   that each site's text could be kept.
 
+*(Noted 2026-11-10, at step 1's records, by [JSD-0087](0087-the-wide-path-parses-with-the-shared-syntax-library.md).)* The note above says "**each shared code renders one text that
+states its own condition**" and "**The texts `JsParser` gave each site retire from step 1.**" Step 1 applied it, on
+its branch `sjl-13-3-step1d`, in `b036f0f` and in `0467a1b`, its review fixes. `JsFrontendDiagnostics.Texts.cs` holds
+one text for every shared code the front end's mapping holds. Where a text taken from one of `JsParser`'s sites was
+false of another site its code covers, it was written again as a general wording true of each; and the codes that had
+rendered their message identifier gained a text written from the catalogue's description of their row: JSE1317,
+JSE1319, JSE1320, JSE1333, JSE1901, JSE1906, JSE1907, JSE1908, JSE2001 to JSE2003, JSE2201 to JSE2226, JSE7401,
+JSE8101 to JSE8105, JSE8107 and JSE9207. `0467a1b` wrote again the texts of the codes the library also refuses strict
+`eval` and `arguments` under as assignment targets (JSE1324, JSE1325, JSE1329, JSE1330, JSE1331, JSE1335 and JSE1415),
+reworded JSE2202 and JSE9108, and made the code point a span names, for JSE1201 and JSE9101, the one its last
+backslash begins. Each changed or new text's comment quotes what the code rendered before, or says it rendered its
+message identifier, and every pinned row that moved carries a dated note. **`b036f0f`'s message is wrong on the codes
+that gained a text**: it says that "none of the 45 is reported by the library in this family today". As the stage's
+verifier read them, every one of those codes but JSE1317, JSE1906, JSE1907, JSE1908 and JSE9207 is a code of the
+library's rows; JSE1319, JSE1320 and JSE1333 are reached by the library's parse, though no parse-corpus input is
+refused first under one; and the regular-expression rows' codes, JSE2201 to JSE2226, JSE8101 to JSE8105 and JSE8107,
+are reached only through a validator's verdict that names their condition, while this family's validator names only
+EE0019's `regexp.literal.invalid`, so that none of them is rendered today. History keeps the message, since no commit
+is amended; `0467a1b`'s message and the table's remark state the facts, and bundle `sjl-13-001` retains every old and
+new text in `texts/changes.tsv`. No code, place, stage or outcome moves by the texts.
+
+*(Noted 2026-11-10, at step 1's records, by [JSD-0087](0087-the-wide-path-parses-with-the-shared-syntax-library.md).)* The note of 2026-11-09, later that day, says "**each shared code
+renders one text that states its own condition**", and decision D7 says that the provider's answer is "invalid with
+the failing condition's message identifier where the validator can tell it and EE0019's `regexp.literal.invalid`
+where it cannot, with the validator's message as its argument". JSE1315, EE0019's shared code, renders that argument,
+`{0}`: the text this family's validator gives, which is the text the binder's `CheckRegExp` rendered at the base,
+such as "Invalid regular expression flags: …" or the matcher's own message. So JSE1315 is the one shared code that
+does not render one text of its own, and it keeps the validator's message under decision D7, which the owner's
+decision "One true text per code" did not revise; the table's remark states the exception. When SJL-11.4 re-points
+the validator onto Broiler.Regex's validate entry, the message is the validate entry's, and the code and the span
+stay.
+
 **Decision D14 - the limits** *(revised 2026-10-26, finding F18)*. **The tree-depth constant is derived at SJL-13.2e
 as JSD-0022 derived this family's**, with the stack it requires stated beside it; **the derivation must admit this
 family's bound on the stack `CompilationStack` declares**; if it cannot, the library is reworked (explicit stacks),
@@ -1351,6 +1389,18 @@ asked to confirm it before the change that files it merges.
 - **Not taken: "Fix the slice path now".** The slice path would have been given the strict check of a directive's
   escape at step 1, so that the two paths agree on both inputs; sub-population B4 and the census would then have moved
   at step 1, which part B admits under no class but R.
+
+*(Noted 2026-11-10, at step 1's records, by [JSD-0087](0087-the-wide-path-parses-with-the-shared-syntax-library.md).)* The note above ends: "This reading is this record's, not part of
+the owner's decision, which settles the checks row and the record of the defect; the owner is asked to confirm it
+before the change that files it merges." The change that filed it, the area rule's revision of 2026-11-09b, merged as
+`df75f8c` (Broiler-Platform/Broiler.VM#195), and the confirmation was still open after it, at step 1's verification.
+The reading, that `J000262` and
+`J001009` do not meet "Falsified if"'s fourth clause, "The shared tokenizer disagreeing with the slice tokenizer on an
+input the slice path accepts", because no token of either is compared and the two paths differ there in an early
+error the specification states, which the slice path omits, is accepted under the owner's standing direction of
+2026-10-18 ("Please do all recommended decisions and skip waiting for review"). It is not the owner's own dated
+answer, and it is recorded as accepted under that direction and not as confirmed by the owner. Step 1's part F row
+lists both inputs under JSE1204 with hand-off H25, and compares every other input of its population.
 
 **Decision D23 - JS-2's concurrency and deep-nesting items on the wide path** *(revised 2026-10-26, finding F18)*.
 **Two `--checks` rows in the tools commit**, judged by part C at both commits, the deep-nesting row holding only sources

@@ -242,6 +242,8 @@ there, as an `internal` type beside `UnitBuffer` in the same assembly, consuming
 `JsFunctionRow` and the unit's closed regions, and answering with emitted bytes and an offset map or
 with a refusal.
 
+*(Noted 2026-11-10, at the shared JavaScript libraries programme's SJL-13.3 step 1, by [JSD-0087](decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md) and [JSC-326](roadmap.corrections.md#jsc-326).)* The paragraph's second sentence reads "`JsCompiler.Compile` runs the shared tokenizer, then `JsParser.Parse`, then the per-program compilation, and ends in `JsCompiler.Assemble`". From step 1 `JsCompiler.Compile` parses through the shared syntax library, `Broiler.ECMAScript.Frontend`, with the request `JsFrontend` builds from the compile's options, then runs the admission walk, and the adapter builds `JsSyntax` from the shared tree; `JsParser` is deleted, and the slice tokenizer serves only the slice path. The per-program compilation and `JsCompiler.Assemble` do not change at step 1, so the paragraph's point, that a backend attaches inside the assembly step and only there, stands. The paragraph is kept as written.
+
 **It consumes bytecode, and that is the whole argument for where it sits.** The alternative — a
 second walk of the `JsSyntax` tree — would duplicate every hoisting rule, every `Annex B` alias rule
 and every completion-value rule across a body of mutually recursive compilation methods that carry
