@@ -1,0 +1,144 @@
+code	message_id	kind	text_at_c090c9a	text_at_0467a1b
+JSE1202	identifier.escape.invalid-part	changed	a unicode escape in an identifier names {cp}, which may not continue an identifier	a unicode escape in an identifier names a code point that may not continue an identifier
+JSE1203	strict.legacy-octal-literal	changed	a legacy octal literal is not admitted in strict code	a legacy octal literal, or a decimal literal with a leading zero, is not admitted in strict code
+JSE1302	strict.reserved-word	changed	`{0}` is not a binding name	`{0}` is reserved in strict code, so it is not an identifier there
+JSE1303	identifier.await.in-module	changed	`{0}` is not a binding name	`{0}` is reserved in a module, so it is not an identifier there
+JSE1304	identifier.yield.in-generator	changed	`{0}` is not a binding name	`{0}` is not a binding name inside a generator
+JSE1305	identifier.await.in-async	changed	`{0}` is not a binding name	`{0}` is not a binding name inside an async function or a class static block
+JSE1306	identifier.yield.in-generator	changed	`{0}` is a reserved word here, and a unicode escape does not make it a name	`{0}` is reserved inside a generator, so it is not an identifier there, escaped or not
+JSE1307	identifier.await.in-async	changed	`{0}` is a reserved word here, and a unicode escape does not make it a name	`{0}` is reserved inside an async function or a class static block, so it is not an identifier there, escaped or not
+JSE1308	strict.reserved-word	changed	`{0}` is a reserved word in strict code and is not a binding name	`{0}` is reserved in strict code, so it is not an identifier there
+JSE1309	identifier.await.in-module	changed	`{0}` is a reserved word here, and a unicode escape does not make it a name	`{0}` is reserved in a module, so it is not an identifier there, escaped or not
+JSE1312	object.method.private-name	changed	a private name belongs to a class body and cannot be a property key	`{0}` is a private name, which names a method only in a class body and not in an object literal
+JSE1313	expression.shorthand-initializer	changed	`=` is not an object literal entry outside a destructuring assignment	`{0} = …` in an object literal is a shorthand with an initialiser, which only a destructuring pattern admits
+JSE1316	template.escape.invalid	changed	a unicode escape that names no code point	a template that is not tagged holds an escape sequence that only a tagged template admits
+JSE1317	template.too-many-strings	new		a template literal holds 2^32 or more strings, more than a template may hold
+JSE1318	template.escape.invalid	changed	a unicode escape that names no code point	a template that is not tagged holds an escape sequence that only a tagged template admits
+JSE1319	template.escape.invalid	new		a template that is not tagged holds an escape sequence that only a tagged template admits
+JSE1320	template.escape.invalid	new		a template that is not tagged holds an escape sequence that only a tagged template admits
+JSE1321	cover.parenthesized-expression	changed	an arrow function's `=>` must stand on the line its parameters end on	a parenthesised list must be an expression unless `=>` follows it on the same line
+JSE1324	assignment.target.invalid	changed	`{found}` is not the operand of an update in strict code	the operand of an update operator is not a valid assignment target (in strict code, neither `eval` nor `arguments` is one)
+JSE1325	assignment.target.invalid	changed	the operand of an update operator is not a reference	the operand of an update operator is not a valid assignment target (in strict code, neither `eval` nor `arguments` is one)
+JSE1326	strict.delete.unqualified-or-private	changed	`{0} {found}` is a syntax error in strict code: a bare name is a binding and `{0}` removes a property	in strict code, `delete` cannot be applied to a bare name or to a private member, parenthesised or not
+JSE1327	strict.delete.unqualified-or-private	changed	`{0} {found}` is a syntax error in strict code: a bare name is a binding and `{0}` removes a property	in strict code, `delete` cannot be applied to a bare name or to a private member, parenthesised or not
+JSE1328	cover.assignment-pattern	changed	a rest element is admitted only as the last element of a pattern	an object or array literal on the left of `=` must be a valid destructuring pattern
+JSE1329	assignment.target.invalid	changed	the left-hand side of an assignment is not a reference	the left-hand side of an assignment is not a valid assignment target (in strict code, neither `eval` nor `arguments` is one)
+JSE1330	assignment.target.invalid	changed	the left-hand side of an assignment is not a reference	the left-hand side of an assignment is not a valid assignment target (in strict code, neither `eval` nor `arguments` is one)
+JSE1331	assignment.target.not-simple	changed	the left-hand side of an assignment is not a reference	the left-hand side of an assignment is not a valid assignment target (in strict code, neither `eval` nor `arguments` is one)
+JSE1333	assignment.rest-property.nested-pattern	new		the target of a rest property in a destructuring assignment cannot be an object or array pattern
+JSE1334	cover.assignment-pattern	changed	an accessor is not an assignment target	an object or array literal that is a destructuring target must be a valid destructuring pattern
+JSE1335	assignment.target.not-simple	changed	the left-hand side of an assignment is not a reference	a target in a destructuring assignment is not a valid assignment target (in strict code, neither `eval` nor `arguments` is one)
+JSE1406	statement.labelled-function	changed	a declaration is not a statement, so it cannot be the body of a label	a labelled function declaration cannot be the body of an `if` statement
+JSE1407	statement.labelled-function	changed	a declaration is not a statement, so it cannot be the body of a label	a labelled function declaration cannot be the body of an `if` statement
+JSE1408	statement.labelled-function	changed	a declaration is not a statement, so it cannot be the body of a label	a labelled function declaration cannot be the body of an `if` statement
+JSE1409	statement.labelled-function	changed	a declaration is not a statement, so it cannot be the body of a label	a labelled function declaration cannot be the body of a loop
+JSE1410	statement.labelled-function	changed	a declaration is not a statement, so it cannot be the body of a label	a labelled function declaration cannot be the body of a loop
+JSE1411	statement.labelled-function	changed	a declaration is not a statement, so it cannot be the body of a label	a labelled function declaration cannot be the body of a loop
+JSE1413	statement.labelled-function	changed	a declaration is not a statement, so it cannot be the body of a label	a labelled function declaration cannot be the body of a loop
+JSE1414	cover.assignment-pattern	changed	a rest element is admitted only as the last element of a pattern	an object or array literal on the left of a `for … in` or `for … of` head must be a valid destructuring pattern
+JSE1415	assignment.target.invalid	changed	the left-hand side of an assignment is not a reference	the left-hand side of a `for … in` or `for … of` head is not a valid assignment target (in strict code, neither `eval` nor `arguments` is one)
+JSE1419	jump.continue.no-iteration	changed	`continue` names no enclosing loop	`continue` stands outside every loop
+JSE1420	jump.break.no-target	changed	`break` names no enclosing loop or switch	`break` with no label stands outside every loop and `switch`
+JSE1422	statement.labelled-function	changed	a labelled function declaration cannot be the body of a loop	a labelled function declaration cannot be the body of a `with` statement
+JSE1425	strict.labelled-function	changed	a declaration is not a statement, so it cannot be the body of a label	a function declaration cannot be labelled in strict code
+JSE1427	scope.catch.lexical-collision	changed	`{0}` is the `catch` parameter, so the handler cannot declare it again	`{0}` is the `catch` parameter, so the handler cannot declare it again lexically
+JSE1506	scope.parameter.lexical-collision	changed	`{0}` is a parameter of this function, so its body cannot declare it again	`{0}` is a parameter of this function, so its body cannot declare it again lexically
+JSE1507	super.property.outside-method	changed	`super` is only admitted inside a method	`super` is only admitted inside a method, a class field initialiser or a class static block
+JSE1508	super.property.outside-method	changed	`super` is only admitted inside a method	`super` is only admitted inside a method, a class field initialiser or a class static block
+JSE1514	jump.break.undefined-label	changed	`break` names no enclosing loop or switch	`break` names a label that does not enclose it
+JSE1515	jump.continue.undefined-label	changed	`continue` names no enclosing loop	`continue` names a label that is not on a loop enclosing it
+JSE1519	scope.parameter.lexical-collision	changed	`{0}` is a parameter of this function, so its body cannot declare it again	`{0}` is a parameter of this function, so its body cannot declare it again lexically
+JSE1520	cover.arrow-formal-parameters	changed	a rest element is admitted only as the last element of a pattern	the parenthesised list before `=>` is not a valid parameter list
+JSE1522	scope.parameter.lexical-collision	changed	`{0}` is a parameter of this function, so its body cannot declare it again	`{0}` is a parameter of this function, so its body cannot declare it again lexically
+JSE1525	scope.parameter.lexical-collision	changed	`{0}` is a parameter of this function, so its body cannot declare it again	`{0}` is a parameter of this function, so its body cannot declare it again lexically
+JSE1529	scope.parameter.lexical-collision	changed	`{0}` is a parameter of this function, so its body cannot declare it again	`{0}` is a parameter of this function, so its body cannot declare it again lexically
+JSE1533	scope.parameter.lexical-collision	changed	`{0}` is a parameter of this function, so its body cannot declare it again	`{0}` is a parameter of this function, so its body cannot declare it again lexically
+JSE1535	super.property.outside-method	changed	`super` is only admitted inside a method	`super` is only admitted inside a method, a class field initialiser or a class static block
+JSE1536	super.property.outside-method	changed	`super` is only admitted inside a method	`super` is only admitted inside a method, a class field initialiser or a class static block
+JSE1543	scope.parameter.lexical-collision	changed	`{0}` is a parameter of this function, so its body cannot declare it again	`{0}` is a parameter of this function, so its body cannot declare it again lexically
+JSE1547	scope.parameter.lexical-collision	changed	`{0}` is a parameter of this function, so its body cannot declare it again	`{0}` is a parameter of this function, so its body cannot declare it again lexically
+JSE1550	super.property.outside-method	changed	`super` is only admitted inside a method	`super` is only admitted inside a method, a class field initialiser or a class static block
+JSE1551	super.property.outside-method	changed	`super` is only admitted inside a method	`super` is only admitted inside a method, a class field initialiser or a class static block
+JSE1558	class.constructor.special-method	changed	the class definition declares `constructor`, so a field, an accessor, a generator or an async method cannot declare it again	a class's `constructor` cannot be an accessor, a generator or an async method
+JSE1561	class.field.constructor	changed	the class definition declares `{0}`, so a field, an accessor, a generator or an async method cannot declare it again	a class field cannot be named `constructor`
+JSE1562	class.static-field.prototype-or-constructor	changed	the class definition declares `prototype` on the constructor, so a static member cannot declare it again	a static class field cannot be named `prototype` or `constructor`
+JSE1569	jump.break.undefined-label	changed	`break` names no enclosing loop or switch	`break` names a label that does not enclose it
+JSE1570	jump.continue.undefined-label	changed	`continue` names no enclosing loop	`continue` names a label that is not on a loop enclosing it
+JSE1577	scope.parameter.lexical-collision	changed	`{0}` is a parameter of this function, so its body cannot declare it again	`{0}` is a parameter of this function, so its body cannot declare it again lexically
+JSE1582	scope.parameter.lexical-collision	changed	`{0}` is a parameter of this function, so its body cannot declare it again	`{0}` is a parameter of this function, so its body cannot declare it again lexically
+JSE1583	super.property.outside-method	changed	`super` is only admitted inside a method	`super` is only admitted inside a method, a class field initialiser or a class static block
+JSE1584	super.property.outside-method	changed	`super` is only admitted inside a method	`super` is only admitted inside a method, a class field initialiser or a class static block
+JSE1587	scope.parameter.lexical-collision	changed	`{0}` is a parameter of this function, so its body cannot declare it again	`{0}` is a parameter of this function, so its body cannot declare it again lexically
+JSE1588	cover.async-arrow-head	changed	a rest parameter is admitted only as the last parameter	the head of an async arrow function is not a valid parameter list
+JSE1591	scope.parameter.lexical-collision	changed	`{0}` is a parameter of this function, so its body cannot declare it again	`{0}` is a parameter of this function, so its body cannot declare it again lexically
+JSE1603	super.outside-method	changed	`super` is only admitted inside a method	`super` is only admitted inside a method, a class field initialiser or a class static block
+JSE1606	jump.break.undefined-label	changed	`break` names no enclosing loop or switch	`break` names a label that does not enclose it
+JSE1607	jump.continue.undefined-label	changed	`continue` names no enclosing loop	`continue` names a label that is not on a loop enclosing it
+JSE1613	super.outside-method	changed	`super` is only admitted inside a method	`super` is only admitted inside a method, a class field initialiser or a class static block
+JSE1616	jump.break.undefined-label	changed	`break` names no enclosing loop or switch	`break` names a label that does not enclose it
+JSE1617	jump.continue.undefined-label	changed	`continue` names no enclosing loop	`continue` names a label that is not on a loop enclosing it
+JSE1623	module.export.reserved-local-name	changed	`{0}` is exported and this module declares no such binding	`{0}` is a reserved word, so it names no local binding to export
+JSE1901	eval.source.invalid	new		the source given to `eval` is not a valid script
+JSE1903	super.property.outside-method	changed	`super` is only admitted inside a method	`super` is only admitted inside a method, a class field initialiser or a class static block
+JSE1906	eval.var.global-lexical-collision	new		a `var` in evaluated code names a binding the global scope declares lexically
+JSE1907	eval.var.lexical-collision	new		a `var` in evaluated code names a binding an enclosing scope declares lexically
+JSE1908	eval.var.lexical-collision	new		a `var` in evaluated code names a binding an enclosing scope declares lexically
+JSE2001	dynamic-function.parameters.invalid	new		the parameters given to a function constructor are not a valid parameter list
+JSE2002	dynamic-function.body.invalid	new		the body given to a function constructor is not a valid function body
+JSE2003	dynamic-function.source.invalid	new		the source a function constructor assembles is not a valid function
+JSE2201	regexp.pattern.too-many-groups	new		a regular expression has 2^32 - 1 or more capturing groups
+JSE2202	regexp.group-name.duplicate	new		a regular expression gives one name to two capturing groups that might both participate
+JSE2203	regexp.quantifier.out-of-order	new		a quantifier's minimum is greater than its maximum
+JSE2204	regexp.modifiers.repeated-flag	new		a regular-expression modifier names a flag twice
+JSE2205	regexp.modifiers.empty	new		a regular-expression modifier group with `-` names no flag on either side
+JSE2206	regexp.modifiers.repeated-flag	new		a regular-expression modifier names a flag to add twice
+JSE2207	regexp.modifiers.repeated-flag	new		a regular-expression modifier names a flag to remove twice
+JSE2208	regexp.modifiers.added-and-removed	new		a regular-expression modifier both adds and removes one flag
+JSE2209	regexp.backreference.undefined-group-name	new		a named backreference names no capturing group
+JSE2210	regexp.backreference.group-number-too-large	new		a backreference's number is greater than the number of capturing groups
+JSE2211	regexp.class.range-endpoint-is-class	new		a character class range has a class escape as an endpoint
+JSE2212	regexp.class.range-out-of-order	new		a character class range's first character is greater than its last
+JSE2213	regexp.class.range-endpoint-is-class	new		a character class range has a class escape as an endpoint
+JSE2214	regexp.class.range-out-of-order	new		a character class range's first character is greater than its last
+JSE2215	regexp.group-name.invalid-start	new		a capturing group's name begins with a code point that cannot start an identifier
+JSE2216	regexp.group-name.invalid-start	new		a capturing group's name begins with a code point that cannot start an identifier
+JSE2217	regexp.group-name.invalid-part	new		a capturing group's name holds a code point that cannot continue an identifier
+JSE2218	regexp.group-name.invalid-part	new		a capturing group's name holds a code point that cannot continue an identifier
+JSE2219	regexp.property.unknown-name	new		a Unicode property escape names a property that does not exist
+JSE2220	regexp.property.unknown-value	new		a Unicode property escape names a value its property does not have
+JSE2221	regexp.property.unknown-lone-name	new		a Unicode property escape names neither a binary property nor a General_Category value
+JSE2222	regexp.property.of-strings-outside-v-mode	new		a property of strings is admitted only with the `v` flag
+JSE2223	regexp.property.negated-strings	new		a negated Unicode property escape names a property of strings
+JSE2224	regexp.class.negated-may-contain-strings	new		a negated character class may contain strings
+JSE2225	regexp.class.negated-may-contain-strings	new		a negated character class may contain strings
+JSE2226	regexp.class.range-out-of-order	new		a character class range's first character is greater than its last
+JSE7101	declaration.let.bound-name	changed	`{0}` is not a name a `let` or `const` declaration may bind	`{0}` is not a name a `using` declaration may bind
+JSE7103	cover.await-using-declaration-head	changed	`;` was expected and `{found}` was found	the `await using` head of this declaration is not well formed
+JSE7104	declaration.let.bound-name	changed	`{0}` is not a name a `let` or `const` declaration may bind	`{0}` is not a name an `await using` declaration may bind
+JSE7202	decorator.auto-accessor.not-in-edition	changed	a class field ends with `;`, a line break or `}`	an `accessor` class element is not admitted by the declared feature manifest
+JSE7302	import-phase.source-call.not-in-edition	changed	`import.` is followed by `meta` and by nothing else	`import.source` is not admitted by the declared feature manifest
+JSE7304	import-phase.defer-call.not-in-edition	changed	`import.` is followed by `meta` and by nothing else	`import.defer` is not admitted by the declared feature manifest
+JSE7401	eval.source.invalid	new		the source given to `eval` is not a valid script
+JSE8101	regexp.quantifier.braced-without-atom	new		a braced quantifier has no atom to repeat
+JSE8102	regexp.class.range-endpoint-is-class	new		in Unicode mode, a character class range cannot have a class escape as an endpoint
+JSE8103	regexp.class.range-out-of-order	new		a character class range's first character is greater than its last
+JSE8104	regexp.class.range-endpoint-is-class	new		in Unicode mode, a character class range cannot have a class escape as an endpoint
+JSE8105	regexp.class.range-out-of-order	new		a character class range's first character is greater than its last
+JSE8106	annexb.html-comment.module	changed	`{found}` begins no expression	an HTML-like comment is not admitted in a module
+JSE8107	annexb.regexp.unicode-mode	new		Unicode mode does not admit the pattern grammar of Annex B
+JSE8301	strict.labelled-function	changed	a declaration is not a statement, so it cannot be the body of a label	a function declaration cannot be labelled in strict code
+JSE8303	annexb.if-function.strict	changed	a declaration is not a statement, so it cannot be the body of an `if`	a function declaration cannot be the body of an `if` statement in strict code
+JSE8305	annexb.for-in-initializer.strict	changed	a `for … in` or `for … of` head declares its binding and does not initialise it	a `for … in` head cannot initialise its binding in strict code
+JSE8306	assignment.target.invalid	changed	the left-hand side of an assignment is not a reference	a call is not the target of a `for … in` or `for … of` head in strict code
+JSE9103	syntax.numeric-literal.invalid	changed	a numeric separator that is not between two digits	an invalid numeric literal
+JSE9105	syntax.string.escape.invalid	changed	a unicode escape that names no code point	a string literal holds a `\x` or `\u` escape that is not well formed
+JSE9108	syntax.token.unexpected	changed	`{tok}` begins no expression	the grammar admits no `{tok}` at this point
+JSE9204	limit.locals.too-many	changed	evaluated source declares too many bindings	a function declares more locals than the artifact format admits
+JSE9206	limit.operand-stack.too-deep	changed	the program needs an operand stack of {maximumHeight} and the format admits {JavaScriptFormat.CeilingOperandStack}	the program needs a deeper operand stack than the artifact format admits
+JSE9207	limit.regexp.too-deep	new		a regular-expression pattern nests groups and classes deeper than this engine's bound
+JSE9208	limit.json-module.too-deep	changed	the JSON module `{0}` cannot be read: is not JSON:	a JSON module nests deeper than this engine's bound
+JSE9302	engine.constant.assigned	changed	`{reference.Name}` is a constant and cannot be assigned	a `const` binding is assigned to
+JSE9303	engine.name.unresolvable	changed	`{name}` reached the lowering with no resolution, which the validation stage should have refused	a name has no binding and no global object to resolve it on
+JSE9306	engine.json-module.invalid	changed	the JSON module `{0}` cannot be read: is not JSON:	a JSON module's source text is not JSON
+JSE9308	engine.construct.not-compiled	changed	this expression is not admitted by the declared feature manifest	the compiler has no translation for this construct
+JSE9310	engine.request.unsupported	changed	the native output form is admitted by the `{0}` and `{1}` feature manifests, and every unit of an artifact has the one form	this build cannot serve the compile request

@@ -116,6 +116,25 @@ SJL-13.1. **Rules only. Nothing here is a verdict, and nothing has been taken.**
 - A collector joins this bundle when there is a run of the rule to take. Section 3's run is no run of the rule, and
   was taken without one. *(Revised 2026-11-01. It read "A collector joins this bundle when there is a run to take.")*
 
+*(Added 2026-11-10, at step 1's records, before any run of the rule.)* **Step 1 is built, and its runs are not
+taken.** Its branch, `sjl-13-3-step1d`, lands as one merge, which is the after commit; the merge's first parent is the
+base, the default branch's `df75f8cea79aa2452ca22892d47d8afa5a14c93f` (Broiler-Platform/Broiler.VM#195, which filed the
+rule's second revision of 2026-11-09), and the branch's first commit, directly on it, is the registry commit,
+`cbee7c46ece7c9d7cf8a0c3f9a5a68418266672d`. Both are named here by all forty digits as the branch holds them; the merge
+keeps them, and the after commit is named when it lands. The branch's commits after the registry commit are the
+admission, the package baseline, the cut-over and its two `--checks` rows, the texts and their review fixes, ending at
+`0467a1b991cec9b5b078fb7fecb354c98765f99f`, and then step 1's records, which change no product source;
+[JSD-0087](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md), the cut-over record, lists them. The local pre-checks the branch was built against, at the base and at its
+commits, are not evidence and are kept outside this repository; no figure of them is quoted here. Parts A to J are
+taken after the merge, at the base and the after commit: part A by the hosted workflow, dispatched for both, and parts
+B to J locally, with part B also at the registry commit. Nothing here is a verdict yet.
+- **One local pre-check broke the floor of free disk its stage had set.** During the second stage's whole-suite
+  test262 pre-check of 2026-11-09, on the branch's first build of its texts, the machine's free disk fell below the
+  floor that stage's instructions set for every run, while the suite was extracted; a scratch worktree
+  of the earlier, unpushed branch was removed to restore it, and that branch was kept. The run completed, and the
+  verifier's own runs, taken again from clean archives, stayed above the floor. The pre-check is no run of this rule
+  and decides nothing; it is recorded because the stage's own instructions asked that it be.
+
 The home's clauses 1 to 3 are judged in Broiler.JS's bundle of the same name, under its own rule, which this bundle
 does not read.
 
@@ -241,6 +260,16 @@ registry commit mints revision 19 (JSD-0083 decision D12).
   catalogue's copy. *(Added 2026-11-08.)* *(Noted 2026-11-09: the bullet was first written on 2026-11-08, on a
   branch that did not merge; it was written again on 2026-11-09, when step 1 was redone onto the area rule's revision
   of 2026-11-09b, by the commit `5528d6a` that added the provenance files, after the registry commit `cbee7c4`.)*
+  *(Noted 2026-11-10: "the area rule's revision of 2026-11-09b" names the revision by its file's name and not by its
+  date. It is the area rule's second revision of 2026-11-09, written later that day,
+  [`decision-rule-area-revised-2026-11-09b.md`](decision-rule-area-revised-2026-11-09b.md), whose letter `b` orders it
+  after the revision of the same date.)*
+- **`texts/`**: `changes.tsv`, every text decision D11's note of 2026-11-09, later that day, changed or wrote, one
+  row per shared code: the code, its message identifier, whether the text changed or is new, the text the cut-over
+  `c090c9a` took from the base, and the text at `0467a1b`, read from `JsFrontendDiagnostics.Texts.cs` at those two
+  commits; `hashes.txt` holds its SHA-256. No part of the rule reads a text (the revision of 2026-11-09b, section
+  "Message texts"); the file is the record JSD-0083's dated note of 2026-11-10 on decision D11 cites. *(Added
+  2026-11-10.)*
 - **`inputs/`** and **`correspondence-runs/`** stay as committed with the rule.
 
 **No figure is quoted in this README until its bundle retains the log it comes from**, and then only in the
@@ -324,8 +353,11 @@ base commit, at the revision the pin names there.
 ## 9. Exclusions
 
 Sections 3 to 8 are added as the bundle's runs are taken. The exclusions keep this section's number, where rule H2
-reads an exclusion's definition, as in bundles `sjl-3-001` to `sjl-12-001`.
+reads an exclusion's definition, as in bundles `sjl-3-001` to `sjl-12-001`. *(Added 2026-11-10: EX-133, for the code
+step 1 moved out of this component's assurance coverage, joins the table, and the row of SJL-13.1 is kept as
+written.)*
 
 | ID | Status | Exclusion |
 |---|---|---|
 | (none) | | No exclusion is defined at SJL-13.1, and none is planned. A later exclusion takes the next free identifier and is defined in this table |
+| EX-133 | Open | **The wide parser and the front end's checks that left this component's assurance coverage** *(added 2026-11-10, at step 1's records, JSD-0083 decision D31)*. The types and members rule I5 registers for SJL-13.3's step 1 (`src/tests/Broiler.VM.Architecture.Tests/retired-members.json`), with the checks JSD-0087 section 6 names, left the JavaScript family's sources at step 1: `JsParser.cs` whole, the slice tokenizer's wide-only members with `SliceTemplate` and `SliceSubstitution`, the binder's `CheckRegExp`, and the binder's checks of the rows the shared stage table assigns `syntax`. What parses, and makes those checks, now is `Broiler.ECMAScript.Frontend`, namespaces `Broiler.ECMAScript.Syntax` and `Broiler.ECMAScript.Semantics`. The home's own assurance covers it in the Broiler.JS repository: its generated manifest, `Broiler.ECMAScript/hairs.manifest.json`, lists every unit of the library's assembly with an annotation on each relevant declaration, checked in CI (rule SL8). No rule of this component reads those units, their human review is the home's and not `HUMAN_REVIEW.md`'s, and this component's assurance figures no longer count them. The request, the providers, the adapter, the diagnostics and the admission walk of JSD-0087 section 3 (`JsFrontend.cs`, `JsRegularExpressionValidator.cs`, `JsFrontendAdapter.cs` and its parts, `JsFrontendDiagnostics.cs` and its texts, `JsAdmissionWalk.cs`) stay in this component and stay covered. EX-125 and EX-127 to EX-132 say the same of the earlier areas |
