@@ -716,10 +716,14 @@ internal static class Program
         Console.WriteLine("                                process and nowhere else");
         Console.WriteLine($"                {JsNativeBackends.X64SystemV}    emits, and executes on a System V x64");
         Console.WriteLine("                                process and nowhere else");
+        // Corrected 2026-11-08, at SJL-13.3's step 1: registry revision 19 answers a request the
+        // backend cannot serve with 2307 CompileRequestNotServed (JSD-0083 decision D12); the help
+        // line read "time under 2104, so most programs never".
         Console.WriteLine($"                {JsNativeBackends.Arm64}   EMITTING-ONLY, and it admits LESS");
         Console.WriteLine("                                than either x86-64 backend: an instruction");
         Console.WriteLine("                                that reaches the realm is refused at compile");
-        Console.WriteLine("                                time under 2104, so most programs never");
+        Console.WriteLine("                                time under 2307, a request this build cannot");
+        Console.WriteLine("                                serve, so most programs never");
         Console.WriteLine("                                reach an artifact at all. One that does");
         Console.WriteLine("                                verifies and then refuses to instantiate.");
         Console.WriteLine("                                Nothing here arms an arm64 page.");

@@ -43,10 +43,14 @@ internal static class Test262Families
 {
     /// <summary>The suffix the front end's manifest refusals are written with.</summary>
     /// <remarks>
-    /// The one the front end actually emits - <c>JsParser</c> composes every named refusal as the
-    /// construct followed by this - so the family is the front end's own words rather than a
-    /// vocabulary this harness invented beside it. A second vocabulary here would describe one
-    /// construct in two ways and a reader comparing the two would be comparing nothing.
+    /// The one the front end actually emits - its texts compose every named refusal as the construct
+    /// followed by this - so the family is the front end's own words rather than a vocabulary this
+    /// harness invented beside it. A second vocabulary here would describe one construct in two ways
+    /// and a reader comparing the two would be comparing nothing. <i>(Revised 2026-11-09, SJL-13's
+    /// step 1, JSD-0083 decisions D11 and D20: it read "<c>JsParser</c> composes every named refusal as
+    /// the construct followed by this"; <c>JsParser</c> is deleted, and the shared library's refusals
+    /// are rendered with this family's texts by <c>JsFrontendDiagnostics</c>, the BigInt refusals by the
+    /// admission walk, each with this suffix.)</i>
     /// </remarks>
     internal const string ManifestSuffix = " is not admitted by the declared feature manifest";
 

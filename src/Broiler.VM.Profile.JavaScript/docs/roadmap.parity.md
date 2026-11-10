@@ -246,6 +246,8 @@ one line of its own. The change is one arm of the wide parser's primary-expressi
 consumes and leaves on the token's raw text — `SliceTokenizer.FinishNumeric` says in its own comment
 that it does so *so that a parser can notice it*, and until this date only the slice parser did.
 
+*(Noted 2026-11-10, at the shared JavaScript libraries programme's SJL-13.3 step 1, by [JSD-0087](decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md) and [JSC-326](roadmap.corrections.md#jsc-326).)* The paragraph names "one arm of the wide parser's primary-expression switch in `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs`". Step 1 deletes `JsParser.cs`: the wide path parses through the shared syntax library, `Broiler.ECMAScript.Frontend`, and the refusal of a BigInt literal under a manifest that does not admit it is made by the admission walk, `JsAdmissionWalk.cs`, after a parse that reported nothing, under the same code. The paragraph records the change as it was made, and is kept as written.
+
 **And it cost the pass total, which is the part a record of this change must not omit.** Over
 `test/language/literals/bigint` the variants that had passed by accident and the variants that had
 failed silently both became variants meeting a refusal that names the construct, so the subtree's

@@ -40,6 +40,12 @@ internal static class BigIntChecks
     /// <summary>The embedder-seam code of a construct the manifest does not admit.</summary>
     private const int ConstructOutsideManifest = 2104;
 
+    /// <summary>
+    /// The embedder-seam code of a BigInt literal wider than the format's constant, which registry
+    /// revision 19 gave a number of its own (JSD-0083 decision D12); it was 2104's until then.
+    /// </summary>
+    private const int BigIntWiderThanTheFormat = 2106;
+
     /// <summary>The embedder-seam code of a malformed numeric literal.</summary>
     private const int MalformedNumericLiteral = 2003;
 
@@ -553,6 +559,15 @@ internal static class BigIntChecks
     /// A malformed literal is a malformed-literal refusal at the literal, under the manifest that
     /// admits BigInt and under the one that does not.
     /// </summary>
+    /// <remarks>
+    /// The row judges the code and the place and prints the refusal's text. <i>(Noted 2026-11-09, later that day, with
+    /// JSD-0083's note of that day on decision D11, "One true text per code": the printed text is the one text of the
+    /// library's shared code JSE9103, "an invalid numeric literal", for every literal here. At step 1's base the wide
+    /// parser printed one text per site: "a BigInt literal that is not an integer", "a BigInt literal with a leading
+    /// zero", "a numeric literal touching an identifier", "a numeric separator that is not between two digits" and "a
+    /// radix prefix with no digits"; from step 1's adapter commit until this note every literal printed "a numeric
+    /// separator that is not between two digits", which is false of most of them.)</i>
+    /// </remarks>
     private static (string, bool, string) MalformedLiteralIsRefusedAtItsPosition(
         string literal, string why, JsFeatureManifest manifest)
     {
@@ -604,7 +619,7 @@ internal static class BigIntChecks
         }
 
         var first = compiled.Diagnostics[0];
-        var passed = (int)first.Code == ConstructOutsideManifest && first.Line == 1 && first.Column == 9 &&
+        var passed = (int)first.Code == BigIntWiderThanTheFormat && first.Line == 1 && first.Column == 9 &&
             first.Message.Contains("wider than 65536 bits", System.StringComparison.Ordinal);
 
         return (name, passed, first.ToString());

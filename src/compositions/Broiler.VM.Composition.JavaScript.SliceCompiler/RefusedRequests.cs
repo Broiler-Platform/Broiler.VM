@@ -166,7 +166,10 @@ internal sealed record RefusedRequest(string Name, SliceSourceDiagnosticCode Cod
 /// one unit, each with the code it must be refused with.
 /// </summary>
 /// <remarks>
-/// <b>Each is answered with the code the base gives it, and step 1's registry commit renumbers it.</b>
+/// <b>Each was answered with the code the base gives it, and step 1's registry commit renumbered it</b>
+/// (revised 2026-11-08, at that commit: registry revision 19 answers the first with 2408
+/// DuplicateModuleKey and the second with 2307 CompileRequestNotServed; the sentence read "Each is
+/// answered with the code the base gives it, and step 1's registry commit renumbers it.").
 /// At registry revision 18 two modules under one key are refused with 2201 and the value form under
 /// the numeric manifest with 2104, codes the front end's mapping marks as split for those meanings
 /// (EX0020 and EX0030). Revision 19 mints their codes, and the registry commit changes the code each
@@ -183,7 +186,7 @@ internal static class RefusedRequests
     [
         // TWO MODULES UNDER ONE KEY. Each text is an ordinary module; what is refused is the
         // composition, which presents a second module under a key an earlier unit holds.
-        new("refuse-two-modules-under-one-key", SliceSourceDiagnosticCode.DuplicateLexicalDeclaration)
+        new("refuse-two-modules-under-one-key", SliceSourceDiagnosticCode.DuplicateModuleKey)
         {
             Modules =
             [
@@ -194,7 +197,7 @@ internal static class RefusedRequests
 
         // THE VALUE FORM UNDER THE NUMERIC MANIFEST. The source is the numeric manifest's own; what is
         // refused is the request, which asks for an output form only the wide manifest defines.
-        new("refuse-the-value-form-under-the-numeric-manifest", SliceSourceDiagnosticCode.ConstructOutsideManifest)
+        new("refuse-the-value-form-under-the-numeric-manifest", SliceSourceDiagnosticCode.CompileRequestNotServed)
         {
             Scripts = [new JsScriptUnit("main", "1 + 2", SliceParseOptions.Script)],
             Request = new JsCompileRequest(JsFeatureManifest.Numeric, JsOutputForm.Value),

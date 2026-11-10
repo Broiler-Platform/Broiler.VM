@@ -71,14 +71,19 @@ internal static class TemplateChecks
 
         // the places a substitution's refusals name are where they stand in the source: the parser's,
         // from a run tokenized in place, and the lexer's, reported when the parse reaches the substitution
+        // (revised 2026-11-09, at SJL-13.3's step 1: the library refuses the missing `;` before `z`, JSE9109
+        // with the registry code 2102 the mapping gives it, at 3:5, where JsParser refused `z` itself at 3:5
+        // with 2101, part B's class N, kind (code); and it reports its first refusal alone, the lexer's 2003,
+        // so the parser's two refusals after it are gone, class S7. The rows read "2101@3:5" and
+        // "2003@1:13 2101@1:22 2102@1:24".)
         yield return Refused(
             "template: a refusal in a substitution names its own line and column",
             "var x = `a\n${\n  y z\n}`;",
-            "2101@3:5");
+            "2102@3:5");
         yield return Refused(
             "template: a lexer refusal in a substitution is reported where the parse reaches it",
             "var x = `${ 08_1 }` +; var y = ;",
-            "2003@1:13 2101@1:22 2102@1:24");
+            "2003@1:13");
 
         yield return RequestsParsesOnItsOwnStack();
         yield return RequestsAnswersADeepTemplate();
@@ -135,10 +140,13 @@ internal static class TemplateChecks
 
     /// <summary>
     /// A substitution is charged toward the tree-depth bound as a parenthesised operand is: two chains of
-    /// 6,000 additions, one in a substitution that is the other's last operand, are refused, as they are
-    /// with a parenthesis in the template's place, where two of 4,000 compile.
+    /// 6,000 additions, one in a substitution that is the other's last operand, compile, as they do with a
+    /// parenthesis in the template's place, and so do two of 4,000. <i>(Revised 2026-11-09, at SJL-13.3's
+    /// step 1: it read "are refused, as they are with a parenthesis in the template's place, where two of
+    /// 4,000 compile".)</i>
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The parser charges the spine its builders grow and parses a right operand from the depth the chain
     /// has reached, so the substitution's chain begins at 6,000 and passes the bound, as the same chain in
     /// parentheses did at the base too. The base's sub-parse began a substitution at zero and compiled it
@@ -147,6 +155,26 @@ internal static class TemplateChecks
     /// operand instead, both compile, at the base and now, because a left operand's own spine is not
     /// charged to the chain it begins - a gap in the parser's accounting that predates SJL-12.6 item 4 and
     /// lies outside it.
+    /// </para>
+    /// <para>
+    /// <i>Revised 2026-11-09, at SJL-13.3's step 1.</i> The wide path parses through the shared syntax
+    /// library, which charges a chain node its height, one more than its highest child's, and not the depth
+    /// the chain had reached when an operand began (JSD-0083 decisions D14 and D23). Each source's tree holds
+    /// 6,001 chain nodes on its deepest path, within the bound of 10,000, so both compile: part B's class L2
+    /// of the area rule's revision of 2026-11-02, a limit lifted, measured as that revision's part A
+    /// measures (the chain nodes on the deepest path). The row asked "2103@1:12016" of the substitution and
+    /// "2103@1:12014" first of the parenthesis. The charge is still the same in both places, which is what
+    /// the row is about; the refusal past the bound in each such shape is the row step 1 adds for it, "a left
+    /// operand's spine is charged to the chain it begins" (bundle <c>sjl-13-001</c>'s part C, its fifth row).
+    /// </para>
+    /// <para>
+    /// <i>Revised again 2026-11-09, at the review of SJL-13.3's step 1:</i> with the three sources above
+    /// compiling, the row no longer told the two charges apart, so it gains a pair past the bound: a chain of
+    /// 12,000 additions as the substitution of the last operand, and the same chain in parentheses there.
+    /// Both are refused with the tree-depth diagnostic, at places two columns apart, the width by which
+    /// <c>`${</c> is longer than <c>(</c>, so the charge is the same in both: each chain node is charged at
+    /// the same depth whether a substitution or a parenthesis holds it.
+    /// </para>
     /// </remarks>
     private static (string, bool, string) ASubstitutionIsChargedAsAParenthesisedOperandIs()
     {
@@ -156,14 +184,23 @@ internal static class TemplateChecks
             "var x = " + Chain(6_000) + " + `${" + Chain(6_000) + "}`;", SliceParseOptions.Script);
         var parenthesised = JsCompiler.Compile(
             "var x = " + Chain(6_000) + " + (" + Chain(6_000) + ");", SliceParseOptions.Script);
+        var deepSubstitution = JsCompiler.Compile("var x = 1 + `${" + Chain(12_000) + "}`;", SliceParseOptions.Script);
+        var deepParenthesis = JsCompiler.Compile("var x = 1 + (" + Chain(12_000) + ");", SliceParseOptions.Script);
+        var charged =
+            !deepSubstitution.Succeeded && !deepParenthesis.Succeeded &&
+            deepSubstitution.Diagnostics.Count == 1 && deepParenthesis.Diagnostics.Count == 1 &&
+            deepSubstitution.Diagnostics[0].Code == SliceSourceDiagnosticCode.NestingTooDeep &&
+            deepParenthesis.Diagnostics[0].Code == SliceSourceDiagnosticCode.NestingTooDeep &&
+            deepSubstitution.Diagnostics[0].Line == deepParenthesis.Diagnostics[0].Line &&
+            deepSubstitution.Diagnostics[0].Column == deepParenthesis.Diagnostics[0].Column + 2;
 
         return (
             "template: a substitution is charged toward the tree-depth bound as a parenthesised operand is",
-            within.Succeeded && !past.Succeeded && Answer(past) == "2103@1:12016" &&
-                !parenthesised.Succeeded && First(parenthesised) == "2103@1:12014",
-            $"4,000 and 4,000 {Outcome(within)}; 6,000 and 6,000 `{Answer(past)}` (expected 2103@1:12016); " +
-                $"with a parenthesis in the template's place, refused with `{First(parenthesised)}` first " +
-                "(expected 2103@1:12014)");
+            within.Succeeded && past.Succeeded && parenthesised.Succeeded && charged,
+            $"4,000 and 4,000 {Outcome(within)}; 6,000 and 6,000 {Outcome(past)}; with a parenthesis in the " +
+                $"template's place {Outcome(parenthesised)} (expected all three compiled); 12,000 in a substitution " +
+                $"{Outcome(deepSubstitution)}, in a parenthesis {Outcome(deepParenthesis)} (expected both refused " +
+                "with 2103, two columns apart)");
     }
 
     /// <summary>

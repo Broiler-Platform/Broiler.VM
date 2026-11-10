@@ -95,7 +95,7 @@ public static class SliceSourcePrograms
     /// goal does not - and the whole reason that code exists is to keep the two apart.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=DFEF54
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=CC5358
     // Broiler-Falsified-If: any program here is refused with a code other than the one recorded beside it
     // Broiler-Human:        PENDING
     public static SliceRefusedSource[] RefusedModules =>
@@ -152,6 +152,61 @@ public static class SliceSourcePrograms
         {
             Options = SliceParseOptions.Module,
             ModuleType = JsFormat.JsonModuleType,
+        },
+
+        // ---- registry revision 19 (JSD-0083 decision D12) ----------------------------------------
+        //
+        // ONE SOURCE FOR EACH CODE REVISION 19 MINTS THAT A SOURCE REACHES, and all are put to the
+        // wide front end, as every program in this list is: the slice front end refuses each of these
+        // constructs by its manifest long before the rule could apply. Each is presented as a script
+        // unless its rule is a module's. The two codes only a request or a second unit reaches are
+        // the slice compiler's refused requests, and the three no source reaches are defensive rows.
+        new(
+            "refuse-new-target-outside-a-function",
+            "new.target;",
+            SliceSourceDiagnosticCode.NewTargetOutsideFunction),
+        new(
+            "refuse-a-bigint-literal-wider-than-the-format",
+            "0x" + new string('f', (int)(JsFormat.CeilingBigIntConstantBytes * 2) + 1) + "n;",
+            SliceSourceDiagnosticCode.BigIntWiderThanTheFormat),
+        new(
+            "refuse-a-super-property-outside-a-method",
+            "function f() { return super.x; }",
+            SliceSourceDiagnosticCode.MisplacedSuper),
+        new(
+            "refuse-a-cover-initialiser-outside-a-pattern",
+            "({ a = 1 });",
+            SliceSourceDiagnosticCode.CoverInitialiserOutsidePattern),
+        new(
+            "refuse-an-object-literal-setting-its-prototype-twice",
+            "({ __proto__: 1, __proto__: 2 });",
+            SliceSourceDiagnosticCode.DuplicateProtoProperty),
+        new(
+            "refuse-a-capture-group-name-given-twice",
+            "/(?<a>x)(?<a>y)/;",
+            SliceSourceDiagnosticCode.InvalidRegularExpression),
+        new(
+            "refuse-arguments-in-a-class-field",
+            "class C { x = arguments; }",
+            SliceSourceDiagnosticCode.ArgumentsInClassInitialiser),
+        new(
+            "refuse-a-private-name-no-class-declares",
+            "class C { m() { return this.#x; } }",
+            SliceSourceDiagnosticCode.UndeclaredPrivateName),
+        new(
+            "refuse-a-return-outside-a-function",
+            "return 1;",
+            SliceSourceDiagnosticCode.ReturnOutsideFunction),
+        new(
+            "refuse-a-return-in-a-static-block",
+            "class C { static { return; } }",
+            SliceSourceDiagnosticCode.ReturnInStaticBlock),
+        new(
+            "refuse-an-import-attribute-given-twice",
+            "import data from \"./data.json\" with { type: \"json\", type: \"json\" };\ndata",
+            SliceSourceDiagnosticCode.DuplicateImportAttributeKey)
+        {
+            Options = SliceParseOptions.Module,
         },
     ];
 

@@ -179,6 +179,15 @@ diagnostic code and the literal's span; `CompileRegExpLiteral`'s remark that the
 is corrected in the same change. The Compiler references Broiler.Regex for this from SJL-11.4 until SJL-13. The first
 item read "the compiler's literal validation in `JsCompiler.Literals`".
 
+*(Noted 2026-11-10, at SJL-13's step 1's records, by
+[JSD-0087](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md)
+and JSD-0083 decision D36.)* "**`CheckRegExp` is what SJL-11.4 re-points**" is read, from SJL-13's step 1, which lands
+first, as the shared syntax library's regular-expression provider: step 1 deletes `CheckRegExp`, and
+`JsRegularExpressionValidator` makes its checks for the library. SJL-11.4 re-points that validator onto Broiler.Regex's
+validate entry and the shared flag parser, keeping this family's code and the literal's span. Bundle `sjl-11-001`'s
+rule is revised for it before any of its runs, by its `decision-rule-area-revised-2026-11-10.md`. The text above is
+left as written.
+
 The adapter maps the shared statuses to Broiler.VM's errors and to `JsAbort(Exhausted)`.
 
 *(Added 2026-10-25, at SJL-11.1, by JSD-0081 decisions D7, D8 and D10.)* The adapter passes this family's policy:

@@ -510,6 +510,13 @@ The duplication the programme removes is of two kinds, and both count.
   "`JsLocalTime.From` in the date-time formatter" and "the `JsDecimal` and `JsNumberFormatter` pair" are deleted at
   SJL-9.4, which moves the profile's Intl algorithms to `Broiler.ECMAScript.Intl`; `JsTemporalCore` and `JsTimeZones`
   went at SJL-10.4 and SJL-8.5. The paragraph is kept as written, as the programme's start found the runtime.
+
+  *(Noted 2026-11-10, at SJL-13.3's step 1, by
+  [JSD-0087](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md).)*
+  The compiler's bullet above names "its own number rendering (`JsParser.NumberText`), its own BigInt literal parser
+  (`JsParser.TryBigIntValue`)". Both left at SJL-3.4, and step 1 deletes `JsParser` whole: the wide path parses
+  through `Broiler.ECMAScript.Frontend`, and rule I5 registers `JsParser` by type beside those two members. The bullet
+  is kept as written, as the programme's start found the compiler.
 - **Broiler.JS** converts numbers in its parser (`NumberCoercion`), in its runtime
   (`NumberParser`), and in its built-ins (`JSNumber.ToECMAString`, which the runtime reaches
   through a delegate the built-ins initializer installs).

@@ -8,6 +8,16 @@
 
 **Rule:** [`decision-rule-area.md`](decision-rule-area.md), written at SJL-11.1 before any change it judges existed.
 
+*(Added 2026-11-10.)* The rule is revised, before any of its runs, by
+[`decision-rule-area-revised-2026-11-10.md`](decision-rule-area-revised-2026-11-10.md), filed with SJL-13's step 1's
+records as JSD-0083's decision D36 asks when step 1 lands before SJL-11.4. Step 1 deletes the binder's `CheckRegExp`,
+and the shared syntax library asks this family's regular-expression validator, `JsRegularExpressionValidator`, which
+makes the same checks, as its request's provider; so part B's "no other class" and the header's item on part B name
+that provider where they named `CheckRegExp`, and SJL-11.4 re-points the provider. Nothing else of the rule changes,
+and `decision-rule-area.md` is not edited. The revision also names two sentences of the rule that no longer describe
+this family after step 1 and that it leaves as written: part A's reading of row S9b's file, which step 1's row T33
+corrects, and part A's hold on the evidence workflow, which the owner changed on 2026-10-30.
+
 **Records:** [JSD-0081](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0081-regular-expressions-move-to-broiler-regex-under-its-owner-conditions.md),
 the area verdict, which records decision SJL-D-14 as this area applies it and the owner's decisions D1 to D41. Its
 input is [`correspondence.md`](correspondence.md), with every probe and each engine's answers in

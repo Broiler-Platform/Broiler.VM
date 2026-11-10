@@ -45,4 +45,24 @@
     <PackageReference Include="Broiler.Unicode.Algorithms" />
   </ItemGroup>
 
+  <!--
+    THE SHARED SYNTAX LIBRARY (JSD-0083, decision D29; milestone SJL-13.3, step 1): the wide path's parse,
+    which the step's adapter commit calls; at the admission it is referenced and not yet called. Restored
+    from nuget.org under rule I1, as the packages above are, and admitted for this project alone, so no
+    compiler-free root carries it (rule I3).
+  -->
+  <ItemGroup>
+    <PackageReference Include="Broiler.ECMAScript.Frontend" />
+  </ItemGroup>
+
+  <!--
+    THE DIAGNOSTIC MAPPING (JSD-0083, decision D11): the compiler maps the shared library's codes onto this
+    family's registry through the mapping file itself, embedded, so the file the mapping checker holds to the
+    registry, the catalogue and the stage table is the one the compiler reads.
+  -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\Broiler.VM.Profile.JavaScript\docs\diagnostics\frontend-mapping.tsv"
+                      LogicalName="Broiler.VM.Profile.JavaScript.Compiler.frontend-mapping.tsv" />
+  </ItemGroup>
+
 </Project>

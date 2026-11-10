@@ -816,7 +816,7 @@ public sealed partial class JsCompiler
         });
 
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=22B428
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D38ADA
     // Broiler-Human:        PENDING
     private JsCompilation Run(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
@@ -826,54 +826,32 @@ public sealed partial class JsCompiler
         {
             var first = diagnostics.Count;
 
-            // THE WIDE COMPILER IS THE ONE CALLER OF THE TOKENIZER'S STRUCTURED MODE (SJL-12.6 item
-            // 4, JSD-0080 decision D15): each template substitution is tokenized into a run of its
-            // own, so the parser reads it in place, at the template's depth and in its context,
-            // rather than tokenizing its text again and parsing it with a parser of its own. Runs
-            // stop at the nesting bound, which no parse within the bound gets past.
-            var tokenizer = new SliceTokenizer(script.Text)
-            {
-                HtmlLikeComments = script.Options.Goal != SliceGoal.Module,
-                StructuredTemplates = true,
-                TemplateNestingLimit = script.Options.MaximumNestingDepth,
-            };
-
-            var tokens = tokenizer.Tokenize();
-
-            if (tokenizer.Diagnostics.Count != 0)
-            {
-                diagnostics.AddRange(tokenizer.Diagnostics);
-                return Refused(first, script.SourceName);
-            }
-
-            // EVAL CODE IS PARSED UNDER ITS CALLER'S STRICTNESS AND FUNCTION CONTEXT, which is all
-            // the parser can be told: `with` in strict code and `new.target` outside a function are
-            // syntax errors of the parse, and the request flags are what say where the source is
-            // being evaluated (JSD-0026 section 5).
+            // THE WIDE PATH PARSES WITH THE SHARED SYNTAX LIBRARY (JSD-0083, decision D19; milestone
+            // SJL-13.3, step 1), and the adapter builds the tree the lowering reads. Eval code is parsed
+            // under its caller's strictness and function context, which the request's forced strictness
+            // and inherited context carry (decision D16), and the admission walk makes the BigInt and
+            // module-specifier refusals after a parse that reported nothing (decision D18). (2026-11-09:
+            // this comment read "THE WIDE COMPILER IS THE ONE CALLER OF THE TOKENIZER'S STRUCTURED MODE
+            // (SJL-12.6 item 4, JSD-0080 decision D15): each template substitution is tokenized into a run
+            // of its own, so the parser reads it in place, at the template's depth and in its context,
+            // rather than tokenizing its text again and parsing it with a parser of its own. Runs stop at
+            // the nesting bound, which no parse within the bound gets past." and "EVAL CODE IS PARSED UNDER
+            // ITS CALLER'S STRICTNESS AND FUNCTION CONTEXT, which is all the parser can be told: `with` in
+            // strict code and `new.target` outside a function are syntax errors of the parse, and the
+            // request flags are what say where the source is being evaluated (JSD-0026 section 5).")
             var evaluated = script.Options.IsEval;
             var forceStrict = script.ForceStrict ||
                 (evaluated && (script.Options.EvalFlags & JsFormat.EvalRequestFlags.Strict) != 0);
 
-            var parser = new JsParser(
-                tokens,
-                tokenizer.Templates,
-                script.Options,
-                forceStrict,
-                enclosingFunctionDepth:
-                    evaluated && (script.Options.EvalFlags & JsFormat.EvalRequestFlags.InFunction) != 0
-                        ? 1
-                        : 0)
-            {
-                AdmitsBigInt = request.AdmitsBigIntLiterals,
-            };
+            var parsed = JsFrontend.Parse(script.Text, script.Options, forceStrict, request.AdmitsBigIntLiterals);
 
-            var program = parser.Parse();
-
-            if (parser.Diagnostics.Count != 0)
+            if (parsed.Diagnostics.Count != 0)
             {
-                diagnostics.AddRange(parser.Diagnostics);
+                diagnostics.AddRange(parsed.Diagnostics);
                 return Refused(first, script.SourceName);
             }
+
+            var program = parsed.Program!;
 
             // THE MANIFEST IS JUDGED BEFORE THE LOWERING RUNS, AND THAT ORDER IS WHAT MAKES A
             // REFUSAL A REFUSAL BY NAME. The lowering meets a construct as a node to emit code
@@ -896,7 +874,7 @@ public sealed partial class JsCompiler
             // request's strict flag for eval code - which is the imposition the parser was given. The
             // unit's lowering reads it from the binder, so the facts and the emission cannot be told
             // two different strictnesses.
-            binder = JsBinder.Bind(program, forceStrict, script.Options, topLevelAwait: false);
+            binder = JsBinder.Bind(program, forceStrict, script.Options);
 
             // A UNIT ITS BINDER REFUSES IS NOT LOWERED (SJL-12.6 item 2, JSD-0080 decisions D10 and
             // D12). An early error the binder reports is found once, in source order, before any of
@@ -1001,7 +979,7 @@ public sealed partial class JsCompiler
 
             // A MODULE IS BOUND AS A SCRIPT IS, and it is strict whatever it says. Whether its body is
             // an async unit is the parser's answer, which the binder reads as the lowering does.
-            binder = JsBinder.Bind(program, imposed: true, module.Options, topLevelAwait: awaited);
+            binder = JsBinder.Bind(program, imposed: true, module.Options);
 
             // AND A MODULE ITS BINDER REFUSES IS NOT LOWERED EITHER: its declaration, collision and
             // export checks are the binder's with the rest.
@@ -1060,41 +1038,22 @@ public sealed partial class JsCompiler
         return new JsCompilation(false, null, diagnostics);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DC0FE2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=34E655
     // Broiler-Human:        PENDING
     private bool TryParse(
         string text, SliceParseOptions options, bool forceStrict, out JsProgramNode program)
     {
         program = null!;
-        awaited = false;
-        var tokenizer = new SliceTokenizer(text)
-        {
-            HtmlLikeComments = options.Goal != SliceGoal.Module,
-            StructuredTemplates = true,
-            TemplateNestingLimit = options.MaximumNestingDepth,
-        };
+        var parsed = JsFrontend.Parse(text, options, forceStrict, request.AdmitsBigIntLiterals);
+        awaited = parsed.SawTopLevelAwait;
 
-        var tokens = tokenizer.Tokenize();
-
-        if (tokenizer.Diagnostics.Count != 0)
+        if (parsed.Diagnostics.Count == 0)
         {
-            diagnostics.AddRange(tokenizer.Diagnostics);
-            return false;
-        }
-
-        var parser = new JsParser(tokens, tokenizer.Templates, options, forceStrict)
-        {
-            AdmitsBigInt = request.AdmitsBigIntLiterals,
-        };
-        program = parser.Parse();
-        awaited = parser.SawTopLevelAwait;
-
-        if (parser.Diagnostics.Count == 0)
-        {
+            program = parsed.Program!;
             return true;
         }
 
-        diagnostics.AddRange(parser.Diagnostics);
+        diagnostics.AddRange(parsed.Diagnostics);
         return false;
     }
 

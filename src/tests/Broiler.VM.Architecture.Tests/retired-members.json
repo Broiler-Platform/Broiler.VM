@@ -105,7 +105,26 @@
     "UcaCollatorOptions record with the tailoring the library chooses; JsRealm.CompareStrings, which hands it this",
     "engine's meter and maps its status to the RangeError normalize throws; JsCollatorObject, its resolved options and",
     "the bound compare; String.prototype.localeCompare, repointed onto CompareStrings; and JsIntlTables, which keeps its",
-    "name (decision D31 of JSD-0082)."
+    "name (decision D31 of JSD-0082).",
+    "",
+    "SJL-13.3, step 1 (JSD-0087, applying JSD-0083): the wide path's front end, whose shared home is",
+    "Broiler.ECMAScript.Frontend's SyntaxParser, which the compiler's JsFrontend calls with this family's request and whose",
+    "tree JsFrontendAdapter builds into JsSyntax. The type deleted whole is registered by type: JsParser, the wide parser",
+    "(JsParser.NumberText and JsParser.TryBigIntValue keep their SJL-3.4 rows). The slice tokenizer's wide-only types,",
+    "SliceTemplate and SliceSubstitution, are registered by type, and its wide-only members by member: the structured-",
+    "template mode, its nesting limit and the recording fields of TemplateScan. SliceTokenizer stays for the slice path",
+    "until SJL-15.4. The binder's CheckRegExp, whose checks this family's JsRegularExpressionValidator makes as the",
+    "library's regular-expression provider, and ResourceScoped, the context the binder's using check read, are",
+    "registered by member. Not registered, because this rule's reader does not read their kind of name: the slice",
+    "tokenizer's constructor that scanned a substitution, and the frames Async, Body, Disposing, Function and StaticBlock",
+    "of JsBinder.Frame, which only the deleted checks read. The binder's checks of the rows the shared stage table assigns",
+    "syntax were lines of members that stay (Bind, BindTree, Declares and the walks), which the library now refuses",
+    "before the binder runs; they are named here by the correspondence's rows, B03 to B07, B10 to B15, B17 to B20, B26",
+    "to B31 and B34 (B25 is CheckRegExp), and are not registered, since the members that held them are still declared",
+    "(bundle sjl-13-001's area rule as revised on 2026-11-10, part D). What stays as adapters is not here: JsFrontend,",
+    "which builds the request and calls the library; JsCompilerUnicode.Tables, the Unicode provider; JsRegularExpressionValidator; JsFrontendAdapter and its",
+    "parts; JsFrontendDiagnostics and its texts, which map each shared code onto the registry and render it; and",
+    "JsAdmissionWalk, which makes this family's BigInt and module-specifier refusals after the parse."
   ],
   "retired": [
     {
@@ -266,12 +285,12 @@
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.JsParser.NumberText",
       "milestone": "SJL-3.4",
-      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToString, behind JsParser.NumberKey"
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToString, behind JsFrontendAdapter.Key (revised 2026-11-09 at SJL-13's step 1, which deletes JsParser: it read \"behind JsParser.NumberKey\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.JsParser.TryBigIntValue",
       "milestone": "SJL-3.4",
-      "replacedBy": "Broiler.ECMAScript.Numbers.NumericLiterals.Evaluate, behind JsParser.BigIntValueOf"
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumericLiterals.Evaluate, behind JsAdmissionWalk.BigIntKey (revised 2026-11-09 at SJL-13's step 1, which deletes JsParser: it read \"behind JsParser.BigIntValueOf\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.DigitValue",
@@ -2752,6 +2771,121 @@
       "member": "Broiler.VM.Profile.JavaScript.JsRealm.CollatorKeyData",
       "milestone": "SJL-17.4",
       "replacedBy": "Broiler.ECMAScript.Intl.UcaCollationData.KeyValues, over the tailorings this family's tables carry, which JsRealm.NewCollator's ResolveLocale and CollatorLocaleData read"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsParser",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.SyntaxParser, behind JsFrontend.Parse, with JsFrontendAdapter building JsSyntax from its tree and JsAdmissionWalk making the BigInt and module-specifier refusals JsParser made during the parse"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTemplate",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's template tokens and pieces, which JsFrontendAdapter reads into JsSyntax's template parts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceSubstitution",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and the tree of each substitution, which JsFrontendAdapter reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.StructuredTemplates",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's tokenizer, which scans a template and its substitutions for the wide path"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.Templates",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's template tokens, read by JsFrontendAdapter"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.templates",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's template tokens, read by JsFrontendAdapter"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.streamTemplates",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's tokenizer, which scans a template and its substitutions for the wide path"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.scanned",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's tokenizer, which scans a template and its substitutions for the wide path"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.textStart",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's tokenizer, which scans a template and its substitutions for the wide path"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TokenizeSubstitutions",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's tokenizer and parser, which read each substitution as an expression"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateNestingLimit",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's nesting bound, which the request's nesting depth sets (JSD-0083 decision D14)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.Start",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.End",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.EndLine",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.EndLineStart",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.ChunkStart",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.Chunks",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.Substitutions",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.SubstitutionStart",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.SubstitutionLine",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.SubstitutionLineStart",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsBinder.CheckRegExp",
+      "milestone": "SJL-13.3",
+      "replacedBy": "the regular-expression provider of Broiler.ECMAScript.Frontend's request, which JsRegularExpressionValidator implements with the checks CheckRegExp made (JSD-0083 decision D7)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsBinder.ResourceScoped",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Frontend's refusal of a using declaration outside a disposing list, a row the stage table assigns syntax (JSD-0083 decision D20)"
     }
   ]
 }

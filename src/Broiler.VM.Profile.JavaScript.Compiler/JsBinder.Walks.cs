@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   54
-// Annotated:        54/54
-// Exempt:           30
-// Human-reviewed:   0/54
+// Relevant units:   53
+// Annotated:        53/53
+// Exempt:           25
+// Human-reviewed:   0/53
 // IP risk:          None
 // Security risk:    High
 // Criteria:         10/7
 // Resource impact:  3/10 max
-// Unverified:       54
+// Unverified:       53
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -88,15 +88,19 @@ internal sealed partial class JsBinder
     /// <remarks>
     /// <b>Each is the reading the lowering takes of the same position</b>, because each decides an
     /// early error the lowering used to raise from its own flags while it emitted (SJL-12.6 item 2):
-    /// an arrow takes its definer's <see cref="Method"/>, <see cref="Derived"/> and
-    /// <see cref="Function"/> and every other function sets its own, while
-    /// <see cref="StaticBlock"/> belongs to a static block's own body and nothing nested in it.
-    /// <see cref="Async"/> and <see cref="Disposing"/> belong to one unit each, an arrow's included:
-    /// the first is the unit's async flag, which the lowering takes from the function alone, and for a
-    /// module's top level from its parser's answer to whether the module awaits there; the second a
-    /// resource scope on the unit's exit stack, which every unit starts empty.
+    /// an arrow takes its definer's <see cref="Method"/> and <see cref="Derived"/> and every other
+    /// function sets its own. <i>(Revised 2026-11-09: the flags <c>Function</c>, <c>Body</c>,
+    /// <c>StaticBlock</c>, <c>Async</c> and <c>Disposing</c> left with the checks that read them, the
+    /// correspondence's B03 to B05, B10 and B14, which are the shared library's refusals from SJL-13.3's
+    /// step 1 (JSD-0083, decision D20). The remark read "an arrow takes its definer's
+    /// <c>Method</c>, <c>Derived</c> and <c>Function</c> and every other function sets its own, while
+    /// <c>StaticBlock</c> belongs to a static block's own body and nothing nested in it. <c>Async</c>
+    /// and <c>Disposing</c> belong to one unit each, an arrow's
+    /// included: the first is the unit's async flag, which the lowering takes from the function alone,
+    /// and for a module's top level from its parser's answer to whether the module awaits there; the
+    /// second a resource scope on the unit's exit stack, which every unit starts empty.")</i>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=287354
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=7D4CB5
     // Broiler-Human:        PENDING
     [System.Flags]
     private enum Frame
@@ -116,35 +120,11 @@ internal sealed partial class JsBinder
         /// <summary>A derived constructor's code, or an arrow's in one, where <c>super()</c> resolves.</summary>
         Derived = 4,
 
-        /// <summary>A function's code, or an arrow's in one, where <c>new.target</c> resolves.</summary>
-        Function = 8,
-
-        /// <summary>
-        /// Any function's code, an arrow's included, where <c>return</c> has something to return from.
-        /// </summary>
-        Body = 16,
-
-        /// <summary>A class static block's own body, where a <c>return</c> is an early error.</summary>
-        StaticBlock = 32,
-
         /// <summary>
         /// Code where <c>arguments</c> names a binding the unit itself makes, which only an evaluated
         /// program inside a class field initialiser asks about.
         /// </summary>
         ArgumentsBound = 64,
-
-        /// <summary>
-        /// Code of a unit the lowering emits as an async one, where <c>await</c> has something to wait
-        /// in: an async function's own code, and a module's top level when the module awaits there.
-        /// </summary>
-        Async = 128,
-
-        /// <summary>
-        /// Code inside a statement list, a <c>for</c> loop or a <c>for-of</c> turn that the lowering
-        /// opened a resource scope for in the same unit, where a <c>using</c> declaration has a scope to
-        /// be disposed with.
-        /// </summary>
-        Disposing = 256,
     }
 
     /// <summary>The private names one class body declares, and the bodies around it.</summary>
@@ -414,25 +394,23 @@ internal sealed partial class JsBinder
     /// </remarks>
     /// <param name="program">The unit's tree.</param>
     /// <param name="strict">The unit's strictness.</param>
-    /// <param name="topLevelAwait">Whether a module awaits at its own top level, as its parser saw.</param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=D12350
-    // Broiler-Falsified-If: a function, block, switch, class body or jump the lowering can reach is not given its facts, a node is walked under a strictness other than its definer's, a node is met before one the source writes ahead of it, or the unit's top level is walked as async, or inside a resource scope, where the lowering's is not, or the other way round
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=23641F
+    // Broiler-Falsified-If: a function, block, switch, class body or jump the lowering can reach is not given its facts, a node is walked under a strictness other than its definer's, or a node is met before one the source writes ahead of it
     // Broiler-Human:        PENDING
-    private void BindTree(JsProgramNode program, bool strict, bool topLevelAwait)
+    private void BindTree(JsProgramNode program, bool strict)
     {
         var frame = Frame.None;
-        var module = unit.Goal == SliceGoal.Module;
-
-        // A MODULE'S TOP LEVEL IS A UNIT OF ITS OWN: an async one when the module awaits there, which
-        // is the parser's reading the lowering takes too, and inside a resource scope when its own
-        // list declares a resource (below). A script's top level and an evaluated program's are neither.
-        if (module && topLevelAwait)
-        {
-            frame |= Frame.Async;
-        }
 
         // EVAL CODE'S OWN TOP LEVEL IS WHERE ITS CALLER STANDS, as far as the caller's request says:
-        // the lowering takes `super`, `super()` and `new.target` there from the request's flags.
+        // the lowering takes `super` and `super()` there from the request's flags. *(Revised
+        // 2026-11-09: a module's top level is no longer walked as an async unit or a resource scope,
+        // and eval code's no longer as a function's, because the checks that read those frames, the
+        // correspondence's B05, B10 and B14, are the shared library's refusals from SJL-13.3's step 1
+        // (JSD-0083, decision D20). The comments read "A MODULE'S TOP LEVEL IS A UNIT OF ITS OWN: an
+        // async one when the module awaits there, which is the parser's reading the lowering takes too,
+        // and inside a resource scope when its own list declares a resource (below). A script's top
+        // level and an evaluated program's are neither." and "the lowering takes `super`, `super()` and
+        // `new.target` there from the request's flags.")*
         if (unit.IsEval)
         {
             var flags = unit.EvalFlags;
@@ -445,11 +423,6 @@ internal sealed partial class JsBinder
             if ((flags & Format.JsFormat.EvalRequestFlags.InDerivedConstructor) != 0)
             {
                 frame |= Frame.Derived;
-            }
-
-            if ((flags & Format.JsFormat.EvalRequestFlags.InFunction) != 0)
-            {
-                frame |= Frame.Function;
             }
 
             if (EvaluatedInField && EvalRootDeclaresArguments(strict))
@@ -466,7 +439,7 @@ internal sealed partial class JsBinder
         var pending = new System.Collections.Generic.Stack<Pending>();
         var inside = new System.Collections.Generic.List<Pending>();
         var root = new Context(strict, null, frame, null);
-        Push(inside, program.Body, module ? ResourceScoped(root, program.Body) : root);
+        Push(inside, program.Body, root);
         Queue(pending, inside);
 
         while (pending.Count != 0)
@@ -511,7 +484,7 @@ internal sealed partial class JsBinder
     /// <see cref="Frame.Silent"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=490B4A
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=CC0834
     // Broiler-Falsified-If: a node that holds a function, a class, a block, a switch or a jump is left unvisited, a node of a kind the walk does not name passes it without failing, or an early error is found where the lowering lowered the node without refusing it
     // Broiler-Human:        PENDING
     private void Visit(System.Collections.Generic.List<Pending> pending, Pending visiting)
@@ -559,10 +532,7 @@ internal sealed partial class JsBinder
             {
                 var declarations = DeclarationsOf(block.Body);
                 lists[block] = declarations;
-                Push(
-                    pending,
-                    block.Body,
-                    ResourceScoped(InsideRecord(context, declarations.Lexical), block.Body));
+                Push(pending, block.Body, InsideRecord(context, declarations.Lexical));
 
                 return;
             }
@@ -600,17 +570,16 @@ internal sealed partial class JsBinder
             // A LEXICAL HEAD'S NAMES ARE DECLARED BEFORE ITS INITIALISER RUNS, and its test, its
             // update and its body see them. The head's fact is recorded and then read back, so
             // the early errors decided under it - which `arguments` the unit binds - are decided
-            // from the fact itself (SJL-12.6 item 2), as they are for a catch parameter's. A RESOURCE
-            // THE HEAD DECLARES BELONGS TO THE WHOLE LOOP, whose scope the lowering opens before the
-            // head's declaration and closes after the loop.
+            // from the fact itself (SJL-12.6 item 2), as they are for a catch parameter's. *(Revised
+            // 2026-11-09: the walk no longer marks the loop as a resource scope, because the check that
+            // read it, the correspondence's B14, is the shared library's refusal from SJL-13.3's step 1
+            // (JSD-0083, decision D20); the comment went on "A RESOURCE THE HEAD DECLARES BELONGS TO THE
+            // WHOLE LOOP, whose scope the lowering opens before the head's declaration and closes after
+            // the loop.")*
             case JsForStatement loop:
             {
                 heads[loop] = ForHeadOf(loop);
-                var head = InsideRecord(context, LoopHead(loop));
-                var resource = loop.Initialiser is JsVariableStatement initialiser
-                    ? initialiser.Using
-                    : JsUsing.None;
-                var inner = resource == JsUsing.None ? head : head.And(Frame.Disposing);
+                var inner = InsideRecord(context, LoopHead(loop));
                 Push(pending, loop.Initialiser, inner);
                 Push(pending, loop.Test, inner);
                 Push(pending, loop.Update, inner);
@@ -636,15 +605,17 @@ internal sealed partial class JsBinder
                 return;
             }
 
-            // EACH TURN'S RESOURCE IS ITS OWN, in a scope the lowering opens around the turn's body.
+            // *(Revised 2026-11-09: the walk no longer marks a turn as a resource scope, because the
+            // check that read it, the correspondence's B14, is the shared library's refusal from
+            // SJL-13.3's step 1 (JSD-0083, decision D20); the comment read "EACH TURN'S RESOURCE IS ITS
+            // OWN, in a scope the lowering opens around the turn's body.")*
             case JsForOfStatement loop:
             {
                 heads[loop] = EachHeadOf(loop.Declaration, loop.Name, loop.Pattern);
                 var inner = InsideRecord(context, LoopHead(loop));
-                var turn = loop.Using == JsUsing.None ? inner : inner.And(Frame.Disposing);
                 Head(pending, loop.Declaration, loop.Name, loop.Pattern, loop.Target, loop.Using, context, inner);
                 Push(pending, loop.Right, inner);
-                Push(pending, loop.Body, turn.Inside(ExitKind.Loop, label, loop));
+                Push(pending, loop.Body, inner.Inside(ExitKind.Loop, label, loop));
                 return;
             }
 
@@ -721,29 +692,15 @@ internal sealed partial class JsBinder
                 Push(pending, statement.Body, context);
                 return;
 
-            // A `return` HAS SOMETHING TO RETURN FROM ONLY IN A FUNCTION'S OWN CODE, and a class
-            // static block compiles to a function and is not one: the word is an early error there
-            // too, under the code the catalogue records for it (2207; JSD-0080 decisions D12 and
-            // D13). The lowering lowered nothing of the value after refusing either; the value is
-            // walked all the same, so what it holds is reported too.
+            // A `return` outside a function's own code, or in a class static block, is the shared
+            // library's refusal from SJL-13.3's step 1, before the binder runs (JSD-0083, decision D20,
+            // the correspondence's B03 and B04). *(Revised 2026-11-09: the binder refused both here; the
+            // comment read "A `return` HAS SOMETHING TO RETURN FROM ONLY IN A FUNCTION'S OWN CODE, and a
+            // class static block compiles to a function and is not one: the word is an early error there
+            // too, under the code the catalogue records for it (2218 outside a function and 2219 in a
+            // static block from registry revision 19, JSD-0083 decision D12; JSD-0080 decisions D12 and
+            // D13).")*
             case JsReturnStatement statement:
-                if (!context.Is(Frame.Body))
-                {
-                    Report(
-                        context,
-                        statement.Span,
-                        SliceSourceDiagnosticCode.UnexpectedToken,
-                        "`return` has nothing to return from outside a function");
-                }
-                else if (context.Is(Frame.StaticBlock))
-                {
-                    Report(
-                        context,
-                        statement.Span,
-                        SliceSourceDiagnosticCode.IllegalBreak,
-                        "`return` has nothing to return from inside a class static block");
-                }
-
                 Push(pending, statement.Value, context);
                 return;
 
@@ -812,49 +769,26 @@ internal sealed partial class JsBinder
                 Push(pending, expression.Operand, context);
                 return;
 
-            // `await` WAITS ONLY IN A UNIT THE LOWERING EMITS AS AN ASYNC ONE, and anywhere else it is
-            // refused under the code the catalogue records for it (2104; JSD-0080 decisions D12 and
-            // D13). A template substitution's own parse let one into the parameters of an arrow that
-            // is not async, whose unit is the arrow's, until SJL-12.6 item 4 (decision D15) had the
-            // parser read a substitution in its parameter list and refuse the `await` itself (2101).
-            // No other way to this refusal is known, so no source the parser admits reaches it now;
-            // it stays as the rule's place.
+            // `await` outside an async unit, `delete` of a private reference and an update of what is
+            // not a reference are the shared library's refusals from SJL-13.3's step 1, before the
+            // binder runs (JSD-0083, decision D20, the correspondence's B05 to B07). *(Revised
+            // 2026-11-09: the binder refused all three here; the comment on the first read "`await`
+            // WAITS ONLY IN A UNIT THE LOWERING EMITS AS AN ASYNC ONE, and anywhere else it is refused
+            // under the code the catalogue records for it (2104; JSD-0080 decisions D12 and D13). A
+            // template substitution's own parse let one into the parameters of an arrow that is not
+            // async, whose unit is the arrow's, until SJL-12.6 item 4 (decision D15) had the parser read
+            // a substitution in its parameter list and refuse the `await` itself (2101). No other way to
+            // this refusal is known, so no source the parser admits reaches it now; it stays as the
+            // rule's place.")*
             case JsAwaitExpression expression:
-                if (!context.Is(Frame.Async))
-                {
-                    Report(
-                        context,
-                        expression.Span,
-                        SliceSourceDiagnosticCode.ConstructOutsideManifest,
-                        "`await` is only admitted inside an async function");
-                }
-
                 Push(pending, expression.Operand, context);
                 return;
 
             case JsUnaryExpression expression:
-                if (expression.Operator == SliceTokenKind.Delete && expression.Operand is JsPrivateMemberExpression)
-                {
-                    Report(
-                        context,
-                        expression.Span,
-                        SliceSourceDiagnosticCode.InvalidAssignmentTarget,
-                        "a private element cannot be deleted");
-                }
-
                 Push(pending, expression.Operand, context);
                 return;
 
             case JsUpdateExpression expression:
-                if (!IsReference(expression.Operand, context.Strict))
-                {
-                    Report(
-                        context,
-                        expression.Span,
-                        SliceSourceDiagnosticCode.InvalidAssignmentTarget,
-                        "the operand of an update operator is not a reference");
-                }
-
                 Push(pending, expression.Operand, context);
                 return;
 
@@ -943,7 +877,7 @@ internal sealed partial class JsBinder
                     Report(
                         context,
                         expression.Span,
-                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        SliceSourceDiagnosticCode.MisplacedSuper,
                         "`super` is only admitted inside a method");
                 }
 
@@ -966,7 +900,7 @@ internal sealed partial class JsBinder
                     Report(
                         context,
                         expression.Span,
-                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        SliceSourceDiagnosticCode.MisplacedSuper,
                         "a `super` call is only admitted in the constructor of a class with a heritage");
                 }
 
@@ -1018,45 +952,23 @@ internal sealed partial class JsBinder
 
                 return;
 
-            case JsNewTargetExpression expression:
-                if (!context.Is(Frame.Function))
-                {
-                    Report(
-                        context,
-                        expression.Span,
-                        SliceSourceDiagnosticCode.UnexpectedToken,
-                        "`new.target` is only admitted inside a function");
-                }
-
-                return;
-
-            case JsImportMeta expression:
-                if (unit.Goal != SliceGoal.Module)
-                {
-                    Report(
-                        context,
-                        expression.Span,
-                        SliceSourceDiagnosticCode.ImportMetaOutsideModuleGoal,
-                        "`import.meta` is only admitted inside a module");
-                }
-
-                return;
-
-            case JsRegExpLiteral expression:
-                CheckRegExp(context, expression);
-                return;
-
             // A NAME IN AN EXPRESSION IS A REFERENCE THE LOWERING RESOLVES, and in eval code inside a
             // field initialiser one that reaches the caller as `arguments` is an early error.
             case JsIdentifier expression:
                 Referenced(context, expression.Name);
                 return;
 
-            // A LEAF: a literal, `this`, an empty or `debugger` statement, an `import` declaration.
-            // None holds a node with a fact or an early error of its own.
+            // A LEAF: a literal, `this`, an empty or `debugger` statement, an `import` declaration,
+            // `new.target`, `import.meta` and a regular-expression literal. None holds a node with a
+            // fact or an early error of its own: `new.target` outside a function, `import.meta` outside
+            // a module and a regular expression's validity are the shared library's refusals from
+            // SJL-13.3's step 1, the last through this family's validator (JSD-0083, decisions D7 and
+            // D20, the correspondence's B10, B11 and B25). *(Revised 2026-11-09: the binder checked the
+            // three here; the comment read "A LEAF: a literal, `this`, an empty or `debugger` statement,
+            // an `import` declaration. None holds a node with a fact or an early error of its own.")*
             case JsNumberLiteral or JsBigIntLiteral or JsStringLiteral or JsBooleanLiteral or
                 JsNullLiteral or JsThisExpression or JsEmptyStatement or JsDebuggerStatement or
-                JsImportDeclaration:
+                JsImportDeclaration or JsNewTargetExpression or JsImportMeta or JsRegExpLiteral:
                 return;
 
             // EVERY KIND OF NODE IS NAMED ABOVE, AS ONE THAT HOLDS OTHERS OR AS A LEAF, so that a kind
@@ -1072,13 +984,17 @@ internal sealed partial class JsBinder
     /// <summary>One function: its facts, and its parameters and body under what it is inside of.</summary>
     /// <remarks>
     /// <b>An arrow takes its definer's frames and every other function sets its own</b>, which is the
-    /// whole of what <c>super</c>, <c>super()</c> and <c>new.target</c> mean inside an arrow - the
-    /// lowering's own rule. A static block's frame is its own body's alone. <b>Every function is a unit
-    /// of its own</b>, an arrow included: an async one only when it is async itself, and with no
-    /// resource scope until its body's own list declares a resource.
+    /// whole of what <c>super</c> and <c>super()</c> mean inside an arrow - the lowering's own rule.
+    /// <i>(Revised 2026-11-09: a function is no longer walked with a function, body, static-block, async
+    /// or resource-scope frame, because the checks that read them, the correspondence's B03 to B05, B10
+    /// and B14, are the shared library's refusals from SJL-13.3's step 1 (JSD-0083, decision D20). The
+    /// remark read "which is the whole of what <c>super</c>, <c>super()</c> and <c>new.target</c> mean
+    /// inside an arrow - the lowering's own rule. A static block's frame is its own body's alone.
+    /// <b>Every function is a unit of its own</b>, an arrow included: an async one only when it is async
+    /// itself, and with no resource scope until its body's own list declares a resource.")</i>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=F0ABC5
-    // Broiler-Falsified-If: a function's code is walked as a method's, a derived constructor's or a function's where the lowering compiles it otherwise, a function the lowering never compiles is walked as one it does, or its code is walked as async, or inside a resource scope, where the lowering's unit for it is not, or the other way round
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=A530A4
+    // Broiler-Falsified-If: a function's code is walked as a method's or a derived constructor's where the lowering compiles it otherwise, or a function the lowering never compiles is walked as one it does
     // Broiler-Human:        PENDING
     private void VisitFunction(
         System.Collections.Generic.List<Pending> pending, JsFunctionNode function, Context context, Use use)
@@ -1086,16 +1002,14 @@ internal sealed partial class JsBinder
         var facts = BindFunction(function, context.Strict);
         functions[function] = facts;
 
-        var frame = (context.Frame & (Frame.Silent | Frame.ArgumentsBound)) | Frame.Body;
+        var frame = context.Frame & (Frame.Silent | Frame.ArgumentsBound);
 
         if (function.IsArrow)
         {
-            frame |= context.Frame & (Frame.Method | Frame.Derived | Frame.Function);
+            frame |= context.Frame & (Frame.Method | Frame.Derived);
         }
         else
         {
-            frame |= Frame.Function;
-
             if (use is Use.Method or Use.Derived or Use.StaticBlock)
             {
                 frame |= Frame.Method;
@@ -1105,16 +1019,6 @@ internal sealed partial class JsBinder
             {
                 frame |= Frame.Derived;
             }
-        }
-
-        if (use == Use.StaticBlock)
-        {
-            frame |= Frame.StaticBlock;
-        }
-
-        if (function.IsAsync)
-        {
-            frame |= Frame.Async;
         }
 
         // A DECLARATION A SLOPPY EVALUATED PROGRAM DECLARES AGAIN LATER IS NEVER COMPILED: the
@@ -1142,25 +1046,11 @@ internal sealed partial class JsBinder
             Push(pending, parameter.Default, parameters);
         }
 
-        Push(pending, function.Body, ResourceScoped(body, function.Body));
+        Push(pending, function.Body, body);
     }
 
-    /// <summary>
-    /// This context inside a statement list, and inside the resource scope the lowering opens around
-    /// the list when the list itself declares a resource.
-    /// </summary>
-    /// <remarks>
-    /// <b>The test is the lowering's own</b> (<see cref="JsCompiler.UsingIn"/>): only the list's own
-    /// declarations count, and a block inside it opens a scope of its own.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=018728
-    // Broiler-Human:        PENDING
-    private static Context ResourceScoped(
-        Context context, System.Collections.Generic.IReadOnlyList<JsStatement> list) =>
-        JsCompiler.UsingIn(list, out _) == JsUsing.None ? context : context.And(Frame.Disposing);
-
     /// <summary>One declaration statement's declarators, each with the early errors of its own.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=399BCD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=369E15
     // Broiler-Human:        PENDING
     private void VisitDeclarators(
         System.Collections.Generic.List<Pending> pending, JsVariableStatement statement, Context context)
@@ -1169,40 +1059,16 @@ internal sealed partial class JsBinder
 
         foreach (var declarator in statement.Declarators)
         {
-            // A DESTRUCTURING DECLARATION ALWAYS HAS AN INITIALISER, whatever its keyword, and a
-            // `const` that names one does too.
-            if (declarator.Pattern is not null && declarator.Initialiser is null)
-            {
-                Report(
-                    context,
-                    declarator.Span,
-                    SliceSourceDiagnosticCode.ConstWithoutInitialiser,
-                    "a destructuring declaration needs an initialiser");
-            }
-            else if (declarator.Pattern is null &&
-                statement.Kind == SliceDeclarationKind.Const &&
-                declarator.Initialiser is null)
-            {
-                Report(
-                    context,
-                    declarator.Span,
-                    SliceSourceDiagnosticCode.ConstWithoutInitialiser,
-                    "`const " + declarator.Name + "` needs an initialiser");
-            }
-            else if (declarator.Pattern is null &&
-                statement.Using != JsUsing.None &&
-                !context.Is(Frame.Disposing))
-            {
-                // A RESOURCE IS REGISTERED WITH THE SCOPE AROUND IT, and where the lowering opened none
-                // in the unit it refused the declaration under the code the catalogue records for it
-                // (2104; JSD-0080 decisions D12 and D13). The parser refuses every such place first today.
-                Report(
-                    context,
-                    declarator.Span,
-                    SliceSourceDiagnosticCode.ConstructOutsideManifest,
-                    "a `using` declaration outside a statement list that can dispose it");
-            }
-            else if (declarator.Pattern is null && mode == Use.Var && declarator.Initialiser is not null)
+            // A destructuring declaration without an initialiser, a `const` without one, and a `using`
+            // declaration outside a list that disposes it are the shared library's refusals from
+            // SJL-13.3's step 1, before the binder runs (JSD-0083, decision D20, the correspondence's B12
+            // to B14). *(Revised 2026-11-09: the binder refused the three here first; the comments read
+            // "A DESTRUCTURING DECLARATION ALWAYS HAS AN INITIALISER, whatever its keyword, and a `const`
+            // that names one does too." and "A RESOURCE IS REGISTERED WITH THE SCOPE AROUND IT, and where
+            // the lowering opened none in the unit it refused the declaration under the code the catalogue
+            // records for it (2104; JSD-0080 decisions D12 and D13). The parser refuses every such place
+            // first today.")*
+            if (declarator.Pattern is null && mode == Use.Var && declarator.Initialiser is not null)
             {
                 Referenced(context, declarator.Name);
             }
@@ -1218,11 +1084,15 @@ internal sealed partial class JsBinder
 
     /// <summary>One object literal's entries, each as the lowering reads it.</summary>
     /// <remarks>
-    /// A <c>{ a = 1 }</c> entry that reached the lowering was never a pattern; a <c>__proto__: v</c>
+    /// A <c>__proto__: v</c> written a second time sets the prototype twice; an entry in method form is
+    /// a method, whose <c>super</c> resolves. <i>(Revised 2026-11-09: a <c>{ a = 1 }</c> entry outside a
+    /// pattern is the shared library's refusal from SJL-13.3's step 1, before the binder runs (JSD-0083,
+    /// decision D20, the correspondence's B15), and the binder no longer checks it; the remark read
+    /// "A <c>{ a = 1 }</c> entry that reached the lowering was never a pattern; a <c>__proto__: v</c>
     /// written a second time sets the prototype twice; an entry in method form is a method, whose
-    /// <c>super</c> resolves.
+    /// <c>super</c> resolves.")</i>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=84B66F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=97C85A
     // Broiler-Human:        PENDING
     private void VisitObject(
         System.Collections.Generic.List<Pending> pending, JsObjectLiteral literal, Context context)
@@ -1232,18 +1102,6 @@ internal sealed partial class JsBinder
         foreach (var entry in literal.Entries)
         {
             Push(pending, entry.Computed, context);
-
-            if (entry.Cover)
-            {
-                Report(
-                    context,
-                    entry.Span,
-                    SliceSourceDiagnosticCode.UnexpectedToken,
-                    "`=` is not an object literal entry outside a destructuring assignment");
-
-                Push(pending, entry.Value, context);
-                continue;
-            }
 
             if (entry.Kind != JsPropertyKind.Spread && entry.IsMethod && entry.Value is JsFunctionExpression method)
             {
@@ -1259,7 +1117,7 @@ internal sealed partial class JsBinder
                     Report(
                         context,
                         entry.Span,
-                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        SliceSourceDiagnosticCode.DuplicateProtoProperty,
                         "an object literal may set `__proto__` once");
                 }
 
@@ -1270,46 +1128,23 @@ internal sealed partial class JsBinder
         }
     }
 
-    /// <summary>One assignment, with the target the lowering can write through or the refusal.</summary>
+    /// <summary>One assignment: its target, then its value, each walked for the facts it holds.</summary>
     /// <remarks>
-    /// <b>A logical assignment writes through a name or a property and nothing else</b>: any other
-    /// target is refused under the code the catalogue records for it (2104; JSD-0080 decisions D12 and
-    /// D13). The lowering lowered neither half after refusing it; both are walked all the same. The
-    /// parser refuses every such target first today, under 2205.
+    /// <i>(Revised 2026-11-09: a target the lowering cannot write through, a logical assignment's
+    /// included, is the shared library's refusal from SJL-13.3's step 1, before the binder runs
+    /// (JSD-0083, decision D20, the correspondence's B17 and B18), and the binder no longer checks it.
+    /// The summary read "One assignment, with the target the lowering can write through or the
+    /// refusal." and the remark "<b>A logical assignment writes through a name or a property and
+    /// nothing else</b>: any other target is refused under the code the catalogue records for it (2104;
+    /// JSD-0080 decisions D12 and D13). The lowering lowered neither half after refusing it; both are
+    /// walked all the same. The parser refuses every such target first today, under 2205.")</i>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=AF90E9
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=CD4290
     // Broiler-Human:        PENDING
     private void VisitAssignment(
         System.Collections.Generic.List<Pending> pending, JsAssignmentExpression assignment, Context context)
     {
         var target = assignment.Target;
-
-        if (assignment.Operator is SliceTokenKind.AmpersandAmpersand or SliceTokenKind.BarBar or
-            SliceTokenKind.QuestionQuestion)
-        {
-            if (target is not (JsMemberExpression or JsPrivateMemberExpression or JsSuperMemberExpression or
-                JsIdentifier))
-            {
-                Report(
-                    context,
-                    assignment.Span,
-                    SliceSourceDiagnosticCode.ConstructOutsideManifest,
-                    "a logical assignment to a target that is neither a name nor a property is not admitted");
-            }
-
-            Push(pending, target, context);
-            Push(pending, assignment.Value, context);
-            return;
-        }
-
-        if (!IsReference(target, context.Strict))
-        {
-            Report(
-                context,
-                assignment.Span,
-                SliceSourceDiagnosticCode.InvalidAssignmentTarget,
-                "the left-hand side of an assignment is not a reference");
-        }
 
         Push(pending, target, context);
         Push(pending, assignment.Value, context);
@@ -1319,7 +1154,7 @@ internal sealed partial class JsBinder
     /// One leaf of a pattern: a binding a declaration initialises, a <c>var</c> it writes, or a
     /// reference an assignment writes through.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=16EE09
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=C54206
     // Broiler-Falsified-If: a leaf is read as a binding where the lowering writes through it, or as a reference where it initialises one
     // Broiler-Human:        PENDING
     private void VisitLeaf(
@@ -1328,19 +1163,10 @@ internal sealed partial class JsBinder
         switch (use)
         {
             case Use.Initialise or Use.Var:
-                if (leaf.Target is not JsIdentifier)
-                {
-                    Report(
-                        context,
-                        leaf.Target.Span,
-                        SliceSourceDiagnosticCode.InvalidAssignmentTarget,
-                        "a declaration's pattern binds names, and this is not one");
-
-                    Push(pending, leaf.Target, context);
-                    return;
-                }
-
-                // A `var`'s leaf is written through its name; a binding initialised is no reference.
+                // A `var`'s leaf is written through its name; a binding initialised is no reference. A
+                // leaf that is not a name is the shared library's refusal from SJL-13.3's step 1 (JSD-0083,
+                // decision D20, the correspondence's B19). *(Revised 2026-11-09: the binder refused it
+                // here first.)*
                 if (use == Use.Var)
                 {
                     Push(pending, leaf.Target, context);
@@ -1349,15 +1175,9 @@ internal sealed partial class JsBinder
                 return;
 
             case Use.Assign:
-                if (!IsReference(leaf.Target, context.Strict))
-                {
-                    Report(
-                        context,
-                        leaf.Target.Span,
-                        SliceSourceDiagnosticCode.InvalidAssignmentTarget,
-                        "the left-hand side of an assignment is not a reference");
-                }
-
+                // A leaf that is not a reference is the shared library's refusal from SJL-13.3's step 1
+                // (JSD-0083, decision D20, the correspondence's B20). *(Revised 2026-11-09: the binder
+                // refused it here first.)*
                 Push(pending, leaf.Target, context);
                 return;
 

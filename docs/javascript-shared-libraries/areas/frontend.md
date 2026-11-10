@@ -97,6 +97,13 @@ Three things it does not do, and one thing it does:
   item 4, `964b460`, JSD-0080 decision D15: the sentence read "**Template substitutions are
   re-tokenised** by a fresh tokenizer and sub-parser.")*.
 
+*(Noted 2026-11-10, at SJL-13.3's step 1, by [JSD-0087](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md).)* "**The wide path** runs `JsParser` into
+`JsSyntax`, then the lowering in `JsCompiler`" describes the wide path before step 1. From step 1 it parses with the
+shared syntax library, through the request `JsFrontend` builds from `SliceParseOptions`, an admission walk over the
+shared tree, and an adapter that builds `JsSyntax`, so the lowering does not change; `JsParser` and the tokenizer's
+structured template mode are deleted, and the binder no longer makes the checks of `syntax` rows. Step 2 moves the
+lowering onto the shared tree. The section is kept as it described the base.
+
 **Options and context.**
 
 - `SliceParseOptions`: goal (Script or Module), top-level `await`, nesting depth (bounded),

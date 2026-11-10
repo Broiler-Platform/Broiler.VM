@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   5
 // Annotated:        5/5
-// Exempt:           31
+// Exempt:           47
 // Human-reviewed:   0/5
 // IP risk:          Low
 // Security risk:    Medium
@@ -44,7 +44,7 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// dated it.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6F12D3
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=770F6F
 // Broiler-Human:        PENDING
 public enum SliceSourceDiagnosticCode
 {
@@ -93,6 +93,23 @@ public enum SliceSourceDiagnosticCode
     /// implement. The message names the construct.
     /// </remarks>
     ConstructOutsideManifest = 2104,
+
+    // REGISTRY REVISION 19 (JSD-0083 decision D12, at SJL-13.3's step 1) gives a new number to each
+    // meaning a code reached that its published meaning does not state, which the front end's
+    // mapping recorded as a split row. Every member below whose number is 19's states the meaning it
+    // took, and its registry row names the code it left. A code that was left keeps its published
+    // meaning and every other use it had.
+
+    /// <summary><c>new.target</c> where no function encloses it.</summary>
+    /// <remarks>Left <see cref="UnexpectedToken"/> at registry revision 19.</remarks>
+    NewTargetOutsideFunction = 2105,
+
+    /// <summary>A BigInt literal wider than the format's BigInt constant admits.</summary>
+    /// <remarks>
+    /// A format ceiling and not a construct the manifest declines. Left
+    /// <see cref="ConstructOutsideManifest"/> at registry revision 19, and graded as it was.
+    /// </remarks>
+    BigIntWiderThanTheFormat = 2106,
 
     // ---- 2200: static semantics ------------------------------------------------------------
 
@@ -169,6 +186,47 @@ public enum SliceSourceDiagnosticCode
     // code for the same fact would have been a number no rejection could reach. It is retired
     // rather than reused, because a code is never given a second meaning.
 
+    /// <summary>
+    /// A <c>super</c> property outside a method, or a <c>super</c> call outside the constructor of
+    /// a class with a heritage.
+    /// </summary>
+    /// <remarks>Left <see cref="UnexpectedToken"/> at registry revision 19.</remarks>
+    MisplacedSuper = 2212,
+
+    /// <summary>An object literal entry <c>a = 1</c> that no destructuring assignment covers.</summary>
+    /// <remarks>Left <see cref="UnexpectedToken"/> at registry revision 19.</remarks>
+    CoverInitialiserOutsidePattern = 2213,
+
+    /// <summary>An object literal that sets <c>__proto__</c> twice.</summary>
+    /// <remarks>Left <see cref="UnexpectedToken"/> at registry revision 19.</remarks>
+    DuplicateProtoProperty = 2214,
+
+    /// <summary>A regular-expression literal whose flags or pattern the pattern grammar refuses.</summary>
+    /// <remarks>
+    /// Its nesting bound included: one meaning for every pattern and flags rule, which the matcher
+    /// tells apart by its message. Left <see cref="UnexpectedToken"/> at registry revision 19.
+    /// </remarks>
+    InvalidRegularExpression = 2215,
+
+    /// <summary><c>arguments</c> inside a class field initialiser or a static block.</summary>
+    /// <remarks>Left <see cref="UnresolvableIdentifier"/> at registry revision 19, and classed as it was.</remarks>
+    ArgumentsInClassInitialiser = 2216,
+
+    /// <summary>A private name that no enclosing class declares.</summary>
+    /// <remarks>
+    /// The dynamic function's included. Left <see cref="UnresolvableIdentifier"/> at registry
+    /// revision 19, and classed as it was.
+    /// </remarks>
+    UndeclaredPrivateName = 2217,
+
+    /// <summary>A <c>return</c> statement outside a function body.</summary>
+    /// <remarks>Left <see cref="UnexpectedToken"/> at registry revision 19.</remarks>
+    ReturnOutsideFunction = 2218,
+
+    /// <summary>A <c>return</c> statement inside a class static block.</summary>
+    /// <remarks>Left <see cref="IllegalBreak"/> at registry revision 19.</remarks>
+    ReturnInStaticBlock = 2219,
+
     // ---- 2300: lowering --------------------------------------------------------------------
 
     /// <summary>The program needs more local slots than the format's frame admits.</summary>
@@ -179,6 +237,36 @@ public enum SliceSourceDiagnosticCode
 
     /// <summary>The program needs a deeper operand stack than the format admits.</summary>
     OperandStackTooDeep = 2303,
+
+    /// <summary>A construct the front end admitted and the lowering has no arm for.</summary>
+    /// <remarks>
+    /// Defensive: only the lowering's default arms answer it. Left
+    /// <see cref="ConstructOutsideManifest"/> at registry revision 19, and graded as it was.
+    /// </remarks>
+    ConstructTheLoweringHasNoArmFor = 2304,
+
+    /// <summary>A template literal with 2^32 strings or more.</summary>
+    /// <remarks>
+    /// Defensive: nothing produces it, because no source of that size reaches the lowering. Left
+    /// <see cref="TooManyConstants"/> at registry revision 19.
+    /// </remarks>
+    TemplateTooManyStrings = 2305,
+
+    /// <summary>Eval code whose free name crosses more scope records than a hop operand holds.</summary>
+    /// <remarks>
+    /// Defensive: reachable only past the eval nesting bound no public request can raise. Left
+    /// <see cref="NestingTooDeep"/> at registry revision 19.
+    /// </remarks>
+    EvalScopeTooDeep = 2306,
+
+    /// <summary>
+    /// A compile request this build cannot serve: an output form, a backend, or a backend's refusal.
+    /// </summary>
+    /// <remarks>
+    /// No property of the source. Left <see cref="ConstructOutsideManifest"/> at registry revision
+    /// 19, and graded as it was.
+    /// </remarks>
+    CompileRequestNotServed = 2307,
 
     // ---- 2400: the module goal's early errors ----------------------------------------------
     //
@@ -251,6 +339,14 @@ public enum SliceSourceDiagnosticCode
     /// moment: no module of the graph is evaluated.
     /// </remarks>
     InvalidJsonModule = 2406,
+
+    /// <summary>An import's attributes give one key twice.</summary>
+    /// <remarks>Left <see cref="DuplicateExportName"/> at registry revision 19.</remarks>
+    DuplicateImportAttributeKey = 2407,
+
+    /// <summary>Two modules presented under one module key in one composition.</summary>
+    /// <remarks>Left <see cref="DuplicateLexicalDeclaration"/> at registry revision 19.</remarks>
+    DuplicateModuleKey = 2408,
 }
 
 /// <summary>One refusal of source text: a code, a message, and where in the source it happened.</summary>

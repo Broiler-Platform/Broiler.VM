@@ -263,8 +263,10 @@ public sealed partial class JsCompiler
         // does not catch this. The block's body is a code unit so that it can close over the class
         // scope and be called with the constructor as its `this`; nothing about it is a function a
         // program can return FROM, and the specification makes the word an early error there. The
-        // binder refuses it under 2207, the code the catalogue records for it, before any of the
-        // unit is lowered (SJL-12.6 item 2, JSD-0080 decision D12); here the lowering only asserts it.
+        // binder refuses it under 2219, the code the catalogue records for it from registry revision
+        // 19, before any of the unit is lowered (SJL-12.6 item 2, JSD-0080 decision D12, JSD-0083
+        // decision D12); here the lowering only asserts it. *(Revised 2026-11-08: it read "The binder
+        // refuses it under 2207".)*
         if (insideStaticBlock)
         {
             throw BinderAdmitted(returned.Span, "a `return` in a class static block");

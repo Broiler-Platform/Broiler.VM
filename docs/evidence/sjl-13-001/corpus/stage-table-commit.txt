@@ -1,0 +1,20 @@
+# bundle sjl-13-001: where the stage-table copy beside this file comes from, read from Broiler.JS with git alone
+# (README section 2, corpus/). Written 2026-11-09T18:20:01Z in Broiler.VM's worktree of branch sjl-13-3-step1d, at the commit after
+# 00a3359b2c4d1b11366a78475363976179b168fa; the copy was added by step 1's registry commit cbee7c4, as the front end's
+# mapping's header names it (stage-table-copy). Every command as it was run, with its output and exit code.
+copy          docs/evidence/sjl-13-001/corpus/stages.tsv
+copy-sha256   3c9c49d97162650a48acfeec33b3d1d084dddda6bf649ad648c2e5ff1f1ce6a6
+copy-added-by cbee7c46ece7c9d7cf8a0c3f9a5a68418266672d
+$ git -C <Broiler.JS> show 238069ab8150858a112461b42b95c1f49c1f4eb1:Broiler.ECMAScript/docs/frontend/stages.tsv | sha256sum
+3c9c49d97162650a48acfeec33b3d1d084dddda6bf649ad648c2e5ff1f1ce6a6  -
+exit=0
+$ git -C <Broiler.JS> show 6f7284daa2d2fbec3104a9498d5f7c989f956946:Broiler.ECMAScript/docs/frontend/stages.tsv | sha256sum
+3c9c49d97162650a48acfeec33b3d1d084dddda6bf649ad648c2e5ff1f1ce6a6  -
+exit=0
+$ git -C <Broiler.JS> show 29061d65f0ca41c5bd93074083f2018ccedd5c57:Broiler.ECMAScript/docs/frontend/stages.tsv | sha256sum
+3c9c49d97162650a48acfeec33b3d1d084dddda6bf649ad648c2e5ff1f1ce6a6  -
+exit=0
+$ cmp <(git -C <Broiler.JS> show 238069ab8150858a112461b42b95c1f49c1f4eb1:Broiler.ECMAScript/docs/frontend/stages.tsv) stages.tsv
+exit=0
+# 238069ab is the commit the mapping's header names (stage-table-commit), the Broiler.JS merge of SJL-13 WP1;
+# 6f7284da built 0.1.0-preview.9 and 29061d65 built 0.1.0-preview.10, which step 1 admits; the table is the same at all three.

@@ -87,6 +87,14 @@ runs, which also places every admitted package on that feed.)*
 | P14 | `api/public-api.txt` | `JsRegExpMatcher` and `JsRegExpCharge` are public in Format. | They leave the baseline when SJL-11 removes them (rule N10, both directions). | Baseline regeneration | SJL-11 |
 | P15 | `diagnostics/registry.txt` (embedder-seam codes 2001–2406) | Codes are bound to `SliceSourceDiagnosticCode` by rules N5 to N9. | The registry stays this profile's. Shared frontend codes map onto it, with a new registry revision for every code whose meaning changes, as JSD-0009 requires. | Registry revision; JSD | SJL-13 |
 
+*(Noted 2026-11-10, at SJL-13's step 1's records, by
+[JSD-0087](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md).)*
+Row P15's "Where" cell reads "`diagnostics/registry.txt` (embedder-seam codes 2001–2406)". Registry revision 19, at
+step 1's registry commit, mints seam codes past that range, 2407 `DuplicateImportAttributeKey` and 2408
+`DuplicateModuleKey`, with the others it mints inside it. The range named the codes as the programme found them; the
+row's need, a new registry revision for every code whose meaning changes, is what revision 19 meets. The row is kept
+as written.
+
 ### 2.3 Broiler.JS documents
 
 | # | Where | What it says now | What the programme needs | Milestone |

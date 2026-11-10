@@ -352,7 +352,7 @@ public sealed class SliceSourceCompiler
     }
 
     /// <summary>Lowers one statement, beginning and ending at operand-stack height zero.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=B5BD8A
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=2D304B
     // Broiler-Falsified-If: any statement lowering leaves the operand stack at a different height than it entered with
     // Broiler-Human:        PENDING
     private void LowerStatement(SliceStatement statement, SliceParseOptions options)
@@ -485,7 +485,7 @@ public sealed class SliceSourceCompiler
 
             default:
                 Refuse(
-                    SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                    SliceSourceDiagnosticCode.ConstructTheLoweringHasNoArmFor,
                     $"the statement kind {statement.GetType().Name} has no lowering",
                     statement.Span);
 
@@ -663,7 +663,7 @@ public sealed class SliceSourceCompiler
     }
 
     /// <summary>Lowers an expression, leaving exactly one value on the stack.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=441EF6
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=C1D2C2
     // Broiler-Falsified-If: any expression lowering leaves other than exactly one value on the stack
     // Broiler-Human:        PENDING
     private void LowerExpression(SliceExpression expression)
@@ -717,7 +717,7 @@ public sealed class SliceSourceCompiler
 
             default:
                 Refuse(
-                    SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                    SliceSourceDiagnosticCode.ConstructTheLoweringHasNoArmFor,
                     $"the expression kind {expression.GetType().Name} has no lowering",
                     expression.Span);
 

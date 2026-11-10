@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   6
-// Annotated:        6/6
+// Relevant units:   7
+// Annotated:        7/7
 // Exempt:           1
-// Human-reviewed:   0/6
+// Human-reviewed:   0/7
 // IP risk:          Low
 // Security risk:    Low
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       6
+// Unverified:       7
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -42,10 +42,18 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 // Broiler-Human:        PENDING
 internal static class JsCompilerUnicode
 {
-    /// <summary>The owner's property lookups over Format's tables.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=B66754
+    /// <summary>
+    /// Format's tables as the Unicode area's provider, which the owner's lookups read here and the shared
+    /// syntax library's request reads for the lexical grammar's classes (JSD-0083; milestone SJL-13.3).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=809C70
     // Broiler-Human:        PENDING
-    private static readonly UnicodeProperties Properties = new(new FormatTables());
+    internal static readonly IUnicodeTables Tables = new FormatTables();
+
+    /// <summary>The owner's property lookups over Format's tables.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=03E4AC
+    // Broiler-Human:        PENDING
+    private static readonly UnicodeProperties Properties = new(Tables);
 
     /// <summary>IdentifierStartChar, IdentifierPartChar and WhiteSpace.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=D9919C

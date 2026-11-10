@@ -434,7 +434,14 @@ internal static class Test262Run
     {
         var first = diagnostics.Count == 0 ? null : diagnostics[0];
 
-        if (first is not null && first.Code == SliceSourceDiagnosticCode.ConstructOutsideManifest)
+        // Registry revision 19's codes that left ConstructOutsideManifest are graded as it is
+        // (JSD-0083 decision D12): a format ceiling, a construct the lowering has no arm for and a
+        // request this build cannot serve were graded unsupported under that code, and a
+        // renumbering moves no verdict.
+        if (first is not null && first.Code is SliceSourceDiagnosticCode.ConstructOutsideManifest
+                or SliceSourceDiagnosticCode.BigIntWiderThanTheFormat
+                or SliceSourceDiagnosticCode.ConstructTheLoweringHasNoArmFor
+                or SliceSourceDiagnosticCode.CompileRequestNotServed)
         {
             return new Test262Outcome(
                 relativePath,

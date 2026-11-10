@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   83
-// Annotated:        83/83
+// Relevant units:   86
+// Annotated:        86/86
 // Exempt:           22
-// Human-reviewed:   0/83
+// Human-reviewed:   0/86
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       83
+// Unverified:       86
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -1023,3 +1023,27 @@ internal sealed record JsProgramNode(
     System.Collections.Generic.IReadOnlyList<JsStringLiteral> Directives,
     System.Collections.Generic.IReadOnlyList<JsStatement> Body,
     bool IsStrict) : JsNode(Span);
+
+/// <summary>
+/// The two binding names a module's tree uses that no source can write: the binding an
+/// <c>export default</c> of an expression creates, and the local name of a re-exported namespace.
+/// </summary>
+/// <remarks>
+/// They were the wide parser's (<c>JsParser.DefaultBindingName</c> and <c>JsParser.StarName</c>), which
+/// the binder and the lowering read, and moved here with the parser's deletion at SJL-13.3's step 1
+/// (JSD-0083, decision D20); step 2 moves them to the lowering's module code.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=604FAA
+// Broiler-Human:        PENDING
+internal static class JsModuleNames
+{
+    /// <summary>The binding an <c>export default</c> of an expression creates.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=8B78FE
+    // Broiler-Human:        PENDING
+    internal const string DefaultBindingName = "*default*";
+
+    /// <summary>The local name of <c>export * as name from</c>'s namespace.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=828A3E
+    // Broiler-Human:        PENDING
+    internal const string StarName = "*";
+}

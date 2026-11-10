@@ -445,7 +445,7 @@ public sealed partial class JsCompiler
     /// names a construct rather than a stage.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6F05A5
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8F2366
     // Broiler-Human:        PENDING
     private JsNativeEmission? Emit(JsAssembledProgram assembled)
     {
@@ -453,7 +453,7 @@ public sealed partial class JsCompiler
         {
             Refuse(
                 default,
-                SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                SliceSourceDiagnosticCode.CompileRequestNotServed,
                 "the native output form is admitted by the `" + JsNumericManifest.ManifestId +
                 "` and `" + JsFormat.ManifestId + "` feature manifests, and every unit of an " +
                 "artifact has the one form");
@@ -467,7 +467,7 @@ public sealed partial class JsCompiler
         {
             Refuse(
                 default,
-                SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                SliceSourceDiagnosticCode.CompileRequestNotServed,
                 "the value output form is admitted by the `" + JsFormat.ManifestId + "` feature " +
                 "manifest alone");
 
@@ -478,7 +478,7 @@ public sealed partial class JsCompiler
         {
             Refuse(
                 default,
-                SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                SliceSourceDiagnosticCode.CompileRequestNotServed,
                 "this build carries no backend named `" + request.Backend + "`; it names " +
                 string.Join(", ", JsNativeBackends.Names));
 
@@ -494,7 +494,7 @@ public sealed partial class JsCompiler
                 out var emission,
                 out var refusal))
         {
-            Refuse(default, SliceSourceDiagnosticCode.ConstructOutsideManifest, refusal);
+            Refuse(default, SliceSourceDiagnosticCode.CompileRequestNotServed, refusal);
             return null;
         }
 

@@ -37,7 +37,7 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4700BC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BF277E
     // Broiler-Human:        PENDING
     private void CompileStatement(JsStatement statement, int completion)
     {
@@ -148,7 +148,7 @@ public sealed partial class JsCompiler
             default:
                 Refuse(
                     statement.Span,
-                    SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                    SliceSourceDiagnosticCode.ConstructTheLoweringHasNoArmFor,
                     "this statement is not admitted by the declared feature manifest");
 
                 break;

@@ -1,6 +1,6 @@
 # broiler.javascript.slice diagnostic-code registry
 #
-# registry-revision: 18
+# registry-revision: 19
 # published-at-milestone: JS-3a (revision 1), JS-3b (revision 2), JS-4 (revision 3), JSW-2 (revision 4),
 #                         JSW-5 (revisions 5, 6, 7 and 9), JSW-8 (revisions 8 and 10),
 #                         JSN-1 (revisions 11 and 12); revision 13 at no milestone (JSeal V14, the
@@ -13,7 +13,9 @@
 #                         an accepted stage); revision 17 at no milestone (phase F1, JSON
 #                         modules, JSC-255, not an accepted stage); revision 18 at no milestone
 #                         (phase F3, the source-text section of proposed decision JSD-0037,
-#                         JSC-259, not an accepted stage)
+#                         JSC-259, not an accepted stage); revision 19 at no milestone (SJL-13.3's
+#                         step 1, the registry commit of JSD-0083 decision D12, not an accepted
+#                         stage)
 # owning-decision: JSD-0009
 # format-version: 1, 2
 # feature-manifest: broiler.javascript.slice, broiler.javascript.wide, broiler.javascript.numeric
@@ -197,3 +199,31 @@
 2404|ImportMetaOutsideModuleGoal|embedder-seam|-|parser|source|refuse-an-import-meta-in-a-script|10
 2405|UnsupportedImportAttribute|embedder-seam|-|semantics|source|refuse-an-import-attribute-nothing-can-honour|10
 2406|InvalidJsonModule|embedder-seam|-|semantics|source|refuse-a-json-module-that-is-not-json|17
+#
+# REVISION 19 (JSD-0083 decision D12, at SJL-13.3's step 1, the registry commit): one new number for
+# each meaning a code was reached under that its published meaning does not state, which the front
+# end's mapping (frontend-mapping.tsv) recorded as a split row. A meaning is the kind of fact a row's
+# name and declaration state, not a catalogue condition, so one new code may hold several of the
+# catalogue's conditions: every misplaced `super`, every regular-expression pattern and flags rule,
+# every private name no class declares. Each code it LEFT keeps its published meaning and its other
+# uses, and no code changes meaning: the mapping's registry row for each new code names the code it
+# left. Thirteen are reached by a retained source; three are defensive by the owner's decision of
+# 2026-11-04 (JSD-0083's dated notes on D12), and rule N7 admits each for one catalogue row. No code
+# is minted for the three language rules JSD-0080's D13 found coded 2104: the parser refuses each
+# first, under the code its row maps to.
+2105|NewTargetOutsideFunction|embedder-seam|-|parser|source|refuse-new-target-outside-a-function|19
+2106|BigIntWiderThanTheFormat|embedder-seam|-|parser|source|refuse-a-bigint-literal-wider-than-the-format|19
+2212|MisplacedSuper|embedder-seam|-|semantics|source|refuse-a-super-property-outside-a-method|19
+2213|CoverInitialiserOutsidePattern|embedder-seam|-|semantics|source|refuse-a-cover-initialiser-outside-a-pattern|19
+2214|DuplicateProtoProperty|embedder-seam|-|semantics|source|refuse-an-object-literal-setting-its-prototype-twice|19
+2215|InvalidRegularExpression|embedder-seam|-|semantics|source|refuse-a-capture-group-name-given-twice|19
+2216|ArgumentsInClassInitialiser|embedder-seam|-|semantics|source|refuse-arguments-in-a-class-field|19
+2217|UndeclaredPrivateName|embedder-seam|-|semantics|source|refuse-a-private-name-no-class-declares|19
+2218|ReturnOutsideFunction|embedder-seam|-|semantics|source|refuse-a-return-outside-a-function|19
+2219|ReturnInStaticBlock|embedder-seam|-|semantics|source|refuse-a-return-in-a-static-block|19
+2304|ConstructTheLoweringHasNoArmFor|embedder-seam|-|lowering|defensive|no source reaches it: only the lowering's default arms answer it, for a construct the front end admitted and no arm compiles|19
+2305|TemplateTooManyStrings|embedder-seam|-|lowering|defensive|no source reaches it: nothing produces it, because a template literal of 2^32 strings is past every source length this build reads, in both engines|19
+2306|EvalScopeTooDeep|embedder-seam|-|lowering|defensive|no source reaches it: eval code reaches it only past the eval nesting bound no public request can raise|19
+2307|CompileRequestNotServed|embedder-seam|-|lowering|source|refuse-the-value-form-under-the-numeric-manifest|19
+2407|DuplicateImportAttributeKey|embedder-seam|-|parser|source|refuse-an-import-attribute-given-twice|19
+2408|DuplicateModuleKey|embedder-seam|-|lowering|source|refuse-two-modules-under-one-key|19

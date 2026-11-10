@@ -47,6 +47,13 @@ internal static class SourceFrontEndChecks
             yield return row;
         }
 
+        // THE TWO TOKENIZERS' AGREEMENT ON THE SLICE PATH'S INPUTS (SJL-13's step 1, JSD-0083 decision D21;
+        // bundle sjl-13-001's part F): its own file, because it reads the shared library's token stream.
+        foreach (var row in TokenizerAgreementChecks.Run())
+        {
+            yield return row;
+        }
+
         yield return AnEarlyErrorNeverProducesBytes();
         yield return TheSourceFuzzGuidanceLoopIsWired();
         yield return EveryLineTerminatorInsideALiteralIsCountedOnce();
@@ -217,10 +224,16 @@ internal static class SourceFrontEndChecks
             failed.Add("the second of two units: " + string.Join(" | ", second.Diagnostics));
         }
 
+        // (Revised 2026-11-09, later that day, at SJL-13.3's step 1, with JSD-0083's note of that day on decision D11,
+        // "One true text per code": the unnamed form's text is the one text of the library's shared code JSE9108; code
+        // and place are unchanged. The pinned form read "2101:UnexpectedToken at 1:9: `;` begins no expression".)
+        // (Revised 2026-11-09, later that day, at the review of SJL-13.3's step 1: JSE9108's one text is reworded so
+        // that it also reads as a sentence where the token is the end of the source; code and place are unchanged. The
+        // pinned form read "2101:UnexpectedToken at 1:9: no production admits `;` where it stands".)
         var unnamed = JsCompiler.Compile("var x = ;", SliceParseOptions.Script);
 
         if (unnamed.Diagnostics.Count == 0 || unnamed.Diagnostics[0].SourceName.Length != 0 ||
-            unnamed.Diagnostics[0].ToString() != "2101:UnexpectedToken at 1:9: `;` begins no expression")
+            unnamed.Diagnostics[0].ToString() != "2101:UnexpectedToken at 1:9: the grammar admits no `;` at this point")
         {
             failed.Add("an unnamed unit: " + string.Join(" | ", unnamed.Diagnostics));
         }

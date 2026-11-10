@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   56
-// Annotated:        56/56
-// Exempt:           137
-// Human-reviewed:   0/56
+// Relevant units:   50
+// Annotated:        50/50
+// Exempt:           122
+// Human-reviewed:   0/50
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         30/24
-// Resource impact:  3/10 max
-// Unverified:       56
+// Criteria:         25/20
+// Resource impact:  2/10 max
+// Unverified:       50
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -400,14 +400,16 @@ public readonly record struct SliceToken(
 /// <para>
 /// <b>It refuses rather than throws.</b> Every malformed input answers with a diagnostic in the
 /// returned list and a token stream truncated at the refusal; nothing here throws for input, which
-/// is what lets the front end have one refusal path rather than two. <i>(2026-10-25, SJL-12.6 item
-/// 4, JSD-0080 decision D15: under the wide compiler's <see cref="StructuredTemplates"/> mode the
-/// returned array holds the source's stream and then one run per template substitution, each
-/// ending with an <see cref="SliceTokenKind.EndOfSource"/> of its own. A substitution whose own text
-/// the lexer refuses has no run, and its refusals are not in the returned list: they are kept with
-/// that substitution in <see cref="Templates"/>, for the parser to report when it reaches it. What
-/// this paragraph says of the list and the stream is said of the source's stream, up to its first
-/// <see cref="SliceTokenKind.EndOfSource"/>.)</i>
+/// is what lets the front end have one refusal path rather than two. <i>(2026-11-09, SJL-13's step 1,
+/// JSD-0083 decision D20: the wide compiler's structured mode is deleted with the wide parser that read it,
+/// and the returned array holds the source's stream alone, ending with one <see
+/// cref="SliceTokenKind.EndOfSource"/>. The note this replaces read: "(2026-10-25, SJL-12.6 item 4,
+/// JSD-0080 decision D15: under the wide compiler's StructuredTemplates mode the returned array holds the
+/// source's stream and then one run per template substitution, each ending with an
+/// SliceTokenKind.EndOfSource of its own. A substitution whose own text the lexer refuses has no run, and
+/// its refusals are not in the returned list: they are kept with that substitution in Templates, for the
+/// parser to report when it reaches it. What this paragraph says of the list and the stream is said of the
+/// source's stream, up to its first SliceTokenKind.EndOfSource.)")</i>
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=5006C2
@@ -435,43 +437,16 @@ public sealed class SliceTokenizer
     private SliceToken previous;
 
     /// <summary>
-    /// The offset of the first character this tokenizer reads: zero, or the first character of a
-    /// template substitution the structured mode tokenizes.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=2B8AB1
-    // Broiler-Human:        PENDING
-    private readonly int textStart;
-
-    /// <summary>
-    /// The offset just past the last character it reads: the source's length, or the brace that
-    /// closes the substitution it tokenizes. Nothing at or past it is read, so a substitution is
-    /// tokenized exactly as the same characters would be on their own.
+    /// The offset just past the last character it reads: the source's length. Nothing at or past it
+    /// is read. <i>(Revised 2026-11-09, SJL-13's step 1, JSD-0083 decision D20: it read "the source's
+    /// length, or the brace that closes the substitution it tokenizes. Nothing at or past it is read, so
+    /// a substitution is tokenized exactly as the same characters would be on their own."; the
+    /// substitution's tokenizer is deleted.)</i>
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=1EFA14
     // Broiler-Falsified-If: a character at or past this offset decides a token, a comment or a refusal
     // Broiler-Human:        PENDING
     private readonly int textEnd;
-
-    /// <summary>
-    /// Every template the structured mode has scanned, by the offset of its opening backtick, shared
-    /// by the tokenizers of one <see cref="Tokenize"/>; null when the mode is off.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=443C01
-    // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.Dictionary<int, TemplateScan>? scanned;
-
-    /// <summary>The templates of the stream this tokenizer read, by the index of their token in it.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=1C95F5
-    // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.List<(int Token, TemplateScan Scan)> streamTemplates = [];
-
-    /// <summary>
-    /// What the structured mode found for every template, by the index of its token; null when the
-    /// mode is off, and in a substitution's tokenizer, whose templates its creator records.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=C2C8F7
-    // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.Dictionary<int, SliceTemplate>? templates;
 
     /// <summary>Creates a tokenizer over <paramref name="source"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=E373F1
@@ -483,130 +458,26 @@ public sealed class SliceTokenizer
     }
 
     /// <summary>
-    /// Creates the tokenizer of one template substitution: the characters from
-    /// <paramref name="start"/> to <paramref name="end"/>, read with nothing before them read, at
-    /// the line they stand on.
-    /// </summary>
-    /// <remarks>
-    /// <b>It starts as a tokenizer of those characters alone would</b> - no previous token, the
-    /// source's own bracket at the bottom, at the start of a line for <c>--&gt;</c> and of a text
-    /// for a hashbang - because that is what the substitution's own tokenizer was until SJL-12.6
-    /// item 4, when the parser tokenized each substitution's text again (JSD-0080 decision D15). Its
-    /// tokens are where they are in the source, so nothing moves them afterwards.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E677A4
-    // Broiler-Falsified-If: a substitution's tokens or refusals differ from those of a tokenizer over its text alone, but for where they are
-    // Broiler-Human:        PENDING
-    private SliceTokenizer(
-        string source,
-        int start,
-        int end,
-        int line,
-        int lineStart,
-        System.Collections.Generic.Dictionary<int, TemplateScan> scanned)
-    {
-        this.source = source;
-        textStart = start;
-        textEnd = end;
-        index = start;
-        this.line = line;
-        this.lineStart = lineStart;
-        this.scanned = scanned;
-    }
-
-    /// <summary>
-    /// Whether template substitutions are tokenized too: the wide compiler's mode, and set by
-    /// nothing else (SJL-12.6 item 4, JSD-0080 decision D15).
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// <b>The stream the parser reads is the same either way</b>: a template is one
-    /// <see cref="SliceTokenKind.TemplateLiteral"/> token, backtick to backtick, where the scan
-    /// below ends it. What the mode adds is behind that stream. Each substitution's characters are
-    /// tokenized by this lexer into a run of their own, ending with its own
-    /// <see cref="SliceTokenKind.EndOfSource"/> at the brace that closes the substitution; the runs
-    /// follow the stream in the array <see cref="Tokenize"/> returns; and <see cref="Templates"/>
-    /// says, by the index of each template's token, where its chunks are and where each of its
-    /// substitutions' runs begins. A nested template is a token of its substitution's run, so it is
-    /// in that table too.
-    /// </para>
-    /// <para>
-    /// <b>It is what lets one parser read a template.</b> The wide parser re-tokenized each
-    /// substitution's text and parsed it with a parser of its own, which started at depth zero and
-    /// outside any parameter list: nesting templates was not counted toward the nesting bound, and
-    /// <c>${yield}</c> and <c>${await 1}</c> were admitted in formal parameters. With the runs
-    /// here, the parser that reads the template reads its substitutions.
-    /// </para>
-    /// <para>
-    /// <b>The slice front end never sets it</b>: it admits no template, so it reads the token and
-    /// nothing behind it, and its outcomes do not depend on this mode.
-    /// </para>
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=4EE9DE
-    // Broiler-Falsified-If: the stream the parser reads, up to its first EndOfSource, differs with the mode on from the stream with it off
-    // Broiler-Human:        PENDING
-    internal bool StructuredTemplates
-    {
-        get => scanned is not null;
-        init
-        {
-            scanned = value ? new System.Collections.Generic.Dictionary<int, TemplateScan>() : null;
-            templates = value ? new System.Collections.Generic.Dictionary<int, SliceTemplate>() : null;
-        }
-    }
-
-    /// <summary>
-    /// How many templates deep the structured mode tokenizes substitutions: the parse's nesting
-    /// bound, which the wide compiler passes.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// <b>A template nested deeper than the bound is never read, so its substitutions are not
-    /// tokenized.</b> A template's substitution is an expression the parser enters a level of
-    /// nesting for, so the template inside N others is read at a depth of at least N, and past the
-    /// bound the parse refuses before it gets there. Tokenizing those runs anyway cost every level a
-    /// copy of the text below it - a template's token carries its text - which for a nesting of tens
-    /// of thousands is more memory than the process has.
-    /// </para>
-    /// <para>
-    /// <b>Such a template is still in <see cref="Templates"/></b>, marked as past the bound, so a
-    /// parser that did reach one refuses it as nested too deep rather than reading nothing.
-    /// </para>
-    /// <para>
-    /// <b>Within the bound, the memory is up to the bound times the template's length, and it is
-    /// spent before the parse starts.</b> A run that holds a nested template holds its token, and the
-    /// token's text is a copy of everything inside it, so what a template's innermost levels hold is
-    /// copied once per level: at most this many times - 64 at the default bound, 512 at the largest
-    /// the parse options accept. The runs are tokenized for every template of the source, whether or
-    /// not the parse goes on to read it. The sub-parse this mode replaced copied each level twice,
-    /// with no bound, but only as the parse reached it, so a source refused before a large template
-    /// paid for that template's token alone; that is the one case that now costs more.
-    /// </para>
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=22B583
-    // Broiler-Falsified-If: a template the parse reads within its nesting bound has a substitution with no run and no refusal
-    // Broiler-Human:        PENDING
-    internal int TemplateNestingLimit { get; init; } = int.MaxValue;
-
-    /// <summary>
-    /// Where every template of the array <see cref="Tokenize"/> returned has its chunks and its
-    /// substitutions, by the index of its token; empty unless <see cref="StructuredTemplates"/> is set.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=401E96
-    // Broiler-Human:        PENDING
-    internal System.Collections.Generic.IReadOnlyDictionary<int, SliceTemplate> Templates =>
-        (System.Collections.Generic.IReadOnlyDictionary<int, SliceTemplate>?)templates ??
-            System.Collections.Immutable.ImmutableDictionary<int, SliceTemplate>.Empty;
-
-    /// <summary>
     /// Whether Annex B's HTML-like comments are comments: <c>&lt;!--</c> anywhere, and <c>--&gt;</c>
     /// where only whitespace and comments precede it on its line, each running to the line's end.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// <b>The script goal of the wide surface admits them and a module never does</b>, which is the
     /// language's own split (JSP-7, JSC-239): a module's source is not web script text. Without them
     /// <c>x &lt;!-- y</c> was read as <c>x &lt; !(--y)</c> - a program the file does not contain -
     /// and a line opening with <c>--&gt;</c> was a decrement and a comparison.
+    /// </para>
+    /// <para>
+    /// <i>Noted 2026-11-09, at SJL-13.3's step 1 (JSD-0083 decision D20): the wide surface no longer
+    /// reads this tokenizer, so "The script goal of the wide surface admits them" describes the shared
+    /// syntax library's switch (<c>ParseSwitches.HtmlLikeComments</c>), which the compiler's requests set,
+    /// and not this member. Nothing in this repository sets this member any more: its only setters were
+    /// the wide compiler's two tokenizer passes, which step 1 deletes, and the slice front end leaves it
+    /// off. It stays because it is public (<c>docs/api/public-api.txt</c>), and taking a member out of the
+    /// public surface is a change of its own for SJL-13's records step to decide, not a deletion D20
+    /// lists.</i>
+    /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=582642
     // Broiler-Human:        PENDING
@@ -626,17 +497,17 @@ public sealed class SliceTokenizer
     public System.Collections.Generic.IReadOnlyList<SliceSourceDiagnostic> Diagnostics => diagnostics;
 
     /// <summary>
-    /// Reads every token: the source's stream, ending with one
-    /// <see cref="SliceTokenKind.EndOfSource"/>, and under <see cref="StructuredTemplates"/> each
-    /// template substitution's run after it.
+    /// Reads every token: the source's stream, ending with one <see cref="SliceTokenKind.EndOfSource"/>.
     /// </summary>
     /// <remarks>
-    /// Under <see cref="StructuredTemplates"/> the array goes on past that token with each template
-    /// substitution's run, each ending with an <see cref="SliceTokenKind.EndOfSource"/> of its own;
-    /// the stream before the first one is the same as without the mode.
+    /// <i>(Revised 2026-11-09, SJL-13's step 1, JSD-0083 decision D20: the summary went on "and under
+    /// StructuredTemplates each template substitution's run after it", and this remark read "Under
+    /// StructuredTemplates the array goes on past that token with each template substitution's run, each
+    /// ending with an EndOfSource of its own; the stream before the first one is the same as without the
+    /// mode."; the mode is deleted.)</i>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=820D6C
-    // Broiler-Falsified-If: the stream up to its first EndOfSource goes on past a refusal, or without the structured mode the array holds a token after that EndOfSource
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=31039E
+    // Broiler-Falsified-If: the stream goes on past a refusal, or the array holds a token after its EndOfSource
     // Broiler-Human:        PENDING
     public SliceToken[] Tokenize()
     {
@@ -644,21 +515,14 @@ public sealed class SliceTokenizer
 
         ReadStream(tokens);
 
-        // A REFUSAL STILL ENDS EVERYTHING: the parser is not run over a stream the tokenizer refused,
-        // so nothing behind it would be read.
-        if (scanned is not null && diagnostics.Count == 0)
-        {
-            TokenizeSubstitutions(tokens);
-        }
-
         return tokens.ToArray();
     }
 
     /// <summary>
-    /// Reads the tokens from <see cref="textStart"/> to <see cref="textEnd"/> into
+    /// Reads the tokens from the start of the source to <see cref="textEnd"/> into
     /// <paramref name="tokens"/>, ending with one <see cref="SliceTokenKind.EndOfSource"/>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=60AD78
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=FFEA5D
     // Broiler-Falsified-If: a token is produced after a refusal, or the stream does not end with exactly one EndOfSource
     // Broiler-Human:        PENDING
     private void ReadStream(System.Collections.Generic.List<SliceToken> tokens)
@@ -698,13 +562,6 @@ public sealed class SliceTokenizer
             tokens.Add(token);
             lineHasOnlyTrivia = false;
 
-            // THE STRUCTURED MODE NOTES EACH TEMPLATE AS IT JOINS THE STREAM. The scan that ended its
-            // token recorded where its parts are, under the offset of its backtick.
-            if (scanned is not null && token.Kind == SliceTokenKind.TemplateLiteral)
-            {
-                streamTemplates.Add((tokens.Count - 1, scanned[start]));
-            }
-
             // The regular-expression heuristic reads this, and it is set HERE rather than inside
             // each reader so that exactly one assignment can be wrong.
             Follow(token);
@@ -716,90 +573,6 @@ public sealed class SliceTokenizer
         tokens.Add(new SliceToken(
             SliceTokenKind.EndOfSource, string.Empty, 0, string.Empty,
             line, index - lineStart + 1, false, false, false, index, index));
-    }
-
-    /// <summary>
-    /// Tokenizes every substitution of every template of <paramref name="tokens"/>, appending each
-    /// run, and records each template in <see cref="Templates"/>.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// <b>A queue, not a recursion.</b> A substitution's run holds its nested templates as tokens,
-    /// so their substitutions join the queue rather than a call stack, and nesting costs the queue a
-    /// slot per substitution and never a frame. A run's own templates are taken from the scan that
-    /// already found them, so no character is scanned twice for where a template ends.
-    /// </para>
-    /// <para>
-    /// <b>A substitution its lexer refuses has no run</b>, and the refusals are kept for the parser
-    /// to report when it reaches that substitution, at the place it reports them in the parse. A
-    /// refused run's templates are not followed: nothing would read them.
-    /// </para>
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=0B3D31
-    // Broiler-Falsified-If: a template of the returned array has no entry in Templates, or a run is reached through recursion
-    // Broiler-Human:        PENDING
-    private void TokenizeSubstitutions(System.Collections.Generic.List<SliceToken> tokens)
-    {
-        // EACH ENTRY IS A TEMPLATE AND HOW MANY TEMPLATES IT IS INSIDE, ITSELF INCLUDED: the
-        // stream's own templates are one deep.
-        var pending = new System.Collections.Generic.Queue<(int Token, TemplateScan Scan, int Nesting)>();
-
-        foreach (var (token, scan) in streamTemplates)
-        {
-            pending.Enqueue((token, scan, 1));
-        }
-
-        while (pending.Count != 0)
-        {
-            var (at, scan, nesting) = pending.Dequeue();
-            var offset = tokens[at].Offset;
-            var chunks = new (int Start, int End)[scan.Chunks!.Count];
-            var substitutions = new SliceSubstitution[scan.Substitutions!.Count];
-            var pastBound = nesting > TemplateNestingLimit;
-
-            for (var chunk = 0; chunk < chunks.Length; chunk++)
-            {
-                var (start, end) = scan.Chunks[chunk];
-                chunks[chunk] = (start - offset, end - offset);
-            }
-
-            for (var which = 0; which < substitutions.Length; which++)
-            {
-                var (start, end, startLine, startLineStart) = scan.Substitutions[which];
-                var column = start - startLineStart + 1;
-
-                if (pastBound)
-                {
-                    substitutions[which] = new SliceSubstitution(-1, -1, startLine, column, []);
-                    continue;
-                }
-
-                var inner = new SliceTokenizer(source, start, end, startLine, startLineStart, scanned!)
-                {
-                    HtmlLikeComments = HtmlLikeComments,
-                };
-
-                var run = new System.Collections.Generic.List<SliceToken>();
-                inner.ReadStream(run);
-
-                if (inner.diagnostics.Count != 0)
-                {
-                    substitutions[which] = new SliceSubstitution(-1, -1, startLine, column, [.. inner.diagnostics]);
-                    continue;
-                }
-
-                var first = tokens.Count;
-                tokens.AddRange(run);
-                substitutions[which] = new SliceSubstitution(first, tokens.Count - 1, startLine, column, []);
-
-                foreach (var (token, nested) in inner.streamTemplates)
-                {
-                    pending.Enqueue((first + token, nested, nesting + 1));
-                }
-            }
-
-            templates!.Add(at, new SliceTemplate(chunks, substitutions, pastBound));
-        }
     }
 
     /// <summary>
@@ -826,23 +599,24 @@ public sealed class SliceTokenizer
     /// been fixed by a version that ate the terminator.
     /// </para>
     /// <para>
-    /// <b>Offset zero is the start of the text this tokenizer reads</b>, which for a template
-    /// substitution's run is the character after its <c>${</c>. That is where the substitution's own
-    /// tokenizer, over its text alone, found one until SJL-12.6 item 4, and the run keeps that
-    /// answer rather than change what a program means as a side effect of where it is tokenized.
+    /// <i>(Revised 2026-11-09, SJL-13's step 1, JSD-0083 decision D20: a paragraph here read "Offset zero
+    /// is the start of the text this tokenizer reads, which for a template substitution's run is the
+    /// character after its ${. That is where the substitution's own tokenizer, over its text alone, found
+    /// one until SJL-12.6 item 4, and the run keeps that answer rather than change what a program means as
+    /// a side effect of where it is tokenized."; the runs are deleted, and offset zero is the source's.)</i>
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=96C85A
-    // Broiler-Falsified-If: a `#!` anywhere but the start of the text this tokenizer reads is treated as a comment, or the line terminator ending one is consumed
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=6EA46C
+    // Broiler-Falsified-If: a `#!` anywhere but the start of the source is treated as a comment, or the line terminator ending one is consumed
     // Broiler-Human:        PENDING
     private void SkipHashbangComment()
     {
-        if (index != textStart || textEnd - textStart < 2 || source[textStart] != '#' || source[textStart + 1] != '!')
+        if (index != 0 || textEnd < 2 || source[0] != '#' || source[1] != '!')
         {
             return;
         }
 
-        index = textStart + 2;
+        index = 2;
 
         while (index < textEnd && !IsLineTerminator(source[index]))
         {
@@ -1216,15 +990,17 @@ public sealed class SliceTokenizer
     /// requires would buy a program nobody can write and cost a rule nobody can see.
     /// </para>
     /// <para>
-    /// <b>It is reachable from the wide parser, and for one question only:</b> which word an
-    /// ESCAPED identifier would have been had it been spelled plainly. Asking the table rather than
-    /// writing a second list of reserved words in the parser is what keeps the answer one fact -
-    /// a word added here cannot be forgotten there.
+    /// <i>(Revised 2026-11-09, at SJL-13.3's step 1, JSD-0083 decision D20: a paragraph here read "It is
+    /// reachable from the wide parser, and for one question only: which word an ESCAPED identifier would
+    /// have been had it been spelled plainly. Asking the table rather than writing a second list of
+    /// reserved words in the parser is what keeps the answer one fact - a word added here cannot be
+    /// forgotten there."; the wide parser is deleted, this tokenizer is the table's only reader, and the
+    /// method, internal for that parser, is private.)</i>
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E5ABA7
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=15B2D3
     // Broiler-Human:        PENDING
-    internal static SliceTokenKind KeywordKind(string text) => text switch
+    private static SliceTokenKind KeywordKind(string text) => text switch
     {
         "var" => SliceTokenKind.Var,
         "let" => SliceTokenKind.Let,
@@ -2244,8 +2020,9 @@ public sealed class SliceTokenizer
     /// nothing can lower. What the scan owes is therefore exactly one thing - the position the
     /// literal ENDS at - and it owes it absolutely, because a scan that ends early hands the parser a
     /// stream that resumes in the middle of a string, and every diagnostic after it names the wrong
-    /// thing. The wide compiler's <see cref="StructuredTemplates"/> mode tokenizes the parts behind
-    /// the stream, from where this scan found them.
+    /// thing. <i>(Revised 2026-11-09, SJL-13's step 1, JSD-0083 decision D20: the paragraph went on "The
+    /// wide compiler's StructuredTemplates mode tokenizes the parts behind the stream, from where this scan
+    /// found them."; the mode is deleted.)</i>
     /// </para>
     /// <para>
     /// <b>Counting <c>${</c> against <c>}</c> is not enough, and that is what this used to do.</b> A
@@ -2264,30 +2041,19 @@ public sealed class SliceTokenizer
     /// What it can get wrong is where a template ends, never what an admitted program means.
     /// </para>
     /// <para>
-    /// <b>A template the structured mode has already scanned is not scanned again.</b> The scan of
-    /// an outer template found where each template nested in it ends, and a substitution's run
-    /// meets those templates as tokens; it takes the end the scan recorded, which is the end a scan
-    /// from that backtick finds, as long as it lies inside the text the run reads. Otherwise it
-    /// scans, within that text.
+    /// <i>(Revised 2026-11-09, SJL-13's step 1, JSD-0083 decision D20: a paragraph here read "A template
+    /// the structured mode has already scanned is not scanned again. The scan of an outer template found
+    /// where each template nested in it ends, and a substitution's run meets those templates as tokens; it
+    /// takes the end the scan recorded, which is the end a scan from that backtick finds, as long as it lies
+    /// inside the text the run reads. Otherwise it scans, within that text."; the runs are deleted.)</i>
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=B5039C
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=9ABBF8
     // Broiler-Falsified-If: a template, string, comment or object literal inside a substitution ends the outer literal
     // Broiler-Human:        PENDING
     private SliceToken ReadTemplateLiteral(int startLine, int startColumn, bool sawNewline)
     {
         var start = index;
-
-        if (scanned is not null && scanned.TryGetValue(start, out var known) && known.End <= textEnd)
-        {
-            index = known.End;
-            line = known.EndLine;
-            lineStart = known.EndLineStart;
-
-            return new SliceToken(
-                SliceTokenKind.TemplateLiteral, source[start..index], 0, string.Empty,
-                startLine, startColumn, sawNewline, false);
-        }
 
         index++;
 
@@ -2336,18 +2102,18 @@ public sealed class SliceTokenizer
     /// unterminated, which is the construct a reader is looking at.
     /// </para>
     /// <para>
-    /// <b>Under <see cref="StructuredTemplates"/> it records where the parts are</b>: each chunk,
-    /// each substitution with the line it begins on, and the end, for every template it closes,
-    /// nested ones included, under the offset of its backtick.
+    /// <i>(Revised 2026-11-09, SJL-13's step 1, JSD-0083 decision D20: a paragraph here read "Under
+    /// StructuredTemplates it records where the parts are: each chunk, each substitution with the line it
+    /// begins on, and the end, for every template it closes, nested ones included, under the offset of its
+    /// backtick."; the mode is deleted, and the scan records nothing.)</i>
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=4207C6
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=A2D119
     // Broiler-Falsified-If: a substitution consumes the backtick that closes the template it belongs to, or a nesting costs a stack frame
     // Broiler-Human:        PENDING
     private bool ScanTemplateBody()
     {
-        var recording = scanned is not null;
-        var open = new System.Collections.Generic.List<TemplateScan> { new(index - 1, index, recording) };
+        var open = new System.Collections.Generic.List<TemplateScan> { new() };
 
         while (index < textEnd)
         {
@@ -2370,17 +2136,7 @@ public sealed class SliceTokenizer
 
                 if (c == '`')
                 {
-                    scan.Chunks?.Add((scan.ChunkStart, index));
                     index++;
-
-                    if (recording)
-                    {
-                        scan.End = index;
-                        scan.EndLine = line;
-                        scan.EndLineStart = lineStart;
-                        scanned![scan.Start] = scan;
-                    }
-
                     open.RemoveAt(open.Count - 1);
 
                     if (open.Count == 0)
@@ -2395,14 +2151,10 @@ public sealed class SliceTokenizer
 
                 if (c == '$' && index + 1 < textEnd && source[index + 1] == '{')
                 {
-                    scan.Chunks?.Add((scan.ChunkStart, index));
                     index += 2;
                     scan.InSubstitution = true;
                     scan.Braces = 0;
                     scan.Previous = '\0';
-                    scan.SubstitutionStart = index;
-                    scan.SubstitutionLine = line;
-                    scan.SubstitutionLineStart = lineStart;
                     continue;
                 }
 
@@ -2465,7 +2217,7 @@ public sealed class SliceTokenizer
             if (c == '`')
             {
                 index++;
-                open.Add(new TemplateScan(index - 1, index, recording));
+                open.Add(new TemplateScan());
                 continue;
             }
 
@@ -2483,10 +2235,7 @@ public sealed class SliceTokenizer
 
                 if (scan.Braces == 0)
                 {
-                    scan.Substitutions?.Add(
-                        (scan.SubstitutionStart, index - 1, scan.SubstitutionLine, scan.SubstitutionLineStart));
                     scan.InSubstitution = false;
-                    scan.ChunkStart = index;
                     continue;
                 }
 
@@ -2508,28 +2257,20 @@ public sealed class SliceTokenizer
 
     /// <summary>
     /// One template the scan is inside: whether the cursor is in its body or in its open
-    /// substitution, that substitution's state, and - under <see cref="StructuredTemplates"/> -
-    /// where its parts are.
+    /// substitution, and that substitution's state.
     /// </summary>
     /// <remarks>
-    /// <b>A closed one is the structured mode's record of the template</b>, kept under the offset of
-    /// its backtick: the chunks and substitutions as offsets into the source, each substitution with
-    /// the line it begins on and where that line starts, and where the template ends.
+    /// <i>(Revised 2026-11-09, SJL-13's step 1, JSD-0083 decision D20: the summary ended "and - under
+    /// StructuredTemplates - where its parts are", and a remark read "A closed one is the structured mode's
+    /// record of the template, kept under the offset of its backtick: the chunks and substitutions as
+    /// offsets into the source, each substitution with the line it begins on and where that line starts,
+    /// and where the template ends."; the mode and its record are deleted, with the members that held the
+    /// template's start, its chunks, its substitutions and its end.)</i>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=AB7A90
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=8CF45A
     // Broiler-Human:        PENDING
-    private sealed class TemplateScan(int start, int chunkStart, bool recording)
+    private sealed class TemplateScan
     {
-        /// <summary>The offset of the template's opening backtick.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=8679FE
-        // Broiler-Human:        PENDING
-        internal int Start { get; } = start;
-
-        /// <summary>Where the chunk being read began: just past the backtick or the closing brace.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=2895B5
-        // Broiler-Human:        PENDING
-        internal int ChunkStart { get; set; } = chunkStart;
-
         /// <summary>Whether the cursor is in the template's open substitution rather than its body.</summary>
         // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=9585C7
         // Broiler-Human:        PENDING
@@ -2544,52 +2285,6 @@ public sealed class SliceTokenizer
         // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=D1ED42
         // Broiler-Human:        PENDING
         internal char Previous { get; set; }
-
-        /// <summary>The offset of the open substitution's first character.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=29D0DC
-        // Broiler-Human:        PENDING
-        internal int SubstitutionStart { get; set; }
-
-        /// <summary>The line the open substitution begins on.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=D1CE0A
-        // Broiler-Human:        PENDING
-        internal int SubstitutionLine { get; set; }
-
-        /// <summary>The offset that line starts at.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=81E926
-        // Broiler-Human:        PENDING
-        internal int SubstitutionLineStart { get; set; }
-
-        /// <summary>Each chunk, as offsets of the source; null unless recording.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=966E34
-        // Broiler-Human:        PENDING
-        internal System.Collections.Generic.List<(int Start, int End)>? Chunks { get; } = recording ? [] : null;
-
-        /// <summary>
-        /// Each substitution: its first offset, the offset of the brace closing it, its line and
-        /// where that line starts; null unless recording.
-        /// </summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=96CAE1
-        // Broiler-Human:        PENDING
-        internal System.Collections.Generic.List<(int Start, int End, int Line, int LineStart)>? Substitutions
-        {
-            get;
-        } = recording ? [] : null;
-
-        /// <summary>The offset just past the closing backtick, once the template is closed.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=2F0DCF
-        // Broiler-Human:        PENDING
-        internal int End { get; set; }
-
-        /// <summary>The line the cursor was on just past the closing backtick.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=54A486
-        // Broiler-Human:        PENDING
-        internal int EndLine { get; set; }
-
-        /// <summary>The offset that line starts at.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=E586F2
-        // Broiler-Human:        PENDING
-        internal int EndLineStart { get; set; }
     }
 
     /// <summary>Skips a string literal from its opening quote to just past its closing one.</summary>
@@ -2704,9 +2399,10 @@ public sealed class SliceTokenizer
     /// a regular expression, but a keyword that ends in a letter - <c>return /x/</c> - reads as
     /// division here. It is consulted only inside a template substitution, to find the brace that
     /// closes it, so what it can get wrong is where a template ends. The slice front end discards
-    /// what is inside; the wide compiler's <see cref="StructuredTemplates"/> mode has the lexer
-    /// itself read the characters this scan says are the substitution, as the parser's own copy of
-    /// this scan had them read until SJL-12.6 item 4.
+    /// what is inside. <i>(Revised 2026-11-09, SJL-13's step 1, JSD-0083 decision D20: the sentence went
+    /// on "; the wide compiler's StructuredTemplates mode has the lexer itself read the characters this scan
+    /// says are the substitution, as the parser's own copy of this scan had them read until SJL-12.6 item
+    /// 4."; the mode is deleted, and the wide path reads templates through the shared library.)</i>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=17FBC0
     // Broiler-Falsified-If: a division after an identifier or a literal is taken for a regular expression
@@ -3060,54 +2756,3 @@ public sealed class SliceTokenizer
     private static bool IsDecimalPart(char c) => char.IsAsciiDigit(c) || c == '_';
 
 }
-
-/// <summary>
-/// One template literal of a structured token stream (<see cref="SliceTokenizer.StructuredTemplates"/>):
-/// where its chunks are and where each substitution's tokens are.
-/// </summary>
-/// <remarks>
-/// <b>It is a side table and not a token</b>, so the stream the parser reads is the one the slice
-/// front end reads too, a template one token in it, and nothing about a token changes for a consumer
-/// that does not ask (SJL-12.6 item 4, JSD-0080 decision D15). There is one more chunk than there are
-/// substitutions: the text before the first <c>${</c>, between each <c>}</c> and the next <c>${</c>,
-/// and after the last.
-/// </remarks>
-/// <param name="Chunks">
-/// Each chunk's raw text, as offsets into the template token's <see cref="SliceToken.RawText"/>.
-/// </param>
-/// <param name="Substitutions">Each substitution, in source order.</param>
-/// <param name="PastNestingBound">
-/// Whether the template is nested deeper than <see cref="SliceTokenizer.TemplateNestingLimit"/>, so
-/// that its substitutions have no runs.
-/// </param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=5026FF
-// Broiler-Falsified-If: a chunk's offsets take in a `${`, a substitution or the closing backtick
-// Broiler-Human:        PENDING
-internal sealed record SliceTemplate(
-    System.Collections.Generic.IReadOnlyList<(int Start, int End)> Chunks,
-    System.Collections.Generic.IReadOnlyList<SliceSubstitution> Substitutions,
-    bool PastNestingBound);
-
-/// <summary>Where one template substitution's tokens are, or why it has none.</summary>
-/// <param name="First">
-/// The index of the substitution's first token in the array the tokenizer returned, or -1 when its
-/// lexer refused it or its template is past the nesting bound.
-/// </param>
-/// <param name="Last">
-/// The index of the <see cref="SliceTokenKind.EndOfSource"/> that ends its run, at the brace that
-/// closes the substitution, or -1.
-/// </param>
-/// <param name="Line">The line its first character stands on.</param>
-/// <param name="Column">The column of its first character.</param>
-/// <param name="Refusals">
-/// What its lexer refused, at the places it refused them; empty when it has a run. The parser reports
-/// them when it reaches the substitution.
-/// </param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=82E20A
-// Broiler-Human:        PENDING
-internal sealed record SliceSubstitution(
-    int First,
-    int Last,
-    int Line,
-    int Column,
-    System.Collections.Generic.IReadOnlyList<SliceSourceDiagnostic> Refusals);

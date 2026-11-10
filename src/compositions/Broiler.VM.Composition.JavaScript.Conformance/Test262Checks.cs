@@ -803,9 +803,12 @@ internal static class Test262Checks
 
     private static (string, bool, string) TheFamilyTableNamesAFamilyTheRunMet()
     {
-        // The messages are the front end's own shape - `JsParser` composes every named refusal as
-        // the construct followed by the manifest suffix - so this check is about the reader rather
-        // than about a sentence invented here.
+        // The messages are the front end's own shape - its texts compose every named refusal as the
+        // construct followed by the manifest suffix - so this check is about the reader rather than
+        // about a sentence invented here. (Revised 2026-11-09, SJL-13's step 1, JSD-0083 decisions D11
+        // and D20: it read "`JsParser` composes every named refusal as the construct followed by the
+        // manifest suffix"; JsParser is deleted, and JsFrontendDiagnostics and the admission walk
+        // render those refusals with the same suffix.)
         var results = new List<Test262Outcome>
         {
             Unsupported("test/a.js", "strict", "a class declaration is not admitted by the declared feature manifest"),

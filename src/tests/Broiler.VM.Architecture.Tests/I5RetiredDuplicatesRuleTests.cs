@@ -67,10 +67,22 @@ public sealed class I5RetiredDuplicatesRuleTests
         // JsLocaleInfo.cs. JsRealm.Intl.cs, JsRealm.Locale.cs, JsRealm.PluralRules.cs, JsRealm.ListFormat.cs,
         // JsRealm.RelativeTimeFormat.cs, JsRealm.DisplayNames.cs and JsRealm.DurationFormat.cs, where those
         // members lived and their adapters live now, and JsIntlDataSet.cs, which hands the shared Intl library
-        // this family's data, are added.)
+        // this family's data, are added.) (Revised 2026-11-09, at SJL-13's step 1: JsParser.cs, which the
+        // list named since SJL-3.4, is deleted whole (JSD-0083 decision D20); the numeric key its NumberKey
+        // read through NumberText.ToString is the adapter's (JsFrontendAdapter.Expressions.cs), and the
+        // BigInt value its BigIntValueOf read through NumericLiterals.Evaluate is the admission walk's
+        // (JsAdmissionWalk.cs), so those two files are named instead.) (Revised 2026-11-10, at SJL-13's step 1's
+        // records, when the register took the types and members step 1 deleted (JSD-0087): JsFrontend.cs, which
+        // calls the shared syntax library in JsParser's place, JsRegularExpressionValidator.cs, which makes the
+        // checks the binder's CheckRegExp made, and JsBinder.Walks.cs and JsBinder.EarlyErrors.cs, where
+        // ResourceScoped and CheckRegExp lived, are added; SliceTokenizer.cs, where its wide-only members lived, is
+        // named already.)
         Assert.Equal(FamilyAssemblies.Order(StringComparer.Ordinal), covered.Select(static f => f.Assembly).Distinct().Order(StringComparer.Ordinal));
         foreach (var file in (string[])["src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs", "src/Broiler.VM.Profile.JavaScript/JsRealm.Number.cs",
-                                         "src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs", "src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs",
+                                         "src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs", "src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs",
+                                         "src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs",
+                                         "src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs", "src/Broiler.VM.Profile.JavaScript.Compiler/JsRegularExpressionValidator.cs",
+                                         "src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs", "src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs",
                                          "src/Broiler.VM.Profile.JavaScript/JsValue.cs", "src/Broiler.VM.Profile.JavaScript/JsBinary.cs",
                                          "src/Broiler.VM.Profile.JavaScript/JsRealm.Math.cs", "src/Broiler.VM.Profile.JavaScript/JsTemporal.Conversions.cs",
                                          "src/Broiler.VM.Profile.JavaScript/JsRealm.NumberFormat.cs", "src/Broiler.VM.Profile.JavaScript/JsBigInt.cs",

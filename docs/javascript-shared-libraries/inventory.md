@@ -154,6 +154,12 @@ the profile's collation is `Broiler.ECMAScript.Intl`'s `UcaCollator` and `UcaCol
 | Diagnostics | `SliceSourceDiagnosticCode`, registry | `FastParseException` messages | light / light | shared codes; rendering retained |
 | Static semantics and early errors | `SliceStaticSemantics`; the wide binder in `JsCompiler` | `FastScope`, `FastFunctionScope`, `FreeNameScan`, `SyntaxValidation`, `FastCompiler.EarlyErrors`, `DirectEvalSupport` | heavy / heavy | shared |
 
+*(Noted 2026-11-10, at SJL-13.3's step 1, by [JSD-0087](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md).)* This family's column of the parser and tree row,
+"`JsParser`/`JsSyntax` (wide)", names code step 1 deleted in part: the wide path parses with `Broiler.ECMAScript.Frontend`,
+and an adapter builds `JsSyntax` from its tree until step 2 deletes both; `JsParser` is gone. The tokenizer row's
+`SliceTokenizer` serves only the slice path from step 1, and the static-semantics row's wide binder keeps only the
+checks of rows the shared stage table assigns `semantics`. The rows are kept as written.
+
 ---
 
 ## 2. Duplicated inside one engine

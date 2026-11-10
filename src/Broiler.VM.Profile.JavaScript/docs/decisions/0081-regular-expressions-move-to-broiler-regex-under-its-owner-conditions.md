@@ -222,6 +222,12 @@ risk D10's stop.** Nothing here weakens either.
 - **Outside SJL-11:** S9, an invalid literal read as division, which is the shared front end's and SJL-14's
   (decision D22); and S9b, this family's scanner, which is SJL-12's and SJL-13's front end. S9b's test262 file fails
   at both commits of SJL-11.4 and is no C1 row.
+  *(Noted 2026-11-10, at SJL-13's step 1's records, by
+  [JSD-0087](0087-the-wide-path-parses-with-the-shared-syntax-library.md).)* "S9b's test262 file fails at both commits of
+  SJL-11.4" no longer holds: step 1 corrects that file, `test/staging/sm/RegExp/7.8.5-01.js`, by bundle `sjl-13-001`'s
+  row T33 (the library refuses `/a[bc\` with the unterminated literal's diagnostic where this family's tokenizer
+  threw), so it is expected to pass at both commits of SJL-11.4, which descend from step 1. It is still no C1 row, and a
+  change of its verdict between them is still a finding against this record.
 
 **X6 - extended.**
 - **This family:** the parser in `JsRegExpMatcher.cs` and the public `JsRegExpSyntaxError`, deleted with the file.
@@ -624,6 +630,20 @@ which is decided at SJL-15.1, and only if SJL-11.4 and SJL-11.5 have both landed
 stays, for the provider. If SJL-13's step 1 lands before SJL-11.4, SJL-11.4 re-points the provider's implementation
 instead of `CheckRegExp`, and SJL-11's rule here is revised by a new dated file before any of its runs (JSD-0083
 decision D36).
+
+*(Noted 2026-11-10, at SJL-13's step 1's records, by
+[JSD-0087](0087-the-wide-path-parses-with-the-shared-syntax-library.md) and JSD-0083 decision D36.)* The note above
+ends "If SJL-13's step 1 lands before SJL-11.4, SJL-11.4 re-points the provider's implementation instead of
+`CheckRegExp`, and SJL-11's rule here is revised by a new dated file before any of its runs". Step 1 lands first: its
+branch deletes `CheckRegExp`, and the provider is `JsRegularExpressionValidator`, which makes the checks `CheckRegExp`
+made, in its order and with its texts, over this family's matcher; the library reports its refusal at the literal's
+span under registry code 2215, `InvalidRegularExpression`, which revision 19 minted for the meaning `CheckRegExp`
+reported under 2101. So the check this decision has SJL-11.4 re-point onto Broiler.Regex's validate entry and the
+shared flag parser is `JsRegularExpressionValidator`, keeping that code and that span. Bundle `sjl-11-001`'s rule is
+revised by
+[`decision-rule-area-revised-2026-11-10.md`](../../../../docs/evidence/sjl-11-001/decision-rule-area-revised-2026-11-10.md),
+filed with step 1's records before any of its runs. SJL-11.4's landing branch is not cut, and the windows do not
+overlap.
 
 **Decision D19 - the measurements.** A predeclared part of template T5 in each engine's rule, judged and recorded;
 **not a gate clause**. A NOT MET is recorded in the cut-over JSD as "a slower but bounded matcher", the trade

@@ -39,6 +39,7 @@ internal static class WideFrontEndChecks
     {
         yield return TwoGoalsOnTheWidePathDoNotReachEachOther();
         yield return ADeepNestingCorpusIsRefusedOnTheWidePath();
+        yield return ALeftOperandsSpineIsChargedToTheChainItBegins();
     }
 
     /// <summary>How many rounds the two-goals row runs, each a Script and a Module compilation at once.</summary>
@@ -250,6 +251,108 @@ internal static class WideFrontEndChecks
                   "as NestingTooDeep past it, with the process alive: brackets, parentheses, blocks, functions " +
                   $"and template substitutions {Past.ToString(CultureInfo.InvariantCulture)} deep, and a binary, " +
                   $"a member and a call chain {SpinePast.ToString(CultureInfo.InvariantCulture)} long"
+                : string.Join("; ", failed));
+    }
+
+    /// <summary>
+    /// A chain whose left operand's spine the base left uncharged is refused past the tree-depth bound,
+    /// in each of the four shapes the correspondence's row R14 names and in each residual shape
+    /// JSD-0083's note on decision D14 lists, and a source within the bound that the base refused is
+    /// compiled (SJL-13's step 1, JSD-0083 decisions D14 and D23).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Added 2026-11-09 by SJL-13's step 1, and judged at the after commit only</b> (bundle
+    /// <c>sjl-13-001</c>'s part C, its fifth row, as the rule's revision of 2026-11-02 reads it). The base
+    /// compiled the first four shapes past the bound, because <c>JsParser.Deepen</c> charged a chain one
+    /// level per node it added and did not add a left operand's own spine to the chain it began; the row
+    /// the tools commit added holds none of them for that reason (bundle <c>sjl-12-001</c>'s README, "The
+    /// parser's left-operand gap"). The shared library charges a chain node's height, one more than its
+    /// highest child's, wherever the tree is built, so each shape past the bound is refused with the
+    /// contract's tree-depth diagnostic, the process alive.
+    /// </para>
+    /// <para>
+    /// <b>The four shapes</b>: a binary chain whose first operand is a parenthesised chain, a template whose
+    /// substitution holds one, a binary chain whose first operand is a member or call chain, and a member
+    /// or call chain whose object is a parenthesised binary chain. <b>The residual shapes</b>, one source
+    /// each: a chain as the right operand of a chain's early node, and as a prefix, <c>await</c>,
+    /// <c>yield</c> or update operand, an array element, an object value, a computed key, a call's,
+    /// <c>new</c>'s or <c>import()</c>'s argument, a substitution, a parenthesised sequence, conditional or
+    /// assignment, a function body, a class heritage, a field initialiser, and <c>#x in</c>'s right
+    /// operand. A decorator's expression is the one residual shape left out: this family admits no
+    /// decorator, so the source would be refused for its decorator before its depth. <b>Within the
+    /// bound</b>: a chain of additions whose last right operand is a chain of multiplications, the two
+    /// together past the bound and each within it, which <c>JsParser</c>'s <c>Continue</c> refused by
+    /// summing the depth the chain had reached and the operand's, and which the library compiles.
+    /// </para>
+    /// </remarks>
+    private static (string, bool, string) ALeftOperandsSpineIsChargedToTheChainItBegins()
+    {
+        const string Name = "a left operand's spine is charged to the chain it begins";
+        const int Half = SliceParseOptions.MaximumTreeDepth * 6 / 10;
+        const int Past = SliceParseOptions.MaximumTreeDepth * 12 / 10;
+        const int Within = SliceParseOptions.MaximumTreeDepth * 3 / 4;
+
+        string Chain(int length, string op = " + ") => "a" + Repeat(op + "a", length);
+        var deep = Chain(Past);
+
+        (string Shape, string Source)[] past =
+        [
+            ("a binary chain whose first operand is a parenthesised chain", "var a = 1; (" + Chain(Half) + ")" + Repeat(" + a", Half) + ";"),
+            ("a template whose substitution holds one", "var a = 1; `${(" + Chain(Half) + ")" + Repeat(" + a", Half) + "}`;"),
+            ("a binary chain whose first operand is a member chain", "var a = { b: 1 }; a" + Repeat(".b", Half) + Repeat(" + a", Half) + ";"),
+            ("a binary chain whose first operand is a call chain", "function a() { return a; } a" + Repeat("()", Half) + Repeat(" + a", Half) + ";"),
+            ("a member chain whose object is a parenthesised binary chain", "var a = 1; (" + Chain(Half) + ")" + Repeat(".b", Half) + ";"),
+            ("a call chain whose object is a parenthesised binary chain", "var a = 1; (" + Chain(Half) + ")" + Repeat("()", Half) + ";"),
+            ("the right operand of a chain's early node", "var a = 1; a + (" + deep + ") + a;"),
+            ("a prefix operand", "var a = 1; !(" + deep + ");"),
+            ("an await operand", "async function f() { var a = 1; await (" + deep + "); }"),
+            ("a yield operand", "function* f() { var a = 1; yield (" + deep + "); }"),
+            ("an update operand", "var a = { b: 1 }; ++(" + deep + ").b;"),
+            ("an array element", "var a = 1; [" + deep + "];"),
+            ("an object value", "var a = 1; ({ k: " + deep + " });"),
+            ("a computed key", "var a = 1; ({ [" + deep + "]: 1 });"),
+            ("a call's argument", "function a() {} a(" + deep + ");"),
+            ("new's argument", "function a() {} new a(" + deep + ");"),
+            ("import()'s argument", "var a = 1; import(" + deep + ");"),
+            ("a substitution", "var a = 1; `${" + deep + "}`;"),
+            ("a parenthesised sequence", "var a = 1; (a, " + deep + ");"),
+            ("a parenthesised conditional", "var a = 1; (a ? " + deep + " : a);"),
+            ("a parenthesised assignment", "var a = 1; (a = " + deep + ");"),
+            ("a function body", "function f() { var a = 1; return " + deep + "; }"),
+            ("a class heritage", "var a = 1; class C extends (" + deep + ") {}"),
+            ("a field initialiser", "var a = 1; class C { x = " + deep + "; }"),
+            ("#x in's right operand", "var a = 1; class C { #x; m() { return #x in (" + deep + "); } }"),
+        ];
+
+        var failed = new List<string>();
+
+        foreach (var (shape, source) in past)
+        {
+            var answer = Compile(source, SliceGoal.Script);
+
+            if (answer.Accepted || answer.First != SliceSourceDiagnosticCode.NestingTooDeep)
+            {
+                failed.Add($"{shape}: {answer}");
+            }
+        }
+
+        var within = Compile("var a = 1; " + Chain(Within) + " + " + Chain(Within, " * ") + ";", SliceGoal.Script);
+
+        if (!within.Accepted)
+        {
+            failed.Add($"within the bound, {Within.ToString(CultureInfo.InvariantCulture)} additions and " +
+                $"{Within.ToString(CultureInfo.InvariantCulture)} multiplications: {within}");
+        }
+
+        return (
+            Name,
+            failed.Count == 0,
+            failed.Count == 0
+                ? $"{past.Length} sources past the tree-depth bound of " +
+                  $"{SliceParseOptions.MaximumTreeDepth.ToString(CultureInfo.InvariantCulture)} through JsCompiler.Compile, " +
+                  "the four shapes the base compiled and one of each residual shape, each refused as NestingTooDeep " +
+                  "with the process alive; and a chain within the bound that the base refused, compiled"
                 : string.Join("; ", failed));
     }
 

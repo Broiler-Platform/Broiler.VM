@@ -47,7 +47,7 @@ public sealed partial class JsCompiler
     /// for the lifetime of the instance, and <c>globalThis.x</c> must not see it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6130F2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=83B37D
     // Broiler-Human:        PENDING
     private void CompileModule(JsProgramNode program, JsModuleUnit unit)
     {
@@ -59,7 +59,7 @@ public sealed partial class JsCompiler
             {
                 Refuse(
                     program.Span,
-                    SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                    SliceSourceDiagnosticCode.DuplicateModuleKey,
                     "two modules were presented under the key `" + key + "`");
 
                 return;
@@ -292,7 +292,7 @@ public sealed partial class JsCompiler
     /// lexical ones are declared and left uninitialised, which is the temporal dead zone and is what
     /// an importer that reads too early has to meet.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=200188
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2ACF46
     // Broiler-Human:        PENDING
     private System.Collections.Generic.IReadOnlyList<string> DeclareModuleBindings(
         JsBinder.HoistingScope unit,
@@ -338,7 +338,7 @@ public sealed partial class JsCompiler
         {
             if (statement is JsExportDeclaration { Kind: JsExportKind.Default, Default: not null })
             {
-                build.Scope.Declare(JsParser.DefaultBindingName, constant: false);
+                build.Scope.Declare(JsModuleNames.DefaultBindingName, constant: false);
             }
         }
 
@@ -368,7 +368,7 @@ public sealed partial class JsCompiler
     /// the binder refuses before any of the module is lowered (SJL-12.6 item 2); the lowering only
     /// asserts them (<see cref="BinderAdmitted"/>).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DA409B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B35F4F
     // Broiler-Human:        PENDING
     private void DeclareExports(
         System.Collections.Generic.IReadOnlyList<JsStatement> body, ModuleBuild build)
@@ -402,10 +402,10 @@ public sealed partial class JsCompiler
                         new JsIndirectExportRow(
                             InternedName(specifier.Exported),
                             request,
-                            specifier.Local == JsParser.StarName
+                            specifier.Local == JsModuleNames.StarName
                                 ? 0u
                                 : InternedName(specifier.Local),
-                            specifier.Local == JsParser.StarName
+                            specifier.Local == JsModuleNames.StarName
                                 ? JsFormat.ImportKind.Namespace
                                 : JsFormat.ImportKind.Named));
 
@@ -484,7 +484,7 @@ public sealed partial class JsCompiler
     }
 
     /// <summary>Emits the module's body, which is its statements minus the declarations.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=17AA45
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B63BCF
     // Broiler-Human:        PENDING
     private int EmitModuleBody(JsProgramNode program, ModuleBuild build)
     {
@@ -550,7 +550,7 @@ public sealed partial class JsCompiler
                     EmitScoped(
                         JsOpcode.InitialiseScoped,
                         0,
-                        build.Scope.SlotOf(JsParser.DefaultBindingName));
+                        build.Scope.SlotOf(JsModuleNames.DefaultBindingName));
 
                     break;
                 }
