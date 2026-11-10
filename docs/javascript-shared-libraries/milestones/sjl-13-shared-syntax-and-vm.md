@@ -124,6 +124,14 @@ register: they are named by row in JSD-0087 and in rule I5's register paragraph,
 decision D20 reads it, and bundle `sjl-13-001`'s area rule says the same for its part D by its revision of that day.
 The text above is left as written.
 
+*(Noted 2026-11-10, later, at task 7.3 of step 1's evidence.)* Step 1 merged as `a8d8398` (Broiler-Platform/Broiler.VM#196),
+bundle `sjl-13-001`'s after commit, its first parent `df75f8c` the base and the branch's first commit `cbee7c4` the
+registry commit. Its evidence, tasks 7.1 to 7.3 of work package 7 on the branch `sjl-13-evidence`, is taken, and the
+bundle's README judges the rule's ten parts in its section 4: parts A to I met, part J, the measurement, which is no gate
+clause, not met. Section 5 names each reading the rule does not settle, with the alternative not taken, for the owner;
+parts B, C and H each turn on one of them. Step 1's half of clauses 4 to 6 is judged; the clauses wait on step 2 as
+well, under bundle `sjl-13-002`'s rule. The text above is left as written.
+
 ### SJL-13.4 — Admission and closures
 
 - The allow-list admits the frontend for `Broiler.VM.Profile.JavaScript.Compiler` only.
@@ -138,6 +146,13 @@ declares it for the compiler-bearing roots." does not yet hold: no commit of ste
 `docs/compositions.md`'s rows for those roots, and no closure of a root carrying the library is retained, which rule K4
 holds the rows to. They move after the merge, in the records commit that retains the closures the collector publishes
 at the after commit. JSD-0087 records it. The text above is left as written.
+
+*(Noted 2026-11-10, later, at task 7.3 of step 1's evidence.)* The note above reads "They move after the merge, in the
+records commit that retains the closures the collector publishes at the after commit." They moved at task 7.2 instead,
+in the evidence branch's commit `2c087c4`, which retains in bundle `sjl-13-001` the closures of every root published in
+three modes at the after commit and moves the four rows in the same commit, as JSD-0087's dated note records. From that
+commit the bullet "The composition register declares it for the compiler-bearing roots." holds; the after commit
+itself does not hold it. The text above is left as written.
 
 ### SJL-13.5 — JS-2 closes
 
@@ -164,6 +179,13 @@ reaches `SliceTokenizer` and the slice front end, and a wide-path session, `--fu
 over the seeds bundle `sjl-13-001` commits with its rule; both run at both steps. No session reached the wide parser
 before. "The compiler's own measurement under its rule" is a rule part of each bundle (template T5), not a gate
 clause.
+
+*(Noted 2026-11-10, later, at task 7.3 of step 1's evidence.)* At step 1, bundle `sjl-13-001` holds each item above:
+the artifact comparison over the parse corpus (part B), whole-suite test262 in both forms compared per variant (part A),
+the registry rules (parts D and E), the source front end's concurrency gate (part C), the two fuzz sessions (part G),
+every root published and run in three modes (the closures, read beside the parts), rules I1 to I7 (part D), and the
+compiler's own measurement (part J, not met, no gate clause). Its README judges each part; step 2's are bundle
+`sjl-13-002`'s. The text above is left as written.
 
 **In the home:** the library's runs.
 
