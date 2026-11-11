@@ -1,0 +1,1 @@
+n37-consumer-2	rc=0	wall=62.7s	maxrss=641MB	started=2026-11-10T14:22:49Z	ended=2026-11-10T14:23:51Z

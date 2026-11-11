@@ -1,0 +1,15 @@
+=== vectors-base
+time: 2026-11-10T09:22:57Z
+loadavg: 3.25 4.61 5.21 6/216 22730
+nproc: 4
+os: Ubuntu 24.04.5 LTS; Linux 6.18.44-fc-v338 x86_64
+sdk: 10.0.401
+disk:  7173 MiB free
+other dotnet/python processes:
+  17448 dotnet          dotnet test Broiler.JS/Broiler.JavaScript.Vectors.Tests -c Release --no-build --filter Category=EngineCorpus --logger console;verbosity=detailed
+  17528 dotnet          /root/.dotnet/dotnet exec /root/.dotnet/sdk/10.0.401/vstest.console.dll --testAdapterPath:/root/.nuget/packages/coverlet.collector/10.1.0/build/net10.0/ --framework:.NETCoreApp,V
+  17566 dotnet          /root/.dotnet/dotnet exec --runtimeconfig /root/.dotnet/sdk/10.0.401/datacollector.runtimeconfig.json --depsfile /root/.dotnet/sdk/10.0.401/datacollector.deps.json /root/.dotnet/
+  17612 dotnet          /root/.dotnet/dotnet exec --runtimeconfig /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/rev37/verify/trees/base/Broiler.JS/Broiler.JavaScript.
+  18138 dotnet          dotnet exec /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/rev37/verify/trees/base/Broiler.JS/Broiler.JavaScript.Vectors.Tests/bin/Release/net1
+  18139 dotnet          dotnet exec /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/rev37/verify/trees/base/Broiler.JS/Broiler.JavaScript.Vectors.Tests/bin/Release/net1
+  18140 dotnet          dotnet exec /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/rev37/verify/trees/base/Broiler.JS/Broiler.JavaScript.Vectors.Tests/bin/Release/net1

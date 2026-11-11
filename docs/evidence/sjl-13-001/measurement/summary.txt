@@ -1,0 +1,14 @@
+# part J of docs/evidence/sjl-13-001/decision-rule-area.md, collected by collect-measurement.py
+# Q is the median of the retained repetitions' compile wall time, in ms; N = |Q(A) - Q(A-again)|; D = Q(A) - Q(B); E(arm) = Q(workload, arm) - Q(control, arm), retained beside D and deciding nothing
+# no verdict is written here: part J's reading is the bundle README's
+# workload | Q(B) | Q(A) | Q(A-again) | N | D | Q(control, B) | Q(control, A) | Q(control, A-again) | E(B) | E(A) | E(A-again)
+classes | 294.378 | 305.376 | 316.066 | 10.690 | 10.998 | 0.643 | 0.959 | 0.988 | 293.735 | 304.417 | 315.078
+declarations | 365.333 | 464.926 | 443.135 | 21.791 | 99.593 | 0.779 | 0.968 | 1.046 | 364.554 | 463.958 | 442.089
+expressions | 152.306 | 175.304 | 169.611 | 5.693 | 22.998 | 0.848 | 0.964 | 1.104 | 151.458 | 174.340 | 168.507
+literals | 69.431 | 91.125 | 98.357 | 7.232 | 21.694 | 0.727 | 0.927 | 0.874 | 68.704 | 90.198 | 97.483
+module | 188.179 | 218.612 | 205.727 | 12.885 | 30.433 | 0.615 | 0.818 | 0.838 | 187.564 | 217.794 | 204.889
+statements | 107.480 | 110.417 | 110.009 | 0.408 | 2.937 | 0.781 | 1.171 | 0.984 | 106.699 | 109.246 | 109.025
+# condition lines (conditions.tsv) that differ from arm B's: 0; timed compilations whose condition does: 0
+# children that exited other than 0: 0
+# effective-configuration lines seen: 1 (runs.tsv names each by its number)
+#   1: runtime-identifier=linux-x64 process-architecture=X64 gc-server=False gc-latency=Interactive tiered-compilation-env=unset tiered-compilation-config=unset tiered-pgo-env=unset tiered-pgo-config=unset dynamic-code=True native-arming=installed

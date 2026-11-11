@@ -1,0 +1,1 @@
+fx-build-k-partf	rc=0	wall=39.5s	maxrss=714MB	started=2026-11-10T16:50:46Z	ended=2026-11-10T16:51:25Z

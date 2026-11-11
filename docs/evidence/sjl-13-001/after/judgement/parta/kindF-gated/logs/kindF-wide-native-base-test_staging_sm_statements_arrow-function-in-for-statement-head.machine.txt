@@ -1,0 +1,16 @@
+=== kindF-wide-native-base-test_staging_sm_statements_arrow-function-in-for-statement-head before
+time: 2026-11-10T22:23:21Z
+loadavg: 0.98 1.55 1.55 1/107 31945
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23978 MiB free
+procs-matching:
+=== kindF-wide-native-base-test_staging_sm_statements_arrow-function-in-for-statement-head after (rc=1 started=2026-11-10T22:23:21Z)
+time: 2026-11-10T22:23:23Z
+loadavg: 0.98 1.55 1.55 1/107 32155
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23978 MiB free
+procs-matching:

@@ -1,0 +1,32 @@
+--- /dev/shm/s13ev/w/k4r-Program.cs.orig	2026-11-10 14:52:09.699205679 +0000
++++ src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Program.cs	2026-11-10 14:52:09.714826119 +0000
+@@ -572,6 +572,11 @@
+                 JsWordChecks.Run,
+                 ValueFormChecks.Run,
+             ];
++        // ADJUNCT TO CONTROL K4 OF BUNDLE sjl-13-001 (a scratch copy, never merged): the wide front end's rows alone.
++        if (System.Environment.GetEnvironmentVariable("K4_ROW_ONLY") is not null)
++        {
++            groups = [WideFrontEndChecks.Run];
++        }
+ 
+         var failed = 0;
+         var notRun = 0;
+--- /dev/shm/s13ev/w/k4r-Wide.cs.orig	2026-11-10 14:52:09.700871946 +0000
++++ src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/WideFrontEndChecks.cs	2026-11-10 14:52:09.714907918 +0000
+@@ -37,8 +37,13 @@
+ {
+     internal static IEnumerable<(string Name, bool Passed, string Detail)> Run()
+     {
+-        yield return TwoGoalsOnTheWidePathDoNotReachEachOther();
+-        yield return ADeepNestingCorpusIsRefusedOnTheWidePath();
++        // ADJUNCT TO CONTROL K4 OF BUNDLE sjl-13-001 (a scratch copy, never merged): the fifth row alone when K4_ROW_ONLY is set.
++        if (System.Environment.GetEnvironmentVariable("K4_ROW_ONLY") is null)
++        {
++            yield return TwoGoalsOnTheWidePathDoNotReachEachOther();
++            yield return ADeepNestingCorpusIsRefusedOnTheWidePath();
++        }
++
+         yield return ALeftOperandsSpineIsChargedToTheChainItBegins();
+     }
+ 

@@ -1,0 +1,110 @@
+=== partj (hard gate)
+time: 2026-11-10T13:39:47Z
+loadavg: 0.64 0.96 1.22 1/144 441
+nproc: 4
+os: Ubuntu 24.04.5 LTS; Linux 6.18.44-fc-v338 x86_64
+sdk: 10.0.401
+disk:  6903 MiB free
+processes:
+      1    06:44:39 process_api     /process_api --firecracker-init --addr 0.0.0.0:2024 --max-ws-buffer-size 32768 --block-local-connections --log-vsock-port 5002 --control-vsock-port 5001 --listen-vsoc
+      2    06:44:39 kthreadd        [kthreadd]
+      3    06:44:39 pool_workqueue_ [pool_workqueue_release]
+      4    06:44:39 kworker/R-rcu_g [kworker/R-rcu_gp]
+      5    06:44:39 kworker/R-sync_ [kworker/R-sync_wq]
+      6    06:44:39 kworker/R-kvfre [kworker/R-kvfree_rcu_reclaim]
+      7    06:44:39 kworker/R-slub_ [kworker/R-slub_flushwq]
+      8    06:44:39 kworker/R-netns [kworker/R-netns]
+     10    06:44:39 kworker/0:0H-ev [kworker/0:0H-events_highpri]
+     13    06:44:39 kworker/R-mm_pe [kworker/R-mm_percpu_wq]
+     14    06:44:39 ksoftirqd/0     [ksoftirqd/0]
+     15    06:44:39 rcu_sched       [rcu_sched]
+     16    06:44:39 rcu_exp_par_gp_ [rcu_exp_par_gp_kthread_worker/0]
+     17    06:44:39 rcu_exp_gp_kthr [rcu_exp_gp_kthread_worker]
+     18    06:44:39 migration/0     [migration/0]
+     19    06:44:39 cpuhp/0         [cpuhp/0]
+     20    06:44:39 cpuhp/1         [cpuhp/1]
+     21    06:44:39 migration/1     [migration/1]
+     22    06:44:39 ksoftirqd/1     [ksoftirqd/1]
+     24    06:44:39 kworker/1:0H-kb [kworker/1:0H-kblockd]
+     25    06:44:39 cpuhp/2         [cpuhp/2]
+     26    06:44:39 migration/2     [migration/2]
+     27    06:44:39 ksoftirqd/2     [ksoftirqd/2]
+     29    06:44:39 kworker/2:0H-kb [kworker/2:0H-kblockd]
+     30    06:44:39 cpuhp/3         [cpuhp/3]
+     31    06:44:39 migration/3     [migration/3]
+     32    06:44:39 ksoftirqd/3     [ksoftirqd/3]
+     34    06:44:39 kworker/3:0H-ev [kworker/3:0H-events_highpri]
+     35    06:44:39 kdevtmpfs       [kdevtmpfs]
+     36    06:44:39 kworker/R-inet_ [kworker/R-inet_frag_wq]
+     37    06:44:39 rcu_tasks_rude_ [rcu_tasks_rude_kthread]
+     38    06:44:39 rcu_tasks_trace [rcu_tasks_trace_kthread]
+     39    06:44:39 kauditd         [kauditd]
+     40    06:44:39 khungtaskd      [khungtaskd]
+     41    06:44:39 oom_reaper      [oom_reaper]
+     44    06:44:39 kworker/R-write [kworker/R-writeback]
+     45    06:44:39 kcompactd0      [kcompactd0]
+     46    06:44:39 ksmd            [ksmd]
+     47    06:44:39 khugepaged      [khugepaged]
+     48    06:44:39 kworker/R-kbloc [kworker/R-kblockd]
+     49    06:44:39 kworker/R-blkcg [kworker/R-blkcg_punt_bio]
+     53    06:44:39 watchdogd       [watchdogd]
+     54    06:44:39 kworker/R-quota [kworker/R-quota_events_unbound]
+     55    06:44:39 kworker/3:1H-kb [kworker/3:1H-kblockd]
+     56    06:44:39 kswapd0         [kswapd0]
+     57    06:44:39 kworker/R-xfsal [kworker/R-xfsalloc]
+     58    06:44:39 kworker/R-xfs_m [kworker/R-xfs_mru_cache]
+     59    06:44:39 kworker/u17:0   [kworker/u17:0]
+     60    06:44:39 kworker/R-kthro [kworker/R-kthrotld]
+     61    06:44:39 irq/24-ACPI:Ged [irq/24-ACPI:Ged]
+     62    06:44:39 irq/25-ACPI:Ged [irq/25-ACPI:Ged]
+     63    06:44:39 hwrng           [hwrng]
+     64    06:44:39 kworker/R-kstrp [kworker/R-kstrp]
+     67    06:44:39 kworker/0:1H-kb [kworker/0:1H-kblockd]
+     76    06:44:38 kworker/R-ext4- [kworker/R-ext4-rsv-conversion]
+     77    06:44:38 kworker/1:1H-kb [kworker/1:1H-kblockd]
+     79    06:44:38 kworker/R-ext4- [kworker/R-ext4-rsv-conversion]
+     80    06:44:38 kworker/R-ext4- [kworker/R-ext4-rsv-conversion]
+     82    06:44:38 4               sbx-telemetry-collector
+     83    06:44:38 sh              /bin/sh -c if ! { [ ! -L /var/lib/ccr-ca-store ] && { [ ! -e /var/lib/ccr-ca-store ] || { [ -d /var/lib/ccr-ca-store ] && [ -O /var/lib/ccr-ca-store ] ; } ; } ; } ; t
+     86    06:44:37 environment-man /usr/local/bin/environment-manager task-run --stdin --session cse_01EvynDJNoDfZb8zqpgEWykW --session-mode resume --upgrade-claude-code=False
+     94    06:44:37 claude          /opt/claude-code/bin/claude --preload /home/claude/.claude/remote/spare.sock
+     95    06:44:37 kworker/2:1H-kb [kworker/2:1H-kblockd]
+    349       00:34 sleep           sleep 60
+    399       00:33 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/scripts/partj.sh
+    420       00:22 sleep           sleep 30
+    422       00:19 sleep           sleep 60
+    425       00:13 sleep           sleep 60
+    426       00:09 sleep           sleep 180
+    456       00:00 ps              ps -eo pid=,etime=,comm=,args=
+    457       00:00 cut             cut -c1-200
+    458       00:00 sed             sed s/^/  /
+   1670    03:33:25 kworker/u16:19- [kworker/u16:19-events_unbound]
+   1806       31:28 kworker/1:0     [kworker/1:0]
+   3308       30:18 kworker/2:1-mm_ [kworker/2:1-mm_percpu_wq]
+   4592       19:53 kworker/2:2-eve [kworker/2:2-events]
+   5277       42:09 bash            /bin/bash -c source /root/.claude/shell-snapshots/snapshot-bash-1794293735176-csljwt.sh 2>/dev/null || true && \builtin export BUN_OPTIONS="--smol${BUN_OPTIONS:+ $BUN
+   7248       37:03 kworker/3:0-mm_ [kworker/3:0-mm_percpu_wq]
+   7338    03:52:33 kworker/1:2-eve [kworker/1:2-events]
+   8795    01:36:05 kworker/u16:1-k [kworker/u16:1-kvfree_rcu_reclaim]
+  12211    04:38:29 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/scripts/ev2-stage2.sh
+  13477    03:52:58 kworker/0:0-eve [kworker/0:0-events]
+  18005       14:03 kworker/0:2     [kworker/0:2]
+  18269    02:23:14 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/scripts/ev2-stage3.sh
+  18340    02:01:23 kworker/u16:0-k [kworker/u16:0-kvfree_rcu_reclaim]
+  21146    04:10:26 kworker/3:1-mm_ [kworker/3:1-mm_percpu_wq]
+  25674       05:34 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/scripts/ev2-stage6.sh
+  25727       05:02 kworker/2:0     [kworker/2:0]
+  25730       04:58 kworker/3:2     [kworker/3:2]
+  27460       49:50 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/scripts/ev2-stage4.sh
+  27630       48:42 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/scripts/ev2-stage5.sh
+  27893       47:45 VBCSCompiler    /root/.dotnet/sdk/10.0.401/Roslyn/bincore/VBCSCompiler -pipename:IJ3EgvLuDDs2FgDyl1nB6eiF2Q9aEb7CfolLdSYistc
+  28553       03:19 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/scripts/ev2-stage7.sh
+  28572       03:11 bash            /bin/bash -c source /root/.claude/shell-snapshots/snapshot-bash-1794293735176-csljwt.sh 2>/dev/null || true && \builtin export BUN_OPTIONS="--smol${BUN_OPTIONS:+ $BUN
+  28573       03:11 sleep           sleep 240
+  29880       02:22 bash            /bin/bash -c source /root/.claude/shell-snapshots/snapshot-bash-1794293735176-csljwt.sh 2>/dev/null || true && \builtin export BUN_OPTIONS="--smol${BUN_OPTIONS:+ $BUN
+  29881       02:22 timeout         timeout 580 bash -c until [ -e /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl9-6/GO-LOCAL ]; do sleep 30; done
+  29882       02:22 bash            bash -c until [ -e /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl9-6/GO-LOCAL ]; do sleep 30; done
+  32391       00:50 sleep           sleep 60
+  32598       00:42 sleep           sleep 60
+after: 2026-11-10T13:41:54Z loadavg 1.43 1.13 1.24 1/122 1898
+df before and after (MiB free on /): see gate.log; at the end  6903

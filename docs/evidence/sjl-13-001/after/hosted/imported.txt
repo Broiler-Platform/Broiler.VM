@@ -1,0 +1,7 @@
+# imported: the hosted run was taken by .github/workflows/test262-evidence.yml
+workflow run: https://github.com/Broiler-Platform/Broiler.VM/actions/runs/42775067652 (attempt 1), dispatched 2026-11-10T07:24:26Z, completed 2026-11-10T07:32:21Z, conclusion success
+dispatched ref: refs/heads/main at a8d8398bd59e7f5600cb0aa9e733ff8948859cf4 (the merge of Broiler-Platform/Broiler.VM#196, the after commit); the workflow (blob 740a70f8d919ced6cd4bdf31f8bb2408f12fdcf7) and its driver eng/test262-evidence.py (blob 55f71ee3da6844dd3e3aeb23ea98d24143222a88) there are byte-identical to the base commit's df75f8cea79aa2452ca22892d47d8afa5a14c93f (the same two blobs, read with git rev-parse <commit>:<path> at both), and to the registry commit's cbee7c46ece7c9d7cf8a0c3f9a5a68418266672d
+inputs: commit a8d8398bd59e7f5600cb0aa9e733ff8948859cf4 (the after commit), forms both
+artifact: test262-evidence, id 13743937900, 2,625,297 bytes, sha256 7af22bf431f42b720210e834663be92d5dd7400e9a2a01728279fc635b4ff2ae (the zip as downloaded with gh api .../actions/artifacts/13743937900/zip on 2026-11-10; GitHub records the same digest)
+image: every runner and the merging job, ubuntu24 20261101.360.1, SDK 10.0.403 (run.txt, wide-bytecode.runners.txt, wide-native.runners.txt); the same image at both runs, a record, since the rule names no image
+retained: every file of the artifact, unchanged, in this directory (54 entries; diff -r against the zip's extraction finds none different); this file and hashes.txt are the only ones added

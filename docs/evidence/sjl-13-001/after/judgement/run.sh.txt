@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# run.sh <label> <logdir> <workdir> -- <command...>
+# Gate, machine record before/after, timed run, exit code, stop leftover servers. Output: <logdir>/<label>.{out,err,exit,machine}.txt
+S=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev3r
+source $S/scripts/gate.sh
+label=$1; logdir=$2; wd=$3; shift 4
+mkdir -p "$logdir"
+export PATH=/root/.dotnet:$PATH DOTNET_ROOT=/root/.dotnet DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1 MSBUILDDISABLENODEREUSE=1 DOTNET_CLI_USE_MSBUILD_SERVER=0 UseSharedCompilation=false
+gate "$label" "$logdir/gate.log"
+{ echo "=== $label before"; machine_record; } > "$logdir/$label.machine.txt"
+printf '%s %s: cd %s && %s\n' "$(date -u +%FT%TZ)" "$label" "$wd" "$*" >> "$logdir/commands.log"
+start=$(date -u +%FT%TZ); t0=$(date +%s.%N)
+( cd "$wd" && python3 -I $S/scripts/timed.py "$logdir/$label.time.txt" "$@" ) > "$logdir/$label.out.txt" 2> "$logdir/$label.err.txt"
+rc=$?
+echo "$rc" > "$logdir/$label.exit.txt"
+{ echo "=== $label after (rc=$rc started=$start)"; machine_record; } >> "$logdir/$label.machine.txt"
+printf '%s\trc=%s\t%s\tstarted=%s\tended=%s\n' "$label" "$rc" "$(cat $logdir/$label.time.txt 2>/dev/null | tail -1)" "$start" "$(date -u +%FT%TZ)" >> "$logdir/runs.tsv"
+stop_servers "$logdir/gate.log"
+exit $rc

@@ -1,0 +1,8 @@
+=== build-solution-partd-base
+time: 2026-11-10T15:04:53Z
+loadavg: 0.16 0.79 0.92 1/126 6696
+nproc: 4
+os: Ubuntu 24.04.5 LTS; Linux 6.18.44-fc-v338 x86_64
+sdk: 10.0.401
+disk:  6893 MiB free
+other dotnet/python processes:

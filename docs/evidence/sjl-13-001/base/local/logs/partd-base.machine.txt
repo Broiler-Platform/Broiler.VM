@@ -1,0 +1,8 @@
+=== partd-base
+time: 2026-11-10T15:07:54Z
+loadavg: 1.08 1.67 1.30 1/124 7696
+nproc: 4
+os: Ubuntu 24.04.5 LTS; Linux 6.18.44-fc-v338 x86_64
+sdk: 10.0.401
+disk:  6893 MiB free
+other dotnet/python processes:

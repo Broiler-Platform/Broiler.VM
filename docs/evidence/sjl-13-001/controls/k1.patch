@@ -1,0 +1,31 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Hoisting.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Hoisting.cs
+index bb0f902..b595b96 100644
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Hoisting.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Hoisting.cs
+@@ -90,7 +90,16 @@ public sealed partial class JsCompiler
+         programLexicals.Clear();
+         CollectLexicalKinds(unit.TopLevel, programLexicals);
+ 
+-        foreach (var (name, constant) in programLexicals)
++        // CONTROL K1 OF BUNDLE sjl-12-001 PART C (a scratch copy, never merged): the global lexical
++        // declarations reversed, in the instructions and in the script-declarations row.
++        var controlOrder = new System.Collections.Generic.List<(string Name, bool Constant)>();
++
++        foreach (var entry in programLexicals)
++        {
++            controlOrder.Insert(0, entry);
++        }
++
++        foreach (var (name, constant) in controlOrder)
+         {
+             Emit(
+                 constant ? JsOpcode.DeclareGlobalConst : JsOpcode.DeclareGlobalLet,
+@@ -131,7 +140,7 @@ public sealed partial class JsCompiler
+             }
+         }
+ 
+-        var lexicalNames = programLexicals.Names();
++        var lexicalNames = controlOrder.ConvertAll(static entry => entry.Name).ToArray();
+ 
+         var annexBNames = new System.Collections.Generic.List<string>();
+         var aliasSeen = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);

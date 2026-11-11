@@ -1,0 +1,25 @@
+broiler-js-source-fuzz: seed 3, 2000 iterations, 58 seed sources of which 56 are drawn from, surface: the source tokenizer, parser and lowering
+broiler-js-source-fuzz: 2000 mutants, 24 distinct answers (24 reached by the seed corpus alone), 0 kept as further seeds
+       452  compiled-and-verified
+       316  refused:ExpectedToken
+       186  refused:UnexpectedToken
+       172  refused:NestingTooDeep
+       163  refused:ConstructOutsideManifest
+       133  refused:UnresolvableIdentifier
+       107  refused:MalformedNumericLiteral
+        53  refused:UnterminatedComment
+        53  refused:UnterminatedRegularExpression
+        50  refused:UnterminatedStringLiteral
+        45  refused:VarAndLexicalCollision
+        42  refused:UnknownEscapeSequence
+        40  refused:UnterminatedTemplateLiteral
+        33  refused:UnexpectedCharacter
+        30  refused:DuplicateLexicalDeclaration
+        26  refused:IllegalContinue
+        20  refused:ConstWithoutInitialiser
+        19  refused:ReservedWordAsBinding
+        18  refused:LegacyOctalInStrictCode
+        18  refused:IllegalBreak
+        17  refused:InvalidAssignmentTarget
+         7  refused:AssignmentToConstant
+broiler-js-source-fuzz: no finding

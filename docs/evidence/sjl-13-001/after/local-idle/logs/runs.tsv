@@ -1,0 +1,4 @@
+fx-build-cf-after	rc=0	wall=9.7s	maxrss=238MB	started=2026-11-10T15:49:54Z	ended=2026-11-10T15:50:04Z
+fx-build-cli-after	rc=0	wall=7.5s	maxrss=233MB	started=2026-11-10T15:49:16Z	ended=2026-11-10T15:49:24Z
+fx-build-sc-after	rc=0	wall=40.7s	maxrss=669MB	started=2026-11-10T15:47:06Z	ended=2026-11-10T15:47:46Z
+fx-parse-corpus-after-run1	rc=0	wall=641.4s	maxrss=1175MB	started=2026-11-10T15:50:34Z	ended=2026-11-10T16:01:15Z

@@ -1,0 +1,9 @@
+check-frontend-mapping: mapping /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/out/controls/parte/control-2-split-row.tsv
+check-frontend-mapping: catalogue Broiler.JS Broiler.ECMAScript/docs/frontend/early-errors.tsv at b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, copy SHA-256 7a9109b0db685df98a7327cd95b9337cc538337f834fe4f22692b249058aa4f1
+check-frontend-mapping: stage table Broiler.JS Broiler.ECMAScript/docs/frontend/stages.tsv at 238069ab8150858a112461b42b95c1f49c1f4eb1, copy SHA-256 3c9c49d97162650a48acfeec33b3d1d084dddda6bf649ad648c2e5ff1f1ce6a6
+check-frontend-mapping: registry revision 19
+check-frontend-mapping: refused: E5 line 152 (JSE1201, EE0001): marked split, and the meaning does not read 'leaves <code> <name>: <meaning>; the new number is minted at SJL-13 under JSD-0009'
+check-frontend-mapping: refused: E5 line 152 (JSE1201, EE0001): marked split from 2001, whose published meaning its registry row says covers identifier.escape.invalid-start
+check-frontend-mapping: refused: E6 registry 2001's row says its meaning covers identifier.escape.invalid-start, which no row reaches within its meaning
+check-frontend-mapping: refused: E10 line 152 (JSE1201, EE0001): marked split at registry revision 19; no split relation remains from revision 19 (JSD-0083 decision D12)
+check-frontend-mapping: REFUSED: 4 problem(s)

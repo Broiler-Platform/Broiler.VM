@@ -1,0 +1,3 @@
+mode's own comment lines:
+# control (bundle sjl-12-001 part B): T000001 B1 strict bytecode has its hash changed and T000001 B1 sloppy bytecode is flipped from accepted to refused; nothing else differs from parse-corpus-base-run1.tsv.gz
+# control (by hand, bundle sjl-13-001 part B): T000741 B1 strict bytecode, its first diagnostic's code 2210 at 18:4 changed to 2305 (TemplateTooManyStrings, revision 19's defensive code for EE0021), a code revision 19 does not give that input's rule

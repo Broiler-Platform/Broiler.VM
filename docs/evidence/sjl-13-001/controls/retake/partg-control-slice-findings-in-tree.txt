@@ -1,0 +1,1 @@
+# the files --fuzz retained inside the scratch tree, at src/tests/corpus/js-1-source-fuzz-findings (sha256, path)

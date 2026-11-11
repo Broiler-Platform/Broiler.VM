@@ -1,0 +1,10 @@
+fx-build-k-partf	rc=0	wall=39.5s	maxrss=714MB	started=2026-11-10T16:50:46Z	ended=2026-11-10T16:51:25Z
+fx-build-k-partg-slice	rc=0	wall=15.7s	maxrss=387MB	started=2026-11-10T16:59:00Z	ended=2026-11-10T16:59:16Z
+fx-build-k-partg-slice-again	rc=0	wall=36.9s	maxrss=683MB	started=2026-11-10T17:13:14Z	ended=2026-11-10T17:13:51Z
+fx-build-k-reverted	rc=0	wall=7.3s	maxrss=231MB	started=2026-11-10T17:02:48Z	ended=2026-11-10T17:02:55Z
+fx-k-reverted-checks	rc=0	wall=328.1s	maxrss=840MB	started=2026-11-10T17:03:25Z	ended=2026-11-10T17:08:54Z
+fx-partf-checks	rc=1	wall=333.7s	maxrss=732MB	started=2026-11-10T16:52:56Z	ended=2026-11-10T16:58:29Z
+fx-partg-control-slice-1	rc=1	wall=0.2s	maxrss=43MB	started=2026-11-10T17:00:46Z	ended=2026-11-10T17:00:46Z
+fx-partg-control-slice-2	rc=1	wall=0.2s	maxrss=44MB	started=2026-11-10T17:01:16Z	ended=2026-11-10T17:01:16Z
+fx-partg-control-slice-3	rc=1	wall=0.2s	maxrss=43MB	started=2026-11-10T17:01:47Z	ended=2026-11-10T17:01:47Z
+fx-partg-control-slice-4	rc=1	wall=0.2s	maxrss=44MB	started=2026-11-10T17:02:17Z	ended=2026-11-10T17:02:17Z

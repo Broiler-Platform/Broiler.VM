@@ -1,0 +1,4 @@
+restored library package: /dev/shm/s13ev/w/k4-packages/broiler.ecmascript.frontend/0.1.0-preview.10/broiler.ecmascript.frontend.0.1.0-preview.10.nupkg
+ae82cea74c81821fcdbf965d56efadc998522da66301dbb53fcdd1f0f120fc0e  /dev/shm/s13ev/w/k4-packages/broiler.ecmascript.frontend/0.1.0-preview.10/broiler.ecmascript.frontend.0.1.0-preview.10.nupkg
+df90c1085e6d8b5f4232245d9432af9ebab7af83b1cb6c40e2a3f8e41fb30091  /dev/shm/s13ev/w/k4/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.ECMAScript.Frontend.dll
+the restored library is the scratch pack: ae82cea74c81821fcdbf965d56efadc998522da66301dbb53fcdd1f0f120fc0e

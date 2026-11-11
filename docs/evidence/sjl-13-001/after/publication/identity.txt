@@ -1,0 +1,7 @@
+bundle sjl-13-001, the closures at step 1's after commit (written by bundle sjl-7-001's collect-area.py --only cutover-closures, whose first line named that bundle's cut-over)
+collected 2026-11-10T13:07:30Z
+commit a8d8398bd59e7f5600cb0aa9e733ff8948859cf4
+tree clean
+product-sources sha256=dac14e4ad07649e234e86bb9a8b636d484117dc2ba02bc408b5ddebd98c84f1a over 5446 entries of `git ls-tree -r`, every path outside docs/ and outside any docs/ directory
+sdk 10.0.401
+machine Linux-6.18.44-fc-v338-x86_64-with-glibc2.39 x86_64 cpus=4

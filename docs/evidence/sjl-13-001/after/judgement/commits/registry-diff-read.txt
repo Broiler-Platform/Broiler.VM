@@ -1,0 +1,230 @@
+# base df75f8cea79aa2452ca22892d47d8afa5a14c93f
+# registry commit cbee7c46ece7c9d7cf8a0c3f9a5a68418266672d
+# paths 42
+
+CODE-ASSURANCE.md	data or documentation	+5 -5
+HUMAN_REVIEW.md	data or documentation	+9 -9
+assurance.manifest.json	data or documentation	+52 -36
+docs/evidence/sjl-13-001/corpus/stages.tsv	data or documentation	+285 -0
+src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs	source	code-swap=12 comment=5 comment-extended=1 fingerprint=8 other=0
+    code-swap SliceSourceDiagnosticCode.UnexpectedToken > SliceSourceDiagnosticCode.InvalidRegularExpression: 3
+    code-swap SliceSourceDiagnosticCode.UnresolvableIdentifier > SliceSourceDiagnosticCode.ArgumentsInClassInitialiser: 2
+    code-swap SliceSourceDiagnosticCode.UnresolvableIdentifier > SliceSourceDiagnosticCode.UndeclaredPrivateName: 1
+src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs	source	code-swap=18 comment=8 comment-extended=1 fingerprint=6 other=0
+    code-swap SliceSourceDiagnosticCode.ConstWithoutInitialiser > SliceSourceDiagnosticCode.ExpectedToken: 1
+    code-swap SliceSourceDiagnosticCode.IllegalBreak > SliceSourceDiagnosticCode.ReturnInStaticBlock: 1
+    code-swap SliceSourceDiagnosticCode.InvalidAssignmentTarget > SliceSourceDiagnosticCode.UnexpectedToken: 1
+    code-swap SliceSourceDiagnosticCode.UnexpectedToken > SliceSourceDiagnosticCode.CoverInitialiserOutsidePattern: 1
+    code-swap SliceSourceDiagnosticCode.UnexpectedToken > SliceSourceDiagnosticCode.DuplicateProtoProperty: 1
+    code-swap SliceSourceDiagnosticCode.UnexpectedToken > SliceSourceDiagnosticCode.MisplacedSuper: 2
+    code-swap SliceSourceDiagnosticCode.UnexpectedToken > SliceSourceDiagnosticCode.NewTargetOutsideFunction: 1
+    code-swap SliceSourceDiagnosticCode.UnexpectedToken > SliceSourceDiagnosticCode.ReturnOutsideFunction: 1
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Assembly.cs	source	code-swap=8 comment=0 fingerprint=2 other=0
+    code-swap SliceSourceDiagnosticCode.ConstructOutsideManifest > SliceSourceDiagnosticCode.CompileRequestNotServed: 4
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Classes.cs	source	code-swap=2 comment=8 fingerprint=2 other=0
+    code-swap SliceSourceDiagnosticCode.UnresolvableIdentifier > SliceSourceDiagnosticCode.UndeclaredPrivateName: 1
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Eval.cs	source	code-swap=2 comment=0 fingerprint=2 other=0
+    code-swap SliceSourceDiagnosticCode.NestingTooDeep > SliceSourceDiagnosticCode.EvalScopeTooDeep: 1
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Exceptions.cs	source	comment=6 other=0
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Expressions.cs	source	code-swap=2 comment=0 fingerprint=2 other=0
+    code-swap SliceSourceDiagnosticCode.ConstructOutsideManifest > SliceSourceDiagnosticCode.ConstructTheLoweringHasNoArmFor: 1
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Modules.cs	source	code-swap=2 comment=0 fingerprint=2 other=0
+    code-swap SliceSourceDiagnosticCode.DuplicateLexicalDeclaration > SliceSourceDiagnosticCode.DuplicateModuleKey: 1
+src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Statements.cs	source	code-swap=2 comment=0 fingerprint=2 other=0
+    code-swap SliceSourceDiagnosticCode.ConstructOutsideManifest > SliceSourceDiagnosticCode.ConstructTheLoweringHasNoArmFor: 1
+src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs	source	code-swap=10 comment=4 fingerprint=14 other=10
+    code-swap SliceSourceDiagnosticCode.DuplicateExportName > SliceSourceDiagnosticCode.DuplicateImportAttributeKey: 1
+    code-swap SliceSourceDiagnosticCode.ExpectedToken > SliceSourceDiagnosticCode.UnexpectedToken: 1
+    code-swap SliceSourceDiagnosticCode.ReservedWordAsBinding > SliceSourceDiagnosticCode.UnexpectedToken: 2
+    code-swap SliceSourceDiagnosticCode.UnexpectedToken > SliceSourceDiagnosticCode.NewTargetOutsideFunction: 1
+    -            return OutsideExpression(
+    +            Refuse(
+    +                SliceSourceDiagnosticCode.BigIntWiderThanTheFormat,
+    -                " bits");
+    +                " bits is not admitted by the declared feature manifest");
+    +
+    +            return new JsNullLiteral(span);
+    +                SliceSourceDiagnosticCode.BigIntWiderThanTheFormat,
+    -                " bits");
+    +                " bits is not admitted by the declared feature manifest");
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs	source	code-swap=4 comment=0 fingerprint=4 other=0
+    code-swap SliceSourceDiagnosticCode.ConstructOutsideManifest > SliceSourceDiagnosticCode.ConstructTheLoweringHasNoArmFor: 2
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceDiagnostics.cs	source	comment=63 fingerprint=2 header=2 other=33
+    +
+    +    NewTargetOutsideFunction = 2105,
+    +
+    +    BigIntWiderThanTheFormat = 2106,
+    +
+    +    MisplacedSuper = 2212,
+    +
+    +    CoverInitialiserOutsidePattern = 2213,
+    +
+    +    DuplicateProtoProperty = 2214,
+    +
+    +    InvalidRegularExpression = 2215,
+    +
+    +    ArgumentsInClassInitialiser = 2216,
+    +
+    +    UndeclaredPrivateName = 2217,
+    +
+    +    ReturnOutsideFunction = 2218,
+    +
+    +    ReturnInStaticBlock = 2219,
+    +
+    +    ConstructTheLoweringHasNoArmFor = 2304,
+    +
+    +    TemplateTooManyStrings = 2305,
+    +
+    +    EvalScopeTooDeep = 2306,
+    +
+    +    CompileRequestNotServed = 2307,
+    +
+    +
+    +    DuplicateImportAttributeKey = 2407,
+    +
+    +    DuplicateModuleKey = 2408,
+src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourcePrograms.cs	source	comment=7 fingerprint=2 other=48
+    +
+    +        new(
+    +            "refuse-new-target-outside-a-function",
+    +            "new.target;",
+    +            SliceSourceDiagnosticCode.NewTargetOutsideFunction),
+    +        new(
+    +            "refuse-a-bigint-literal-wider-than-the-format",
+    +            "0x" + new string('f', (int)(JsFormat.CeilingBigIntConstantBytes * 2) + 1) + "n;",
+    +            SliceSourceDiagnosticCode.BigIntWiderThanTheFormat),
+    +        new(
+    +            "refuse-a-super-property-outside-a-method",
+    +            "function f() { return super.x; }",
+    +            SliceSourceDiagnosticCode.MisplacedSuper),
+    +        new(
+    +            "refuse-a-cover-initialiser-outside-a-pattern",
+    +            "({ a = 1 });",
+    +            SliceSourceDiagnosticCode.CoverInitialiserOutsidePattern),
+    +        new(
+    +            "refuse-an-object-literal-setting-its-prototype-twice",
+    +            "({ __proto__: 1, __proto__: 2 });",
+    +            SliceSourceDiagnosticCode.DuplicateProtoProperty),
+    +        new(
+    +            "refuse-a-capture-group-name-given-twice",
+    +            "/(?<a>x)(?<a>y)/;",
+    +            SliceSourceDiagnosticCode.InvalidRegularExpression),
+    +        new(
+    +            "refuse-arguments-in-a-class-field",
+    +            "class C { x = arguments; }",
+    +            SliceSourceDiagnosticCode.ArgumentsInClassInitialiser),
+    +        new(
+    +            "refuse-a-private-name-no-class-declares",
+    +            "class C { m() { return this.#x; } }",
+    +            SliceSourceDiagnosticCode.UndeclaredPrivateName),
+    +        new(
+    +            "refuse-a-return-outside-a-function",
+    +            "return 1;",
+    +            SliceSourceDiagnosticCode.ReturnOutsideFunction),
+    +        new(
+    +            "refuse-a-return-in-a-static-block",
+    +            "class C { static { return; } }",
+    +            SliceSourceDiagnosticCode.ReturnInStaticBlock),
+    +        new(
+    +            "refuse-an-import-attribute-given-twice",
+    +            "import data from \"./data.json\" with { type: \"json\", type: \"json\" };\ndata",
+    +            SliceSourceDiagnosticCode.DuplicateImportAttributeKey)
+    +        {
+    +            Options = SliceParseOptions.Module,
+    +        },
+src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt	data or documentation	+16 -0
+src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv	data or documentation	+147 -108
+src/Broiler.VM.Profile.JavaScript/docs/diagnostics/registry.txt	data or documentation	+32 -2
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/LanguageErrors.cs	source	comment=5 other=33
+    +        SliceSourceDiagnosticCode.NewTargetOutsideFunction => RefusalClass.EarlyError,
+    +        SliceSourceDiagnosticCode.MisplacedSuper => RefusalClass.EarlyError,
+    +        SliceSourceDiagnosticCode.CoverInitialiserOutsidePattern => RefusalClass.EarlyError,
+    +        SliceSourceDiagnosticCode.DuplicateProtoProperty => RefusalClass.EarlyError,
+    +        SliceSourceDiagnosticCode.InvalidRegularExpression => RefusalClass.EarlyError,
+    +        SliceSourceDiagnosticCode.ReturnOutsideFunction => RefusalClass.EarlyError,
+    +        SliceSourceDiagnosticCode.ReturnInStaticBlock => RefusalClass.EarlyError,
+    +        SliceSourceDiagnosticCode.DuplicateImportAttributeKey => RefusalClass.EarlyError,
+    +        SliceSourceDiagnosticCode.DuplicateModuleKey => RefusalClass.EarlyError,
+    +        SliceSourceDiagnosticCode.ArgumentsInClassInitialiser => RefusalClass.Divergence,
+    +        SliceSourceDiagnosticCode.UndeclaredPrivateName => RefusalClass.Divergence,
+    +        SliceSourceDiagnosticCode.BigIntWiderThanTheFormat => RefusalClass.OutsideManifest,
+    +        SliceSourceDiagnosticCode.ConstructTheLoweringHasNoArmFor => RefusalClass.OutsideManifest,
+    +        SliceSourceDiagnosticCode.CompileRequestNotServed => RefusalClass.OutsideManifest,
+    +        SliceSourceDiagnosticCode.TemplateTooManyStrings => RefusalClass.ImplementationLimit,
+    +        SliceSourceDiagnosticCode.EvalScopeTooDeep => RefusalClass.ImplementationLimit,
+    +
+    +            SliceSourceDiagnosticCode.NewTargetOutsideFunction,
+    +            SliceSourceDiagnosticCode.BigIntWiderThanTheFormat,
+    +            SliceSourceDiagnosticCode.MisplacedSuper,
+    +            SliceSourceDiagnosticCode.CoverInitialiserOutsidePattern,
+    +            SliceSourceDiagnosticCode.DuplicateProtoProperty,
+    +            SliceSourceDiagnosticCode.InvalidRegularExpression,
+    +            SliceSourceDiagnosticCode.ArgumentsInClassInitialiser,
+    +            SliceSourceDiagnosticCode.UndeclaredPrivateName,
+    +            SliceSourceDiagnosticCode.ReturnOutsideFunction,
+    +            SliceSourceDiagnosticCode.ReturnInStaticBlock,
+    +            SliceSourceDiagnosticCode.ConstructTheLoweringHasNoArmFor,
+    +            SliceSourceDiagnosticCode.TemplateTooManyStrings,
+    +            SliceSourceDiagnosticCode.EvalScopeTooDeep,
+    +            SliceSourceDiagnosticCode.CompileRequestNotServed,
+    +            SliceSourceDiagnosticCode.DuplicateImportAttributeKey,
+    +            SliceSourceDiagnosticCode.DuplicateModuleKey,
+src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Run.cs	source	comment=4 other=5
+    -        if (first is not null && first.Code == SliceSourceDiagnosticCode.ConstructOutsideManifest)
+    +        if (first is not null && first.Code is SliceSourceDiagnosticCode.ConstructOutsideManifest
+    +                or SliceSourceDiagnosticCode.BigIntWiderThanTheFormat
+    +                or SliceSourceDiagnosticCode.ConstructTheLoweringHasNoArmFor
+    +                or SliceSourceDiagnosticCode.CompileRequestNotServed)
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/BigIntChecks.cs	source	comment=4 other=4
+    +    private const int BigIntWiderThanTheFormat = 2106;
+    +
+    -        var passed = (int)first.Code == ConstructOutsideManifest && first.Line == 1 && first.Column == 9 &&
+    +        var passed = (int)first.Code == BigIntWiderThanTheFormat && first.Line == 1 && first.Column == 9 &&
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/BinderChecks.cs	source	code-swap=46 comment=19 other=1
+    code-swap 2101 > 2212: 3
+    code-swap 2101 > 2213: 1
+    code-swap 2101 > 2214: 1
+    code-swap 2101 > 2215: 3
+    code-swap 2101 > 2218: 1
+    code-swap 2203 > 2102: 1
+    code-swap 2205 > 2101: 1
+    code-swap 2206 2206 > 2216 2216: 1
+    code-swap 2206 > 2216: 3
+    code-swap 2206 > 2217: 2
+    code-swap 2207 2101 > 2207 2212: 1
+    code-swap 2207 2101 > 2219 2213: 1
+    code-swap 2207 2101 > 2219 2215: 1
+    code-swap 2207 2207 > 2219 2207: 1
+    code-swap 2207 > 2219: 2
+    +
+src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/RefusedRequests.cs	source	code-swap=4 comment=5 other=0
+    code-swap SliceSourceDiagnosticCode.ConstructOutsideManifest > SliceSourceDiagnosticCode.CompileRequestNotServed: 1
+    code-swap SliceSourceDiagnosticCode.DuplicateLexicalDeclaration > SliceSourceDiagnosticCode.DuplicateModuleKey: 1
+src/compositions/Broiler.VM.Composition.PolyglotCli/Program.cs	source	comment=3 other=3
+    -        Console.WriteLine("                                time under 2104, so most programs never");
+    +        Console.WriteLine("                                time under 2307, a request this build cannot");
+    +        Console.WriteLine("                                serve, so most programs never");
+src/tests/Broiler.VM.Architecture.Tests/DiagnosticRegistryRuleTests.cs	source	comment=9 comment-extended=1 other=8
+    -        Assert.Equal(30, SeamVocabulary.Count);
+    +        Assert.Equal(46, SeamVocabulary.Count);
+    -        Assert.Equal(18, DiagnosticRegistry.Revision);
+    +        Assert.Equal(19, DiagnosticRegistry.Revision);
+    -            29,
+    +            42,
+    -            [2303],
+    +            [2303, 2304, 2305, 2306],
+src/tests/cli/expected.txt	data or documentation	+13 -3
+src/tests/corpus/js-1/source/refused/refuse-a-bigint-literal-wider-than-the-format.js	data or documentation	+1 -0
+src/tests/corpus/js-1/source/refused/refuse-a-capture-group-name-given-twice.js	data or documentation	+1 -0
+src/tests/corpus/js-1/source/refused/refuse-a-cover-initialiser-outside-a-pattern.js	data or documentation	+1 -0
+src/tests/corpus/js-1/source/refused/refuse-a-private-name-no-class-declares.js	data or documentation	+1 -0
+src/tests/corpus/js-1/source/refused/refuse-a-return-in-a-static-block.js	data or documentation	+1 -0
+src/tests/corpus/js-1/source/refused/refuse-a-return-outside-a-function.js	data or documentation	+1 -0
+src/tests/corpus/js-1/source/refused/refuse-a-super-property-outside-a-method.js	data or documentation	+1 -0
+src/tests/corpus/js-1/source/refused/refuse-an-import-attribute-given-twice.mjs	data or documentation	+2 -0
+src/tests/corpus/js-1/source/refused/refuse-an-object-literal-setting-its-prototype-twice.js	data or documentation	+1 -0
+src/tests/corpus/js-1/source/refused/refuse-arguments-in-a-class-field.js	data or documentation	+1 -0
+src/tests/corpus/js-1/source/refused/refuse-new-target-outside-a-function.js	data or documentation	+1 -0
+src/tests/corpus/js-1/source/refused/refuse-the-value-form-under-the-numeric-manifest.request	data or documentation	+1 -1
+src/tests/corpus/js-1/source/refused/refuse-two-modules-under-one-key.request	data or documentation	+1 -1
+src/tests/corpus/js-1/source/source.manifest	data or documentation	+13 -2

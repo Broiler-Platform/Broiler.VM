@@ -1,0 +1,32 @@
+manifest written and made read-only: /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/out/measurement/manifest.txt
+child 1: repetition 0, arm B, exit 0
+child 2: repetition 0, arm A, exit 0
+child 3: repetition 0, arm A-again, exit 0
+child 4: repetition 1, arm A, exit 0
+child 5: repetition 1, arm A-again, exit 0
+child 6: repetition 1, arm B, exit 0
+child 7: repetition 2, arm A-again, exit 0
+child 8: repetition 2, arm B, exit 0
+child 9: repetition 2, arm A, exit 0
+child 10: repetition 3, arm B, exit 0
+child 11: repetition 3, arm A, exit 0
+child 12: repetition 3, arm A-again, exit 0
+child 13: repetition 4, arm A, exit 0
+child 14: repetition 4, arm A-again, exit 0
+child 15: repetition 4, arm B, exit 0
+child 16: repetition 5, arm A-again, exit 0
+child 17: repetition 5, arm B, exit 0
+child 18: repetition 5, arm A, exit 0
+child 19: repetition 6, arm B, exit 0
+child 20: repetition 6, arm A, exit 0
+child 21: repetition 6, arm A-again, exit 0
+child 22: repetition 7, arm A, exit 0
+child 23: repetition 7, arm A-again, exit 0
+child 24: repetition 7, arm B, exit 0
+child 25: repetition 8, arm A-again, exit 0
+child 26: repetition 8, arm B, exit 0
+child 27: repetition 8, arm A, exit 0
+child 28: repetition 9, arm B, exit 0
+child 29: repetition 9, arm A, exit 0
+child 30: repetition 9, arm A-again, exit 0
+done: 30 children; summary.txt written

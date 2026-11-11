@@ -1,0 +1,16 @@
+=== kindF-wide-bytecode-base-test_staging_sm_expressions_destructuring-pattern-parenthesized before
+time: 2026-11-10T22:22:41Z
+loadavg: 0.94 1.63 1.58 1/110 19232
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23978 MiB free
+procs-matching:
+=== kindF-wide-bytecode-base-test_staging_sm_expressions_destructuring-pattern-parenthesized after (rc=1 started=2026-11-10T22:22:42Z)
+time: 2026-11-10T22:22:43Z
+loadavg: 0.94 1.63 1.58 1/110 19458
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23978 MiB free
+procs-matching:

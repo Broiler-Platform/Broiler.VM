@@ -1,0 +1,16 @@
+=== kindF-wide-native-after-test_staging_sm_class_compPropNames before
+time: 2026-11-10T22:23:13Z
+loadavg: 0.88 1.55 1.55 1/110 28702
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23978 MiB free
+procs-matching:
+=== kindF-wide-native-after-test_staging_sm_class_compPropNames after (rc=0 started=2026-11-10T22:23:13Z)
+time: 2026-11-10T22:23:15Z
+loadavg: 0.89 1.54 1.55 1/110 29117
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23978 MiB free
+procs-matching:

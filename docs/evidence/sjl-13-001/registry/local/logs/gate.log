@@ -1,0 +1,10 @@
+2026-11-10T09:42:24Z gate build-sc-registry: NOT idle after 60s, proceeding: load 3.90 5.29 5.47 12/218 12667; others: 15867:dotnet 17041:dotnet 17455:dotnet 17984:dotnet 27118:dotnet 27119:dotnet 27120:dotnet 
+2026-11-10T09:43:30Z build-sc-registry: done: build-sc-registry	rc=0	wall=65.6s	maxrss=666MB	started=2026-11-10T09:42:24Z	ended=2026-11-10T09:43:30Z
+2026-11-10T11:12:53Z gate identity-base-registry: idle (load 0.27 0.60 1.04 1/109 17465) after 0s
+2026-11-10T11:13:01Z identity-base-registry: done: identity-base-registry	rc=1	wall=8.6s	maxrss=962MB	started=2026-11-10T11:12:53Z	ended=2026-11-10T11:13:01Z
+2026-11-10T11:13:31Z gate identity-registry-after: idle (load 0.23 0.56 1.01 1/105 17518) after 0s
+2026-11-10T11:13:40Z identity-registry-after: done: identity-registry-after	rc=1	wall=8.3s	maxrss=960MB	started=2026-11-10T11:13:32Z	ended=2026-11-10T11:13:40Z
+2026-11-10T09:45:00Z gate parse-corpus-registry-run1: NOT idle after 60s, proceeding: load 5.39 6.63 6.05 10/215 13251; others: 15867:dotnet 17041:dotnet 17455:dotnet 17984:dotnet 27118:dotnet 27119:dotnet 27120:dotnet 
+2026-11-10T09:55:16Z parse-corpus-registry-run1: done: parse-corpus-registry-run1	rc=0	wall=615.4s	maxrss=1148MB	started=2026-11-10T09:45:00Z	ended=2026-11-10T09:55:16Z
+2026-11-10T11:15:23Z gate partb-bytes-registry: idle (load 0.15 0.43 0.91 1/106 17793) after 0s
+2026-11-10T11:15:26Z partb-bytes-registry: done: partb-bytes-registry	rc=0	wall=2.6s	maxrss=670MB	started=2026-11-10T11:15:23Z	ended=2026-11-10T11:15:26Z

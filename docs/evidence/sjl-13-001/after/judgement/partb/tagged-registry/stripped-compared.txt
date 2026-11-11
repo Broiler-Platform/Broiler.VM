@@ -1,0 +1,3 @@
+data rows: tagged 562101 run1 562101
+stripped rows equal to run 1, in order: True
+tags seen: {'@binder': 12724, '@lowering': 125, '@parser': 102543, '@slice-lowering': 5, '@slice-parser': 858, '@slice-semantics': 3003347, '@tokenizer': 2159}

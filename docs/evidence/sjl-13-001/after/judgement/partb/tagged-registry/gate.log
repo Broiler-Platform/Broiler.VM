@@ -1,0 +1,7 @@
+2026-11-10T21:46:31Z gate build-sc-tagged-registry PASS load1=0.98 procs=none checks=0
+2026-11-10T21:47:11Z stop-servers: done, remaining:
+2026-11-10T21:47:12Z gate parse-corpus-tagged-registry WAIT load1=6.62 procs=none
+2026-11-10T21:48:13Z gate parse-corpus-tagged-registry WAIT load1=2.77 procs=none
+2026-11-10T21:49:14Z gate parse-corpus-tagged-registry WAIT load1=1.52 procs=none
+2026-11-10T21:50:15Z gate parse-corpus-tagged-registry PASS load1=0.99 procs=none checks=18
+2026-11-10T21:59:45Z stop-servers: done, remaining:

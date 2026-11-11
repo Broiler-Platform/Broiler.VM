@@ -1,0 +1,4 @@
+# --checks --verbose at the base, the first run (base/local/checks.log.gz) and this idle run (checks.log.gz), compared by each row's verdict and name (the text before its first ': '), sorted
+first run: 722 rows, 0 FAIL
+idle run:  722 rows, 0 FAIL
+the same rows with the same verdicts; the texts differ in elapsed times, machine addresses and per-form milliseconds (checks.diff.gz)

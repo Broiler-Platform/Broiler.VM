@@ -1,0 +1,5 @@
+broiler-js-slice-compiler: B1: accepted 4, refused 8
+broiler-js-slice-compiler: B2: accepted 2
+broiler-js-slice-compiler: B3: accepted 8
+broiler-js-slice-compiler: B5: refused 19
+broiler-js-slice-compiler: --parse-corpus reported 41 compilations of 55751 inputs with 1 worker(s) in 3.0 s; 0 crashed

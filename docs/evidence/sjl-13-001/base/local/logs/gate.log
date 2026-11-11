@@ -1,0 +1,50 @@
+2026-11-10T08:54:35Z gate build-cf-base: NOT idle after 60s, proceeding: load 5.53 6.32 5.53 2/209 16697; others: 13520:dotnet 13538:dotnet 13551:dotnet 13566:dotnet 13630:dotnet 13631:dotnet 13632:dotnet 
+2026-11-10T08:54:46Z build-cf-base: done: build-cf-base	rc=0	wall=11.4s	maxrss=249MB	started=2026-11-10T08:54:35Z	ended=2026-11-10T08:54:46Z
+2026-11-10T08:56:17Z gate build-cli-base: NOT idle after 60s, proceeding: load 1.77 4.87 5.10 1/108 17319; others: : 
+2026-11-10T08:56:24Z build-cli-base: done: build-cli-base	rc=0	wall=7.0s	maxrss=237MB	started=2026-11-10T08:56:17Z	ended=2026-11-10T08:56:24Z
+2026-11-10T08:52:00Z gate build-sc-base: NOT idle after 60s, proceeding: load 3.12 4.11 4.64 5/211 16034; others: 13520:dotnet 13538:dotnet 13551:dotnet 13566:dotnet 13630:dotnet 13631:dotnet 13632:dotnet 
+2026-11-10T08:53:05Z build-sc-base: done: build-sc-base	rc=0	wall=64.8s	maxrss=671MB	started=2026-11-10T08:52:00Z	ended=2026-11-10T08:53:05Z
+2026-11-10T15:04:53Z gate build-solution-partd-base: idle (load 0.16 0.79 0.92 1/126 6694) after 0s
+2026-11-10T15:06:24Z build-solution-partd-base: done: build-solution-partd-base	rc=0	wall=91.1s	maxrss=481MB	started=2026-11-10T15:04:53Z	ended=2026-11-10T15:06:24Z
+2026-11-10T09:10:14Z gate census-inputs-base: NOT idle after 60s, proceeding: load 4.53 6.33 5.83 7/217 3849; others: 4811:dotnet 5161:dotnet 5291:dotnet 5405:dotnet 7458:dotnet 7459:dotnet 7460:dotnet 
+2026-11-10T09:10:17Z census-inputs-base: done: census-inputs-base	rc=0	wall=2.6s	maxrss=234MB	started=2026-11-10T09:10:14Z	ended=2026-11-10T09:10:17Z
+2026-11-10T09:11:47Z gate census-test-base: NOT idle after 60s, proceeding: load 3.83 5.61 5.62 9/219 6287; others: 4811:dotnet 5161:dotnet 5291:dotnet 5405:dotnet 7458:dotnet 7459:dotnet 7460:dotnet 
+2026-11-10T09:12:22Z census-test-base: done: census-test-base	rc=0	wall=34.3s	maxrss=335MB	started=2026-11-10T09:11:47Z	ended=2026-11-10T09:12:22Z
+2026-11-10T09:13:52Z gate checks-base: NOT idle after 60s, proceeding: load 3.39 4.90 5.36 10/214 27636; others: 4811:dotnet 5161:dotnet 5291:dotnet 5405:dotnet 7458:dotnet 7459:dotnet 7460:dotnet 
+2026-11-10T09:19:57Z checks-base: done: checks-base	rc=0	wall=364.8s	maxrss=800MB	started=2026-11-10T09:13:52Z	ended=2026-11-10T09:19:57Z
+2026-11-10T11:07:30Z gate fuzz-slice-1-base: idle (load 0.18 0.99 1.32 1/108 8565) after 0s
+2026-11-10T11:07:57Z fuzz-slice-1-base: done: fuzz-slice-1-base	rc=0	wall=26.5s	maxrss=215MB	started=2026-11-10T11:07:30Z	ended=2026-11-10T11:07:57Z
+2026-11-10T11:08:27Z gate fuzz-slice-2-base: idle (load 0.30 0.90 1.26 1/107 10750) after 0s
+2026-11-10T11:08:53Z fuzz-slice-2-base: done: fuzz-slice-2-base	rc=0	wall=26.4s	maxrss=216MB	started=2026-11-10T11:08:27Z	ended=2026-11-10T11:08:53Z
+2026-11-10T11:09:23Z gate fuzz-slice-3-base: idle (load 0.33 0.82 1.21 1/108 12934) after 0s
+2026-11-10T11:09:50Z fuzz-slice-3-base: done: fuzz-slice-3-base	rc=0	wall=26.1s	maxrss=206MB	started=2026-11-10T11:09:24Z	ended=2026-11-10T11:09:50Z
+2026-11-10T11:10:20Z gate fuzz-slice-4-base: idle (load 0.34 0.75 1.17 1/111 15125) after 0s
+2026-11-10T11:10:47Z fuzz-slice-4-base: done: fuzz-slice-4-base	rc=0	wall=27.0s	maxrss=207MB	started=2026-11-10T11:10:20Z	ended=2026-11-10T11:10:47Z
+2026-11-10T09:21:27Z gate fuzz-wide-base: NOT idle after 60s, proceeding: load 4.22 5.17 5.43 13/216 22595; others: 17448:dotnet 17528:dotnet 17566:dotnet 17612:dotnet 18138:dotnet 18139:dotnet 18140:dotnet 
+2026-11-10T09:21:27Z fuzz-wide-base: done: fuzz-wide-base	rc=2	wall=0.1s	maxrss=27MB	started=2026-11-10T09:21:27Z	ended=2026-11-10T09:21:27Z
+2026-11-10T11:06:50Z gate fuzz-wide-base-2: idle (load 0.17 1.10 1.37 1/110 14908) after 0s
+2026-11-10T11:07:00Z fuzz-wide-base-2: done: fuzz-wide-base-2	rc=0	wall=10.1s	maxrss=354MB	started=2026-11-10T11:06:50Z	ended=2026-11-10T11:07:00Z
+2026-11-10T11:14:10Z gate identity-base-after: idle (load 0.18 0.51 0.97 1/106 17572) after 0s
+2026-11-10T11:14:19Z identity-base-after: done: identity-base-after	rc=1	wall=8.4s	maxrss=960MB	started=2026-11-10T11:14:10Z	ended=2026-11-10T11:14:18Z
+2026-11-10T11:12:53Z gate identity-base-registry: idle (load 0.27 0.60 1.04 1/109 17465) after 0s
+2026-11-10T11:13:01Z identity-base-registry: done: identity-base-registry	rc=1	wall=8.6s	maxrss=962MB	started=2026-11-10T11:12:53Z	ended=2026-11-10T11:13:01Z
+2026-11-10T11:37:38Z gate k1-identity-base: idle (load 0.43 0.83 0.94 1/111 18103) after 0s
+2026-11-10T11:37:48Z k1-identity-base: done: k1-identity-base	rc=1	wall=9.3s	maxrss=960MB	started=2026-11-10T11:37:38Z	ended=2026-11-10T11:37:48Z
+2026-11-10T08:57:54Z gate parse-corpus-base-run1: idle (load 0.38 3.51 4.59 1/104 17816) after 60s
+2026-11-10T09:08:44Z parse-corpus-base-run1: done: parse-corpus-base-run1	rc=0	wall=649.5s	maxrss=1099MB	started=2026-11-10T08:57:55Z	ended=2026-11-10T09:08:44Z
+2026-11-10T11:14:50Z gate partb-bytes-base: idle (load 0.18 0.47 0.94 1/109 17658) after 0s
+2026-11-10T11:14:52Z partb-bytes-base: done: partb-bytes-base	rc=0	wall=2.6s	maxrss=671MB	started=2026-11-10T11:14:50Z	ended=2026-11-10T11:14:52Z
+2026-11-10T13:50:52Z gate partd-base: idle (load 0.18 0.78 1.09 1/137 3641) after 0s
+2026-11-10T13:51:53Z partd-base: done: partd-base	rc=1	wall=60.7s	maxrss=224MB	started=2026-11-10T13:50:52Z	ended=2026-11-10T13:51:53Z
+2026-11-10T15:07:54Z gate partd-base: NOT idle after 60s, proceeding: load 1.08 1.67 1.30 1/124 7690; others: : 
+2026-11-10T15:08:36Z partd-base: done: partd-base	rc=0	wall=41.5s	maxrss=1790MB	started=2026-11-10T15:07:54Z	ended=2026-11-10T15:08:36Z
+2026-11-10T14:36:41Z gate_hard race-wide-native-base-test_staging_sm_Date_dst-offset-caching-1-of-8: idle (load 0.61 0.97 1.12 1/108 2172) after 0s
+2026-11-10T14:36:53Z race-wide-native-base-test_staging_sm_Date_dst-offset-caching-1-of-8: done: race-wide-native-base-test_staging_sm_Date_dst-offset-caching-1-of-8	rc=1	wall=11.9s	maxrss=195MB	started=2026-11-10T14:36:41Z	ended=2026-11-10T14:36:53Z
+2026-11-10T14:38:05Z gate_hard race-wide-native-base-test_staging_sm_Date_dst-offset-caching-3-of-8: idle (load 0.30 0.80 1.05 1/114 2360) after 0s
+2026-11-10T14:38:16Z race-wide-native-base-test_staging_sm_Date_dst-offset-caching-3-of-8: done: race-wide-native-base-test_staging_sm_Date_dst-offset-caching-3-of-8	rc=1	wall=11.5s	maxrss=196MB	started=2026-11-10T14:38:05Z	ended=2026-11-10T14:38:16Z
+2026-11-10T14:39:28Z gate_hard race-wide-native-base-test_staging_sm_Date_dst-offset-caching-5-of-8: idle (load 0.23 0.67 0.98 1/114 2538) after 0s
+2026-11-10T14:39:40Z race-wide-native-base-test_staging_sm_Date_dst-offset-caching-5-of-8: done: race-wide-native-base-test_staging_sm_Date_dst-offset-caching-5-of-8	rc=1	wall=11.9s	maxrss=195MB	started=2026-11-10T14:39:28Z	ended=2026-11-10T14:39:40Z
+2026-11-10T09:22:57Z gate vectors-base: NOT idle after 60s, proceeding: load 3.25 4.61 5.21 6/216 22724; others: 17448:dotnet 17528:dotnet 17566:dotnet 17612:dotnet 18138:dotnet 18139:dotnet 18140:dotnet 
+2026-11-10T09:32:29Z vectors-base: done: vectors-base	rc=1	wall=571.8s	maxrss=839MB	started=2026-11-10T09:22:57Z	ended=2026-11-10T09:32:29Z
+2026-11-10T09:33:59Z gate vectors-control-base: NOT idle after 60s, proceeding: load 3.95 5.24 5.45 7/218 17365; others: 17448:dotnet 17528:dotnet 17566:dotnet 17612:dotnet 18138:dotnet 18139:dotnet 18140:dotnet 
+2026-11-10T09:40:52Z vectors-control-base: done: vectors-control-base	rc=1	wall=412.9s	maxrss=816MB	started=2026-11-10T09:33:59Z	ended=2026-11-10T09:40:52Z

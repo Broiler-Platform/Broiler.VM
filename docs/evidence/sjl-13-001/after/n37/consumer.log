@@ -1,0 +1,125 @@
+=== THE PREVIOUS PACKAGE SET, AS PUBLISHED ===
+Broiler.VM.Abstractions 0.1.0-preview.5 sha256=5abd02db9ab722c0c0daef0fff878d137b506196fe190921f378533037b9fb59 bytes=130389
+Broiler.VM.Binary 0.1.0-preview.5 sha256=c1e9b16eb1a98ad84a8443a35519e4a9db97d7a8b55c2a7f4070dac1ea6c5f02 bytes=64331
+Broiler.VM.Runtime 0.1.0-preview.5 sha256=f65c3fee954223e3e483bd5fc56d5ec2eec6d5bc80dc813dbeeb373f78dee46b bytes=121813
+Broiler.VM.Profile.JavaScript 0.1.0-preview.5 sha256=b21249cc282087bd96d92a12c327602afa087a2f1c2de37c46584248a729d275 bytes=614524
+Broiler.VM.Profile.JavaScript.Format 0.1.0-preview.5 sha256=0420f4864eeeca960dd58cd4019910e9943fb9d9686441235ba696f426000e02 bytes=279961
+Broiler.VM.Profile.JavaScript.Compiler 0.1.0-preview.5 sha256=56f47b92a66825a6bbb169d84fafbde251354ff65dc1c1b7d681e07ee02026e7 bytes=395079
+
+--- feed contents ---
+Broiler.ECMAScript.Algorithms.0.1.0-preview.10.nupkg sha256=294451f9d9451cc5e50935bf916790cb635f9a51f034aafe08059ab1739d9aaa
+Broiler.ECMAScript.Frontend.0.1.0-preview.10.nupkg sha256=c7fd1e1a3b0d290facbc466944fb3b68dea1c758ce2e1e2fe56268aaac5bf88a
+Broiler.ECMAScript.Generation.0.1.0-preview.10.nupkg sha256=cbfd33fe90729a9fdf6842f956ca67f05f7598a968e96ac0abb73af2cb5f19f7
+Broiler.ECMAScript.Intl.0.1.0-preview.10.nupkg sha256=c2a5a8eca81e44ed5f35307aeaf935975d06cd91029a0e82bc2ed69568766b85
+Broiler.Unicode.Algorithms.0.1.0-preview.6.nupkg sha256=53789754d7d1dce1c7f7a07cd8da1ecbb654327df47be424e5e110c31cbf4899
+Broiler.Unicode.Generation.0.1.0-preview.6.nupkg sha256=3f2430c7840cfeb6b11a764ed03c99e3bd75a8d214d3e0f52675fd6e444d379e
+Broiler.Unicode.Segmentation.0.1.0-preview.6.nupkg sha256=3b1907eb0f44ad03e196f7824637f51e71e9f635f0f1708be8496257c583d94e
+Broiler.VM.Abstractions.0.1.0-preview.5.nupkg sha256=5abd02db9ab722c0c0daef0fff878d137b506196fe190921f378533037b9fb59
+Broiler.VM.Abstractions.0.1.0-preview.6.f9-candidate.nupkg sha256=7e7813c287d39d96f18a4b43d4a44944dffe3ab28356fa57a031ea05411041da
+Broiler.VM.Binary.0.1.0-preview.5.nupkg sha256=c1e9b16eb1a98ad84a8443a35519e4a9db97d7a8b55c2a7f4070dac1ea6c5f02
+Broiler.VM.Binary.0.1.0-preview.6.f9-candidate.nupkg sha256=580079d40db926911d1c2ab6238a8a5c3397ac9477dd8d849316f4a8dc10d9e0
+Broiler.VM.Emitter.Bytecode.0.1.0-preview.6.f9-candidate.nupkg sha256=506c797fe72cc41884423a5bb4d6cda7c116cdde77648ecdceae4535c86c966b
+Broiler.VM.Profile.JavaScript.0.1.0-preview.5.nupkg sha256=b21249cc282087bd96d92a12c327602afa087a2f1c2de37c46584248a729d275
+Broiler.VM.Profile.JavaScript.0.1.0-preview.6.f9-candidate.nupkg sha256=0e888e7d18ac10ce70bb611d14619b53d97fe31a8b296aa1dfb011068e047a4c
+Broiler.VM.Profile.JavaScript.Compiler.0.1.0-preview.5.nupkg sha256=56f47b92a66825a6bbb169d84fafbde251354ff65dc1c1b7d681e07ee02026e7
+Broiler.VM.Profile.JavaScript.Compiler.0.1.0-preview.6.f9-candidate.nupkg sha256=44546792c187127612711ab8da95d65d4b5524d568e078977ae8624463f4bdb2
+Broiler.VM.Profile.JavaScript.Format.0.1.0-preview.5.nupkg sha256=0420f4864eeeca960dd58cd4019910e9943fb9d9686441235ba696f426000e02
+Broiler.VM.Profile.JavaScript.Format.0.1.0-preview.6.f9-candidate.nupkg sha256=eefd2fd165cb8d9cdcefec12ec371ed66d0cf829199a7abc4ab03a16139b8db6
+Broiler.VM.Profile.JavaScript.Intl.0.1.0-preview.6.f9-candidate.nupkg sha256=5a977c836fc9cc34dafa77bd48375a8147133a8e132ef0ca41be8968bc60a9db
+Broiler.VM.Profile.MachineCode.0.1.0-preview.6.f9-candidate.nupkg sha256=779da8615a157daec2f407994585ae756291e1d2d13a77668d991f492db0c992
+Broiler.VM.Profile.WebAssembly.0.1.0-preview.6.f9-candidate.nupkg sha256=62feaff95ee96492dad0beba7663c9c0d6557571b6b9b4112523778088073594
+Broiler.VM.Runtime.0.1.0-preview.5.nupkg sha256=f65c3fee954223e3e483bd5fc56d5ec2eec6d5bc80dc813dbeeb373f78dee46b
+Broiler.VM.Runtime.0.1.0-preview.6.f9-candidate.nupkg sha256=1ace2b5cfc5365d14c3cfbfb35f6ae5d88c2b752841578d33dc5d7b58ce5d7bd
+Broiler.VM.Ubc.0.1.0-preview.6.f9-candidate.nupkg sha256=b7c00b9bbbc87dd73885203d8fc502ea532dae7c99618b4a2928a408e6d21e6a
+--- admitted shared packages placed on the feed ---
+Broiler.ECMAScript.Algorithms.0.1.0-preview.10.nupkg
+Broiler.ECMAScript.Frontend.0.1.0-preview.10.nupkg
+Broiler.ECMAScript.Generation.0.1.0-preview.10.nupkg
+Broiler.ECMAScript.Intl.0.1.0-preview.10.nupkg
+Broiler.Unicode.Algorithms.0.1.0-preview.6.nupkg
+Broiler.Unicode.Segmentation.0.1.0-preview.6.nupkg
+Broiler.Unicode.Generation.0.1.0-preview.6.nupkg
+
+--- restore and run the candidate 0.1.0-preview.6.f9-candidate ---
+# broiler-vm-sample-javascript core-contract-version=1
+# assembly Broiler.VM.Runtime 0.1.0-preview.6.f9-candidate+a8d8398bd59e7f5600cb0aa9e733ff8948859cf4
+# assembly Broiler.VM.Profile.JavaScript 0.1.0-preview.6.f9-candidate+a8d8398bd59e7f5600cb0aa9e733ff8948859cf4
+# assembly Broiler.VM.Profile.JavaScript.Compiler 0.1.0-preview.6.f9-candidate+a8d8398bd59e7f5600cb0aa9e733ff8948859cf4
+# assembly Broiler.VM.Profile.JavaScript.Intl 0.1.0-preview.6.f9-candidate+a8d8398bd59e7f5600cb0aa9e733ff8948859cf4
+ok   one-plus-one: answered 2
+ok   a-program: answered 1,2,3:{"x":[1,"two"]}
+ok   a-syntax-error: refused: 2101:UnexpectedToken at 1:4: the grammar admits no `end of source` at this point
+ok   a-truncated-artifact: verification refused: InvalidArtifact/Truncated
+ok   intl-from-its-package: answered 1.234.567,891|January 1, 1970
+ok   temporal-from-its-package: answered 2026-11-04
+broiler-vm-sample-javascript: 6 checks passed
+exit code: 0
+
+--- ROLL BACK to the published 0.1.0-preview.5 and run ---
+# broiler-vm-sample-javascript core-contract-version=1
+# assembly Broiler.VM.Runtime 0.1.0-preview.5+ebd7079116e7fd40051827a01c86bb35cb2e026d
+# assembly Broiler.VM.Profile.JavaScript 0.1.0-preview.5+ebd7079116e7fd40051827a01c86bb35cb2e026d
+# assembly Broiler.VM.Profile.JavaScript.Compiler 0.1.0-preview.5+ebd7079116e7fd40051827a01c86bb35cb2e026d
+# built without the internationalization data: the Intl and Temporal checks are not run
+ok   one-plus-one: answered 2
+ok   a-program: answered 1,2,3:{"x":[1,"two"]}
+ok   a-syntax-error: refused: 2101:UnexpectedToken at 1:4: `end of source` begins no expression
+ok   a-truncated-artifact: verification refused: InvalidArtifact/Truncated
+broiler-vm-sample-javascript: 4 checks passed
+exit code: 0
+
+--- roll forward to the candidate 0.1.0-preview.6.f9-candidate and run ---
+# broiler-vm-sample-javascript core-contract-version=1
+# assembly Broiler.VM.Runtime 0.1.0-preview.6.f9-candidate+a8d8398bd59e7f5600cb0aa9e733ff8948859cf4
+# assembly Broiler.VM.Profile.JavaScript 0.1.0-preview.6.f9-candidate+a8d8398bd59e7f5600cb0aa9e733ff8948859cf4
+# assembly Broiler.VM.Profile.JavaScript.Compiler 0.1.0-preview.6.f9-candidate+a8d8398bd59e7f5600cb0aa9e733ff8948859cf4
+# assembly Broiler.VM.Profile.JavaScript.Intl 0.1.0-preview.6.f9-candidate+a8d8398bd59e7f5600cb0aa9e733ff8948859cf4
+ok   one-plus-one: answered 2
+ok   a-program: answered 1,2,3:{"x":[1,"two"]}
+ok   a-syntax-error: refused: 2101:UnexpectedToken at 1:4: the grammar admits no `end of source` at this point
+ok   a-truncated-artifact: verification refused: InvalidArtifact/Truncated
+ok   intl-from-its-package: answered 1.234.567,891|January 1, 1970
+ok   temporal-from-its-package: answered 2026-11-04
+broiler-vm-sample-javascript: 6 checks passed
+exit code: 0
+
+--- NEGATIVE CONTROL: restore exactly 0.1.0-preview.4, which nuget.org holds and the feed does not; it must fail ---
+Determining projects to restore...
+/dev/shm/s13ev/wt-after-n37/samples/Broiler.VM.Sample.JavaScriptConsumer/Broiler.VM.Sample.JavaScriptConsumer.csproj : error NU1102: Unable to find package Broiler.VM.Abstractions with version (= 0.1.0-preview.4)
+/dev/shm/s13ev/wt-after-n37/samples/Broiler.VM.Sample.JavaScriptConsumer/Broiler.VM.Sample.JavaScriptConsumer.csproj : error NU1102:   - Found 2 version(s) in local-feed [ Nearest version: 0.1.0-preview.5 ]
+/dev/shm/s13ev/wt-after-n37/samples/Broiler.VM.Sample.JavaScriptConsumer/Broiler.VM.Sample.JavaScriptConsumer.csproj : error NU1102: Unable to find package Broiler.VM.Binary with version (= 0.1.0-preview.4)
+/dev/shm/s13ev/wt-after-n37/samples/Broiler.VM.Sample.JavaScriptConsumer/Broiler.VM.Sample.JavaScriptConsumer.csproj : error NU1102:   - Found 2 version(s) in local-feed [ Nearest version: 0.1.0-preview.5 ]
+/dev/shm/s13ev/wt-after-n37/samples/Broiler.VM.Sample.JavaScriptConsumer/Broiler.VM.Sample.JavaScriptConsumer.csproj : error NU1102: Unable to find package Broiler.VM.Runtime with version (= 0.1.0-preview.4)
+/dev/shm/s13ev/wt-after-n37/samples/Broiler.VM.Sample.JavaScriptConsumer/Broiler.VM.Sample.JavaScriptConsumer.csproj : error NU1102:   - Found 2 version(s) in local-feed [ Nearest version: 0.1.0-preview.5 ]
+/dev/shm/s13ev/wt-after-n37/samples/Broiler.VM.Sample.JavaScriptConsumer/Broiler.VM.Sample.JavaScriptConsumer.csproj : error NU1102: Unable to find package Broiler.VM.Profile.JavaScript with version (= 0.1.0-preview.4)
+/dev/shm/s13ev/wt-after-n37/samples/Broiler.VM.Sample.JavaScriptConsumer/Broiler.VM.Sample.JavaScriptConsumer.csproj : error NU1102:   - Found 2 version(s) in local-feed [ Nearest version: 0.1.0-preview.5 ]
+/dev/shm/s13ev/wt-after-n37/samples/Broiler.VM.Sample.JavaScriptConsumer/Broiler.VM.Sample.JavaScriptConsumer.csproj : error NU1102: Unable to find package Broiler.VM.Profile.JavaScript.Format with version (= 0.1.0-preview.4)
+/dev/shm/s13ev/wt-after-n37/samples/Broiler.VM.Sample.JavaScriptConsumer/Broiler.VM.Sample.JavaScriptConsumer.csproj : error NU1102:   - Found 2 version(s) in local-feed [ Nearest version: 0.1.0-preview.5 ]
+/dev/shm/s13ev/wt-after-n37/samples/Broiler.VM.Sample.JavaScriptConsumer/Broiler.VM.Sample.JavaScriptConsumer.csproj : error NU1102: Unable to find package Broiler.VM.Profile.JavaScript.Compiler with version (= 0.1.0-preview.4)
+/dev/shm/s13ev/wt-after-n37/samples/Broiler.VM.Sample.JavaScriptConsumer/Broiler.VM.Sample.JavaScriptConsumer.csproj : error NU1102:   - Found 2 version(s) in local-feed [ Nearest version: 0.1.0-preview.5 ]
+  Failed to restore /dev/shm/s13ev/wt-after-n37/samples/Broiler.VM.Sample.JavaScriptConsumer/Broiler.VM.Sample.JavaScriptConsumer.csproj (in 154 ms).
+exit code: 1
+
+--- publish the consumer as Native AOT from the candidate ---
+Determining projects to restore...
+  Restored /dev/shm/s13ev/wt-after-n37/samples/Broiler.VM.Sample.JavaScriptConsumer/Broiler.VM.Sample.JavaScriptConsumer.csproj (in 516 ms).
+  Broiler.VM.Sample.JavaScriptConsumer -> /dev/shm/s13ev/wt-after-n37/samples/Broiler.VM.Sample.JavaScriptConsumer/bin/Release/net10.0/linux-x64/Broiler.VM.Sample.JavaScriptConsumer.dll
+  Generating native code
+  Broiler.VM.Sample.JavaScriptConsumer -> /dev/shm/s13ev/tmp/broiler-js-consumer-aot-ya5dzs0x/publish/
+exit code: 0
+native image size: 8907216 bytes
+
+--- run the Native AOT consumer ---
+# broiler-vm-sample-javascript core-contract-version=1
+# assembly Broiler.VM.Runtime 0.1.0-preview.6.f9-candidate+a8d8398bd59e7f5600cb0aa9e733ff8948859cf4
+# assembly Broiler.VM.Profile.JavaScript 0.1.0-preview.6.f9-candidate+a8d8398bd59e7f5600cb0aa9e733ff8948859cf4
+# assembly Broiler.VM.Profile.JavaScript.Compiler 0.1.0-preview.6.f9-candidate+a8d8398bd59e7f5600cb0aa9e733ff8948859cf4
+# assembly Broiler.VM.Profile.JavaScript.Intl 0.1.0-preview.6.f9-candidate+a8d8398bd59e7f5600cb0aa9e733ff8948859cf4
+ok   one-plus-one: answered 2
+ok   a-program: answered 1,2,3:{"x":[1,"two"]}
+ok   a-syntax-error: refused: 2101:UnexpectedToken at 1:4: the grammar admits no `end of source` at this point
+ok   a-truncated-artifact: verification refused: InvalidArtifact/Truncated
+ok   intl-from-its-package: answered 1.234.567,891|January 1, 1970
+ok   temporal-from-its-package: answered 2026-11-04
+broiler-vm-sample-javascript: 6 checks passed
+exit code: 0

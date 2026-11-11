@@ -1,0 +1,4 @@
+## compare-wide-bytecode.log against after/parta-comparisons/compare-wide-bytecode.log, '#   reference'/'# candidate' path lines removed
+  (none: identical)
+## compare-wide-native.log against after/parta-comparisons/compare-wide-native.log, '#   reference'/'# candidate' path lines removed
+  (none: identical)

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# tagged-run.sh <registry|after> <commit>: a scratch copy of the commit with the stage-tag patch (tagpatch.py),
+# the slice compiler built in Release, and --parse-corpus over B1 to B5 with one worker, as part B's run 1.
+S=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev3r
+which=$1; c=$2; O=$S/partb/tagged-$which; W=/dev/shm/s13r/tag-$which; mkdir -p $O; rm -rf $W; mkdir -p $W/tree $W/orig
+git -C /home/user/vm-s13ev archive --format=tar $c | tar -x -C $W/tree
+git -C /home/user/vm-s13ev archive --format=tar $c | tar -x -C $W/orig
+echo "commit $(git -C /home/user/vm-s13ev rev-parse $c) archived $(date -u +%FT%TZ)" > $O/archive.txt
+python3 -I $S/scripts/tagpatch.py $W/tree $which >> $O/archive.txt || exit 3
+(cd $W && diff -ru orig tree > $O/tag-patch.diff.txt); rm -rf $W/orig
+HL="-p:CreateHardLinksForCopyLocalIfPossible=true -p:CreateHardLinksForCopyFilesToOutputDirectoryIfPossible=true -p:CreateHardLinksForAdditionalFilesIfPossible=true"
+$S/scripts/run.sh build-sc-tagged-$which $O $W/tree -- dotnet build src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj -c Release --disable-build-servers -nologo $HL || exit 4
+grep -E 'warning [A-Z]+[0-9]+' $O/build-sc-tagged-$which.out.txt | sort -u > $O/build-warnings.txt
+BIN=$W/tree/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0
+$S/scripts/run.sh parse-corpus-tagged-$which $O $W/tree -- dotnet $BIN/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --parse-corpus $W/tree/src/tests/corpus/parse-1/corpus.manifest $O/parse-corpus-tagged-$which.tsv.gz --populations B1,B2,B3,B4,B5 --journal $O/parse-corpus-tagged-$which.journal --workers 1
+rm -rf $W/tree/src/*/bin $W/tree/src/*/obj
+echo DONE > $O/DONE

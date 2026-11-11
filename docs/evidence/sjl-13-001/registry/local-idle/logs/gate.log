@@ -1,0 +1,5 @@
+2026-11-10T16:02:18Z gate fx-build-sc-registry: idle (load 0.41 0.79 0.80 1/113 2238) after 0s
+2026-11-10T16:02:56Z fx-build-sc-registry: done: fx-build-sc-registry	rc=0	wall=38.0s	maxrss=690MB	started=2026-11-10T16:02:18Z	ended=2026-11-10T16:02:56Z
+2026-11-10T16:03:26Z gate_hard fx-parse-corpus-registry-run1: waiting, load 1.32 1.08 0.90 1/116 2692; others: : 
+2026-11-10T16:04:26Z gate_hard fx-parse-corpus-registry-run1: idle (load 0.48 0.88 0.85 1/117 2738) after 60s
+2026-11-10T16:13:23Z fx-parse-corpus-registry-run1: done: fx-parse-corpus-registry-run1	rc=0	wall=537.4s	maxrss=1265MB	started=2026-11-10T16:04:26Z	ended=2026-11-10T16:13:23Z

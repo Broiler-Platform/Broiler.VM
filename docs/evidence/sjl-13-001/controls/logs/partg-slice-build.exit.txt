@@ -1,0 +1,1 @@
+build-k-partg-slice	rc=0	wall=7.2s	maxrss=234MB	started=2026-11-10T12:44:52Z	ended=2026-11-10T12:45:00Z

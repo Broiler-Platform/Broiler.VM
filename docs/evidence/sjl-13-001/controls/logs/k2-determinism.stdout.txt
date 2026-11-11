@@ -1,0 +1,13 @@
+# compare-parse-corpus determinism (bundle sjl-12-001 part C); no class is admitted
+# run 1 /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/out/controls/k2-parse-corpus-run1.tsv.gz (one worker)
+# run 2 /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/out/controls/k2-parse-corpus-run2.tsv.gz (one worker)
+# run 3 /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/out/controls/k2-parse-corpus-run3.tsv.gz (two workers, every compilation twice concurrently)
+# population /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev1/out/after/parse-corpus-after-run1.tsv.gz: the B1 and B3 compilations it accepted
+# B1 and B3 compilations of the population report outside the population (refused, not compiled or crashed) 39211
+# compilations of the population report crashed or not compiled outside reading 2, in any sub-population 0 (part B's completeness, which part C does not read)
+# manifest-sha256 1c5342104766f14d0c17d950537e4ed078a0c438c3652f8c65bff8c6c347e9cc (every report checked against /dev/shm/s13ev/w/k/src/tests/corpus/parse-1/corpus.manifest)
+# run 1 outcomes B1 accepted 194200, refused 19726; B2 accepted 93134, refused 9033, not-compiled 287; B3 accepted 169347, refused 19485; B4 accepted 268, refused 55470, not-compiled 13; B5 accepted 832, refused 305
+# run 2 outcomes B1 accepted 194200, refused 19726; B2 accepted 93134, refused 9033, not-compiled 287; B3 accepted 169347, refused 19485; B4 accepted 268, refused 55470, not-compiled 13; B5 accepted 832, refused 305
+# run 3 outcomes, both compilations B1 accepted 388400, refused 39452; B2 accepted 186268, refused 18066, not-compiled 574; B3 accepted 338694, refused 38970; B4 accepted 536, refused 110940, not-compiled 26; B5 accepted 1664, refused 610
+# compilations in the population 363547
+# compilations whose four results are not one accepted hash 28497

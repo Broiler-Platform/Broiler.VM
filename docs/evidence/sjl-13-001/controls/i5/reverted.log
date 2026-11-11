@@ -1,0 +1,21 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> /dev/shm/s13ev/w/after-full/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> /dev/shm/s13ev/w/after-full/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Runtime -> /dev/shm/s13ev/w/after-full/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Fixtures -> /dev/shm/s13ev/w/after-full/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Architecture.Tests -> /dev/shm/s13ev/w/after-full/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /dev/shm/s13ev/w/after-full/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v4.0.1+0f7d528729 (64-bit .NET 10.0.12)
+[xUnit.net 00:00:00.47]   Discovering: Broiler.VM.Architecture.Tests
+[xUnit.net 00:00:01.31]   Discovered:  Broiler.VM.Architecture.Tests
+[xUnit.net 00:00:01.54]   Starting:    Broiler.VM.Architecture.Tests
+  Passed Broiler.VM.Architecture.Tests.I5RetiredDuplicatesRuleTests.I5_A_Retired_Member_Declared_Again_Is_Reported [2 s]
+[xUnit.net 00:00:05.07]   Finished:    Broiler.VM.Architecture.Tests (ID = '68140be1e8bde0e783e79d21657fc408423c5139241359a3c15a28b39c38ce3b')
+  Passed Broiler.VM.Architecture.Tests.I5RetiredDuplicatesRuleTests.I5_No_Retired_Member_Is_Declared_Again [1 s]
+
+Test Run Successful.
+Total tests: 2
+     Passed: 2
+ Total time: 5.5970 Seconds

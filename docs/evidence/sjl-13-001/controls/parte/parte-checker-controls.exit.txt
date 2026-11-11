@@ -1,0 +1,1 @@
+parte-checker-controls	rc=0	wall=0.1s	maxrss=21MB	started=2026-11-10T15:04:16Z	ended=2026-11-10T15:04:16Z

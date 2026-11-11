@@ -1,0 +1,2 @@
+partb-control-make	rc=0	wall=13.6s	maxrss=874MB	started=2026-11-10T11:11:17Z	ended=2026-11-10T11:11:31Z
+partb-control-identity	rc=1	wall=8.2s	maxrss=962MB	started=2026-11-10T11:12:14Z	ended=2026-11-10T11:12:22Z

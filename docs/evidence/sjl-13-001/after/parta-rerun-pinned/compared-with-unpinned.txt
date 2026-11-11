@@ -1,0 +1,50 @@
+# part A's re-runs taken with the retained pin (this folder) against the first, unpinned ones (after/parta-rerun/), row by row: label, form, rep, path, variant, verdict|dimension; '<' first, '>' this folder
+# the same paths in both: yes
+# every log here names the retained pin: yes; any log reporting MissingSuiteRevision: 0
+## rerun-wide-bytecode: 48 rows first, 48 here
+  the same
+## rerun-wide-native: 96 rows first, 96 here
+< after	native	1	test/staging/sm/Date/dst-offset-caching-1-of-8.js	sloppy	Exhausted|Fuel
+> after	native	1	test/staging/sm/Date/dst-offset-caching-1-of-8.js	sloppy	Exhausted|WallClock
+< after	native	1	test/staging/sm/Date/dst-offset-caching-3-of-8.js	sloppy	Exhausted|Fuel
+> after	native	1	test/staging/sm/Date/dst-offset-caching-3-of-8.js	sloppy	Exhausted|WallClock
+< after	native	1	test/staging/sm/Date/dst-offset-caching-5-of-8.js	sloppy	Exhausted|WallClock
+> after	native	1	test/staging/sm/Date/dst-offset-caching-5-of-8.js	sloppy	Exhausted|Fuel
+< after	native	1	test/staging/sm/Date/dst-offset-caching-6-of-8.js	sloppy	Exhausted|WallClock
+> after	native	1	test/staging/sm/Date/dst-offset-caching-6-of-8.js	sloppy	Exhausted|Fuel
+< after	native	1	test/staging/sm/Date/dst-offset-caching-7-of-8.js	sloppy	Exhausted|WallClock
+> after	native	1	test/staging/sm/Date/dst-offset-caching-7-of-8.js	sloppy	Exhausted|Fuel
+< after	native	2	test/staging/sm/Date/dst-offset-caching-3-of-8.js	sloppy	Exhausted|WallClock
+> after	native	2	test/staging/sm/Date/dst-offset-caching-3-of-8.js	sloppy	Exhausted|Fuel
+< after	native	2	test/staging/sm/Date/dst-offset-caching-5-of-8.js	sloppy	Exhausted|WallClock
+> after	native	2	test/staging/sm/Date/dst-offset-caching-5-of-8.js	sloppy	Exhausted|Fuel
+< after	native	2	test/staging/sm/Date/dst-offset-caching-6-of-8.js	sloppy	Exhausted|WallClock
+> after	native	2	test/staging/sm/Date/dst-offset-caching-6-of-8.js	sloppy	Exhausted|Fuel
+< after	native	3	test/staging/sm/Date/dst-offset-caching-3-of-8.js	sloppy	Exhausted|Fuel
+> after	native	3	test/staging/sm/Date/dst-offset-caching-3-of-8.js	sloppy	Exhausted|WallClock
+< after	native	3	test/staging/sm/Date/dst-offset-caching-6-of-8.js	sloppy	Exhausted|WallClock
+> after	native	3	test/staging/sm/Date/dst-offset-caching-6-of-8.js	sloppy	Exhausted|Fuel
+< base	native	1	test/staging/sm/Date/dst-offset-caching-1-of-8.js	sloppy	Exhausted|WallClock
+> base	native	1	test/staging/sm/Date/dst-offset-caching-1-of-8.js	sloppy	Exhausted|Fuel
+< base	native	1	test/staging/sm/Date/dst-offset-caching-6-of-8.js	sloppy	Exhausted|WallClock
+> base	native	1	test/staging/sm/Date/dst-offset-caching-6-of-8.js	sloppy	Exhausted|Fuel
+< base	native	2	test/staging/sm/Date/dst-offset-caching-5-of-8.js	sloppy	Exhausted|WallClock
+> base	native	2	test/staging/sm/Date/dst-offset-caching-5-of-8.js	sloppy	Exhausted|Fuel
+< base	native	2	test/staging/sm/Date/dst-offset-caching-6-of-8.js	sloppy	Exhausted|WallClock
+> base	native	2	test/staging/sm/Date/dst-offset-caching-6-of-8.js	sloppy	Exhausted|Fuel
+< base	native	3	test/staging/sm/Date/dst-offset-caching-6-of-8.js	sloppy	Exhausted|WallClock
+> base	native	3	test/staging/sm/Date/dst-offset-caching-6-of-8.js	sloppy	Exhausted|Fuel
+## kindF-wide-bytecode: 20 rows first, 20 here
+  the same
+## kindF-wide-native: 20 rows first, 20 here
+  the same
+## the race's rows (differing-wide-*.tsv): first
+  test/staging/sm/Date/dst-offset-caching-1-of-8.js	sloppy
+  test/staging/sm/Date/dst-offset-caching-3-of-8.js	sloppy
+  test/staging/sm/Date/dst-offset-caching-5-of-8.js	sloppy
+## here
+  test/staging/sm/Date/dst-offset-caching-1-of-8.js	sloppy
+  test/staging/sm/Date/dst-offset-caching-3-of-8.js	sloppy
+  test/staging/sm/Date/dst-offset-caching-5-of-8.js	sloppy
+  test/staging/sm/Date/dst-offset-caching-7-of-8.js	sloppy
+# every race log here names the retained pin: yes

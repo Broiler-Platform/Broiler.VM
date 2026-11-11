@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+"""Bundle sjl-13-001, task 7.3, taken at its review (2026-11-10): a git read of what each path's diff holds between the base (df75f8c) and the registry commit
+(cbee7c4), for the revision of 2026-11-08's item 1 ("in each path only what the list says").
+
+Usage: python3 registry-diff-read.py.txt <repo>   (git reads alone; prints to stdout; kept with a .txt suffix so that
+nothing in the repository reads it as a script)
+
+For every path `git diff --name-only` names, each changed line (from `git diff -U0`) is put in one kind:
+  fingerprint   a `// Broiler-AI: ... Fingerprint=` annotation line whose only change is its fingerprint
+  header        a line of a source file's generated `Broiler Code Assurance` header block (`// Name:   count`)
+  comment-extended  of the comment lines, a removed one whose words an added comment line begins with (kept, and added to)
+  comment       a C# comment line (`//`, `///`, `/*`, `*`) added, removed or changed, no code with it
+  code-swap     a removed line and an added line, paired in order within one hunk, equal once each
+                `SliceSourceDiagnosticCode.<member>` and each four-digit code is blanked
+  other         anything else; printed in full, to be read by hand
+Each code-swap's pair of codes is listed with its count. A hunk that removes a comment line and adds no line carrying a
+date is printed with "!", since the list asks a replaced comment to carry a dated note quoting what it read.
+Data and documentation files (registry, mapping, stage table, API listing, CLI table, corpus files, the assurance
+artefacts) are counted, not kinded; the README's section 4 says how far their lines were read.
+"""
+import re, subprocess, sys
+repo = sys.argv[1]
+BASE, REG = 'df75f8cea79aa2452ca22892d47d8afa5a14c93f', 'cbee7c46ece7c9d7cf8a0c3f9a5a68418266672d'
+def git(*a): return subprocess.run(['git', '-C', repo, *a], check=True, capture_output=True, text=True).stdout
+paths = git('diff', '--name-only', BASE, REG).split()
+blank = lambda s: re.sub(r'\b\d{4}\b', '#', re.sub(r'SliceSourceDiagnosticCode\.\w+', 'C', s)).strip()
+DATED = re.compile(r'(Revised|Noted|Added|Corrected) 20\d\d-\d\d-\d\d|20\d\d-\d\d-\d\d')
+HEADER = re.compile(r'// [A-Z][A-Za-z -]+:\s+\d+(/\d+)?\s*$')
+CODES = re.compile(r'SliceSourceDiagnosticCode\.\w+|\b2\d{3}\b')
+iscomment = lambda s: re.match(r'\s*(//|/\*|\*)', s) is not None
+print(f'# base {BASE}\n# registry commit {REG}\n# paths {len(paths)}\n')
+for p in paths:
+    d = git('diff', '-U0', BASE, REG, '--', p)
+    if not p.endswith('.cs'):
+        add = sum(1 for l in d.splitlines() if l.startswith('+') and not l.startswith('+++'))
+        rem = sum(1 for l in d.splitlines() if l.startswith('-') and not l.startswith('---'))
+        print(f'{p}\tdata or documentation\t+{add} -{rem}')
+        continue
+    kinds, others, pairs = {}, [], {}
+    hunks = re.split(r'^@@.*$', d, flags=re.M)[1:]
+    for h in hunks:
+        rm = [l[1:] for l in h.splitlines() if l.startswith('-')]
+        ad = [l[1:] for l in h.splitlines() if l.startswith('+')]
+        def put(k, n=1): kinds[k] = kinds.get(k, 0) + n
+        # pair removed and added lines in order
+        rest_r, rest_a = [], []
+        for l in rm:
+            (put('fingerprint') if 'Fingerprint=' in l else put('header') if HEADER.match(l) else rest_r.append(l))
+        for l in ad:
+            (put('fingerprint') if 'Fingerprint=' in l else put('header') if HEADER.match(l) else rest_a.append(l))
+        cr = [l for l in rest_r if iscomment(l)]; ca = [l for l in rest_a if iscomment(l)]
+        put('comment', len(cr) + len(ca))
+        nr = [l for l in rest_r if not iscomment(l)]; na = [l for l in rest_a if not iscomment(l)]
+        ext = [l for l in cr if any(x.strip().startswith(l.strip().rstrip('.')) for x in ca)]
+        if ext: put('comment-extended', len(ext))
+        cr_rep = [l for l in cr if l not in ext]
+        if cr_rep and not any(DATED.search(l) for l in ad):
+            others.append('! a comment line removed in a hunk whose added lines carry no dated note: ' + cr_rep[0].strip())
+        i = 0
+        while i < min(len(nr), len(na)) and blank(nr[i]) == blank(na[i]) and nr[i] != na[i]:
+            put('code-swap', 2)
+            a_, b_ = CODES.findall(nr[i]), CODES.findall(na[i])
+            pairs[' '.join(a_) + ' > ' + ' '.join(b_)] = pairs.get(' '.join(a_) + ' > ' + ' '.join(b_), 0) + 1
+            i += 1
+        for l in nr[i:]: others.append('-' + l)
+        for l in na[i:]: others.append('+' + l)
+    print(f'{p}\tsource\t' + ' '.join(f'{k}={v}' for k, v in sorted(kinds.items())) + f' other={len(others)}')
+    for k, v in sorted(pairs.items()): print(f'    code-swap {k}: {v}')
+    for l in others: print('    ' + l.rstrip())

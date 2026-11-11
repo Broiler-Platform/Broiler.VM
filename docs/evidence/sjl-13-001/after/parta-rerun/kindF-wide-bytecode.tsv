@@ -1,0 +1,20 @@
+base	bytecode	1	result|test/staging/sm/RegExp/7.8.5-01.js|sloppy|Failed|||an uncaught Test262Error||uncaught Error: Expected a SyntaxError but got a EvalError
+base	bytecode	1	result|test/staging/sm/RegExp/7.8.5-01.js|strict|Failed|||an uncaught Test262Error||uncaught Error: Expected a SyntaxError but got a EvalError
+after	bytecode	1	result|test/staging/sm/RegExp/7.8.5-01.js|sloppy|Passed|||||
+after	bytecode	1	result|test/staging/sm/RegExp/7.8.5-01.js|strict|Passed|||||
+base	bytecode	1	result|test/staging/sm/async-functions/await-in-arrow-parameters.js|sloppy|Failed|||an uncaught SyntaxError||uncaught SyntaxError: the evaluated source is not a program this profile admits
+base	bytecode	1	result|test/staging/sm/async-functions/await-in-arrow-parameters.js|strict|Failed|||an uncaught SyntaxError||uncaught SyntaxError: the evaluated source is not a program this profile admits
+after	bytecode	1	result|test/staging/sm/async-functions/await-in-arrow-parameters.js|sloppy|Passed|||||
+after	bytecode	1	result|test/staging/sm/async-functions/await-in-arrow-parameters.js|strict|Passed|||||
+base	bytecode	1	result|test/staging/sm/class/compPropNames.js|sloppy|Failed|||an uncaught Test262Error||uncaught Error: Expected a SyntaxError to be thrown but no exception was thrown at all
+base	bytecode	1	result|test/staging/sm/class/compPropNames.js|strict|Failed|||an uncaught Test262Error||uncaught Error: Expected a SyntaxError to be thrown but no exception was thrown at all
+after	bytecode	1	result|test/staging/sm/class/compPropNames.js|sloppy|Passed|||||
+after	bytecode	1	result|test/staging/sm/class/compPropNames.js|strict|Passed|||||
+base	bytecode	1	result|test/staging/sm/expressions/destructuring-pattern-parenthesized.js|sloppy|Failed|||an uncaught Test262Error|class|uncaught Error: Expected a SyntaxError to be thrown but no exception was thrown at all
+base	bytecode	1	result|test/staging/sm/expressions/destructuring-pattern-parenthesized.js|strict|Failed|||an uncaught Test262Error|class|uncaught Error: Expected a SyntaxError to be thrown but no exception was thrown at all
+after	bytecode	1	result|test/staging/sm/expressions/destructuring-pattern-parenthesized.js|sloppy|Passed||||class|
+after	bytecode	1	result|test/staging/sm/expressions/destructuring-pattern-parenthesized.js|strict|Passed||||class|
+base	bytecode	1	result|test/staging/sm/statements/arrow-function-in-for-statement-head.js|sloppy|Failed|||an uncaught Test262Error||uncaught Error: Expected a SyntaxError to be thrown but no exception was thrown at all
+base	bytecode	1	result|test/staging/sm/statements/arrow-function-in-for-statement-head.js|strict|Failed|||an uncaught Test262Error||uncaught Error: Expected a SyntaxError to be thrown but no exception was thrown at all
+after	bytecode	1	result|test/staging/sm/statements/arrow-function-in-for-statement-head.js|sloppy|Passed|||||
+after	bytecode	1	result|test/staging/sm/statements/arrow-function-in-for-statement-head.js|strict|Passed|||||

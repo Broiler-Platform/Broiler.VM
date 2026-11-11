@@ -1,0 +1,36 @@
+# the binder's refusals at the registry commit cbee7c4, by their message text (a Python regular expression the
+# whole message must match), each with the correspondence row that names its site (correspondence.md, rows B01 to
+# B34, and correspondence-runs/analysis/binder-refusals.tsv for the message each site renders) and the stage the
+# stage table (corpus/stages.tsv) assigns its catalogue rows. One text, "the left-hand side of an assignment is not
+# a reference", is three sites; part-b-classify.py reads B21 where the text before the place on its line ends a
+# for statement's head ("for (", "for (var ", ...), and B18 otherwise (B20 has the same text and stage as B18).
+code	message	correspondence row	catalogue rows	stage
+2101	a private element cannot be deleted	B06	EE0030 EE0031	syntax
+2205	the operand of an update operator is not a reference	B07	EE0028 EE0029	syntax
+2212	`super` is only admitted inside a method	B08	EE0074 EE0075 EE0102 EE0103 EE0117 EE0118 EE0150 EE0151 EE0162 EE0172 EA0003 EP0017	semantics
+2212	a `super` call is only admitted in the constructor of a class with a heritage	B09	EE0015 EE0076 EE0077 EE0093 EE0104-EE0106 EE0119-EE0121 EE0124 EE0126 EE0131 EE0139 EE0142 EE0152 EE0153 EA0004 EP0018	semantics
+2105	`new\.target` is only admitted inside a function	B10	EE0163 EE0173 EA0002 EP0016	syntax
+2404	`import\.meta` is only admitted inside a module	B11	EE0027	syntax
+2203	a destructuring declaration needs an initialiser	B12	EX0009	syntax
+2203	`const [^`]+` needs an initialiser	B13	EE0044	syntax
+2213	`=` is not an object literal entry outside a destructuring assignment	B15	EE0017	syntax
+2214	an object literal may set `__proto__` once	B16	EE0018	semantics
+2205	the left-hand side of an assignment is not a reference	B18	EE0033 EE0034 EE0035 (B20: EE0036 EE0039, the same text and stage)	syntax
+2205	the left-hand side of an assignment is not a reference	B21	EE0054 (a for-in or for-of head)	semantics
+2205	a declaration's pattern binds names, and this is not one	B19	EX0008	syntax
+2207	`break` names no enclosing loop or switch	B01	EE0059 EE0081 EE0136 EE0165 EE0175	semantics
+2208	`continue` names no enclosing loop	B02	EE0058 EE0082 EE0137 EE0166 EE0176	semantics
+2218	`return` has nothing to return from outside a function	B03	EX0032	syntax
+2219	`return` has nothing to return from inside a class static block	B04	EX0033	syntax
+2216	`arguments` names nothing inside a class field initialiser or a static block	B22	EE0130 EE0138	semantics
+2217	`[^`]+` is not declared by any class this expression is inside of	B23	EE0167 EE0177 EA0009 EX0031	semantics
+2216	`arguments` names nothing inside a class field initialiser	B24	EA0005	semantics
+2215	.*	B25	EE0019, EE0183 to EE0213 (CheckRegExp: the flags, then the pattern through the validator, whose message it carries; 2215 is no other binder site's code)	syntax
+2209	`[^`]+` is not a binding name in a module	B26	EE0005	syntax
+2201	`[^`]+` is imported twice	B27	EE0168 EE0179	syntax
+2201	`[^`]+` is declared twice at this module's top level	B28	EE0168 (B30, the same text and row)	syntax
+2202	`[^`]+` is declared both as a `var` and as a function	B29	EE0169	syntax
+2202	`[^`]+` is declared both as a `var` and lexically	B31	EE0169	syntax
+2402	`[^`]+` is exported twice	B32	EE0170	semantics
+2403	`[^`]+` is exported and this module declares no such binding	B33	EE0171 (EE0182 for a reserved word, syntax)	semantics
+2201	`[^`]+` is both imported and declared in this module	B34	EE0168 EE0169	syntax

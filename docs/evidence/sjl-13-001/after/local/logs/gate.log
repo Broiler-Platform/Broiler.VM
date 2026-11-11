@@ -1,0 +1,52 @@
+2026-11-10T09:59:01Z gate build-cf-after: NOT idle after 60s, proceeding: load 2.29 4.40 5.49 3/125 19033; others: 26807:dotnet 
+2026-11-10T09:59:12Z build-cf-after: done: build-cf-after	rc=0	wall=11.2s	maxrss=241MB	started=2026-11-10T09:59:01Z	ended=2026-11-10T09:59:12Z
+2026-11-10T10:00:42Z gate build-cli-after: NOT idle after 60s, proceeding: load 1.44 3.59 5.09 3/127 12548; others: 3258:dotnet 
+2026-11-10T10:00:51Z build-cli-after: done: build-cli-after	rc=0	wall=8.1s	maxrss=235MB	started=2026-11-10T10:00:43Z	ended=2026-11-10T10:00:51Z
+2026-11-10T09:56:47Z gate build-sc-after: NOT idle after 60s, proceeding: load 2.35 5.03 5.80 2/129 27338; others: 26807:dotnet 
+2026-11-10T09:57:31Z build-sc-after: done: build-sc-after	rc=0	wall=43.8s	maxrss=767MB	started=2026-11-10T09:56:47Z	ended=2026-11-10T09:57:31Z
+2026-11-10T14:55:45Z gate build-solution-partd-after: idle (load 0.46 0.81 0.70 1/110 4392) after 0s
+2026-11-10T14:57:12Z build-solution-partd-after: done: build-solution-partd-after	rc=0	wall=87.0s	maxrss=463MB	started=2026-11-10T14:55:45Z	ended=2026-11-10T14:57:12Z
+2026-11-10T10:14:21Z gate census-inputs-after: idle (load 0.67 1.34 2.94 1/113 7597) after 0s
+2026-11-10T10:14:23Z census-inputs-after: done: census-inputs-after	rc=0	wall=2.7s	maxrss=290MB	started=2026-11-10T10:14:21Z	ended=2026-11-10T10:14:23Z
+2026-11-10T10:14:53Z gate census-test-after: idle (load 0.42 1.20 2.84 1/109 9893) after 0s
+2026-11-10T10:15:13Z census-test-after: done: census-test-after	rc=0	wall=19.3s	maxrss=346MB	started=2026-11-10T10:14:54Z	ended=2026-11-10T10:15:13Z
+2026-11-10T10:15:43Z gate checks-after: idle (load 0.45 1.11 2.73 1/111 31006) after 0s
+2026-11-10T10:21:36Z checks-after: done: checks-after	rc=0	wall=352.5s	maxrss=849MB	started=2026-11-10T10:15:43Z	ended=2026-11-10T10:21:36Z
+2026-11-10T10:22:48Z gate fuzz-slice-1-after: idle (load 0.61 0.91 2.04 1/112 9343) after 0s
+2026-11-10T10:23:15Z fuzz-slice-1-after: done: fuzz-slice-1-after	rc=0	wall=26.4s	maxrss=215MB	started=2026-11-10T10:22:48Z	ended=2026-11-10T10:23:15Z
+2026-11-10T10:23:45Z gate fuzz-slice-2-after: idle (load 0.45 0.83 1.94 2/112 11529) after 0s
+2026-11-10T10:24:12Z fuzz-slice-2-after: done: fuzz-slice-2-after	rc=0	wall=26.6s	maxrss=200MB	started=2026-11-10T10:23:45Z	ended=2026-11-10T10:24:12Z
+2026-11-10T10:24:42Z gate fuzz-slice-3-after: idle (load 0.39 0.76 1.85 1/110 13711) after 0s
+2026-11-10T10:25:08Z fuzz-slice-3-after: done: fuzz-slice-3-after	rc=0	wall=26.0s	maxrss=236MB	started=2026-11-10T10:24:42Z	ended=2026-11-10T10:25:08Z
+2026-11-10T10:25:38Z gate fuzz-slice-4-after: idle (load 0.36 0.71 1.77 1/109 15915) after 0s
+2026-11-10T10:26:05Z fuzz-slice-4-after: done: fuzz-slice-4-after	rc=0	wall=26.7s	maxrss=214MB	started=2026-11-10T10:25:38Z	ended=2026-11-10T10:26:05Z
+2026-11-10T10:22:06Z gate fuzz-wide-after: idle (load 0.61 0.94 2.10 1/108 15675) after 0s
+2026-11-10T10:22:18Z fuzz-wide-after: done: fuzz-wide-after	rc=0	wall=12.5s	maxrss=362MB	started=2026-11-10T10:22:06Z	ended=2026-11-10T10:22:18Z
+2026-11-10T11:14:10Z gate identity-base-after: idle (load 0.18 0.51 0.97 1/106 17572) after 0s
+2026-11-10T11:14:19Z identity-base-after: done: identity-base-after	rc=1	wall=8.4s	maxrss=960MB	started=2026-11-10T11:14:10Z	ended=2026-11-10T11:14:18Z
+2026-11-10T11:13:31Z gate identity-registry-after: idle (load 0.23 0.56 1.01 1/105 17518) after 0s
+2026-11-10T11:13:40Z identity-registry-after: done: identity-registry-after	rc=1	wall=8.3s	maxrss=960MB	started=2026-11-10T11:13:32Z	ended=2026-11-10T11:13:40Z
+2026-11-10T11:37:00Z gate k1-identity-after: idle (load 0.65 0.91 0.97 1/106 18035) after 0s
+2026-11-10T11:37:08Z k1-identity-after: done: k1-identity-after	rc=1	wall=7.9s	maxrss=959MB	started=2026-11-10T11:37:00Z	ended=2026-11-10T11:37:08Z
+2026-11-10T10:02:21Z gate parse-corpus-after-run1: NOT idle after 60s, proceeding: load 1.54 3.05 4.75 2/123 14407; others: 3258:dotnet 
+2026-11-10T10:13:50Z parse-corpus-after-run1: done: parse-corpus-after-run1	rc=0	wall=689.3s	maxrss=1285MB	started=2026-11-10T10:02:21Z	ended=2026-11-10T10:13:50Z
+2026-11-10T10:37:15Z gate parse-corpus-after-run2: idle (load 0.67 1.05 1.41 1/110 3318) after 0s
+2026-11-10T10:48:09Z parse-corpus-after-run2: done: parse-corpus-after-run2	rc=0	wall=654.2s	maxrss=1208MB	started=2026-11-10T10:37:15Z	ended=2026-11-10T10:48:09Z
+2026-11-10T10:48:39Z gate parse-corpus-after-run3: idle (load 0.68 0.91 1.14 1/107 17994) after 0s
+2026-11-10T11:03:56Z parse-corpus-after-run3: done: parse-corpus-after-run3	rc=0	wall=916.3s	maxrss=1721MB	started=2026-11-10T10:48:39Z	ended=2026-11-10T11:03:56Z
+2026-11-10T11:15:57Z gate partb-bytes-after: idle (load 0.13 0.40 0.88 1/109 17929) after 0s
+2026-11-10T11:16:01Z partb-bytes-after: done: partb-bytes-after	rc=0	wall=3.1s	maxrss=670MB	started=2026-11-10T11:15:57Z	ended=2026-11-10T11:16:01Z
+2026-11-10T13:44:04Z gate partd-after: idle (load 0.65 0.96 1.16 1/122 2063) after 0s
+2026-11-10T13:45:15Z partd-after: done: partd-after	rc=1	wall=71.1s	maxrss=255MB	started=2026-11-10T13:44:04Z	ended=2026-11-10T13:45:15Z
+2026-11-10T14:58:42Z gate partd-after: idle (load 0.82 1.51 1.06 1/109 5408) after 60s
+2026-11-10T14:59:18Z partd-after: done: partd-after	rc=0	wall=36.2s	maxrss=1849MB	started=2026-11-10T14:58:42Z	ended=2026-11-10T14:59:18Z
+2026-11-10T14:37:23Z gate_hard race-wide-native-after-test_staging_sm_Date_dst-offset-caching-1-of-8: idle (load 0.40 0.88 1.08 1/118 2272) after 0s
+2026-11-10T14:37:35Z race-wide-native-after-test_staging_sm_Date_dst-offset-caching-1-of-8: done: race-wide-native-after-test_staging_sm_Date_dst-offset-caching-1-of-8	rc=1	wall=11.4s	maxrss=196MB	started=2026-11-10T14:37:23Z	ended=2026-11-10T14:37:35Z
+2026-11-10T14:38:46Z gate_hard race-wide-native-after-test_staging_sm_Date_dst-offset-caching-3-of-8: idle (load 0.27 0.73 1.01 2/118 2450) after 0s
+2026-11-10T14:38:58Z race-wide-native-after-test_staging_sm_Date_dst-offset-caching-3-of-8: done: race-wide-native-after-test_staging_sm_Date_dst-offset-caching-3-of-8	rc=1	wall=11.7s	maxrss=196MB	started=2026-11-10T14:38:47Z	ended=2026-11-10T14:38:58Z
+2026-11-10T14:40:10Z gate_hard race-wide-native-after-test_staging_sm_Date_dst-offset-caching-5-of-8: idle (load 0.21 0.61 0.94 1/115 2624) after 0s
+2026-11-10T14:40:22Z race-wide-native-after-test_staging_sm_Date_dst-offset-caching-5-of-8: done: race-wide-native-after-test_staging_sm_Date_dst-offset-caching-5-of-8	rc=1	wall=11.0s	maxrss=197MB	started=2026-11-10T14:40:11Z	ended=2026-11-10T14:40:22Z
+2026-11-10T10:26:35Z gate vectors-after: idle (load 0.40 0.68 1.69 1/108 18106) after 0s
+2026-11-10T10:31:26Z vectors-after: done: vectors-after	rc=1	wall=291.1s	maxrss=931MB	started=2026-11-10T10:26:35Z	ended=2026-11-10T10:31:26Z
+2026-11-10T10:31:56Z gate vectors-control-after: idle (load 0.70 0.90 1.50 1/111 10660) after 0s
+2026-11-10T10:36:43Z vectors-control-after: done: vectors-control-after	rc=1	wall=287.4s	maxrss=994MB	started=2026-11-10T10:31:56Z	ended=2026-11-10T10:36:43Z

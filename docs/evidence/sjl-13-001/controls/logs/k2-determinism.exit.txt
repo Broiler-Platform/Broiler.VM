@@ -1,0 +1,1 @@
+k2-determinism	rc=1	wall=15.5s	maxrss=1919MB	started=2026-11-10T12:18:52Z	ended=2026-11-10T12:19:08Z

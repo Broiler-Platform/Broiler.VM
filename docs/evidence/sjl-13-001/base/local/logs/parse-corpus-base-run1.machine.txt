@@ -1,0 +1,8 @@
+=== parse-corpus-base-run1
+time: 2026-11-10T08:57:54Z
+loadavg: 0.38 3.51 4.59 1/104 17818
+nproc: 4
+os: Ubuntu 24.04.5 LTS; Linux 6.18.44-fc-v338 x86_64
+sdk: 10.0.401
+disk:  8212 MiB free
+other dotnet/python processes:

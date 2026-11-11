@@ -1,0 +1,20 @@
+import gzip, sys
+B='/home/user/vm-s13ev/docs/evidence/sjl-13-001/'; S='/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev3r/'
+def rows(p):
+    d={}
+    for l in gzip.open(p,'rt',encoding='utf-8'):
+        if l.startswith('#') or l.startswith('id\t'): continue
+        c=l.rstrip('\n').split('\t'); d[tuple(c[:4])]=l
+    return d
+b=rows(B+'base/local/parse-corpus-base-run1.tsv.gz'); g=rows(B+'registry/local/parse-corpus-registry-run1.tsv.gz'); a=rows(B+'after/local/parse-corpus-after-run1.tsv.gz')
+keys={k for k in b if not (b[k]==g[k]==a[k])}
+print('keys differing between two of the three runs:', len(keys))
+for side,src in (('registry',S+'partb/tagged-registry/parse-corpus-tagged-registry.tsv.gz'),('after',S+'partb/tagged-after/parse-corpus-tagged-after.tsv.gz')):
+    with gzip.GzipFile(B+'after/judgement/partb/stage-tags-%s.tsv.gz'%side,'wb',mtime=0) as gz:
+        o=gz
+        o.write(('# the stage-tagged run of task 7.3 at the %s commit, the rows of the keys whose rows differ between two of part B\'s three run 1 reports; each diagnostic is code:line:column@stage#message, the message base64 over its UTF-8 bytes\n'%side).encode())
+        for l in gzip.open(src,'rt',encoding='utf-8'):
+            if l.startswith('id\t'): o.write(l.encode()); continue
+            if l.startswith('#'): continue
+            c=l.split('\t',4)
+            if tuple(c[:4]) in keys: o.write(l.encode('utf-8'))

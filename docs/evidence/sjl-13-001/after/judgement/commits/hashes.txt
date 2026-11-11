@@ -1,0 +1,4 @@
+4285d5d0b492049e2d901226a966761f670b30fe761c17ebb1efbb4c3185ab80  commit-conditions.sh.txt
+7dacc7e1d3cdbf8ddb389a3b395cc45dbdaa7d92329886046085d573d3e27a6c  commit-conditions.txt
+005bc91fafd7f6e16e047ceb8a15017ad63da67c3a9d7498d145ec4a63fd24b7  registry-diff-read.py.txt
+85bd838d47652a164e84df60be0454580cc0a7179a119a8524296ce858e4f9f9  registry-diff-read.txt

@@ -1,0 +1,4 @@
+k1-parse-corpus journal: begin 562100, end 562100
+k2-parse-corpus-run1 journal: begin 562100, end 562100
+k2-parse-corpus-run2 journal: begin 562100, end 562100
+k2-parse-corpus-run3 journal: begin 1124200, end 1124200

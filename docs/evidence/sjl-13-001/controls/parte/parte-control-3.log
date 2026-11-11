@@ -1,0 +1,6 @@
+check-frontend-mapping: mapping src/Broiler.VM.Profile.JavaScript/docs/diagnostics/frontend-mapping.tsv
+check-frontend-mapping: catalogue Broiler.JS Broiler.ECMAScript/docs/frontend/early-errors.tsv at b1ac1b8a756b5db6699b53fbb4bd4f4e06eae2dd, copy SHA-256 7a9109b0db685df98a7327cd95b9337cc538337f834fe4f22692b249058aa4f1
+check-frontend-mapping: stage table Broiler.JS Broiler.ECMAScript/docs/frontend/stages.tsv at 238069ab8150858a112461b42b95c1f49c1f4eb1, copy SHA-256 3c9c49d97162650a48acfeec33b3d1d084dddda6bf649ad648c2e5ff1f1ce6a6
+check-frontend-mapping: registry revision 19
+check-frontend-mapping: refused: E14 registry 2212 MisplacedSuper (since 19): LanguageErrors gives it no class (Classified lists it: yes; Classify has an arm: no)
+check-frontend-mapping: REFUSED: 1 problem(s)

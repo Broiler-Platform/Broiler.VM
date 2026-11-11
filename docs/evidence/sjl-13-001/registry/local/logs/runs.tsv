@@ -1,0 +1,5 @@
+build-sc-registry	rc=0	wall=65.6s	maxrss=666MB	started=2026-11-10T09:42:24Z	ended=2026-11-10T09:43:30Z
+identity-base-registry	rc=1	wall=8.6s	maxrss=962MB	started=2026-11-10T11:12:53Z	ended=2026-11-10T11:13:01Z
+identity-registry-after	rc=1	wall=8.3s	maxrss=960MB	started=2026-11-10T11:13:32Z	ended=2026-11-10T11:13:40Z
+parse-corpus-registry-run1	rc=0	wall=615.4s	maxrss=1148MB	started=2026-11-10T09:45:00Z	ended=2026-11-10T09:55:16Z
+partb-bytes-registry	rc=0	wall=2.6s	maxrss=670MB	started=2026-11-10T11:15:23Z	ended=2026-11-10T11:15:26Z

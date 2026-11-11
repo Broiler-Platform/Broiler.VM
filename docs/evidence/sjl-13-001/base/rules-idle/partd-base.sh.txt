@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Part D at the base commit, taken again behind the hard gate: clean archive, Release build of the solution,
+# then the architecture tests with BROILER_RULE_MESSAGES set, as task 7.2 took them.
+S=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/sjl13-ev3r
+c=df75f8cea79aa2452ca22892d47d8afa5a14c93f; O=$S/partd-base; W=/dev/shm/s13r/partd-base; mkdir -p $O $O/rule-messages; rm -rf $W; mkdir -p $W/tree
+git -C /home/user/vm-s13ev archive --format=tar $c | tar -x -C $W/tree
+{ echo "commit $c"; echo "tree $(git -C /home/user/vm-s13ev rev-parse $c^{tree})"; echo "mode full"; echo "made $(date -u +%FT%TZ)"; echo "files $(find $W/tree -type f | wc -l)"; echo "content-sha256 $(cd $W/tree && find . -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -c1-64)"; } > $O/archive.txt
+HL="-p:CreateHardLinksForCopyLocalIfPossible=true -p:CreateHardLinksForCopyFilesToOutputDirectoryIfPossible=true -p:CreateHardLinksForAdditionalFilesIfPossible=true"
+$S/scripts/run.sh build-solution-partd-base $O $W/tree -- dotnet build Broiler.VM.slnx -c Release --disable-build-servers -nologo $HL
+grep -E 'warning [A-Z]+[0-9]+' $O/build-solution-partd-base.out.txt | sort -u > $O/build-warnings.txt
+BROILER_RULE_MESSAGES=$O/rule-messages $S/scripts/run.sh partd-base $O $W/tree -- env BROILER_RULE_MESSAGES=$O/rule-messages dotnet test src/tests/Broiler.VM.Architecture.Tests -c Release --no-build --nologo --disable-build-servers --results-directory $O/results --logger "console;verbosity=normal" --logger "trx;LogFileName=partd-base.trx"
+grep -E '^\s+Failed ' $O/partd-base.out.txt > $O/failed-tests.txt
+grep -E '^(Total tests|     Passed|     Failed|Test Run)' $O/partd-base.out.txt > $O/test-summary.txt
+rm -rf $W
+echo DONE > $O/DONE

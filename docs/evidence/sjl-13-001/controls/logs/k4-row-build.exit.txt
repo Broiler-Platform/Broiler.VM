@@ -1,0 +1,1 @@
+build-k4-row	rc=0	wall=42.3s	maxrss=666MB	started=2026-11-10T14:52:39Z	ended=2026-11-10T14:53:22Z

@@ -1,0 +1,8 @@
+=== build-k-partg-slice
+time: 2026-11-10T12:44:52Z
+loadavg: 0.38 0.78 0.97 1/110 25534
+nproc: 4
+os: Ubuntu 24.04.5 LTS; Linux 6.18.44-fc-v338 x86_64
+sdk: 10.0.401
+disk:  9787 MiB free
+other dotnet/python processes:

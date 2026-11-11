@@ -1,0 +1,1 @@
+partf-checks	rc=1	wall=428.6s	maxrss=713MB	started=2026-11-10T12:35:53Z	ended=2026-11-10T12:43:02Z

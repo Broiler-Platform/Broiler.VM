@@ -1,0 +1,120 @@
+diff -ru orig/src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs tree/src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs
+--- orig/src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs	2026-11-10 07:05:18.000000000 +0000
++++ tree/src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs	2026-11-10 21:59:52.869352385 +0000
+@@ -198,5 +198,5 @@
+     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6FC4F9
+     // Broiler-Human:        PENDING
+     private void Refuse(SyntaxNode node, SliceSourceDiagnosticCode code, string message) =>
+-        found.Add((node.Span.Offset, new SliceSourceDiagnostic(code, message, node.Span.Line, node.Span.Column)));
++        found.Add((node.Span.Offset, new SliceSourceDiagnostic(code, "\u0001admission-walk\u0001" + message, node.Span.Line, node.Span.Column)));
+ }
+diff -ru orig/src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs tree/src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs
+--- orig/src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs	2026-11-10 07:05:18.000000000 +0000
++++ tree/src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs	2026-11-10 21:59:52.869310509 +0000
+@@ -90,7 +90,7 @@
+     {
+         if (!context.Is(Frame.Silent))
+         {
+-            found.Add(new SliceSourceDiagnostic(code, message, span.Line, span.Column));
++            found.Add(new SliceSourceDiagnostic(code, "\u0001binder\u0001" + message, span.Line, span.Column));
+         }
+     }
+ 
+diff -ru orig/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Emission.cs tree/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Emission.cs
+--- orig/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Emission.cs	2026-11-10 07:05:18.000000000 +0000
++++ tree/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Emission.cs	2026-11-10 21:59:52.867830893 +0000
+@@ -279,6 +279,6 @@
+             return;
+         }
+ 
+-        diagnostics.Add(new SliceSourceDiagnostic(code, message, span.Line, span.Column));
++        diagnostics.Add(new SliceSourceDiagnostic(code, "\u0001lowering\u0001" + message, span.Line, span.Column));
+     }
+ }
+diff -ru orig/src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendDiagnostics.cs tree/src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendDiagnostics.cs
+--- orig/src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendDiagnostics.cs	2026-11-10 07:05:18.000000000 +0000
++++ tree/src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendDiagnostics.cs	2026-11-10 21:59:52.869385340 +0000
+@@ -85,7 +85,7 @@
+                 "the shared code " + diagnostic.Code + " (" + diagnostic.MessageId + ") has no row in frontend-mapping.tsv");
+         }
+ 
+-        return new SliceSourceDiagnostic(code, Render(diagnostic, source), diagnostic.Span.Line, diagnostic.Span.Column);
++        return new SliceSourceDiagnostic(code, "\u0001library/" + diagnostic.Code + "/" + diagnostic.MessageId + "/" + diagnostic.Phase + "\u0001" + Render(diagnostic, source), diagnostic.Span.Line, diagnostic.Span.Column);
+     }
+ 
+     /// <summary>The mapping's <c>code</c> rows, read from the embedded file.</summary>
+diff -ru orig/src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs tree/src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs
+--- orig/src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs	2026-11-10 07:05:18.000000000 +0000
++++ tree/src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs	2026-11-10 21:59:52.869591366 +0000
+@@ -103,7 +103,7 @@
+ 
+         diagnostics.Add(new SliceSourceDiagnostic(
+             SliceSourceDiagnosticCode.ConstructOutsideManifest,
+-            what + " is not admitted by the declared feature manifest",
++            "\u0001numeric\u0001" + what + " is not admitted by the declared feature manifest",
+             span.Line,
+             span.Column));
+     }
+diff -ru orig/src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs tree/src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs
+--- orig/src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs	2026-11-10 07:05:18.000000000 +0000
++++ tree/src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs	2026-11-10 21:59:52.868277457 +0000
+@@ -1873,7 +1873,7 @@
+             return;
+         }
+ 
+-        diagnostics.Add(new SliceSourceDiagnostic(code, message, Current.Line, Current.Column));
++        diagnostics.Add(new SliceSourceDiagnostic(code, "\u0001slice-parser\u0001" + message, Current.Line, Current.Column));
+     }
+ 
+     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=AB2B33
+diff -ru orig/src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs tree/src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs
+--- orig/src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs	2026-11-10 07:05:18.000000000 +0000
++++ tree/src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs	2026-11-10 21:59:52.868570109 +0000
+@@ -1025,5 +1025,5 @@
+     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=FA3241
+     // Broiler-Human:        PENDING
+     private void Refuse(SliceSourceDiagnosticCode code, string message, SliceSourceSpan span) =>
+-        diagnostics.Add(new SliceSourceDiagnostic(code, message, span.Line, span.Column));
++        diagnostics.Add(new SliceSourceDiagnostic(code, "\u0001slice-lowering\u0001" + message, span.Line, span.Column));
+ }
+diff -ru orig/src/Broiler.VM.Profile.JavaScript.Compiler/SliceStaticSemantics.cs tree/src/Broiler.VM.Profile.JavaScript.Compiler/SliceStaticSemantics.cs
+--- orig/src/Broiler.VM.Profile.JavaScript.Compiler/SliceStaticSemantics.cs	2026-11-10 07:05:18.000000000 +0000
++++ tree/src/Broiler.VM.Profile.JavaScript.Compiler/SliceStaticSemantics.cs	2026-11-10 21:59:52.868681618 +0000
+@@ -826,5 +826,5 @@
+     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=FA3241
+     // Broiler-Human:        PENDING
+     private void Refuse(SliceSourceDiagnosticCode code, string message, SliceSourceSpan span) =>
+-        diagnostics.Add(new SliceSourceDiagnostic(code, message, span.Line, span.Column));
++        diagnostics.Add(new SliceSourceDiagnostic(code, "\u0001slice-semantics\u0001" + message, span.Line, span.Column));
+ }
+diff -ru orig/src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs tree/src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs
+--- orig/src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs	2026-11-10 07:05:18.000000000 +0000
++++ tree/src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs	2026-11-10 21:59:52.869162294 +0000
+@@ -2591,7 +2591,7 @@
+     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=846430
+     // Broiler-Human:        PENDING
+     private void Refuse(SliceSourceDiagnosticCode code, string message, int atLine, int atColumn) =>
+-        diagnostics.Add(new SliceSourceDiagnostic(code, message, atLine, atColumn));
++        diagnostics.Add(new SliceSourceDiagnostic(code, "\u0001tokenizer\u0001" + message, atLine, atColumn));
+ 
+     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=FBEFF9
+     // Broiler-Human:        PENDING
+diff -ru orig/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/ParseCorpus.cs tree/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/ParseCorpus.cs
+--- orig/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/ParseCorpus.cs	2026-11-10 07:05:18.000000000 +0000
++++ tree/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/ParseCorpus.cs	2026-11-10 21:59:52.869729097 +0000
+@@ -1317,7 +1317,14 @@
+                 ';',
+                 diagnostics.Select(diagnostic => string.Create(
+                     CultureInfo.InvariantCulture,
+-                    $"{(int)diagnostic.Code}:{diagnostic.Line}:{diagnostic.Column}")));
++                    $"{(int)diagnostic.Code}:{diagnostic.Line}:{diagnostic.Column}") + Tagged(diagnostic.Message)));
++
++    private static string Tagged(string message)
++    {
++        if (message.Length < 2 || message[0] != '\u0001') { return "@untagged#" + System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(message)); }
++        var end = message.IndexOf('\u0001', 1);
++        return "@" + message.Substring(1, end - 1) + "#" + System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(message.Substring(end + 1)));
++    }
+ 
+     /// <summary>Reports one compilation's answer, and writes its bytes when the run was asked to.</summary>
+     private static Result Answer(
