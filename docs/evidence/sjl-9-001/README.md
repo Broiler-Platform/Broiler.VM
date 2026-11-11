@@ -35,7 +35,14 @@ name the machine's worktrees as run.
 
 **State:** rules and correspondence, 2026-10-26, at SJL-9.1; this family's engine-level run of the vectors on its pin
 at corpus revision 28, 2026-10-27, at SJL-9.2 (section 3); and its runs on the pin before and after it moved to corpus
-revision 38, 2026-11-11, at SJL-9.6 (section 5). **Nothing here is a verdict, and no run of the rule has been taken.**
+revision 38, 2026-11-11, at SJL-9.6 (section 5); and the run of the rule, its parts A, B and C, taken and judged on
+2026-11-11, at SJL-9.6 (sections 2, 6, 7 and 8). **Parts A, B and C of the rule, as its revision of 2026-11-04 reads
+it, are each MET**, on the readings section 2 lists. **Nothing is accepted**: review is deferred, these verdicts are
+not SJL-9's exit reading, and they meet no clause by themselves.
+*(Revised 2026-11-11, at SJL-9.6, when the run of the rule was taken and judged. The state read "rules and
+correspondence, 2026-10-26, at SJL-9.1; this family's engine-level run of the vectors on its pin at corpus revision
+28, 2026-10-27, at SJL-9.2 (section 3); and its runs on the pin before and after it moved to corpus revision 38,
+2026-11-11, at SJL-9.6 (section 5). **Nothing here is a verdict, and no run of the rule has been taken.**")*
 *(Revised 2026-10-27, at SJL-9.2, when the pin moved to revision 28. It read "rules and correspondence only,
 2026-10-26, at SJL-9.1. **Nothing here is a verdict, and nothing has been taken.**")* *(Revised 2026-11-11, at SJL-9.6,
 when the pin moved to revision 38. It read "rules and correspondence, 2026-10-26, at SJL-9.1, and this family's
@@ -46,7 +53,9 @@ engine-level run of the vectors on its pin at corpus revision 28, 2026-10-27, at
 - A collector joins this bundle when there is a run of the rule to take. Section 3's run is no run of the rule, and
   was taken without one. *(Revised 2026-10-27, at SJL-9.2. It read "A collector joins this bundle when there is a run
   to take.")* Section 5's runs are no run of the rule either, and were taken without one. *(Added 2026-11-11, at
-  SJL-9.6.)*
+  SJL-9.6.)* *(Noted 2026-11-11, at SJL-9.6's run of the rule.)* No collector joined: the run was taken, as bundle
+  `sjl-13-001`'s judgement was, by short scripts kept as written in [`after/scripts/`](after/scripts/), each named
+  where its output is read; section 2 says how they ran. The sentence above is left as written.
 
 Broiler.JS's clauses, and the data home's and the home's, are judged in Broiler.JS's bundle of the same name. This
 bundle reads none of their runs.
@@ -80,6 +89,12 @@ before SJL-3 meets SJL-3's.
   SJL-9.4 merges, and this README names each, by all forty digits, when it lands. The base commit descends from the
   rule commit and from the commit bundle `sjl-12-001` names as its after commit here, `1de3af6`.
 
+*(Noted 2026-11-11, at SJL-9.6.)* The three commits, by all forty digits, as section 2 reads them: the rule commit
+`4cf9ca449fc96a1a5be810f6d0ca31c42b855c8f`, the merge of Broiler-Platform/Broiler.VM#171, which section 3 names as
+`4cf9ca4`; the after commit `68cad8baf7403125d44d5007441d30ff07bc4edf`, the merge of Broiler-Platform/Broiler.VM#190,
+SJL-9.4's cut-over; and the base commit `3b33530d354431675667087a0044648b8f617c2e`, its first parent, the merge of
+Broiler-Platform/Broiler.VM#189. The items above are left as written.
+
 **The rule has three parts**, each deciding alone.
 - **Part A** takes test262 in both forms with the hosted workflow, at the base commit and at the after commit
   (template T1).
@@ -103,7 +118,10 @@ before SJL-3 meets SJL-3's.
 at `tc39/ecma402@3d4c558`, with Intl over Temporal by `tc39/proposal-temporal@e8cc03fc` and the Intl era and month
 code proposal (JSD-0082 decision D14).
 
-## 2. What this bundle will hold
+## 2. What this bundle holds, and the run of the rule (SJL-9.6)
+
+*(Heading revised 2026-11-11, at SJL-9.6, when the run of the rule was taken. It read "2. What this bundle will
+hold". The section's first paragraphs, below, are left as written; the subsections after them are added.)*
 
 - **`base/`**: part A's base dispatch, imported unchanged with the digest of its zip; part B's check runs and the
   datasets' state at the base commit; part C's `fuel-parity.log` with each twin's bisected allowance.
@@ -118,6 +136,153 @@ folder; no part of the rule defines a control, and the folder is added only if a
 **No figure is quoted in this README until its bundle retains the log it comes from**, and then only in the
 section that reads that log (rule H5). A test262 suite total is never quoted: part A is decided per variant, and
 totals decide nothing.
+
+### What the folders hold (2026-11-11, at SJL-9.6)
+
+*(Added 2026-11-11, at SJL-9.6.)* The folders the list above names now hold the run of the rule:
+- **[`base/`](base/)**: [`hosted/`](base/hosted/), part A's base dispatch, imported unchanged, with
+  [`imported.txt`](base/hosted/imported.txt) naming the digest of its zip; [`datasets/`](base/datasets/), part B's
+  check run (`checks.log`, `named-checks.txt`, and `named-check-names.txt`, the names the base commit's `IntlChecks.cs`
+  spells) and the datasets' state (`files.sha256`); [`fuel-parity.log`](base/fuel-parity.log), part C's bisection;
+  and [`local/`](base/local/), every local step's record at the base: the archive, the builds, and each run's gate log,
+  machine before and after, command, exit code and wall time.
+- **[`after/`](after/)**: [`hosted/`](after/hosted/), part A's after dispatch, imported the same way;
+  [`parta/`](after/parta/), the completeness of all four runs, both comparisons, every changed verdict with its class,
+  the table of C1 rows, the rows the rule's "How it is read" names, and the (c') re-runs and the (e) race with every
+  report and record; [`datasets/`](after/datasets/), part B's after run, its comparison with the base, and every
+  changed line under `src/tests/cldr/` and `src/tests/temporal/` with its class, its line at both commits and the
+  retained answer's line; [`fuel-parity.log`](after/fuel-parity.log), part C at each ceiling tried;
+  [`commits/`](after/commits/), the git reads behind the commit conditions; [`local/`](after/local/), as at the base;
+  and [`scripts/`](after/scripts/), every script that took or read these files, as run, each named `.txt`.
+- [`base/hashes.txt`](base/hashes.txt) and [`after/hashes.txt`](after/hashes.txt) hold the SHA-256 of every file of
+  their folder outside `hosted/`, and each `hosted/hashes.txt` every file of that folder; `sha256sum -c` verifies each.
+  [`manifest.json`](manifest.json) lists every file of the bundle at `collected-at`, the commit its digests describe,
+  which holds the evidence; this README and the manifest are committed on top of it.
+
+No `controls/` folder is added: no part of the rule defines a control.
+
+### The commits, and the conditions the rule's header sets
+
+[`after/commits/commit-conditions.txt`](after/commits/commit-conditions.txt) is the output of
+[`commit-conditions.sh.txt`](after/scripts/commit-conditions.sh.txt), git reads alone. Every condition holds on those
+reads, on reading 1 below for the third of the base's conditions. So no part is void.
+
+| Commit | Condition (the rule's header) | The git read, and what it shows |
+|---|---|---|
+| Rule commit `4cf9ca449fc96a1a5be810f6d0ca31c42b855c8f` (Broiler-Platform/Broiler.VM#171) | carries `decision-rule-area.md`; a later bundle shows the file unchanged | `git log --diff-filter=A` names `f0023e28`, and the file's two later edits, `61fab9fb` and `8edfcb79`, are SJL-9.1's too; all three are in `4cf9ca4` and none in its first parent. The file's blob is `feb83f64…` at the rule commit, the base, the after commit and this branch's head (reading 2) |
+| After commit `68cad8baf7403125d44d5007441d30ff07bc4edf` (#190) | the default-branch merge that lands SJL-9.4's cut-over, one merge (decision D3) | on the default branch's first-parent line; parents `3b33530d` and `791d8b9d`, the branch that carries SJL-9.4's code, records, rule revision and closures |
+| Base commit `3b33530d354431675667087a0044648b8f617c2e` (#189) | the after commit's first parent | `git rev-parse 68cad8b^1` is `3b33530d` |
+| | descends from the rule commit | `git merge-base --is-ancestor 4cf9ca4 3b33530d`: yes |
+| | descends from bundle `sjl-12-001`'s after commit `1de3af6` | yes |
+| | the after commit is its only first-parent successor that changes a path under `src/Broiler.VM.Profile.JavaScript*/`, `src/compositions/`, `eng/packages/` or `Directory.Packages.props` | `git rev-list --first-parent 3b33530d..68cad8b` is `68cad8b` alone, which changes paths under all four; the cut-over landed in one merge (reading 1) |
+| Part A's runs | dispatched from the default branch with forms both and the tested commit's forty-digit identifier, the workflow and the driver at the dispatched ref byte-identical to the base commit's | each `imported.txt` and `run.txt` names its tested commit and inputs; `.github/workflows/test262-evidence.yml` is blob `740a70f8…` and `eng/test262-evidence.py` blob `55f71ee3…` at the base, at the after commit, at `0ffc037f` (the base run's dispatched ref, the merge of #198) and at `11c53897` (the after run's, the merge of #199); so are `eng/run-test262.py`, `eng/collect-js-release-candidate.py`, `eng/compare-test262-forms.py` and the suite pin at all four |
+| Parts B and C | taken locally from a clean checkout of each commit | each from a clean `git archive` of its commit on tmpfs ([`base/local/archive.txt`](base/local/archive.txt), [`after/local/archive.txt`](after/local/archive.txt)), built in Release there |
+
+**The data and the admitted proposals** (the same file). `JsCldrTables.g.cs` and `src/tests/cldr/pins/cldr.pin` have
+the same blob at both commits (rule N28). `SuiteFeatures.cs` differs between them by the `canonical-tz` entry, naming
+JSD-0082, and its note, and nothing else, as part A's population says.
+
+**The two dispatched refs differ**, `0ffc037f` for the base run and `11c53897` for the after run, because the after
+run was dispatched once #199 had merged; the rule asks that the workflow and the driver at the dispatched ref be the
+base commit's, which both are.
+
+### The machine and the gate
+
+The local steps were taken on 2026-11-11 on this family's local machine: `linux-x64`, four logical processors,
+Ubuntu 24.04.5 LTS, .NET SDK 10.0.404, the native backend `x86-64-sysv` (reading 9). Each tree is a clean
+`git archive` of its commit on a tmpfs, and each root was built there in Release with `--disable-build-servers`,
+`MSBUILDDISABLENODEREUSE=1` and shared compilation off ([`build-roots.sh.txt`](after/scripts/build-roots.sh.txt)): the
+slice compiler, the command-line root and the conformance root, one build at a time, with no warning in any build
+log. Every build and every run ran behind a hard gate ([`gate.sh.txt`](after/scripts/gate.sh.txt), with
+[`run.sh.txt`](after/scripts/run.sh.txt)) that waits, with no time limit, for a one-minute load of at most 1.0 and no
+process whose executable (read from `/proc/<pid>/exe`, not a shell's command line) is `dotnet`, `testhost`,
+`VBCSCompiler`, `MSBuild`, `ilc`, `crossgen` or a `Broiler.*` program. Its `stop_servers` kills only a process whose
+own environment carries the run's tag; no build left one, and every gate log's `stop-servers` lines name none. Every
+check found no such process; where the load stood above 1.0 after a build, the gate waited until it fell.
+
+| Step | Taken (UTC) | Records |
+|---|---|---|
+| Part A's hosted runs | base 09:16:10 to 09:24:00, after 09:24:18 to 09:30:34 | `base/hosted/`, `after/hosted/` |
+| Builds at the base | 10:01:49 to 10:04:11 | `base/local/builds/` |
+| Part B at the base | 10:05:19 to 10:10:34 | `base/local/partb/`, `base/datasets/` |
+| Part C at the base | 10:10:35 to 10:12:45 | `base/local/partc/`, `base/fuel-parity.log` |
+| Builds at the after commit | 10:12:56 to 10:16:05 | `after/local/builds/` |
+| Part B at the after commit | 10:16:36 to 10:21:18 | `after/local/partb/`, `after/datasets/` |
+| Part C at the after commit | 10:21:19 to 10:21:35 | `after/local/partc/`, `after/fuel-parity.log` |
+| Part A's comparisons (Python only) | 10:22:09 to 10:22:11 | `after/parta/commands.log` |
+| Part A's (c') re-runs | 10:22:20 to 10:30:18 | `after/parta/rerun/` |
+| Part A's (e) race | 10:30:37 to 10:30:59 | `after/parta/race/` |
+
+No other build, test or run was on the machine. The agent that took the steps also read files beside some of them,
+none a build, test or run of an engine: `git` reads and Python reads of the imported reports during part B's base run
+and the builds, and copies of finished files into this bundle during the re-runs. *(This is recorded so that the
+condition "no other build, test or run" is read against what happened, not against a claim of an idle machine.)*
+
+### The verdicts
+
+Each part decides alone, on the rule as its revision of 2026-11-04 reads it, from the files named with it.
+
+| Part | Verdict | What it reads |
+|---|---|---|
+| A, test262 in both forms (section 6) | **MET** | [`after/parta/`](after/parta/): `completeness.txt`, `compare-wide-bytecode.log`, `compare-wide-native.log`, `changed-verdicts.tsv`, `c1-table.tsv`, `rows-named.txt`, `rerun/`, `race/` |
+| B, the reference datasets and the Intl checks (section 7) | **MET** | [`base/datasets/`](base/datasets/), [`after/datasets/`](after/datasets/): `checks.log`, `named-checks.txt`, `files.sha256`, `compare.txt`, `part-b-lines.tsv`, `part-b-summary.txt` |
+| C, the fuel-parity twins (section 8) | **MET** | [`base/fuel-parity.log`](base/fuel-parity.log), [`after/fuel-parity.log`](after/fuel-parity.log), each side's `local/partc/attempts.tsv` |
+
+No part needs an exclusion (section 9).
+
+### Readings the rule does not settle
+
+Each verdict rests on these readings. For each, the reading taken, why, and the alternative, for the owner to rule
+on. No reading changes a verdict as far as the files show, except where the item says so.
+
+1. **"The after commit is its only first-parent successor that changes" a named path.** *Taken:* the first-parent
+   successors from the base up to the after commit, `git rev-list --first-parent 3b33530d..68cad8b`, which is the
+   after commit alone. *Why:* the clause, with its next sentence ("If the cut-over had to land in more than one merge,
+   each is SJL-9.4's ... and the base is the first one's first parent"), asks that the cut-over be one merge whose
+   first parent is the base; a condition read over every later commit would change its answer with each merge after
+   the cut-over. *Alternative:* every first-parent descendant of the base on the default branch today. Eight of the
+   nine merges after `68cad8b` change such paths ([`commit-conditions.txt`](after/commits/commit-conditions.txt)), the
+   SJL-13 and record merges among them, so the condition would fail and **every part would be void**.
+2. **The rule commit.** *Taken:* `4cf9ca4`, the merge that carries the file into the default branch, as section 3
+   names it. *Alternative:* `f0023e28`, the commit that adds the file, or `8edfcb79`, its last edit. All three are
+   ancestors of the base and the file's blob is the same at each that holds it, so nothing turns on it.
+3. **The revision of 2026-11-04 is in the after commit, not the base.** It was filed on SJL-9.4's branch and merged
+   with the cut-over; its file says it was written before any run it judges, which the dispatch times bear out.
+   *Taken:* the rule as revised judges every part. *Alternative:* the rule as the base holds it, unrevised; part B's
+   guard `temporal/t1/data-without-the-tz-release-reads-its-zones` would then be a regression and part B NOT MET.
+4. **Part A's rows in one report only.** The comparison joins on path and variant and ignores a row present in one
+   report only, and says how many. A `canonical-tz` file is one row with no variant at the base, skipped, and two
+   rows after. *Taken:* those rows read from the reports themselves and listed beside the comparison's rows, so that
+   class C1's first kind, which names exactly them, is listed ([`part-a-tables.py.txt`](after/scripts/part-a-tables.py.txt));
+   any other row in one report only would have been a regression, and there is none. *Alternative:* the comparison's
+   rows alone; the C1 rows would go unlisted, and "every changed verdict ... is listed" could not be met.
+5. **How many re-runs (C4 (c')).** *Taken:* three one-process runs at each commit per path, alternating the commits,
+   as bundle `sjl-13-001` took them, the row admitted when all six agree. A process over a path runs both its
+   variants, and each row is read in its own variant. *Alternative:* one re-run at each commit, as bundle `sjl-10-001`
+   took them; then every row's two re-runs agree, the first pair of row 9 in section 6's table included, and no race
+   is needed. Either way every (c') row is admitted.
+6. **A Fuel-against-WallClock split under "no C2".** *Taken:* class (c') admits "a wall-clock exhaustion on either
+   side", so a row exhausted on fuel on one side and on the wall clock on the other is (c'), decided by its re-runs and
+   (e); "an exhaustion verdict that moves on fuel" is read as one with no wall-clock exhaustion on either side.
+   *Alternative:* any row with fuel on one side is a regression under "no C2"; then the (c') rows on fuel at one side
+   would be regressions and part A NOT MET.
+7. **Part B: the area checks' outputs.** Two area checks print a different count after, with their verdicts ok:
+   `intl/i4/locales-match-icu` and `tzdb/time-zone-offsets-match-icu` read more lines as the divergences name them.
+   *Taken:* part B compares each check's verdict and holds the programs, retained answers and divergences files byte
+   for byte; a count that grows by exactly the lines class L18 or Z8 adds less those it removes (section 7) is no
+   difference outside those classes. JSD-0082's note of 2026-11-04 on decision D15 says the same of the tzdb check.
+   *Alternative:* each check's output line held byte for byte; the two checks would be regressions and part B NOT MET.
+8. **Part B: whose primary, and which language.** *Taken:* a Z8 key's primary is the name the base answers for it,
+   since the base reports a zone's primary (decision D15); an L18 key's language is the options' `language` when they
+   give one, else the tag's first subtag. *Alternative:* the primary read from the time-zone tables, and the language
+   after alias replacement. No line's class depends on the choice: no alias in the file replaces to `und`, `de` or `en`.
+9. **The local machine.** The rule names it "by its processor count, its SDK and its operating system", the machine
+   bundles `sjl-5-001` to `sjl-10-001` were taken on. This one has the same processor count, operating system and
+   native backend, and .NET SDK 10.0.404 where those bundles had 10.0.401; it was installed again after the machine
+   was replaced, as bundle `sjl-13-001` records. *Taken:* the same machine by the rule's description, the SDK recorded.
+   *Alternative:* a different machine; the local parts and part A's re-runs would then not be the rule's.
+10. **The wall allowances.** *Taken:* part C's "ample" wall allowance is 600,000 ms at both commits, as bundles
+    `sjl-5-001` to `sjl-13-001` took it; part A's re-runs use the part's 5,000 ms and the race ten times it, 50,000 ms.
 
 ## 3. Engine-level vectors on the Intl area (SJL-9.2)
 
@@ -279,6 +444,190 @@ divergence no longer holds and 61 classified divergences. Its negative control r
 So the vectors find no difference of this family's that the correspondence does not classify, which JSD-0082 names as
 falsifying it. This section is no part of the rule's parts A to C, and nothing in it is a verdict.
 
+## 6. Test262, both forms (rule part A)
+
+*(Added 2026-11-11, at SJL-9.6.)*
+
+**MET.** "MET if and only if all four runs are complete as above, every changed verdict of the bytecode pair is in C1
+or C4 and is listed, and the native pair meets the same conditions."
+- **All four runs are complete** ([`after/parta/completeness.txt`](after/parta/completeness.txt), read off the
+  imported artifacts by [`part-a-tables.py.txt`](after/scripts/part-a-tables.py.txt)). In each form at each commit:
+  sixteen shard logs of sixteen, and the merge took sixteen shard reports; the run log's exit code is 1 in the bytecode
+  form and 4 in the native form, both of which completeness admits; the merged report's retention object says
+  retainable, its coverage is whole and it accounts for every variant; the binaries log has one distinct list of
+  assemblies. Every runner and the merging job ran image `ubuntu24` 20261101.360.1 with SDK 10.0.404 at both runs.
+- **The comparisons** ([`compare-wide-bytecode.log`](after/parta/compare-wide-bytecode.log),
+  [`compare-wide-native.log`](after/parta/compare-wide-native.log)) are `eng/compare-test262-forms.py --same-form` as the
+  base commit holds it (the same blob after), the base's report as control and the after's as candidate, the native
+  pair with `--exempt-guest-loads` over the pin's archive extracted whole: its SHA-256 is the archive's, it holds the
+  pin's 56,560 files and `tar --compare` finds no difference ([`commands.log`](after/parta/commands.log)). Each exits 0:
+  every row each lists is in class (c'). Each also ignores 57 rows present in one report only, which section 2's
+  reading 4 reads.
+- [`changed-verdicts.tsv`](after/parta/changed-verdicts.tsv) lists every changed row of both pairs with its class, and
+  [`c1-table.tsv`](after/parta/c1-table.tsv) every C1 row with its path, variant, row and clause.
+
+**C1, row Z8, its first kind: 38 variants in each pair**, both variants of each of the 19 files below. Each claims
+`canonical-tz`, is one row at the base, skipped with "the test claims the proposed feature `canonical-tz`", and passes
+in both variants after, in both forms. They are the only rows in one report only: the base report's 19 are these
+files' skipped rows, and the after report's 38 their variants. No `canonical-tz` file is skipped after, and none fails,
+is exhausted or is unsupported. Clause: "a variant of a file whose features include canonical-tz, skipped at the base
+because the proposal was not admitted and passing after" (class C1, kind Z8). Paths are under `test/intl402/`.
+
+| File | Variants | Row | Base, after (both pairs) |
+|---|---|---|---|
+| `DateTimeFormat/canonicalize-timezone.js` | strict, sloppy | Z8 | Skipped, Passed |
+| `DateTimeFormat/canonicalize-utc-timezone.js` | strict, sloppy | Z8 | Skipped, Passed |
+| `DateTimeFormat/timezone-case-insensitive.js` | strict, sloppy | Z8 | Skipped, Passed |
+| `DateTimeFormat/timezone-not-canonicalized.js` | strict, sloppy | Z8 | Skipped, Passed |
+| `Temporal/ZonedDateTime/etc-timezone.js` | strict, sloppy | Z8 | Skipped, Passed |
+| `Temporal/ZonedDateTime/from/argument-valid.js` | strict, sloppy | Z8 | Skipped, Passed |
+| `Temporal/ZonedDateTime/from/do-not-canonicalize-iana-identifiers.js` | strict, sloppy | Z8 | Skipped, Passed |
+| `Temporal/ZonedDateTime/from/etc-timezone.js` | strict, sloppy | Z8 | Skipped, Passed |
+| `Temporal/ZonedDateTime/from/timezone-case-insensitive.js` | strict, sloppy | Z8 | Skipped, Passed |
+| `Temporal/ZonedDateTime/iana-legacy-names.js` | strict, sloppy | Z8 | Skipped, Passed |
+| `Temporal/ZonedDateTime/links-backward.js` | strict, sloppy | Z8 | Skipped, Passed |
+| `Temporal/ZonedDateTime/links-backzone.js` | strict, sloppy | Z8 | Skipped, Passed |
+| `Temporal/ZonedDateTime/links-etcetera.js` | strict, sloppy | Z8 | Skipped, Passed |
+| `Temporal/ZonedDateTime/links.js` | strict, sloppy | Z8 | Skipped, Passed |
+| `Temporal/ZonedDateTime/non-canonical-utc.js` | strict, sloppy | Z8 | Skipped, Passed |
+| `Temporal/ZonedDateTime/prototype/equals/canonicalize-timezone.js` | strict, sloppy | Z8 | Skipped, Passed |
+| `Temporal/ZonedDateTime/prototype/equals/canonicalize-utc-timezone.js` | strict, sloppy | Z8 | Skipped, Passed |
+| `Temporal/ZonedDateTime/timezone-case-insensitive.js` | strict, sloppy | Z8 | Skipped, Passed |
+| `Temporal/ZonedDateTime/timezone-ids-basic.js` | strict, sloppy | Z8 | Skipped, Passed |
+
+**C1's other kinds list nothing.** No variant fails at the base and passes after, in either pair, so row Z8's second
+kind ("a variant failing at the base that passes after because the formatter reports the identifier as given") has
+no row, and neither have rows L18 and L9, which the rule expects to reach no scored variant. **No C1 row is of a kind
+the rule does not name, so none is a finding against JSD-0082's correspondence.**
+
+**What the rule's "How it is read" names** ([`rows-named.txt`](after/parta/rows-named.txt), from
+[`part-a-rows.py.txt`](after/scripts/part-a-rows.py.txt)). Rows S7's and T8's four files pass in both variants at both
+commits, in both forms, so they keep their base verdicts. Every `getCollations` file claims `Intl.Locale-info` and is
+skipped at both commits. The `Intl.NumberFormat-v3` and `Intl.Locale-info` skips are the same rows at both commits.
+
+**C4 (c'): two rows in the bytecode pair and eleven in the native pair**, every one exhausted at both commits, on the
+wall clock at one side. Their re-runs ([`rerun/`](after/parta/rerun/), by
+[`part-a-rerun.sh.txt`](after/scripts/part-a-rerun.sh.txt)) are each one process of the conformance root over the
+row's path, built in Release from a clean archive of its commit, under the wide manifest, the row's form, fuel
+100,000,000 and a wall clock of 5,000 ms, with `--expect` against the commit's retained pin, three at each commit,
+alternating the commits (section 2's reading 5). Every run's log reads the pin's content digest, and each exits 1, as
+the conformance root does when no variant reaches a verdict about the engine. Paths are under `test/`.
+
+| # | Path | Variant | Pair | Base, after (hosted) | Re-runs at `3b33530d` | Re-runs at `68cad8b` | Class |
+|---|---|---|---|---|---|---|---|
+| 1 | `staging/sm/Date/dst-offset-caching-7-of-8.js` | sloppy | bytecode | Exhausted/WallClock, Exhausted/Fuel | Fuel, Fuel, Fuel | Fuel, Fuel, Fuel | **C4 (c')**, the re-runs agree |
+| 2 | `staging/sm/Date/dst-offset-caching-7-of-8.js` | strict | bytecode | Exhausted/WallClock, Exhausted/Fuel | Fuel, Fuel, Fuel | Fuel, Fuel, Fuel | **C4 (c')**, the re-runs agree |
+| 3 | `annexB/built-ins/RegExp/RegExp-leading-escape-BMP.js` | sloppy | native | Exhausted/WallClock, Exhausted/NestedLoadFanOut | NestedLoadFanOut, three times | NestedLoadFanOut, three times | **C4 (c')**, the re-runs agree |
+| 4 | `annexB/built-ins/RegExp/RegExp-leading-escape-BMP.js` | strict | native | Exhausted/WallClock, Exhausted/NestedLoadFanOut | NestedLoadFanOut, three times | NestedLoadFanOut, three times | **C4 (c')**, the re-runs agree |
+| 5 | `staging/sm/Date/dst-offset-caching-1-of-8.js` | sloppy | native | Exhausted/WallClock, Exhausted/Fuel | Fuel, Fuel, Fuel | Fuel, Fuel, Fuel | **C4 (c')**, the re-runs agree |
+| 6 | `staging/sm/Date/dst-offset-caching-1-of-8.js` | strict | native | Exhausted/WallClock, Exhausted/Fuel | Fuel, Fuel, Fuel | Fuel, Fuel, Fuel | **C4 (c')**, the re-runs agree |
+| 7 | `staging/sm/Date/dst-offset-caching-2-of-8.js` | strict | native | Exhausted/WallClock, Exhausted/Fuel | Fuel, Fuel, Fuel | Fuel, Fuel, Fuel | **C4 (c')**, the re-runs agree |
+| 8 | `staging/sm/Date/dst-offset-caching-3-of-8.js` | sloppy | native | Exhausted/Fuel, Exhausted/WallClock | Fuel, Fuel, Fuel | Fuel, Fuel, Fuel | **C4 (c')**, the re-runs agree |
+| 9 | `staging/sm/Date/dst-offset-caching-3-of-8.js` | strict | native | Exhausted/Fuel, Exhausted/WallClock | Fuel, Fuel, Fuel | Fuel, Fuel, Fuel | **C4 (c')**, the re-runs agree |
+| 10 | `staging/sm/Date/dst-offset-caching-4-of-8.js` | sloppy | native | Exhausted/WallClock, Exhausted/Fuel | Fuel, Fuel, Fuel | Fuel, Fuel, Fuel | **C4 (c')**, the re-runs agree |
+| 11 | `staging/sm/Date/dst-offset-caching-4-of-8.js` | strict | native | Exhausted/WallClock, Exhausted/Fuel | Fuel, WallClock, Fuel | Fuel, Fuel, WallClock | **C4 (e)**, below: the re-runs differ |
+| 12 | `staging/sm/TypedArray/sort_large_countingsort.js` | sloppy | native | Exhausted/WallClock, Exhausted/Fuel | Fuel, Fuel, Fuel | Fuel, Fuel, Fuel | **C4 (c')**, the re-runs agree |
+| 13 | `staging/sm/TypedArray/sort_large_countingsort.js` | strict | native | Exhausted/WallClock, Exhausted/Fuel | WallClock, WallClock, WallClock | WallClock, WallClock, WallClock | **C4 (c')**, the re-runs agree |
+
+Every re-run is an exhaustion; the table gives its dimension. **Twelve rows' re-runs agree**, so C4 (c') admits them.
+Row 13's agree on the wall clock: the rule admits a (c') row whose re-runs agree, whatever they agree on, as bundle
+`sjl-10-001` read it, so it is not raced.
+
+**C4 (e)** ([`race/`](after/parta/race/)). Row 11, `staging/sm/Date/dst-offset-caching-4-of-8.js` [strict] in the
+native pair, ran alone once more at each commit with the part's fuel allowance and ten times its wall clock, 50,000
+ms, nothing else on the machine, from 10:30:37Z to 10:30:59Z. **It gives Exhausted/Fuel at both commits**: the same
+verdict, neither a wall-clock exhaustion nor an internal defect, so (e) admits it. The process ran the path, so its
+sloppy variant, row 10, ran too and gave the same; (e) does not read it.
+
+**No other class has a row.** No row is in (a) or (b); no row is unclassified; no variant moved between a pass, a
+failure, a refusal and an exhaustion but the C1 rows; and every changed row outside C1 has a wall-clock exhaustion on
+one side, so none moved on fuel alone (no C2) and none because a choice, a policy or the data moved (no C3, no C5).
+Every changed row outside C1 is one of the long-running tests this family's earlier bundles saw race between the wall
+clock and another allowance. The floor verdicts in the imported artifacts decide nothing.
+
+## 7. The reference datasets and the Intl checks (rule part B)
+
+*(Added 2026-11-11, at SJL-9.6.)*
+
+**MET.** "MET if and only if every check named passes at both commits, and every difference between the two commits
+under src/tests/cldr/ and src/tests/temporal/ is in Z8 or L18 and is listed."
+- **Every named check passes at both commits.** The slice compiler, built in Release at each commit, ran `--checks
+  --verbose` once ([`base/datasets/checks.log`](base/datasets/checks.log), [`after/datasets/checks.log`](after/datasets/checks.log),
+  each with the digest of its binary), and exited 0 at both. [`named-checks.txt`](after/datasets/named-checks.txt) at
+  each commit holds the 34 lines of the checks the rule names, every check of `IntlChecks.cs` under `intl/i0/` to
+  `intl/i4/`, `tzdb/` and `temporal/` as the base commit spells them
+  ([`named-check-names.txt`](base/datasets/named-check-names.txt); its two templates, `{kind}` and `{granularity}`,
+  stand for the two root-collation checks and the three break-test checks), the area's and the guards': every one is
+  `ok` at both, by [`datasets.py.txt`](after/scripts/datasets.py.txt). `IntlChecks.cs` names the same checks at both
+  commits.
+- **Every difference under `src/tests/cldr/` and `src/tests/temporal/` is in Z8 or L18, and is listed**
+  ([`after/datasets/part-b-lines.tsv`](after/datasets/part-b-lines.tsv), each line with its class, its line at both
+  commits and the retained answer's line, and [`part-b-summary.txt`](after/datasets/part-b-summary.txt), by
+  [`part-b-classify.py.txt`](after/scripts/part-b-classify.py.txt), git reads alone). Two files differ, the two
+  divergences files below; no program, no retained answer, no README and nothing under `src/tests/temporal/` changes
+  ([`compare.txt`](after/datasets/compare.txt), and `files.sha256` at both commits, 181 files each, two digests
+  different).
+
+| File | Class | Lines | How |
+|---|---|---|---|
+| `src/tests/cldr/timezones/divergences.txt` | **Z8** | 152 data lines | 7 rewritten, 19 removed where the retained answer already resolves the identifier to itself, 126 added where it resolves it to another name |
+| | header of Z8 | 21 comment lines | the group's header rewritten to give decision D15's reason, with a dated note quoting the old one |
+| `src/tests/cldr/locales/divergences.txt` | **L18** | 38 data lines | 12 rewritten from `[emoji,eor]`, 26 added where the retained answer reads `[emoji,eor]`; none removed |
+| | header of L18 | 10 comment lines | the group's header rewritten to give decision D32's reading of CollationsOfLocale, with a dated note quoting the old one |
+
+Every Z8 line's key is a time-zone identifier whose answer at the base names another identifier, its primary
+(section 2's reading 8), and whose answer after names the identifier itself, the rest of the line, its offsets,
+unchanged: `Asia/Calcutta`, which the base resolves to `Asia/Kolkata`, is removed, since the retained line
+already reads `Asia/Calcutta => Asia/Calcutta`; `Pacific/Yap => Pacific/Chuuk` is rewritten to
+`Pacific/Yap => Pacific/Yap`; `CET => CET` is added, where the retained answer reads `CET => Europe/Brussels`. Every
+L18 line's key asks `collations` of a locale with no `-co-` keyword and no `collation` option, whose language is
+neither `und` nor `de` nor `en`, and its answer moves from `[emoji,eor]` to `[]` alone. No line is outside the two
+classes.
+
+**The one guard in Z8, as the revision of 2026-11-04 admits it.** `temporal/t1/data-without-the-tz-release-reads-its-zones`
+passes at both commits; its output reads "the family's data answered `-04:00 3 Asia/Kolkata`, and the same data
+without the release `-04:00 3 Asia/Kolkata`" at the base and "`-04:00 3 Asia/Calcutta`" in both places after, and the
+literal it is compared with in `IntlChecks.cs` moves from `own == "-04:00 3 Asia/Kolkata"` to
+`own == "-04:00 3 Asia/Calcutta"`, with a comment, and nothing else in the file moves (the whole diff is in
+[`compare.txt`](after/datasets/compare.txt)). Every other guard prints the base's line word for word.
+
+**Two area checks print another count, with their verdicts ok** (section 2's reading 7):
+`intl/i4/locales-match-icu` reads 158 lines as the divergences name them where the base read 132, the 26 L18 lines
+added; `tzdb/time-zone-offsets-match-icu` reads 158 where the base read 51, the 126 Z8 lines added less the 19
+removed. Every other named check prints the base's line word for word.
+
+## 8. The fuel-parity twins (rule part C)
+
+*(Added 2026-11-11, at SJL-9.6.)*
+
+**MET.** "MET if and only if every twin, in both forms, after gives the verdict it gave at the base at each ceiling
+tried, and completes with the base's answer where it completes."
+- **The base** ([`base/fuel-parity.log`](base/fuel-parity.log)): each of the ten `*.small.js` twins of
+  `src/tests/forms/wide` had its smallest completing fuel allowance bisected under the bytecode form, with the
+  command-line root built in Release at the base. Each completes at that figure and is refused with
+  `AllowanceExhausted on Fuel` at one less, in both forms, with the same answer in both.
+- **After** ([`after/fuel-parity.log`](after/fuel-parity.log)): each twin, in the bytecode form and in the native form
+  under `x86-64-sysv`, completes at its base figure with the base's answer and is refused on fuel at one less, as at
+  the base, 20 rows of 20.
+- The wall allowance is 600,000 ms at both commits, and no row ran out of it. Every attempt's command, exit code and
+  last line is in each side's `local/partc/attempts.tsv`, by [`twins.py.txt`](after/scripts/twins.py.txt), which restates
+  bundles `sjl-5-001`'s and `sjl-4-001`'s twin steps.
+- Every figure and answer is bundle `sjl-13-001`'s base's and bundle `sjl-10-001`'s, so the cut-over moved no charge
+  outside the area, as decision D18 requires.
+
+| Twin | Figure | Answer |
+|---|---|---|
+| `wide/array-loop` | 73,082 | 999000 |
+| `wide/call-loop` | 28,026 | 1000 |
+| `wide/closure-loop` | 31,044 | 1000 |
+| `wide/fib` | 7,682 | 144 |
+| `wide/generator-loop` | 40,075 | 499500 |
+| `wide/numeric-loop` | 23,022 | 498497 |
+| `wide/property-loop` | 29,029 | 183125 |
+| `wide/string-loop` | 26,083 | 25 |
+| `wide/throw-loop` | 34,026 | 1000 |
+| `wide/try-loop` | 34,022 | 499500 |
+
 ## 9. Exclusions
 
 Sections 3 to 8 are added as the bundle's runs are taken. The exclusions keep this section's number, where rule H2
@@ -287,3 +636,9 @@ reads an exclusion's definition, as in bundles `sjl-3-001` to `sjl-12-001`.
 | ID | Status | Exclusion |
 |---|---|---|
 | (none) | | No exclusion is defined at SJL-9.1, and none is planned. A later exclusion takes the next free identifier and is defined in this table |
+
+*(Noted 2026-11-11, at SJL-9.6's run of the rule.)* No part of the rule needs an exclusion, and none is defined by it:
+parts A, B and C are MET without one (sections 6 to 8). The ledger's entry of 2026-11-04 also lists for SJL-9.6 "the
+exclusion for the code that left this component's assurance coverage", as EX-125 and EX-127 to EX-133 say for the
+earlier areas. It is no part of the rule, and is not defined here; it takes the next free identifier when it is.
+The table above is left as written.
