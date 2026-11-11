@@ -148,16 +148,19 @@ shown by git reads for all but the mapping's and the stage table's lines and the
 JSD-0087, on which part B turns. No verdict moved at the review. The text above is left as written.
 
 *(Noted 2026-11-11, at the owner's rulings of that day.)* The note above names the readings the bundle's README leaves
-to the owner. The owner ruled on the five that parts B, C and H turn on, each time taking the reading the bundle took:
-control K4's "must still make the fifth row fail", met by the harness narrowed to that row ("Narrowed run counts");
-class R's "unchanged between the registry commit and the after commit", read as a renumbering not undone ("Not
-undone"); the code pairs class N reads, R2's alone, and the registry commit's "in each path only what the list says",
-resting on JSD-0087 ("Accept both"); and part H's "match (divergence no longer holds)", counted as a match ("Counts as
-match"). The README records each ruling against its reading, and parts B, C and H's verdicts now rest on the owner's
-rulings, not on open readings; no verdict moves. The readings that stay open are kind (F)'s "first diagnostic", the
-stages and the library's messages, the one process class N names, the binder message several sites share, the idle
-compiler servers during parts I and J, and the machine taken as the rule's local machine; the README marks none of them
-as one a part's verdict turns on. The text above is left as written.
+to the owner. Step 1's evidence merged as `acfc986b` (Broiler-Platform/Broiler.VM#197, observed). The owner ruled on the
+five readings that parts B, C and H turn on, each time taking the reading the bundle took: control K4's "must still make
+the fifth row fail", met by the harness narrowed to that row ("Narrowed run counts"); class R's "unchanged between the
+registry commit and the after commit", read as a renumbering not undone ("Not undone"); the code pairs class N reads,
+R2's alone, and the registry commit's "in each path only what the list says", resting on JSD-0087 ("Accept both", which
+the README reads as taking that reading whole, the lines of the mapping and of the stage table's copy included); and
+part H's "match (divergence no longer holds)", counted as a match ("Counts as match"). The README records each ruling
+against its reading, and parts B, C and H's verdicts now rest on the owner's rulings, not on open readings; no verdict
+moves. The readings that stay open are kind (F)'s "first diagnostic", the stages and the library's messages, the one
+process class N names, the binder message several sites share, the idle compiler servers during parts I and J, and the
+machine taken as the rule's local machine; the README marks none of them with the words that a part's verdict turns on
+it, but the alternative of the reading on the idle compiler servers would void parts I and J. The owner's ruling on
+these stays owed before bundle `sjl-13-002`'s runs. The text above is left as written.
 
 ### SJL-13.4 — Admission and closures
 
