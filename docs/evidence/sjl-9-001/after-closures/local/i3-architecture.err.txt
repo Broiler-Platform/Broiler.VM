@@ -1,0 +1,4 @@
+[xUnit.net 00:00:03.48]     Broiler.VM.Architecture.Tests.NativeMappingRuleTests.B5c_Names_Every_Shipping_Assembly_It_Could_Not_Read [FAIL]
+[xUnit.net 00:00:07.48]     Broiler.VM.Architecture.Tests.AssemblyMetadataRuleTests.B5_No_Assembly_Reaches_A_Dynamic_Loading_Api [FAIL]
+[xUnit.net 00:00:07.48]     Broiler.VM.Architecture.Tests.AssemblyMetadataRuleTests.B5_And_B5b_Name_Every_Shipping_Assembly_They_Could_Not_Read [FAIL]
+[xUnit.net 00:00:07.49]     Broiler.VM.Architecture.Tests.AssemblyMetadataRuleTests.B3_No_Assembly_Names_A_Foreign_Broiler_Assembly [FAIL]

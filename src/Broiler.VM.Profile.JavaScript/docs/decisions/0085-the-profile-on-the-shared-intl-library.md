@@ -304,6 +304,12 @@ runs are SJL-9.6's at the base and after commits. No figure of them is quoted he
 - **Assurance.** Regenerated at each commit; every human line stays PENDING. The code that left this component's
   assurance coverage is the home's to cover, as EX-125 to EX-132 say of the earlier areas; SJL-9.6 files its
   exclusion in bundle `sjl-9-001`, where rule H2 reads a definition.
+  *(Noted 2026-11-11, at SJL-9.6's close-out.)* SJL-9.6 files it as EX-134, in bundle
+  [`sjl-9-001`](../../../../docs/evidence/sjl-9-001/README.md)'s section 9: the code section 8 names, which
+  `Broiler.ECMAScript.Intl` computes now and the home's own assurance covers in the Broiler.JS repository. The earlier
+  areas' exclusions it reads with are EX-125 and EX-127 to EX-133: the bullet's "EX-125 to EX-132" takes in EX-126,
+  the Android root's closure, which is no area's, and EX-133, bundle `sjl-13-001`'s, was filed after this record. The
+  bullet above is left as written.
 - **Packages.** `packages.md` and `support.md` name JS-10-015 ([JSC-324](../roadmap.corrections.md#jsc-324)).
 - **Support.** `support.md`'s row of proposals not provided names `canonical-tz` among the five admitted, with a dated
   note.
@@ -334,6 +340,16 @@ runs may rewrite it.
   the base's; row Z8 rewrote, removed and added lines.
 - **The third group header of `src/tests/cldr/timezones/divergences.txt`**, "The same resolution, in the lists: …",
   gives the primary's reason, which row Z8 changed for the first group alone.
+
+*(Noted 2026-11-11, at SJL-9.6's close-out.)* Bundle `sjl-9-001`'s runs at the base and after commits are taken, so the
+window is over, and the three texts are brought up to the cut-over in a change after the after commit `68cad8b`, each
+with a dated note quoting what it replaces: the two READMEs' counts and reasons name rows L18's and Z8's lines, and the
+third group header gives the lists' own reason, the primary identifiers, where the first group's is the name as given.
+No data line, program or retained answer moves, and the slice compiler's checks answer at the change's head as before
+it. Part B of the bundle's rule compares the base and the after commit alone, so it reads none of this, and its verdict
+stands. The calendar group's header of `src/tests/cldr/locales/divergences.txt`, which JSD-0082 and JSD-0046 §5 record
+as stale, is not among the three, and neither is the locales README's calendars item: both stay as committed, for a
+later change to rewrite. The list above is left as written.
 
 ## Where the plan, JSD-0082 and the code disagreed
 

@@ -296,6 +296,27 @@ each read met, on readings the bundle names for the owner, and no part needs an 
 evidence and meets no clause: SJL-9's exit reading follows, and nothing is accepted. The paragraph above is left as
 written.
 
+*(Noted 2026-11-11, at the owner's rulings of that day.)* The note above says that parts A, B and C "each read met, on
+readings the bundle names for the owner". The bundle's run merged as `2979e797` (Broiler-Platform/Broiler.VM#200,
+observed). The owner ruled on the readings it names that a verdict turns on, each time taking the reading the bundle
+took: the base's first-parent successors read up to the after commit; the revision of 2026-11-04 judging every part;
+part A's split between a fuel exhaustion and a wall-clock exhaustion read as class C4 (c'), and its (c') row whose
+re-runs agree on a wall-clock exhaustion admitted without (e); and part B's readings of the area checks' counts, of a Z8
+key's primary and an L18 key's language, and of class Z8's rewritten header, standing as taken. The bundle's README
+records each ruling against its reading, and parts A, B and C's verdicts now rest on the owner's rulings; no verdict
+moves, and the bundle's other readings stay as taken, unruled. This meets no clause. The text above is left as written.
+
+*(Noted 2026-11-11, at SJL-9.6's close-out in Broiler.VM.)* The rest of SJL-9.6 in Broiler.VM, which the ledger's entry
+of 2026-11-04 lists, is taken: bundle `sjl-9-001`'s
+[`after-closures/`](../../evidence/sjl-9-001/after-closures/README.md) holds every root published and run under the JIT,
+trimming and Native AOT at the after commit, each closure, catalog and admitted package's identity the same as at
+SJL-9.4's collection, with rule I3 holding on the image records of the roots it reads; its section 9 defines EX-134 for
+the Intl code that left this component's assurance coverage; and the locales and time-zone datasets' READMEs and the
+time-zone divergences' third group header are brought up to the cut-over, with no data line, program or retained answer
+moved; the locales divergences' calendar group header, which JSD-0082 records as stale and no item of SJL-9.6 names,
+stays as committed. SJL-9.6 has nothing left in Broiler.VM, and SJL-9's exit reading is next. This bears on clauses 14
+and 15's evidence and meets no clause; nothing is accepted. The text above is left as written.
+
 ---
 
 ## Exit gate

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# i3-read.sh: the architecture suite at the after commit's clean checkout (the closures' tree), with the five Native
+# AOT image records the closures step left placed under src/i3-image-records/ for rule I3's read, as SJL-9.4's
+# collection read them (3d05880d) and bundle sjl-7-001's rules step does; behind the gate. The solution is built in
+# Release first, since rules B3, B5 and B5c read every shipping assembly. Then the records are removed.
+S=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96b
+T=$S/closures/tree; L=$S/closures/logs
+$S/scripts/run.sh i3-build-solution $L $T -- dotnet build Broiler.VM.slnx -c Release --disable-build-servers -nologo || { echo "rc=build" > $S/closures/I3-DONE; exit 1; }
+grep -E 'warning [A-Z]+[0-9]+' $L/i3-build-solution.out.txt | sort -u > $L/i3-build-warnings.txt
+mkdir -p $T/src/i3-image-records && cp $S/closures/out/cutover/closures/*.mstat $T/src/i3-image-records/
+$S/scripts/run.sh i3-architecture-2 $L $T -- dotnet test src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj -c Release --no-build --disable-build-servers -nologo
+rc=$?
+rm -rf $T/src/i3-image-records
+echo "rc=$rc" > $S/closures/I3-DONE

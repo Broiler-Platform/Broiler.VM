@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# closures.sh: the closures of every JavaScript root in three modes at the after commit, by the method bundle
+# sjl-9-001's cutover/README.md records for SJL-9.4's collection: bundle sjl-7-001's collect-area.py
+# --only cutover-closures, run from a clean checkout of the commit with --out outside the tree, behind the gate.
+# Then the SHA-256 of each Native AOT image record (mstat.sha256), as cutover/closures/ keeps it.
+S=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96b
+C=68cad8baf7403125d44d5007441d30ff07bc4edf
+W=$S/closures; T=$W/tree; O=$W/out; L=$W/logs
+mkdir -p $W $L; rm -rf $T $O
+git clone -q --no-checkout /home/user/vm-sjl96b $T && git -C $T checkout -q --detach $C || { echo "checkout failed"; exit 3; }
+{ echo "commit $(git -C $T rev-parse HEAD)"; echo "status-lines $(git -C $T status --porcelain | wc -l)"; echo "cloned $(date -u +%FT%TZ) into $T (git clone --no-checkout of the worktree's repository, then checkout --detach)"; } > $L/checkout.txt
+$S/scripts/run.sh collect $L $T -- python3 $T/docs/evidence/sjl-7-001/collect-area.py --tree $T --out $O --only cutover-closures
+rc=$?
+F=$O/cutover/closures
+( cd $F && for m in $(ls | grep '\.mstat$' | sort); do printf '%s  %s\n' "$(sha256sum $m | cut -d' ' -f1)" "$m"; done ) > $F/mstat.sha256
+echo "rc=$rc" > $W/DONE

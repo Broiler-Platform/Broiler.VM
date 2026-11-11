@@ -1376,6 +1376,19 @@ requires. Broiler.JS's parts were judged in its bundle (Broiler-Platform/Broiler
 the record: its first clause, both cut-overs landed with both deletion lists absent, is read at SJL-9's exit reading,
 and nothing is accepted. The condition above is left as written.
 
+*(Noted 2026-11-11, at the owner's rulings of that day on bundle `sjl-9-001`'s readings.)* The note above says that
+each of Broiler.VM's parts "reads met, on readings the bundle names for the owner". The bundle's run merged as
+`2979e797` (Broiler-Platform/Broiler.VM#200, observed). The owner ruled on the readings it names that a verdict turns
+on, each time taking the reading the bundle took: the base's first-parent successors are read up to the after commit,
+so no part is void; the rule's revision of 2026-11-04 judges every part; part A's split between a fuel exhaustion and
+a wall-clock exhaustion is class C4 (c'), and a (c') row whose re-runs agree on a wall-clock exhaustion is admitted
+without (e); and part B's readings of the area checks' counts, of a Z8 key's primary and an L18 key's language, and
+of class Z8's rewritten header stand as taken. The bundle's README records each ruling against its reading, and each
+part's verdict now rests on the owner's rulings; the bundle's other readings stay as taken, unruled. No verdict moves,
+and the note's reading of decisions D15, D18 and D32 and of this record's falsifier stands. This note does not settle
+the record either: its first clause is read at SJL-9's exit reading, and nothing is accepted. The notes above are left
+as written.
+
 ## Correction entries
 
 None in this profile's plan documents at this record. SJL-9.2c takes the next free JSC, and SJL-9.4's cut-over its

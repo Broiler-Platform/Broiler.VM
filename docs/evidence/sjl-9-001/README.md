@@ -37,8 +37,11 @@ name the machine's worktrees as run.
 at corpus revision 28, 2026-10-27, at SJL-9.2 (section 3); and its runs on the pin before and after it moved to corpus
 revision 38, 2026-11-11, at SJL-9.6 (section 5); and the run of the rule, its parts A, B and C, taken and judged on
 2026-11-11, at SJL-9.6 (sections 2, 6, 7 and 8). **Parts A, B and C of the rule, as its revision of 2026-11-04 reads
-it, are each MET**, on the readings section 2 lists. **Nothing is accepted**: review is deferred, these verdicts are
-not SJL-9's exit reading, and they meet no clause by themselves.
+it, are each MET**, on the readings section 2 lists, those a verdict turns on as the owner ruled on 2026-11-11.
+**Nothing is accepted**: review is deferred, these verdicts are not SJL-9's exit reading, and they meet no clause by
+themselves.
+*(Revised 2026-11-11, at the owner's rulings of that day, which section 2 records at the end of its readings. It read
+"on the readings section 2 lists.")*
 *(Revised 2026-11-11, at SJL-9.6, when the run of the rule was taken and judged. The state read "rules and
 correspondence, 2026-10-26, at SJL-9.1; this family's engine-level run of the vectors on its pin at corpus revision
 28, 2026-10-27, at SJL-9.2 (section 3); and its runs on the pin before and after it moved to corpus revision 38,
@@ -161,6 +164,11 @@ totals decide nothing.
 
 No `controls/` folder is added: no part of the rule defines a control.
 
+*(Noted 2026-11-11, at SJL-9.6's close-out.)* [`after-closures/`](after-closures/README.md), the closures at the after
+commit (section 4), is added after the manifest's `collected-at`, so `manifest.json` does not list it, as it does not
+list this README; its own [`hashes.txt`](after-closures/hashes.txt) holds the SHA-256 of every other file of it, which
+`sha256sum -c` verifies. The list above is left as written.
+
 ### The commits, and the conditions the rule's header sets
 
 [`after/commits/commit-conditions.txt`](after/commits/commit-conditions.txt) is the output of
@@ -224,9 +232,16 @@ Each part decides alone, on the rule as its revision of 2026-11-04 reads it, fro
 
 | Part | Verdict | What it reads |
 |---|---|---|
-| A, test262 in both forms (section 6) | **MET** | [`after/parta/`](after/parta/): `completeness.txt`, `compare-wide-bytecode.log`, `compare-wide-native.log`, `changed-verdicts.tsv`, `c1-table.tsv`, `rows-named.txt`, `rerun/`, `race/` |
-| B, the reference datasets and the Intl checks (section 7) | **MET** | [`base/datasets/`](base/datasets/), [`after/datasets/`](after/datasets/): `checks.log`, `named-checks.txt`, `files.sha256`, `compare.txt`, `part-b-lines.tsv`, `part-b-summary.txt` |
-| C, the fuel-parity twins (section 8) | **MET** | [`base/fuel-parity.log`](base/fuel-parity.log), [`after/fuel-parity.log`](after/fuel-parity.log), each side's `local/partc/attempts.tsv` |
+| A, test262 in both forms (section 6) | **MET**, on readings 1 to 6 and 9 to 11 below, readings 1, 3, 6 and 11 as the owner ruled on 2026-11-11 | [`after/parta/`](after/parta/): `completeness.txt`, `compare-wide-bytecode.log`, `compare-wide-native.log`, `changed-verdicts.tsv`, `c1-table.tsv`, `rows-named.txt`, `rerun/`, `race/` |
+| B, the reference datasets and the Intl checks (section 7) | **MET**, on readings 1 to 3, 7, 8 and 12 below, readings 1, 3, 7, 8 and 12 as the owner ruled on 2026-11-11 | [`base/datasets/`](base/datasets/), [`after/datasets/`](after/datasets/): `checks.log`, `named-checks.txt`, `files.sha256`, `compare.txt`, `part-b-lines.tsv`, `part-b-summary.txt` |
+| C, the fuel-parity twins (section 8) | **MET**, on readings 1, 2, 9 and 10 below, reading 1 as the owner ruled on 2026-11-11 | [`base/fuel-parity.log`](base/fuel-parity.log), [`after/fuel-parity.log`](after/fuel-parity.log), each side's `local/partc/attempts.tsv` |
+
+*(Noted 2026-11-11, at the owner's rulings of that day, which the end of this section records.)* Each row's verdict
+read "**MET**", without the readings it rests on. Each now names the readings below that the part's verdict rests on,
+as `manifest.json` lists them, and then those of them the owner ruled on: part A's "**MET**, on readings 1 to 6 and 9
+to 11 below, readings 1, 3, 6 and 11 as the owner ruled on 2026-11-11", part B's "**MET**, on readings 1 to 3, 7, 8
+and 12 below, readings 1, 3, 7, 8 and 12 as the owner ruled on 2026-11-11" and part C's "**MET**, on readings 1, 2, 9
+and 10 below, reading 1 as the owner ruled on 2026-11-11". No verdict moves. Sections 6 to 8 are left as written.
 
 No part needs an exclusion (section 9).
 
@@ -323,6 +338,49 @@ on. No reading changes a verdict as far as the files show, except where the item
     under which readings 9 and 10's figures move to sections 6 and 8 and the file count is dropped. No verdict turns on
     it.
 
+**The owner's rulings of 2026-11-11** *(2026-11-11)*. On 2026-11-11, after Broiler-Platform/Broiler.VM#200 had opened
+with the readings above, the owner ruled on readings 1, 3, 6, 7, 8, 11 and 12, each time taking the reading this
+section took; the alternative named with each was not taken. Each of the seven is now the owner's own dated answer, and
+this section's opening, "Each verdict rests on these readings. For each, the reading taken, why, and the alternative,
+for the owner to rule on.", reads for them with this paragraph. The readings above are left as written.
+- **Reading 1, the base's third condition: "Up to after commit".** The reading reads "*Taken:* the first-parent
+  successors from the base up to the after commit, `git rev-list --first-parent 3b33530d..68cad8b`, which is the after
+  commit alone." The owner ruled that the base's first-parent successors are read from the base up to the after commit,
+  so the condition holds and no part is void. Not taken: "All later merges", under which every part would be void.
+- **Reading 3, the revision of 2026-11-04 in the after commit and not the base: "Revised rule governs".** The reading
+  reads "*Taken:* the rule as revised judges every part." The owner ruled that the revision of 2026-11-04 judges every
+  part. Not taken: "Base's unrevised rule", under which part B would be NOT MET.
+- **Readings 6 and 11, part A: "Accept both".** Reading 6 reads "*Taken:* class (c') admits "a wall-clock exhaustion
+  on either side", so a row exhausted on fuel on one side and on the wall clock on the other is (c'), decided by its
+  re-runs and (e)". Reading 11 reads "*Taken:* "a (c') row whose re-runs agree is admitted", whatever they agree on, so
+  the row is admitted without (e)". The owner ruled that a split between a fuel exhaustion and a wall-clock exhaustion
+  is (c'), and that a (c') row whose re-runs agree on a wall-clock exhaustion is admitted without (e). Not taken:
+  "Strict readings", under which part A would be NOT MET (reading 6), or would rest open on a race of row 13 (reading
+  11). With the question, the owner was told that the stage's verifier had raced row 13 of section 6's
+  (c') table once more at each commit, with the allowances of section 6's race, and that it gave a fuel exhaustion at
+  both; this bundle retains no record of that race and reads nothing from it, so reading 11's "no race of it was taken"
+  stays true of this bundle's runs and is left as written.
+- **Readings 7, 8 and 12, part B: "Accept all three".** Reading 7 reads "*Taken:* part B compares each check's verdict
+  and holds the programs, retained answers and divergences files byte for byte; a count that grows by exactly the lines
+  class L18 or Z8 adds less those it removes (section 7) is no difference outside those classes." Reading 8 reads
+  "*Taken:* a Z8 key's primary is the name the base answers for it, since the base reports a zone's primary (decision
+  D15); an L18 key's language is the options' `language` when they give one, else the tag's first subtag, since the
+  options' `language` is the language of the locale built." Reading 12 reads "*Taken:* a header rewritten at greater
+  length, with its dated quote of the old text, is "rewritten" under Z8; the dated quote is how this family rewrites any
+  text it keeps a record of." The owner ruled that all three stand as taken. Not taken: "Strict readings", under which
+  part B would be NOT MET. The ruling takes reading 7's comparison. The gap reading 7 lists in JSD-0082's record, that
+  it says nothing of `intl/i4/locales-match-icu`'s count moving under decision D32's L18 lines, was not put to the
+  owner and stays open; JSD-0082 is still not edited to cover it.
+
+**Parts A, B and C's verdicts now rest on the owner's rulings for readings 1, 3, 6, 7, 8, 11 and 12, not on open
+readings**: parts A and B on readings 1 and 3, part C on reading 1, part A also on readings 6 and 11, and part B also on
+readings 7, 8 and 12. No verdict moves; the State paragraph at the head of this README and the verdict table above say
+so by dated notes. **Readings 2, 4, 5, 9, 10 and 13 stay as taken, unruled**: the owner was not asked about them, since
+the question named only the readings a verdict was found to turn on, and each stands as SJL-9.6 took it, none the
+owner's own dated answer. Two of their alternatives say more than that: reading 4's says that "every changed verdict ...
+is listed" could not be met, and reading 9's that the local parts and part A's re-runs would not be the rule's. Neither
+was put to the owner, and neither is taken here.
+
 ## 3. Engine-level vectors on the Intl area (SJL-9.2)
 
 Broiler.JS's corpus revision 27 adds the Intl area, five files under `conformance/vectors/intl/`, one per sub-area of
@@ -398,6 +456,18 @@ taken again at the branch's last change to a product source, from a clean checko
 README says so; this paragraph, which names the first collection, is kept as written.)* *(Noted 2026-11-04, later:
 one change to an architecture test, `65ad719`, follows `b3fd2ba`; `cutover/`'s README records a retake after it that
 reproduces every closure, and why the collection from `b3fd2ba` stays.)*
+
+*(Noted 2026-11-11, at SJL-9.6's close-out.)* The closures of every JavaScript root in three modes are taken again at
+the after commit `68cad8b`, from a clean checkout of it, by the same step and method, into
+[`after-closures/`](after-closures/README.md), beside `cutover/`. Every closure, every catalog and every admitted
+package's identity is `cutover/closures/`'s byte for byte; each Native AOT image record has a new digest, on a newer
+SDK and Native AOT compiler; and the transcripts differ in timings, the heap plateau check's readings, the addresses
+five checks print and the order of the build's per-project lines alone
+([`after-closures/compare.txt`](after-closures/compare.txt)). Rule I3, run there on the image records of the four
+roots it reads, holds. This too is no run of the rule, and the composition register's rows do not move: the four
+compiling roots' rows name bundle `sjl-13-001`'s later closures since SJL-13.3's step 1, and the execution-only
+root's row names `cutover/closures/`, whose closure and catalog for that root `after-closures/` reproduces byte for
+byte. The paragraph above is left as written.
 
 ## 5. Engine-level vectors on the pin at corpus revision 38 (SJL-9.6)
 
@@ -670,14 +740,22 @@ tried, and completes with the base's answer where it completes."
 ## 9. Exclusions
 
 Sections 3 to 8 are added as the bundle's runs are taken. The exclusions keep this section's number, where rule H2
-reads an exclusion's definition, as in bundles `sjl-3-001` to `sjl-12-001`.
+reads an exclusion's definition, as in bundles `sjl-3-001` to `sjl-12-001`. *(Added 2026-11-11, at SJL-9.6's close-out:
+EX-134, for the code SJL-9.4 moved out of this component's assurance coverage, joins the table, and the row of SJL-9.1
+is kept as written.)*
 
 | ID | Status | Exclusion |
 |---|---|---|
 | (none) | | No exclusion is defined at SJL-9.1, and none is planned. A later exclusion takes the next free identifier and is defined in this table |
+| EX-134 | Open | **The Intl code that left this component's assurance coverage** *(added 2026-11-11, at SJL-9.6's close-out, as JSD-0085 section 11 names it)*. The types and members rule I5 registers for SJL-9.4 (`src/tests/Broiler.VM.Architecture.Tests/retired-members.json`), with the bodies JSD-0085 section 8 names, left the JavaScript family's sources at SJL-9.4's cut-over, the after commit `68cad8b`: `JsLocaleTag.cs`, `JsDecimal.cs`, `JsPluralRule.cs`, `JsNumberData.cs`, `JsNumberFormatter.cs`, `JsDateData.cs`, `JsDatePatternGenerator.cs`, `JsDateIntervalFormat.cs`, `JsDateTimeFormatter.cs`, `JsZoneNames.cs` and `JsLocaleInfo.cs` whole, with every type in them; every `JsIntlTables` decoder and its lazy; the cores of `JsRealm.Intl`, `JsRealm.Locale`, `JsRealm.NumberFormat`, `JsRealm.PluralRules`, `JsRealm.RelativeTimeFormat`, `JsRealm.ListFormat`, `JsRealm.DisplayNames`, `JsRealm.DateTimeFormat` (with `JsTemporalDateFormats`) and `JsRealm.DurationFormat`; the fields of the Intl objects the library's records replace; and the two renamed members, `JsRealm.DateTimeComponents` and `JsRealm.DateTimeValue`. What computes them now is `Broiler.ECMAScript.Intl`, namespace `Broiler.ECMAScript.Intl`. The home's own assurance covers it in the Broiler.JS repository: `Broiler.ECMAScript/hairs.config.json` lists the library's project, and its generated manifest, `Broiler.ECMAScript/hairs.manifest.json`, lists every unit of the library's assembly with an annotation on each relevant declaration, checked in CI (rule SL8). No rule of this component reads those units, their human review is the home's and not `HUMAN_REVIEW.md`'s, and this component's assurance figures no longer count them. The adapters of JSD-0085 section 3 and its seams of section 2 (`JsIntlDataSet.cs` and `JsIntlTables`' `LocaleData`, `FormatData` and `DateTimeData`), the Intl objects with their option reads, coercion, errors, charges and locale policies, the data this family hands the library through `IJsIntlData` and `JsCldrTables.g.cs`, the reference datasets under `src/tests/cldr/`, and `NewCollator` and `CollatorKeyData` (collation, SJL-17's) and `JsRealm.Segmenter.cs` (SJL-7's) stay in this component and stay covered. EX-125 and EX-127 to EX-133 say the same of the earlier areas |
 
 *(Noted 2026-11-11, at SJL-9.6's run of the rule.)* No part of the rule needs an exclusion, and none is defined by it:
 parts A, B and C are MET without one (sections 6 to 8). The ledger's entry of 2026-11-04 also lists for SJL-9.6 "the
 exclusion for the code that left this component's assurance coverage", as EX-125 and EX-127 to EX-133 say for the
 earlier areas. It is no part of the rule, and is not defined here; it takes the next free identifier when it is.
 The table above is left as written.
+
+*(Noted 2026-11-11, at SJL-9.6's close-out.)* That exclusion is now defined, as EX-134 in the table above, the next
+free identifier: EX-133 is bundle `sjl-13-001`'s, and no bundle defines a later one. It is still no part of the rule:
+parts A, B and C read nothing of this component's assurance coverage, and no verdict of sections 6 to 8 moves with it.
+The note above is left as written.

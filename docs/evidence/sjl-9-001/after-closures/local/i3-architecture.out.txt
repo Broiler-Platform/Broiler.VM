@@ -1,0 +1,52 @@
+  Determining projects to restore...
+  Restored /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96b/closures/tree/src/tests/Broiler.VM.Fixtures/Broiler.VM.Fixtures.csproj (in 127 ms).
+  Restored /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96b/closures/tree/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 116 ms).
+  Restored /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96b/closures/tree/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 127 ms).
+  Restored /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96b/closures/tree/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 2 ms).
+  Restored /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96b/closures/tree/src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj (in 537 ms).
+  Broiler.VM.Binary -> /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96b/closures/tree/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96b/closures/tree/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Fixtures -> /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96b/closures/tree/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96b/closures/tree/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Architecture.Tests -> /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96b/closures/tree/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96b/closures/tree/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed Broiler.VM.Architecture.Tests.NativeMappingRuleTests.B5c_Names_Every_Shipping_Assembly_It_Could_Not_Read [50 ms]
+  Error Message:
+   Assert.DoesNotContain() Failure: Sub-string found
+                                      ↓ (pos 2505)
+String: ···"j" />\n    <Project Path="src/tests/Broiler.VM.Benc"···
+Found:  "src/tests/Broiler.VM.Bench.Host/Broiler.VM.Bench.H"···
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.NativeMappingRuleTests.B5c_Names_Every_Shipping_Assembly_It_Could_Not_Read() in /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96b/closures/tree/src/tests/Broiler.VM.Architecture.Tests/NativeMappingRuleTests.cs:line 72
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Architecture.Tests.AssemblyMetadataRuleTests.B5_No_Assembly_Reaches_A_Dynamic_Loading_Api [6 ms]
+  Error Message:
+   Assert.Contains() Failure: Filter not matched in collection
+Collection: [AssemblyFacts { }, AssemblyFacts { }, AssemblyFacts { }, AssemblyFacts { }, AssemblyFacts { }, ···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.AssemblyMetadataRuleTests.B5_No_Assembly_Reaches_A_Dynamic_Loading_Api() in /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96b/closures/tree/src/tests/Broiler.VM.Architecture.Tests/AssemblyMetadataRuleTests.cs:line 120
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Architecture.Tests.AssemblyMetadataRuleTests.B5_And_B5b_Name_Every_Shipping_Assembly_They_Could_Not_Read [1 ms]
+  Error Message:
+   Assert.DoesNotContain() Failure: Sub-string found
+                                      ↓ (pos 2505)
+String: ···"j" />\n    <Project Path="src/tests/Broiler.VM.Benc"···
+Found:  "src/tests/Broiler.VM.Bench.Host/Broiler.VM.Bench.H"···
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.AssemblyMetadataRuleTests.B5_And_B5b_Name_Every_Shipping_Assembly_They_Could_Not_Read() in /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96b/closures/tree/src/tests/Broiler.VM.Architecture.Tests/AssemblyMetadataRuleTests.cs:line 176
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Architecture.Tests.AssemblyMetadataRuleTests.B3_No_Assembly_Names_A_Foreign_Broiler_Assembly [1 ms]
+  Error Message:
+   Assert.Contains() Failure: Filter not matched in collection
+Collection: [AssemblyFacts { }, AssemblyFacts { }, AssemblyFacts { }, AssemblyFacts { }, AssemblyFacts { }, ···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.AssemblyMetadataRuleTests.B3_No_Assembly_Names_A_Foreign_Broiler_Assembly() in /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96b/closures/tree/src/tests/Broiler.VM.Architecture.Tests/AssemblyMetadataRuleTests.cs:line 65
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     4, Passed:   389, Skipped:     0, Total:   393, Duration: 26 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+VSTEST_ARTIFACTS_DIRECTORY environment variable was not found, falling back to a user-private temporary directory. This is most likely caused by an outdated Microsoft.NET.Test.Sdk package reference in the test project.
