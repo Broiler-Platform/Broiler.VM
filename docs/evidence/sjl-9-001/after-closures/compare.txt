@@ -1,0 +1,40 @@
+compared: sjl-9-001/cutover/closures against sjl-9-001/after-closures/closures
+(the Native AOT image records are not retained; mstat.sha256 names them)
+
+admitted-packages.json               identical
+catalog-cli.txt                      identical
+catalog-conformance.txt              identical
+catalog-executiononly.txt            identical
+catalog-polyglotcli.txt              identical
+catalog-slicecompiler.txt            identical
+closure-cli.txt                      identical
+closure-conformance.txt              identical
+closure-executiononly.txt            identical
+closure-polyglotcli.txt              identical
+closure-slicecompiler.txt            identical
+mstat.sha256                         DIFFERS
+    lines 5 at cutover/, 5 after; masked: differ
+    --- cutover
+    +++ after
+    @@ -1,5 +1,5 @@
+    -4160d85968da1c677d109c39d118019bf5f3c523285ae150fde03793d1329215  mstat-cli.mstat
+    -b0fb15405f9e0d06ed4051e1c16aea3519d6c633b0de0d461a5091c7399093b8  mstat-conformance.mstat
+    -b0bdf6428044df26f2729f5b08370e42ea8efeb6ca9a7f8fd96ab1d7dd4b1afa  mstat-executiononly.mstat
+    -d558b4d9852d72c264850ad177eb63b60470a119ec5287e2dfb75fdcfdbf6842  mstat-polyglotcli.mstat
+    -3815a26488c45100c32c4fd6caab7cdb741282ec3ee2ed8f1763b8b67e041e08  mstat-slicecompiler.mstat
+    +0880a677dcd44c80a194df87367327e284b5764b4363f58c248b82de7f35c8b7  mstat-cli.mstat
+    +93ed55f5ad9b5ef1ad28109155aa3e594e563d80c1cab8aace3dcbd2e2d51e3d  mstat-conformance.mstat
+    +31164c802c68e4522af556f4265230486f945305c9d1ef1031a969e16cf49599  mstat-executiononly.mstat
+    +cc31c942c73a3c66604d4b9ff50292fab67d345f2aae7508265e3ae3ce83836b  mstat-polyglotcli.mstat
+    +2bb92f6911f58bea9a5e25546942ec854dd478002970075ecd0b47269e4b4fc3  mstat-slicecompiler.mstat
+    0 lines differ in timings or the plateau check's readings alone, line for line
+publish-and-run-polyglotcli.log      DIFFERS
+    lines 237 at cutover/, 237 after; masked: differ
+    section headings (each publish, run and exit): identical, 25 sections
+    3 sections differ in the order of their lines alone
+    7 lines differ in timings or the plateau check's readings alone, line for line
+publish-and-run.log                  DIFFERS
+    lines 6879 at cutover/, 6879 after; masked: differ
+    section headings (each publish, run and exit): identical, 28 sections
+    12 sections differ in the order of their lines alone
+    804 lines differ in timings or the plateau check's readings alone, line for line

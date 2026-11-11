@@ -1,0 +1,7 @@
+bundle sjl-9-001, the closures at the after commit (SJL-9.6): the merge of SJL-9.4's cut-over, Broiler-Platform/Broiler.VM#190
+collected 2026-11-11T12:14:00Z
+commit 68cad8baf7403125d44d5007441d30ff07bc4edf
+tree clean
+product-sources sha256=14c1478e185c2b80896185526288d49b73e12f297cb8717092997d7088387c4f over 5421 entries of `git ls-tree -r`, every path outside docs/ and outside any docs/ directory
+sdk 10.0.404
+machine Linux-6.18.44-fc-v378-x86_64-with-glibc2.39 x86_64 cpus=4

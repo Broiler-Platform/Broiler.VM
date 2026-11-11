@@ -164,6 +164,11 @@ totals decide nothing.
 
 No `controls/` folder is added: no part of the rule defines a control.
 
+*(Noted 2026-11-11, at SJL-9.6's close-out.)* [`after-closures/`](after-closures/README.md), the closures at the after
+commit (section 4), is added after the manifest's `collected-at`, so `manifest.json` does not list it, as it does not
+list this README; its own [`hashes.txt`](after-closures/hashes.txt) holds the SHA-256 of every other file of it, which
+`sha256sum -c` verifies. The list above is left as written.
+
 ### The commits, and the conditions the rule's header sets
 
 [`after/commits/commit-conditions.txt`](after/commits/commit-conditions.txt) is the output of
@@ -447,6 +452,16 @@ taken again at the branch's last change to a product source, from a clean checko
 README says so; this paragraph, which names the first collection, is kept as written.)* *(Noted 2026-11-04, later:
 one change to an architecture test, `65ad719`, follows `b3fd2ba`; `cutover/`'s README records a retake after it that
 reproduces every closure, and why the collection from `b3fd2ba` stays.)*
+
+*(Noted 2026-11-11, at SJL-9.6's close-out.)* The closures of every JavaScript root in three modes are taken again at
+the after commit `68cad8b`, from a clean checkout of it, by the same step and method, into
+[`after-closures/`](after-closures/README.md), beside `cutover/`. Every closure, every catalog and every admitted
+package's identity is `cutover/closures/`'s byte for byte; each Native AOT image record has a new digest, as at the
+retake from `b3fd2ba`, on a newer SDK; and the transcripts differ in timings, the heap plateau check's readings, the
+addresses five checks print and the order of the build's per-project lines alone
+([`after-closures/compare.txt`](after-closures/compare.txt)). Rule I3, run there on the image records, holds. This
+too is no run of the rule, and the composition register's rows, which name bundle `sjl-13-001`'s later closures since
+SJL-13.3's step 1, do not move. The paragraph above is left as written.
 
 ## 5. Engine-level vectors on the pin at corpus revision 38 (SJL-9.6)
 

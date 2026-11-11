@@ -1,0 +1,16 @@
+=== collect before
+time: 2026-11-11T12:14:00Z
+loadavg: 0.56 0.96 0.96 1/108 15246
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 22778 MiB free
+procs-matching:
+=== collect after (rc=0 started=2026-11-11T12:14:00Z)
+time: 2026-11-11T12:36:30Z
+loadavg: 5.50 4.20 2.65 1/108 3200
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 21616 MiB free
+procs-matching:
