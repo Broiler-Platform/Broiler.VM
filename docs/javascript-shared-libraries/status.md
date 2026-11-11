@@ -3285,7 +3285,9 @@ left in this repository after it; each is done here:
   header, which the entry of 2026-11-04 kept as committed until SJL-9.6's after runs, are brought up to the cut-over,
   each with a dated note quoting what it replaces, and JSD-0085 notes it. No data line, program or retained answer
   moves, and the slice compiler's checks answer at the branch's head as before it. Part B of the bundle's rule compares
-  the base and the after commit alone, so it reads none of this, and its verdict stands.
+  the base and the after commit alone, so it reads none of this, and its verdict stands. The calendar group's header
+  of the locales divergences, which JSD-0082 and JSD-0046 §5 record as stale, and the locales README's calendars item
+  are not among these texts: no item of SJL-9.6 names them, and they stay as committed, for a later change to rewrite.
 
 **SJL-9.6 has nothing left in this repository.** This change meets no clause, and no other ledger's row moves. SJL-9
 stays `In progress`, every clause unmet. Nothing is accepted. Next:

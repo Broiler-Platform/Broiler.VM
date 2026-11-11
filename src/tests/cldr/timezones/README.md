@@ -35,8 +35,8 @@ keeps for the IANA Time Zone Database data the profile generates.
 
   Each line is the profile's answer.
 
-  *(Revised 2026-11-11, at SJL-9.6, after bundle sjl-9-001's runs at the base and after commits, which
-  hold this folder's divergences to rows Z8 and L18 until then (JSD-0085). SJL-9.4's row Z8 rewrote,
+  *(Revised 2026-11-11, at SJL-9.6, after bundle sjl-9-001's runs at the base and after commits, whose
+  part B admitted no change here outside classes Z8 and L18 (JSD-0085). SJL-9.4's row Z8 rewrote,
   removed and added lines of the first group, and changed its reason. The paragraph read "names the 51
   of its 610 lines", its first item "ECMA-402 resolves a name to its IANA Zone, and V8 to CLDR's older
   canonical name (45 lines, on every one of which the offsets agree);", and its third "the same

@@ -40,11 +40,13 @@ little: the suite scores the information methods as a proposal.
 
   Each line is the profile's answer.
 
-  *(Revised 2026-11-11, at SJL-9.6, after bundle sjl-9-001's runs at the base and after commits, which
-  hold this folder's divergences to rows Z8 and L18 until then (JSD-0085). SJL-9.4's row L18 rewrote
+  *(Revised 2026-11-11, at SJL-9.6, after bundle sjl-9-001's runs at the base and after commits, whose
+  part B admitted no change here outside classes Z8 and L18 (JSD-0085). SJL-9.4's row L18 rewrote
   and added lines of the collations group. The paragraph read "names the 132 of its 780 lines", and
   its second item "calendars (21), collations (28) and numbering systems (2).", without the sentence
-  after it.)*
+  after it. The calendars item's reason, and the calendar group's header in `divergences.txt`, are
+  left as committed: JSD-0082 and JSD-0046 §5 record that header's reason as stale, and this change
+  is not the one that rewrites it.)*
 
 The slice compiler's check `intl/i4/locales-match-icu` runs the same program under the profile and
 compares every line: Node's, or the divergence that replaces it.

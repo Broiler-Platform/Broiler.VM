@@ -341,13 +341,15 @@ runs may rewrite it.
 - **The third group header of `src/tests/cldr/timezones/divergences.txt`**, "The same resolution, in the lists: …",
   gives the primary's reason, which row Z8 changed for the first group alone.
 
-*(Noted 2026-11-11, at SJL-9.6's close-out.)* Bundle `sjl-9-001`'s runs at the base and after commits are taken, so
-the window is over, and the three texts are brought up to the cut-over in a change after the after commit `68cad8b`,
-each with a dated note quoting what it replaces: the two READMEs' counts and reasons name rows L18's and Z8's lines,
-and the third group header gives the lists' own reason, the primary identifiers, where the first group's is the name
-as given. No data line, program or retained answer moves, and the slice compiler's checks answer at the change's
-head as before it. Part B of the bundle's rule compares the base and the after commit alone, so it reads none of
-this, and its verdict stands. The list above is left as written.
+*(Noted 2026-11-11, at SJL-9.6's close-out.)* Bundle `sjl-9-001`'s runs at the base and after commits are taken, so the
+window is over, and the three texts are brought up to the cut-over in a change after the after commit `68cad8b`, each
+with a dated note quoting what it replaces: the two READMEs' counts and reasons name rows L18's and Z8's lines, and the
+third group header gives the lists' own reason, the primary identifiers, where the first group's is the name as given.
+No data line, program or retained answer moves, and the slice compiler's checks answer at the change's head as before
+it. Part B of the bundle's rule compares the base and the after commit alone, so it reads none of this, and its verdict
+stands. The calendar group's header of `src/tests/cldr/locales/divergences.txt`, which JSD-0082 and JSD-0046 §5 record
+as stale, is not among the three, and neither is the locales README's calendars item: both stay as committed, for a
+later change to rewrite. The list above is left as written.
 
 ## Where the plan, JSD-0082 and the code disagreed
 

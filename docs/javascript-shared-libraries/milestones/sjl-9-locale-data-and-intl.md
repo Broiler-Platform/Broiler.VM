@@ -313,8 +313,9 @@ trimming and Native AOT at the after commit, each closure, catalog and admitted 
 SJL-9.4's collection, with rule I3 holding on the image records of the roots it reads; its section 9 defines EX-134 for
 the Intl code that left this component's assurance coverage; and the locales and time-zone datasets' READMEs and the
 time-zone divergences' third group header are brought up to the cut-over, with no data line, program or retained answer
-moved. SJL-9.6 has nothing left in Broiler.VM, and SJL-9's exit reading is next. This bears on clauses 14 and 15's
-evidence and meets no clause; nothing is accepted. The text above is left as written.
+moved; the locales divergences' calendar group header, which JSD-0082 records as stale and no item of SJL-9.6 names,
+stays as committed. SJL-9.6 has nothing left in Broiler.VM, and SJL-9's exit reading is next. This bears on clauses 14
+and 15's evidence and meets no clause; nothing is accepted. The text above is left as written.
 
 ---
 
