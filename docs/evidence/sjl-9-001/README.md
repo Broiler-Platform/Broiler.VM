@@ -37,8 +37,11 @@ name the machine's worktrees as run.
 at corpus revision 28, 2026-10-27, at SJL-9.2 (section 3); and its runs on the pin before and after it moved to corpus
 revision 38, 2026-11-11, at SJL-9.6 (section 5); and the run of the rule, its parts A, B and C, taken and judged on
 2026-11-11, at SJL-9.6 (sections 2, 6, 7 and 8). **Parts A, B and C of the rule, as its revision of 2026-11-04 reads
-it, are each MET**, on the readings section 2 lists. **Nothing is accepted**: review is deferred, these verdicts are
-not SJL-9's exit reading, and they meet no clause by themselves.
+it, are each MET**, on the readings section 2 lists, those a verdict turns on as the owner ruled on 2026-11-11.
+**Nothing is accepted**: review is deferred, these verdicts are not SJL-9's exit reading, and they meet no clause by
+themselves.
+*(Revised 2026-11-11, at the owner's rulings of that day, which section 2 records at the end of its readings. It read
+"on the readings section 2 lists.")*
 *(Revised 2026-11-11, at SJL-9.6, when the run of the rule was taken and judged. The state read "rules and
 correspondence, 2026-10-26, at SJL-9.1; this family's engine-level run of the vectors on its pin at corpus revision
 28, 2026-10-27, at SJL-9.2 (section 3); and its runs on the pin before and after it moved to corpus revision 38,
@@ -224,9 +227,15 @@ Each part decides alone, on the rule as its revision of 2026-11-04 reads it, fro
 
 | Part | Verdict | What it reads |
 |---|---|---|
-| A, test262 in both forms (section 6) | **MET** | [`after/parta/`](after/parta/): `completeness.txt`, `compare-wide-bytecode.log`, `compare-wide-native.log`, `changed-verdicts.tsv`, `c1-table.tsv`, `rows-named.txt`, `rerun/`, `race/` |
-| B, the reference datasets and the Intl checks (section 7) | **MET** | [`base/datasets/`](base/datasets/), [`after/datasets/`](after/datasets/): `checks.log`, `named-checks.txt`, `files.sha256`, `compare.txt`, `part-b-lines.tsv`, `part-b-summary.txt` |
-| C, the fuel-parity twins (section 8) | **MET** | [`base/fuel-parity.log`](base/fuel-parity.log), [`after/fuel-parity.log`](after/fuel-parity.log), each side's `local/partc/attempts.tsv` |
+| A, test262 in both forms (section 6) | **MET**, on readings 1, 3, 6 and 11 below, as the owner ruled on 2026-11-11 | [`after/parta/`](after/parta/): `completeness.txt`, `compare-wide-bytecode.log`, `compare-wide-native.log`, `changed-verdicts.tsv`, `c1-table.tsv`, `rows-named.txt`, `rerun/`, `race/` |
+| B, the reference datasets and the Intl checks (section 7) | **MET**, on readings 1, 3, 7, 8 and 12 below, as the owner ruled on 2026-11-11 | [`base/datasets/`](base/datasets/), [`after/datasets/`](after/datasets/): `checks.log`, `named-checks.txt`, `files.sha256`, `compare.txt`, `part-b-lines.tsv`, `part-b-summary.txt` |
+| C, the fuel-parity twins (section 8) | **MET**, on reading 1 below, as the owner ruled on 2026-11-11 | [`base/fuel-parity.log`](base/fuel-parity.log), [`after/fuel-parity.log`](after/fuel-parity.log), each side's `local/partc/attempts.tsv` |
+
+*(Noted 2026-11-11, at the owner's rulings of that day, which the end of this section records.)* Each row's verdict
+read "**MET**", without the readings it rests on. Each now names those of the readings below that the part's verdict
+rests on, as `manifest.json` lists them, and that the owner ruled on, and ends "as the owner ruled on 2026-11-11": part
+A's "**MET**, on readings 1, 3, 6 and 11 below", part B's "**MET**, on readings 1, 3, 7, 8 and 12 below" and part C's
+"**MET**, on reading 1 below". No verdict moves. Sections 6 to 8 are left as written.
 
 No part needs an exclusion (section 9).
 
@@ -322,6 +331,46 @@ on. No reading changes a verdict as far as the files show, except where the item
     property of the pin, not a suite total, as bundle `vm-5-002` quotes the same count. *Alternative:* H5 read strictly,
     under which readings 9 and 10's figures move to sections 6 and 8 and the file count is dropped. No verdict turns on
     it.
+
+**The owner's rulings of 2026-11-11** *(2026-11-11)*. On 2026-11-11, after Broiler-Platform/Broiler.VM#200 had opened
+with the readings above, the owner ruled on readings 1, 3, 6, 7, 8, 11 and 12, each time taking the reading this
+section took; the alternative named with each was not taken. Each of the seven is now the owner's own dated answer, and
+this section's opening, "Each verdict rests on these readings. For each, the reading taken, why, and the alternative,
+for the owner to rule on.", reads for them with this paragraph. The readings above are left as written.
+- **Reading 1, the base's third condition: "Up to after commit".** The reading reads "*Taken:* the first-parent
+  successors from the base up to the after commit, `git rev-list --first-parent 3b33530d..68cad8b`, which is the after
+  commit alone." The owner ruled that the base's first-parent successors are read from the base up to the after commit,
+  so the condition holds and no part is void. Not taken: "All later merges", under which every part would be void.
+- **Reading 3, the revision of 2026-11-04 in the after commit and not the base: "Revised rule governs".** The reading
+  reads "*Taken:* the rule as revised judges every part." The owner ruled that the revision of 2026-11-04 judges every
+  part. Not taken: "Base's unrevised rule", under which part B would be NOT MET.
+- **Readings 6 and 11, part A: "Accept both".** Reading 6 reads "*Taken:* class (c') admits "a wall-clock exhaustion
+  on either side", so a row exhausted on fuel on one side and on the wall clock on the other is (c'), decided by its
+  re-runs and (e)". Reading 11 reads "*Taken:* "a (c') row whose re-runs agree is admitted", whatever they agree on, so
+  the row is admitted without (e)". The owner ruled that a split between a fuel exhaustion and a wall-clock exhaustion
+  is (c'), and that a (c') row whose re-runs agree on a wall-clock exhaustion is admitted without (e). Not taken:
+  "Strict readings". With the question, the owner was told that the stage's verifier had raced row 13 of section 6's
+  (c') table once more at each commit, with the allowances of section 6's race, and that it gave a fuel exhaustion at
+  both; this bundle retains no record of that race and reads nothing from it, so reading 11's "no race of it was taken"
+  stays true of this bundle's runs and is left as written.
+- **Readings 7, 8 and 12, part B: "Accept all three".** Reading 7 reads "*Taken:* part B compares each check's verdict
+  and holds the programs, retained answers and divergences files byte for byte; a count that grows by exactly the lines
+  class L18 or Z8 adds less those it removes (section 7) is no difference outside those classes." Reading 8 reads
+  "*Taken:* a Z8 key's primary is the name the base answers for it, since the base reports a zone's primary (decision
+  D15); an L18 key's language is the options' `language` when they give one, else the tag's first subtag, since the
+  options' `language` is the language of the locale built." Reading 12 reads "*Taken:* a header rewritten at greater
+  length, with its dated quote of the old text, is "rewritten" under Z8; the dated quote is how this family rewrites any
+  text it keeps a record of." The owner ruled that all three stand as taken. Not taken: "Strict readings", under which
+  part B would be NOT MET.
+
+**Parts A, B and C's verdicts now rest on the owner's rulings for readings 1, 3, 6, 7, 8, 11 and 12, not on open
+readings**: each part on readings 1 and 3, part A also on readings 6 and 11, and part B also on readings 7, 8 and 12.
+No verdict moves; the State paragraph at the head of this README and the verdict table above say so by dated notes.
+**Readings 2, 4, 5, 9, 10 and 13 stay as taken, unruled**: the owner was not asked about them, since the question
+named only the readings a verdict was found to turn on, and each stands as SJL-9.6 took it, none the owner's own dated
+answer. Two of their alternatives say more than that: reading 4's says that "every changed verdict ... is listed"
+could not be met, and reading 9's that the local parts and part A's re-runs would not be the rule's. Neither was put to
+the owner, and neither is taken here.
 
 ## 3. Engine-level vectors on the Intl area (SJL-9.2)
 

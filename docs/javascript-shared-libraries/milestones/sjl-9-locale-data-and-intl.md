@@ -296,6 +296,16 @@ each read met, on readings the bundle names for the owner, and no part needs an 
 evidence and meets no clause: SJL-9's exit reading follows, and nothing is accepted. The paragraph above is left as
 written.
 
+*(Noted 2026-11-11, at the owner's rulings of that day.)* The note above says that parts A, B and C "each read met, on
+readings the bundle names for the owner". The bundle's run merged as `2979e797` (Broiler-Platform/Broiler.VM#200,
+observed). The owner ruled on the readings it names that a verdict turns on, each time taking the reading the bundle
+took: the base's first-parent successors read up to the after commit; the revision of 2026-11-04 judging every part;
+part A's split between a fuel exhaustion and a wall-clock exhaustion read as class C4 (c'), and its (c') row whose
+re-runs agree on a wall-clock exhaustion admitted without (e); and part B's readings of the area checks' counts, of a
+Z8 key's primary and an L18 key's language, and of class Z8's rewritten header. The bundle's README records each ruling
+against its reading, and parts A, B and C's verdicts now rest on the owner's rulings; no verdict moves, and the
+bundle's other readings stay as taken, unruled. This meets no clause. The text above is left as written.
+
 ---
 
 ## Exit gate
