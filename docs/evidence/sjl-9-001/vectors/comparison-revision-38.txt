@@ -1,0 +1,103 @@
+Comparison of this family's run on corpus revision 38, on the committed pin, with its run on corpus revision 32, on the
+pin before it moved, and of the run's negative control with the run. Written by compare-revision-38.py here from the files below.
+
+base:     run-base-revision-32.tsv.gz here (decompressed 8b6929c0326c99473f8bb14b8176acc9d4a7dd7cdd40cc67636050f499b64c99)
+after:    run-revision-38.tsv.gz here (decompressed 1ba69b47627fc63831deee8d7df13c8118aeb4bcfe7b8c374ffbededc65de177)
+control:  run-negative-control-revision-38.tsv.gz here (decompressed 63dfe80f99c2e7a1f68e3deec83a3ab8b937b2dc91041e392812d30be4b4aa56)
+retired:  Broiler.JS 3493462a docs/evidence/corpus-revision-38/retired-divergences-revision-38.tsv (sha256 daf2dc658f2b14e696c7ef1098465e662d13116c43aa430d62ff4482166b1d13), its broiler-vm lines
+vectors:  the extracted archives of b2c2e224 (revision 32) and 3493462a (revision 38), read record by record
+
+######## the summary lines (# ...)
+base:
+  # engine: broiler-vm
+  # corpus: Broiler-Platform/broiler.js@b2c2e2243a086285d806866a64b83297791a8ec5 content sha256 fd4240bb87a24508661ba41b7d6f730a282aa7e0ac03484c444d73d8e8a6a347
+  # vectors: 108759
+  # match: 108541
+  # classified-divergence: 61
+  # difference: 157
+  # divergence no longer holds: 65
+after:
+  # engine: broiler-vm
+  # corpus: Broiler-Platform/broiler.js@3493462a120f3169fe36c4c437ac578fd9d39f23 content sha256 b3067f958a702d0d011b1017e3c826a17d575f14d9967615ad7220b5f033fd6e
+  # vectors: 111157
+  # match: 111096
+  # classified-divergence: 61
+  # difference: 0
+  # divergence no longer holds: 24
+
+######## the vectors
+rows: base 108759, after 111157; in both 108759; only after 2398; only in the base 0
+rows only after, by file group, class and verdict (revision 33's collation vectors; their since field):
+     165  intl/collation/options  divergence  match
+     417  intl/collation/options  normative  match
+      37  intl/collation/root  divergence  match
+      34  intl/collation/root  impl-defined  match
+    1435  intl/collation/root  normative  match
+      98  intl/collation/surrogates  normative  match
+      34  intl/collation/tailorings  divergence  match
+      75  intl/collation/tailorings  impl-defined  match
+     103  intl/collation/tailorings  normative  match
+  since: 33 2398
+
+######## the records of the vectors in both runs, field by field (revision 32 against revision 38)
+     193  intl/date-times  class
+     591  intl/date-times  divergence.broiler-js
+      18  intl/date-times  divergence.broiler-vm
+       5  intl/date-times  note
+      44  intl/durations  class
+      94  intl/durations  divergence.broiler-js
+     170  intl/locales  class
+     184  intl/locales  divergence.broiler-js
+      23  intl/locales  divergence.broiler-vm
+     248  intl/numbers-and-text  class
+     758  intl/numbers-and-text  divergence.broiler-js
+       5  intl/numbers-and-text  note
+     102  intl/values-and-plurals  class
+     126  intl/values-and-plurals  divergence.broiler-js
+       4  intl/values-and-plurals  note
+       5  time-zones/case  class
+       5  time-zones/case  note
+       5  time-zones/case  per-engine.broiler-js
+       5  time-zones/case  per-engine.broiler-vm
+       5  time-zones/case  prov
+     152  time-zones/formatter-zone  class
+     152  time-zones/formatter-zone  note
+     152  time-zones/formatter-zone  per-engine.broiler-js
+     152  time-zones/formatter-zone  per-engine.broiler-vm
+     152  time-zones/formatter-zone  prov
+  (no out, script, in, op or prov field of any other group changes; a field this list does not name is unchanged)
+
+######## every verdict that moves, attributed
+      18  intl/date-times  class divergence -> normative  match (divergence no longer holds) -> match
+          revision 38 retires its divergence.broiler-vm field (vm-z8), which SJL-9.4 corrected
+      18  intl/locales  class divergence -> normative  match (divergence no longer holds) -> match
+          revision 38 retires its divergence.broiler-vm field (vm-l9), which SJL-9.4 corrected
+       5  intl/locales  class impl-defined -> impl-defined  match (divergence no longer holds) -> match
+          revision 38 retires its divergence.broiler-vm field (vm-l18), which SJL-9.4 corrected
+       5  time-zones/case  class impl-defined -> normative  difference -> match
+          row Z8: revision 38 drops its per-engine.broiler-vm expectation (the primary), so the expectation is out, the identifier as given, which the run renders at both pins (decision D15)
+     152  time-zones/formatter-zone  class impl-defined -> normative  difference -> match
+          row Z8: revision 38 drops its per-engine.broiler-vm expectation (the primary), so the expectation is out, the identifier as given, which the run renders at both pins (decision D15)
+unattributed moves: 0 []
+the retired fields' vectors: 41; after: match 41
+
+######## the vectors in both runs whose verdict does not move, other columns
+     171  intl/date-times  class divergence -> normative  (revision 38 retires its last divergence field, divergence.broiler-js)
+       4  intl/date-times  class normative -> divergence  (a divergence.broiler-js field, Broiler.JS's alone, that revision 37 adds (a host that lists aa or pap, decision D7))
+      43  intl/durations  class divergence -> normative  (revision 38 retires its last divergence field, divergence.broiler-js)
+       1  intl/durations  class normative -> divergence  (a divergence.broiler-js field, Broiler.JS's alone, that revision 37 adds (a host that lists aa or pap, decision D7))
+     152  intl/locales  class divergence -> normative  (revision 38 retires its last divergence field, divergence.broiler-js)
+     237  intl/numbers-and-text  class divergence -> normative  (revision 38 retires its last divergence field, divergence.broiler-js)
+       3  intl/numbers-and-text  class normative -> divergence  (a divergence.broiler-js field, Broiler.JS's alone, that revision 36 adds (the pinned CLDR 48.2.0 contradicts the reference))
+       8  intl/numbers-and-text  class normative -> divergence  (a divergence.broiler-js field, Broiler.JS's alone, that revision 37 adds (a host that lists aa or pap, decision D7))
+     102  intl/values-and-plurals  class divergence -> normative  (revision 38 retires its last divergence field, divergence.broiler-js)
+expected or rendered column changed with the verdict unchanged: 0
+rendered column changed for any vector in both: 0
+
+######## the negative control against the run
+rows that differ: 1
+  run:     time-zones/formatter-zone/0001	normative	value: str:"Africa/Asmera"	value: str:"Africa/Asmera"	match
+  control: time-zones/formatter-zone/0001	normative	value: str:"Africa/Asmera0"	value: str:"Africa/Asmera"	difference
+summary lines that differ:
+  run: # match: 111096  | control: # match: 111095
+  run: # difference: 0  | control: # difference: 1

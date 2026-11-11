@@ -158,7 +158,7 @@
 # area, rows Z8, L9 and L18, which its SJL-9.4 cut-over corrected (Broiler-Platform/Broiler.VM#190, `68cad8b`), and
 # 1,705 of Broiler.JS's, which its SJL-9.5 cut-over corrected (Broiler-Platform/Broiler.JS#1110, `a5f2692e`), and
 # makes row Z8's 157 time-zone vectors `normative` with one `out`, the identifier as given, case-normalised (decision
-# D15 of JSD-0082), where this profile's `per-engine.broiler-vm` expectation was the canonical identifier. The commit
+# D15 of JSD-0082), where this profile's `per-engine.broiler-vm` expectation was the primary identifier. The commit
 # is Broiler.JS's default branch after the change that carries revision 38 merged (Broiler-Platform/Broiler.JS#1112);
 # its corpus is that of `5a15483f`, revision 38 as completed before the merge. Its header read, for revision 32: "the
 # corpus at that commit is at corpus revision 32", "On 2026-11-02" and "One file of 2,238,846 bytes hashing to
