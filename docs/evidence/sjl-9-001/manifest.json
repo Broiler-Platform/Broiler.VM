@@ -28,8 +28,8 @@
     }
   },
   "verdicts": {
-    "A": "MET (on the README section 2 readings 1 to 6, 9 and 10)",
-    "B": "MET (on the README section 2 readings 1 to 3, 7 and 8)",
+    "A": "MET (on the README section 2 readings 1 to 6 and 9 to 11)",
+    "B": "MET (on the README section 2 readings 1 to 3, 7, 8 and 12)",
     "C": "MET (on the README section 2 readings 1, 2, 9 and 10)"
   },
   "note": "Broiler.VM bundle sjl-9-001: the area rule (decision-rule-area.md, unchanged since the rule commit) and its revision of 2026-11-04, the correspondence and its runs, the vectors (sections 3 and 5), the closures at SJL-9.4 (cutover/), and the run of the rule at SJL-9.6: part A's hosted runs imported unchanged (base/hosted/, after/hosted/) with the comparisons, the C1 table and the re-runs (after/parta/), part B's check runs and dataset comparison (base/datasets/, after/datasets/), part C's twins (base/fuel-parity.log, after/fuel-parity.log), the commit conditions (after/commits/), every local record (base/local/, after/local/) and the scripts as run (after/scripts/). Nothing is accepted.",
