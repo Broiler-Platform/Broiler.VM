@@ -719,14 +719,22 @@ tried, and completes with the base's answer where it completes."
 ## 9. Exclusions
 
 Sections 3 to 8 are added as the bundle's runs are taken. The exclusions keep this section's number, where rule H2
-reads an exclusion's definition, as in bundles `sjl-3-001` to `sjl-12-001`.
+reads an exclusion's definition, as in bundles `sjl-3-001` to `sjl-12-001`. *(Added 2026-11-11, at SJL-9.6's close-out:
+EX-134, for the code SJL-9.4 moved out of this component's assurance coverage, joins the table, and the row of SJL-9.1
+is kept as written.)*
 
 | ID | Status | Exclusion |
 |---|---|---|
 | (none) | | No exclusion is defined at SJL-9.1, and none is planned. A later exclusion takes the next free identifier and is defined in this table |
+| EX-134 | Open | **The Intl code that left this component's assurance coverage** *(added 2026-11-11, at SJL-9.6's close-out, as JSD-0085 section 11 names it)*. The types and members rule I5 registers for SJL-9.4 (`src/tests/Broiler.VM.Architecture.Tests/retired-members.json`), with the bodies JSD-0085 section 8 names, left the JavaScript family's sources at SJL-9.4's cut-over, the after commit `68cad8b`: `JsLocaleTag.cs`, `JsDecimal.cs`, `JsPluralRule.cs`, `JsNumberData.cs`, `JsNumberFormatter.cs`, `JsDateData.cs`, `JsDatePatternGenerator.cs`, `JsDateIntervalFormat.cs`, `JsDateTimeFormatter.cs`, `JsZoneNames.cs` and `JsLocaleInfo.cs` whole, with every type in them; every `JsIntlTables` decoder and its lazy; the cores of `JsRealm.Intl`, `JsRealm.Locale`, `JsRealm.NumberFormat`, `JsRealm.PluralRules`, `JsRealm.RelativeTimeFormat`, `JsRealm.ListFormat`, `JsRealm.DisplayNames`, `JsRealm.DateTimeFormat` (with `JsTemporalDateFormats`) and `JsRealm.DurationFormat`; the fields of the Intl objects the library's records replace; and the two renamed members, `JsRealm.DateTimeComponents` and `JsRealm.DateTimeValue`. What computes them now is `Broiler.ECMAScript.Intl`, namespace `Broiler.ECMAScript.Intl`. The home's own assurance covers it in the Broiler.JS repository: `Broiler.ECMAScript/hairs.config.json` lists the library's project, and its generated manifest, `Broiler.ECMAScript/hairs.manifest.json`, lists every unit of the library's assembly with an annotation on each relevant declaration, checked in CI (rule SL8). No rule of this component reads those units, their human review is the home's and not `HUMAN_REVIEW.md`'s, and this component's assurance figures no longer count them. The adapters of JSD-0085 section 3 and its seams of section 2 (`JsIntlDataSet.cs` and `JsIntlTables`' `LocaleData`, `FormatData` and `DateTimeData`), the Intl objects with their option reads, coercion, errors, charges and locale policies, the data this family hands the library through `IJsIntlData` and `JsCldrTables.g.cs`, the reference datasets under `src/tests/cldr/`, and `NewCollator` and `CollatorKeyData` (collation, SJL-17's) and `JsRealm.Segmenter.cs` (SJL-7's) stay in this component and stay covered. EX-125 and EX-127 to EX-133 say the same of the earlier areas |
 
 *(Noted 2026-11-11, at SJL-9.6's run of the rule.)* No part of the rule needs an exclusion, and none is defined by it:
 parts A, B and C are MET without one (sections 6 to 8). The ledger's entry of 2026-11-04 also lists for SJL-9.6 "the
 exclusion for the code that left this component's assurance coverage", as EX-125 and EX-127 to EX-133 say for the
 earlier areas. It is no part of the rule, and is not defined here; it takes the next free identifier when it is.
 The table above is left as written.
+
+*(Noted 2026-11-11, at SJL-9.6's close-out.)* That exclusion is now defined, as EX-134 in the table above, the next
+free identifier: EX-133 is bundle `sjl-13-001`'s, and no bundle defines a later one. It is still no part of the rule:
+parts A, B and C read nothing of this component's assurance coverage, and no verdict of sections 6 to 8 moves with it.
+The note above is left as written.

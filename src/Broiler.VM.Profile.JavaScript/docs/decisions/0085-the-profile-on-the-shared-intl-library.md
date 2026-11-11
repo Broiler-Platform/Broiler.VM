@@ -304,6 +304,12 @@ runs are SJL-9.6's at the base and after commits. No figure of them is quoted he
 - **Assurance.** Regenerated at each commit; every human line stays PENDING. The code that left this component's
   assurance coverage is the home's to cover, as EX-125 to EX-132 say of the earlier areas; SJL-9.6 files its
   exclusion in bundle `sjl-9-001`, where rule H2 reads a definition.
+  *(Noted 2026-11-11, at SJL-9.6's close-out.)* SJL-9.6 files it as EX-134, in bundle
+  [`sjl-9-001`](../../../../docs/evidence/sjl-9-001/README.md)'s section 9: the code section 8 names, which
+  `Broiler.ECMAScript.Intl` computes now and the home's own assurance covers in the Broiler.JS repository. The earlier
+  areas' exclusions it reads with are EX-125 and EX-127 to EX-133: the bullet's "EX-125 to EX-132" takes in EX-126,
+  the Android root's closure, which is no area's, and EX-133, bundle `sjl-13-001`'s, was filed after this record. The
+  bullet above is left as written.
 - **Packages.** `packages.md` and `support.md` name JS-10-015 ([JSC-324](../roadmap.corrections.md#jsc-324)).
 - **Support.** `support.md`'s row of proposals not provided names `canonical-tz` among the five admitted, with a dated
   note.
