@@ -13,8 +13,10 @@ collection in its first line where the collector wrote sjl-7-001's; every other 
 it. **What it is for:** the ledger's entry of 2026-11-04 and JSD-0085 section 11 leave the closures at the after commit
 to SJL-9.6 (exit clause 14, "Every root is published and run in three modes"), and rules K3, K4 and I7 read closures
 of this kind. **What it is not:** a run of this bundle's rule, which reads no closure; and the evidence the composition
-register's rows name, which since SJL-13.3's step 1 is bundle `sjl-13-001`'s `after/publication/closures/`, a later
-tree. No register row moves.
+register's rows name. The rows of the four roots that compile, SliceCompiler, Conformance, Cli and PolyglotCli, name
+bundle `sjl-13-001`'s `after/publication/closures/` since SJL-13.3's step 1, a later tree; the execution-only root's
+row names [`cutover/closures/`](../cutover/closures/), whose closure and catalog for that root this collection
+reproduces byte for byte (below). No register row moves.
 
 ## Which commit, and how it was taken
 
@@ -64,26 +66,35 @@ differs, each publish and run section with timings masked:
   and every mode: the after commit's roots carry the same assemblies, print the same catalogs and carry the same
   admitted packages, by version, content hash, archive hash and source commit, as SJL-9.4's collection from `b3fd2ba`.
 - **Each Native AOT image record has a new digest** (`mstat.sha256`). The records are not retained here or there, so
-  their bytes cannot be compared. The cause is not the code, whose product sources are those the earlier collections
-  read: the retake from `b3fd2ba` gave every record a new digest on the same SDK, as `cutover/README.md` records, and
-  this collection was taken on .NET SDK 10.0.404 where `cutover/` was taken on 10.0.401. Rule I3 read the records
-  themselves (below).
+  their bytes cannot be compared. The cause is the toolchain, not the code, whose product sources are those the
+  earlier collections read: this collection was taken on .NET SDK 10.0.404, whose Native AOT compiler is
+  `Microsoft.DotNet.ILCompiler` 10.0.15, the only version in this machine's package cache, where `cutover/` was taken
+  on 10.0.401 with the compiler 10.0.12 that `cutover/README.md` names. (`cutover/README.md`'s retake from `b3fd2ba`,
+  which also gave every record a new digest, was at other product sources than the first collection's, `2b798a7`'s,
+  so it shows nothing about reproducibility.) On one SDK a record reproduces: at this branch's review, a re-take of
+  the PolyglotCli root's Native AOT publish from a fresh clean checkout of the after commit gave its record this
+  collection's digest; that re-take is not retained here, and nothing above rests on it. Rule I3 read four of the
+  records themselves (below).
 - **The transcripts** have the same lines in the same sections, every publish, run and exit in the same order with
-  the same exit codes, and differ only in three ways: timings (restore and build times, each check's elapsed time and
-  the run times some checks print beside their answers); the heap plateau check's readings; and, in the publish
-  sections alone, the order in which the restore and the build print their per-project lines, which their parallel
-  nodes decide. The slice compiler's checks pass in every mode, with three not run on this machine and claimed by
-  nothing, and the execution-only root's in every mode, as at `cutover/`. Five of the slice compiler's checks print
-  stack and handler addresses, which differ from run to run, and are masked too.
+  the same exit codes, and differ only in four ways: timings (restore and build times, each check's elapsed time and
+  the run times some checks print beside their answers); the heap plateau check's readings; the stack and handler
+  addresses five of the slice compiler's checks print, which differ from run to run; and, in the publish sections
+  alone, the order in which the restore and the build print their per-project lines, which their parallel nodes
+  decide. The slice compiler's checks pass in every mode, with three not run on this machine and claimed by nothing,
+  and the execution-only root's in every mode, as at `cutover/`. `compare.txt`'s counts of the lines that "differ in
+  timings or the plateau check's readings alone" take in the address lines too, which its script masks with them;
+  it is kept as run.
 
 So the after commit's closures are SJL-9.4's, and no difference is unattributed.
 
 ## Rule I3 on the image records
 
-The image records the collection left were placed under the checkout's `src/`, where rule I3's test reads every
-`mstat-<root>.mstat`, and the whole architecture suite ran there, as SJL-9.4's collection read them and bundle
-sjl-7-001's `rules` step does ([`scripts/i3-read.sh.txt`](scripts/i3-read.sh.txt)); then they were removed. Each step
-ran behind the gate.
+The five image records the collection left were placed under the checkout's `src/`, where rule I3's test reads each
+`mstat-<root>.mstat` whose `<root>` names a `Broiler.VM.Composition.JavaScript.*` root, and the whole architecture
+suite ran there, as bundle sjl-7-001's `rules` step does ([`scripts/i3-read.sh.txt`](scripts/i3-read.sh.txt)); then
+they were removed. The test so reads four of them, ExecutionOnly's, SliceCompiler's, Conformance's and Cli's;
+PolyglotCli's, whose root is `Broiler.VM.Composition.PolyglotCli`, was placed with them and is outside what it reads.
+Each step ran behind the gate.
 - The first attempt built the architecture tests' project alone, and four tests of rules B3, B5 and B5c, which read
   every shipping assembly the solution builds, failed for want of those builds; I3's test passed
   ([`local/i3-architecture.out.txt`](local/i3-architecture.out.txt)). It is kept, and the script was changed to build
@@ -91,6 +102,7 @@ ran behind the gate.
 - The second built the solution in Release with `--disable-build-servers`, with no warning
   ([`local/i3-build-solution.out.txt`](local/i3-build-solution.out.txt)), and ran the suite with the records in place:
   every test passed, I3's among them ([`local/i3-architecture-2.out.txt`](local/i3-architecture-2.out.txt)). So rule I3
-  holds on each root's Native AOT image at the after commit as on its project graph: no compiler-free root holds a
+  holds on the Native AOT image of each of the four JavaScript roots it reads at the after commit as on its project
+  graph: no compiler-free root holds a
   shared frontend assembly, and no root carries optional data that `docs/compositions.md` does not declare in its
   closure.

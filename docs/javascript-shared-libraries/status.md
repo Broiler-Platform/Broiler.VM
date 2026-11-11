@@ -3273,10 +3273,11 @@ left in this repository after it; each is done here:
   the JIT, trimming and Native AOT from a clean checkout of `68cad8b`, by the method the bundle's `cutover/` records
   for SJL-9.4's collection, into its [`after-closures/`](../evidence/sjl-9-001/after-closures/README.md). Every
   closure, every catalog and every admitted package's identity is SJL-9.4's byte for byte, and every other difference
-  is attributed: the image records' digests, as at SJL-9.4's own retake, on a newer SDK; and, in the transcripts,
+  is attributed: the image records' digests, to a newer SDK and Native AOT compiler; and, in the transcripts,
   timings, the heap plateau check's readings, printed addresses and the order of the build's per-project lines. Rule
-  I3 holds on the image records. The composition register's rows, which name bundle `sjl-13-001`'s later closures,
-  do not move.
+  I3 holds on the image records of the roots it reads. The composition register's rows do not move: the compiling
+  roots' rows name bundle `sjl-13-001`'s later closures, and the execution-only root's row names SJL-9.4's, which the
+  closures at the after commit reproduce for that root byte for byte.
 - **The exclusion** for the Intl code that left this component's assurance coverage at SJL-9.4's cut-over is EX-134,
   defined in the bundle's section 9 in the form of the earlier areas' exclusions: what computes that code now is
   `Broiler.ECMAScript.Intl`, which the home's own assurance covers in Broiler.JS. JSD-0085 names it by a dated note.

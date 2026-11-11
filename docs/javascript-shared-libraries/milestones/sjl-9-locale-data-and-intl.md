@@ -306,15 +306,15 @@ key's primary and an L18 key's language, and of class Z8's rewritten header, sta
 records each ruling against its reading, and parts A, B and C's verdicts now rest on the owner's rulings; no verdict
 moves, and the bundle's other readings stay as taken, unruled. This meets no clause. The text above is left as written.
 
-*(Noted 2026-11-11, at SJL-9.6's close-out in Broiler.VM.)* The rest of SJL-9.6 in Broiler.VM, which the ledger's
-entry of 2026-11-04 lists, is taken: bundle `sjl-9-001`'s
-[`after-closures/`](../../evidence/sjl-9-001/after-closures/README.md) holds every root published and run under the
-JIT, trimming and Native AOT at the after commit, each closure, catalog and admitted package's identity the same as
-at SJL-9.4's collection, with rule I3 holding on the image records; its section 9 defines EX-134 for the Intl code that
-left this component's assurance coverage; and the locales and time-zone datasets' READMEs and the time-zone
-divergences' third group header are brought up to the cut-over, with no data line, program or retained answer moved.
-SJL-9.6 has nothing left in Broiler.VM, and SJL-9's exit reading is next. This bears on clauses 14 and 15's evidence
-and meets no clause; nothing is accepted. The text above is left as written.
+*(Noted 2026-11-11, at SJL-9.6's close-out in Broiler.VM.)* The rest of SJL-9.6 in Broiler.VM, which the ledger's entry
+of 2026-11-04 lists, is taken: bundle `sjl-9-001`'s
+[`after-closures/`](../../evidence/sjl-9-001/after-closures/README.md) holds every root published and run under the JIT,
+trimming and Native AOT at the after commit, each closure, catalog and admitted package's identity the same as at
+SJL-9.4's collection, with rule I3 holding on the image records of the roots it reads; its section 9 defines EX-134 for
+the Intl code that left this component's assurance coverage; and the locales and time-zone datasets' READMEs and the
+time-zone divergences' third group header are brought up to the cut-over, with no data line, program or retained answer
+moved. SJL-9.6 has nothing left in Broiler.VM, and SJL-9's exit reading is next. This bears on clauses 14 and 15's
+evidence and meets no clause; nothing is accepted. The text above is left as written.
 
 ---
 

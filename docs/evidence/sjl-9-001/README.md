@@ -460,12 +460,14 @@ reproduces every closure, and why the collection from `b3fd2ba` stays.)*
 *(Noted 2026-11-11, at SJL-9.6's close-out.)* The closures of every JavaScript root in three modes are taken again at
 the after commit `68cad8b`, from a clean checkout of it, by the same step and method, into
 [`after-closures/`](after-closures/README.md), beside `cutover/`. Every closure, every catalog and every admitted
-package's identity is `cutover/closures/`'s byte for byte; each Native AOT image record has a new digest, as at the
-retake from `b3fd2ba`, on a newer SDK; and the transcripts differ in timings, the heap plateau check's readings, the
-addresses five checks print and the order of the build's per-project lines alone
-([`after-closures/compare.txt`](after-closures/compare.txt)). Rule I3, run there on the image records, holds. This
-too is no run of the rule, and the composition register's rows, which name bundle `sjl-13-001`'s later closures since
-SJL-13.3's step 1, do not move. The paragraph above is left as written.
+package's identity is `cutover/closures/`'s byte for byte; each Native AOT image record has a new digest, on a newer
+SDK and Native AOT compiler; and the transcripts differ in timings, the heap plateau check's readings, the addresses
+five checks print and the order of the build's per-project lines alone
+([`after-closures/compare.txt`](after-closures/compare.txt)). Rule I3, run there on the image records of the four
+roots it reads, holds. This too is no run of the rule, and the composition register's rows do not move: the four
+compiling roots' rows name bundle `sjl-13-001`'s later closures since SJL-13.3's step 1, and the execution-only
+root's row names `cutover/closures/`, whose closure and catalog for that root `after-closures/` reproduces byte for
+byte. The paragraph above is left as written.
 
 ## 5. Engine-level vectors on the pin at corpus revision 38 (SJL-9.6)
 
