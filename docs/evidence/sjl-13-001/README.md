@@ -622,15 +622,23 @@ own path, as the earlier records of this bundle and of `sjl-12-001` do.
 | Part | Verdict | What it reads |
 |---|---|---|
 | A, test262 in both forms | **MET** | [`after/judgement/parta/`](after/judgement/parta/): `completeness.txt`, `compare-wide-bytecode.log`, `compare-wide-native.log`, `changed-verdicts.tsv`, `kindF-gated/`; [`after/parta-rerun-pinned/`](after/parta-rerun-pinned/), [`after/parta-race-pinned/`](after/parta-race-pinned/) |
-| B, artifact identity | **MET**, on readings 3, 6 and 11 of section 5 | [`after/judgement/partb/`](after/judgement/partb/): `part-b-classes.tsv.gz`, `part-b-summary.txt`, `part-b-classify.py`, `stage-tags-*.tsv.gz`, `binder-sites.tsv`; part B's run 1 at each commit; [`controls/partb/`](controls/partb/) |
-| C, determinism and the front end's gates | **MET**, on reading 2 of section 5 | [`after/judgement/partc/`](after/judgement/partc/); `after/local/checks.log.gz`, `base/local-idle/checks.log.gz`; [`controls/`](controls/) K1 to K4 |
+| B, artifact identity | **MET**, on readings 3, 6 and 11 of section 5, as the owner ruled on 2026-11-11 | [`after/judgement/partb/`](after/judgement/partb/): `part-b-classes.tsv.gz`, `part-b-summary.txt`, `part-b-classify.py`, `stage-tags-*.tsv.gz`, `binder-sites.tsv`; part B's run 1 at each commit; [`controls/partb/`](controls/partb/) |
+| C, determinism and the front end's gates | **MET**, on reading 2 of section 5, as the owner ruled on 2026-11-11 | [`after/judgement/partc/`](after/judgement/partc/); `after/local/checks.log.gz`, `base/local-idle/checks.log.gz`; [`controls/`](controls/) K1 to K4 |
 | D, the front end's rules | **MET** | [`after/rules/`](after/rules/), [`controls/i5/`](controls/i5/), [`after/n37/`](after/n37/), [`controls/n37/`](controls/n37/); the base, read: [`base/rules-idle/`](base/rules-idle/) |
 | E, the registry and its mapping | **MET** | `after/local/parte-mapping*.log`, [`controls/parte/`](controls/parte/) |
 | F, the two tokenizers | **MET** | `after/local/checks.log.gz`, [`controls/retake/`](controls/retake/) |
 | G, source fuzzing | **MET** | `after/local/fuzz-*.log`, `controls/partg-control-wide.log`, [`controls/retake/partg-again/`](controls/retake/partg-again/) |
-| H, the syntax vectors | **MET**, on reading 7 of section 5 | [`after/judgement/parth/part-h-vectors.tsv`](after/judgement/parth/part-h-vectors.tsv); `base/local/vectors-run.tsv.gz`, `after/local/vectors-run.tsv.gz`, `after/local/vectors-control.log` |
+| H, the syntax vectors | **MET**, on reading 7 of section 5, as the owner ruled on 2026-11-11 | [`after/judgement/parth/part-h-vectors.tsv`](after/judgement/parth/part-h-vectors.tsv); `base/local/vectors-run.tsv.gz`, `after/local/vectors-run.tsv.gz`, `after/local/vectors-control.log` |
 | I, the fuel-parity twins | **MET** | [`base/fuel-parity.log`](base/fuel-parity.log), [`after/fuel-parity.log`](after/fuel-parity.log), [`after/parti/`](after/parti/) |
 | J, the compile measurement (no gate clause, decision D24) | **NOT MET** | [`measurement/summary.txt`](measurement/summary.txt), `measurement/conditions.tsv`, `measurement/runs.tsv` |
+
+*(Noted 2026-11-11, at the owner's rulings of that day, which section 5 records.)* The owner ruled on readings 2, 3,
+6, 7 and 11 of section 5, each time taking the reading task 7.3 took there, so no verdict moves. The table's rows for
+parts B, C and H read "**MET**, on readings 3, 6 and 11 of section 5", "**MET**, on reading 2 of section 5" and
+"**MET**, on reading 7 of section 5"; each now ends ", as the owner ruled on 2026-11-11". The headings of parts B and
+H read "Part B: MET, on readings 3, 6 and 11 of section 5" and "Part H: MET, on reading 7 of section 5", and now end
+the same way. Part C's heading read "Part C: MET", without the reading the table named; it now reads "Part C: MET, on
+reading 2 of section 5, as the owner ruled on 2026-11-11", as the table does. The parts' text is left as written.
 
 ### Part A: MET
 
@@ -679,7 +687,7 @@ C6 and is listed, and the native pair meets the same conditions" (the MET line a
 - **The floors** decide nothing here. The harness's floor lines are retained in the imported artifacts; the native
   floor's `atMost unsupported` row was not re-set at the after commit, which section 5 records as a finding.
 
-### Part B: MET, on readings 3, 6 and 11 of section 5
+### Part B: MET, on readings 3, 6 and 11 of section 5, as the owner ruled on 2026-11-11
 
 "MET if and only if all three runs are complete, the control is reported as stated, every difference is in R, R2, S, F,
 L, L2 or N and is listed, and B4 and the census show none but R" (as the revisions of 2026-11-02 and 2026-11-09 read it).
@@ -741,7 +749,7 @@ L, L2 or N and is listed, and B4 and the census show none but R" (as the revisio
   identical, byte for byte, at the base and the after commit.
 - **No accepted input's bytes differ but P37's.**
 
-### Part C: MET
+### Part C: MET, on reading 2 of section 5, as the owner ruled on 2026-11-11
 
 "MET if and only if every accepted input gives one hash in all four compilations, the first four checks rows pass at
 both commits, the fifth passes at the after commit, and the four controls fail as stated and pass after their revert."
@@ -837,7 +845,7 @@ stated" (the revision of 2026-11-09b).
   control's once the findings directory its own sessions wrote is left out, as `controls/retake/note.txt` explains.
 - The base's sessions are retained and not judged.
 
-### Part H: MET, on reading 7 of section 5
+### Part H: MET, on reading 7 of section 5, as the owner ruled on 2026-11-11
 
 "MET if and only if every vector's verdict after is match or classified-divergence, every change is in C1 and is listed,
 and the control is reported."
@@ -1006,6 +1014,57 @@ quoted here.
 - Section 4 read "`<scratch>` and `<tmpfs>` in the records stand for ...", which most records, not all, follow, and
   "What task 7.3 took itself" came before the commits' conditions, which now open the section.
 - Readings 10 and 11 are new.
+
+**The owner's rulings of 2026-11-11** *(2026-11-11)*. On 2026-11-11 the owner ruled on readings 2, 3, 6, 7 and 11,
+each time taking the reading task 7.3 took; the alternative named with each was not taken. Each of the five is now the
+owner's own dated answer, and this section's opening, "Each reading below was taken by task 7.3 under the owner's
+standing direction of 2026-10-18; none is the owner's own dated answer, and the owner may rule otherwise.", reads for
+them with this paragraph. The readings above are left as written.
+- **Reading 2, K4's "must still make the fifth row fail" (part C): "Narrowed run counts".** The reading reads "Taken:
+  the adjunct shows the fifth row failing under K4, and the configured run's death is, by inference from the order of
+  the checks and the overflow's frames in the adapter, the same defect, the height charge removed, met earlier in the
+  run; nothing in the output names the input." The owner ruled that the harness-narrowed adjunct, under the same
+  library patch, meets "must still make the fifth row fail", and that the configured run's stack overflow is a second
+  defect of the same patch. On that overflow the ruling's words take the place of the reading's inference that it is
+  "the same defect, the height charge removed, met earlier in the run"; the reading's text is left as written, and
+  part C's verdict reads the adjunct. Not taken: "Only configured run", under which part C would be NOT MET until a
+  dated revision named the adjunct; no such revision is needed.
+- **Reading 3, class R's "unchanged between the registry commit and the after commit" (part B): "Not undone".** The
+  reading reads "Taken: the renumbering is not undone (no after diagnostic carries the base's code at a renumbered
+  place; none does)." The owner ruled that "unchanged between the registry and the after commit" means that the
+  renumbering is not undone, and that later changes to the same input are classified on their own. Not taken: "Whole
+  list unchanged".
+- **Readings 6 and 11 (part B): "Accept both".** Reading 6 reads "Taken: between the registry and the after commit
+  only R2's pairs, from the row of the library's shared code (the pair the mapping names "until the after commit");
+  class R's pairs are renumberings already made at the registry commit, each at the site that serves its rule alone."
+  Reading 11 reads "Taken: for those, JSD-0087's section 1, which states that the commit "changed exactly the paths the
+  area rule's revision of 2026-11-08 lists for it, and in each only what that list allows", and the condition holds."
+  The owner ruled that the code pairs class N reads between the registry and the after commit are taken only from rows
+  of the library's shared code (R2's), and that the registry commit's code-for-code swaps standing at the sites
+  decision D12 names rests on JSD-0087's statement, every changed line having been read path by path. This record
+  reads "Accept both" as taking reading 11 whole: the lines of `frontend-mapping.tsv` and of the stage table's copy,
+  which reading 11 also rests on JSD-0087's statement, rest on it as the reading took them. It reads the ruling's
+  "every changed line having been read path by path" as section 4's git read of the registry commit's diff
+  (`registry-diff-read.txt`, "a git read of every line the registry commit's diff changes, path by path"); what that
+  read does not show, that each swap stands at a site decision D12 names and what those lines hold against the list,
+  is what rests on JSD-0087's statement, and section 4's "Not read here" stays as written. Not taken: "Read every site
+  first".
+- **Reading 7, "match (divergence no longer holds)" (part H): "Counts as match".** The reading reads "Taken:
+  the verdict is match, which the runner annotates because the vector carries a divergence field that no longer holds,
+  as C1 foresees ("a divergence field that no longer holds is retired by the next corpus revision")." The owner ruled
+  that "match (divergence no longer holds)" counts as a match, and that the corpus revision retiring those `syntax`
+  divergence fields follows, at SJL-13's WP9.4, as the owner named it (part H's "the corpus's next revision
+  (decision D25)"). Not taken: "Verdict of its own".
+
+**Parts B, C and H's verdicts now rest on the owner's rulings, not on open readings**: part B, MET, on readings 3, 6
+and 11; part C, MET, on reading 2; part H, MET, on reading 7. No verdict moves, and section 4 marks the three by a
+dated note. **Readings 1, 4, 5, 8, 9 and 10 stay open**: the owner has not ruled on them, and each stands as task 7.3
+took it under the standing direction of 2026-10-18, none the owner's own dated answer. This section marks none of them
+with the words that a part's verdict turns on it, but reading 9's alternative, "void, and taken again", would void
+parts I and J, which the reading takes as not void. The paragraph "What step 2 (WP8) needs next" reads with this: of
+what it names before bundle `sjl-13-002`'s runs, the rulings on readings 2, 3, 6, 7 and 11 are given, and, the owner
+having taken reading 2, no dated revision naming K4's narrowed harness is needed; the owner's ruling on the open
+readings and the native floor's row (finding 1) remain.
 
 ## 9. Exclusions
 
