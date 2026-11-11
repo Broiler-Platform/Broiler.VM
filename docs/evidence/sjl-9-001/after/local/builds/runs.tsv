@@ -1,0 +1,3 @@
+build-SliceCompiler-after	rc=0	wall=39.0s maxrss=737MB	started=2026-11-11T10:12:56Z	ended=2026-11-11T10:13:35Z
+build-Cli-after	rc=0	wall=7.5s maxrss=228MB	started=2026-11-11T10:15:07Z	ended=2026-11-11T10:15:15Z
+build-Conformance-after	rc=0	wall=8.1s maxrss=237MB	started=2026-11-11T10:15:56Z	ended=2026-11-11T10:16:05Z

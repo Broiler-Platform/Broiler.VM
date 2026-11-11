@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# hashes.sh: base/hashes.txt and after/hashes.txt of bundle sjl-9-001, over every file of that folder the index holds,
+# hosted/ (hashed by its own hashes.txt) and the file itself excepted. Run from the worktree after staging.
+cd /home/user/vm-sjl96/docs/evidence/sjl-9-001
+for side in base after; do
+  git ls-files -- $side | sed "s|^docs/evidence/sjl-9-001/||" | grep -v "^$side/hosted/" | grep -v "^$side/hashes.txt$" | sed "s|^$side/||" | LC_ALL=C sort > /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96/hl-$side.txt
+  ( cd $side && xargs -a /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96/hl-$side.txt -d '\n' sha256sum > hashes.txt && sha256sum -c --quiet hashes.txt && echo "$side: $(wc -l < hashes.txt) files hashed" )
+  git add $side/hashes.txt
+done

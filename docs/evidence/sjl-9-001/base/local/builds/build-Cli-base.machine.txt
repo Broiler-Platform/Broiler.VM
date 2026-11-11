@@ -1,0 +1,16 @@
+=== build-Cli-base before
+time: 2026-11-11T10:03:22Z
+loadavg: 0.99 0.51 0.19 1/110 2947
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23454 MiB free
+procs-matching:
+=== build-Cli-base after (rc=0 started=2026-11-11T10:03:23Z)
+time: 2026-11-11T10:03:30Z
+loadavg: 1.63 0.66 0.24 1/112 3255
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23454 MiB free
+procs-matching:

@@ -1,0 +1,16 @@
+=== build-SliceCompiler-base before
+time: 2026-11-11T10:01:49Z
+loadavg: 0.17 0.06 0.02 1/110 878
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23454 MiB free
+procs-matching:
+=== build-SliceCompiler-base after (rc=0 started=2026-11-11T10:01:49Z)
+time: 2026-11-11T10:02:31Z
+loadavg: 2.29 0.60 0.20 1/107 1436
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23454 MiB free
+procs-matching:

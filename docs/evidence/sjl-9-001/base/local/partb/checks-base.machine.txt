@@ -1,0 +1,16 @@
+=== checks-base before
+time: 2026-11-11T10:05:18Z
+loadavg: 0.68 0.65 0.28 1/111 5512
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23454 MiB free
+procs-matching:
+=== checks-base after (rc=0 started=2026-11-11T10:05:19Z)
+time: 2026-11-11T10:10:34Z
+loadavg: 0.89 0.86 0.49 1/111 32012
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 23454 MiB free
+procs-matching:

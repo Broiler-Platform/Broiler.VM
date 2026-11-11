@@ -1,0 +1,36 @@
+# part B's checks at 3b33530d354431675667087a0044648b8f617c2e, as checks.log beside this file prints them: every check of IntlChecks.cs whose name begins intl/i0/ to intl/i4/, tzdb/ or temporal/, as the base commit names them (a template name stands for every check it names)
+ok   intl/i0/a-door-handed-no-data-builds-no-intl: answered `undefined:1`: every surface the composition could build, and Intl is not one without its data
+ok   intl/i0/a-door-naming-intl-without-data-is-refused: the door was refused, naming the data it needs, and DescriptorComposing handed the data built
+ok   intl/i0/canonicalization-replaces-aliases: answered `zh-Hans-CN-t-ca-u-ca-x-t-u gss ru-RU hy-AM sl-1994-biske-rozaj und-u-kb und-u-ca-ethioaa en-t-he und-u-rg-no50` (`zh-Hans-CN-t-ca-u-ca-x-t-u gss ru-RU hy-AM sl-1994-biske-rozaj und-u-kb und-u-ca-ethioaa en-t-he und-u-rg-no50` expected)
+ok   intl/i1/german-and-english-orderings-match-icu: all 27 collators order the words as ICU 77.1 did
+ok   intl/i1/german-phonebook-and-search-order: answered `A,Ab,Ä,Af,b,od,ö,off|A,Ä,Ab,Af,b,ö,od,off|AE,Ä|de-u-co-phonebk` (`A,Ab,Ä,Af,b,od,ö,off|A,Ä,Ab,Af,b,ö,od,off|AE,Ä|de-u-co-phonebk` expected): phonebook puts A-umlaut with AE, the root with A, and German search equates them but for the accent
+ok   intl/i1/the-root-collation-orders-collationtest-non-ignorable: 206297 consecutive pairs of CollationTest_CLDR_NON_IGNORABLE_SHORT.txt compared in order under { sensitivity: 'variant' }
+ok   intl/i1/the-root-collation-orders-collationtest-shifted: 227808 consecutive pairs of CollationTest_CLDR_SHIFTED_SHORT.txt compared in order under { sensitivity: 'variant', ignorePunctuation: true }
+ok   intl/i2/german-and-english-numbers-match-icu: all 2241 lines answer as ICU 77.1 did, 24 of them as the divergences name
+ok   intl/i3/german-and-english-dates-match-icu: all 1430 lines answer as ICU 77.1 did, 352 of them as the divergences name
+ok   intl/i4/a-variants-option-is-lowered-by-ascii-rules: answered `RangeError RangeError en-1994-kaaaa` (`RangeError RangeError en-1994-kaaaa` expected)
+ok   intl/i4/german-and-english-display-names-match-icu: all 823 lines answer as ICU 77.1 did, 64 of them as the divergences name
+ok   intl/i4/german-and-english-durations-match-icu: all 553 lines answer as ICU 77.1 did, 192 of them as the divergences name
+ok   intl/i4/german-and-english-lists-match-icu: all 481 lines answer as ICU 77.1 did, 36 of them as the divergences name
+ok   intl/i4/german-and-english-plurals-match-icu: all 1299 lines answer as ICU 77.1 did, 123 of them as the divergences name
+ok   intl/i4/german-and-english-relative-times-match-icu: all 2460 lines answer as ICU 77.1 did, 96 of them as the divergences name
+ok   intl/i4/locales-match-icu: all 780 lines answer as ICU 77.1 did, 132 of them as the divergences name
+ok   intl/i4/segments-match-icu: all 118 lines answer as ICU 77.1 did, 2 of them as the divergences name
+ok   intl/i4/the-segmenter-passes-grapheme-break-test: 766 lines of GraphemeBreakTest.txt segmented at the boundaries they mark
+ok   intl/i4/the-segmenter-passes-word-break-test: 1944 lines of WordBreakTest.txt segmented at the boundaries they mark
+ok   intl/i4/the-segmenter-passes-sentence-break-test: 512 lines of SentenceBreakTest.txt segmented at the boundaries they mark
+ok   temporal/t1/a-day-span-a-zone-skips-is-a-range-error: answered `RangeError RangeError RangeError PT16H` (`RangeError RangeError RangeError PT16H` expected)
+ok   temporal/t1/a-day-window-a-zone-skips-is-a-range-error: answered `RangeError RangeError RangeError PT16H15M` (`RangeError RangeError RangeError PT16H15M` expected)
+ok   temporal/t1/a-door-handed-no-data-builds-no-temporal: answered `undefined:undefined`: every surface the composition could build, and Temporal is not one without the data
+ok   temporal/t1/a-duration-designator-is-upper-cased-by-ascii-rules: answered `RangeError PT1H2M3S` (`RangeError PT1H2M3S` expected)
+ok   temporal/t1/a-year-past-2-to-the-53-is-a-range-error: answered `RangeError RangeError RangeError RangeError RangeError RangeError +275760-09-13` (`RangeError RangeError RangeError RangeError RangeError RangeError +275760-09-13` expected)
+ok   temporal/t1/data-without-the-tz-release-reads-its-zones: the family's data answered `-04:00 3 Asia/Kolkata`, and the same data without the release `-04:00 3 Asia/Kolkata`
+ok   temporal/t1/temporal-matches-the-reference-polyfill: all 1629 lines answer as the reference polyfill did, 0 of them as the divergences name
+ok   temporal/t1/temporal-without-intl-and-bigint-is-refused: 2 of the 2 descriptors lacking Intl or BigInt were refused, and one naming all three answered `bigint`
+ok   temporal/t2/intl-over-temporal-matches-the-reference-polyfill: all 1233 lines answer as the reference polyfill did, 82 of them as the divergences name
+ok   temporal/t3/calendar-conversions-match-icu4x: all 2055 conversions answer as ICU4X 2.3.0 did
+ok   temporal/t3/calendars-match-the-reference-polyfill: all 3999 lines answer as the reference polyfill did, 70 of them as the divergences name
+ok   temporal/t4/calendar-formats-match-the-reference-polyfill: all 5951 lines answer as the reference polyfill did, 1395 of them as the divergences name
+ok   temporal/t5/zone-names-match-the-reference-polyfill: all 2713 lines answer as the reference polyfill did, 275 of them as the divergences name
+ok   tzdb/time-zone-offsets-match-icu: all 610 lines answer as ICU 77.1 did, 51 of them as the divergences name
+slice-compiler exit code 0

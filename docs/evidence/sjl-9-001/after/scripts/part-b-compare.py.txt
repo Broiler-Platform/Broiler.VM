@@ -1,0 +1,36 @@
+"""Part B of bundle sjl-9-001 (SJL-9.6): each named check's line at the after commit beside the base's, the two
+files.sha256 side by side, and `git diff --name-only` between the two commits over src/tests/cldr/ and
+src/tests/temporal/ (bundle sjl-8-001's after-datasets comparison, restated). Reads files and git; runs nothing.
+usage: part-b-compare.py <repo> <base> <after> <base-datasets> <after-datasets> <out>"""
+import subprocess, sys
+repo, base, after, bd, ad, out = sys.argv[1:7]
+def rd(p): return open(p, encoding='utf-8').read().splitlines()
+bn, an = rd(bd + '/named-checks.txt')[1:], rd(ad + '/named-checks.txt')[1:]
+def name(l): return l[5:].split(':', 1)[0] if l.startswith(('ok  ', 'FAIL', 'fail')) else l
+bmap = {name(l): l for l in bn}; amap = {name(l): l for l in an}
+lines = ['# part B, SJL-9.6: the named checks at the base %s and the after commit %s, line by line, and the dataset files' % (base, after), '', '## the named checks (verdict: base, after; line identical or not)']
+same = diff = 0
+for k in sorted(set(bmap) | set(amap)):
+    b, a = bmap.get(k, '(absent)'), amap.get(k, '(absent)')
+    vb, va = b.split()[0], a.split()[0]
+    if b == a:
+        same += 1; lines.append('same\t%s\t%s\t%s' % (vb, va, k))
+    else:
+        diff += 1; lines += ['DIFFERS\t%s\t%s\t%s' % (vb, va, k), '  base:  ' + b, '  after: ' + a]
+lines.append('# %d lines identical, %d differ' % (same, diff))
+bf, af = rd(bd + '/files.sha256'), rd(ad + '/files.sha256')
+lines += ['', '## files.sha256 (%d files at the base, %d after)' % (len(bf), len(af))]
+bd_ = {l[66:]: l[:64] for l in bf}; ad_ = {l[66:]: l[:64] for l in af}
+for p in sorted(set(bd_) | set(ad_)):
+    if bd_.get(p) != ad_.get(p):
+        lines.append('DIFFERS\t%s\t%s\t%s' % (bd_.get(p, '(absent)'), ad_.get(p, '(absent)'), p))
+lines.append('# %d files differ' % sum(1 for p in set(bd_) | set(ad_) if bd_.get(p) != ad_.get(p)))
+r = subprocess.run(['git', '-C', repo, 'diff', '--name-only', base, after, '--', 'src/tests/cldr', 'src/tests/temporal'], capture_output=True, text=True)
+lines += ['', '## git diff --name-only %s %s -- src/tests/cldr src/tests/temporal (exit %d)' % (base, after, r.returncode)] + r.stdout.splitlines()
+r2 = subprocess.run(['git', '-C', repo, 'diff', '--stat', base, after, '--', 'src/tests/cldr', 'src/tests/temporal'], capture_output=True, text=True)
+lines += ['', '## git diff --stat'] + r2.stdout.splitlines()
+r3 = subprocess.run(['git', '-C', repo, 'diff', base, after, '--', 'src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IntlChecks.cs'], capture_output=True, text=True)
+lines += ['', '## the guard temporal/t1/data-without-the-tz-release-reads-its-zones: git diff %s %s -- src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IntlChecks.cs (the whole diff of the file)' % (base, after)] + r3.stdout.splitlines()
+lines.append('slice-compiler exit codes: base %s, after %s' % (bn[-1], an[-1]))
+open(out, 'w', encoding='utf-8', newline='\n').write('\n'.join(lines) + '\n')
+print('\n'.join(l for l in lines if not l.startswith(('same', '+', '-', ' ', '@', 'diff', 'index'))))

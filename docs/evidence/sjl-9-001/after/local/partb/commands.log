@@ -1,0 +1,1 @@
+2026-11-11T10:16:36Z checks-after: cd /dev/shm/sjl96/after && /dev/shm/sjl96/after/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler --checks --verbose
