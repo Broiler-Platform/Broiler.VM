@@ -301,10 +301,10 @@ readings the bundle names for the owner". The bundle's run merged as `2979e797` 
 observed). The owner ruled on the readings it names that a verdict turns on, each time taking the reading the bundle
 took: the base's first-parent successors read up to the after commit; the revision of 2026-11-04 judging every part;
 part A's split between a fuel exhaustion and a wall-clock exhaustion read as class C4 (c'), and its (c') row whose
-re-runs agree on a wall-clock exhaustion admitted without (e); and part B's readings of the area checks' counts, of a
-Z8 key's primary and an L18 key's language, and of class Z8's rewritten header. The bundle's README records each ruling
-against its reading, and parts A, B and C's verdicts now rest on the owner's rulings; no verdict moves, and the
-bundle's other readings stay as taken, unruled. This meets no clause. The text above is left as written.
+re-runs agree on a wall-clock exhaustion admitted without (e); and part B's readings of the area checks' counts, of a Z8
+key's primary and an L18 key's language, and of class Z8's rewritten header, standing as taken. The bundle's README
+records each ruling against its reading, and parts A, B and C's verdicts now rest on the owner's rulings; no verdict
+moves, and the bundle's other readings stay as taken, unruled. This meets no clause. The text above is left as written.
 
 *(Noted 2026-11-11, at SJL-9.6's close-out in Broiler.VM.)* The rest of SJL-9.6 in Broiler.VM, which the ledger's
 entry of 2026-11-04 lists, is taken: bundle `sjl-9-001`'s

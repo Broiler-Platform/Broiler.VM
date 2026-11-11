@@ -232,15 +232,16 @@ Each part decides alone, on the rule as its revision of 2026-11-04 reads it, fro
 
 | Part | Verdict | What it reads |
 |---|---|---|
-| A, test262 in both forms (section 6) | **MET**, on readings 1, 3, 6 and 11 below, as the owner ruled on 2026-11-11 | [`after/parta/`](after/parta/): `completeness.txt`, `compare-wide-bytecode.log`, `compare-wide-native.log`, `changed-verdicts.tsv`, `c1-table.tsv`, `rows-named.txt`, `rerun/`, `race/` |
-| B, the reference datasets and the Intl checks (section 7) | **MET**, on readings 1, 3, 7, 8 and 12 below, as the owner ruled on 2026-11-11 | [`base/datasets/`](base/datasets/), [`after/datasets/`](after/datasets/): `checks.log`, `named-checks.txt`, `files.sha256`, `compare.txt`, `part-b-lines.tsv`, `part-b-summary.txt` |
-| C, the fuel-parity twins (section 8) | **MET**, on reading 1 below, as the owner ruled on 2026-11-11 | [`base/fuel-parity.log`](base/fuel-parity.log), [`after/fuel-parity.log`](after/fuel-parity.log), each side's `local/partc/attempts.tsv` |
+| A, test262 in both forms (section 6) | **MET**, on readings 1 to 6 and 9 to 11 below, readings 1, 3, 6 and 11 as the owner ruled on 2026-11-11 | [`after/parta/`](after/parta/): `completeness.txt`, `compare-wide-bytecode.log`, `compare-wide-native.log`, `changed-verdicts.tsv`, `c1-table.tsv`, `rows-named.txt`, `rerun/`, `race/` |
+| B, the reference datasets and the Intl checks (section 7) | **MET**, on readings 1 to 3, 7, 8 and 12 below, readings 1, 3, 7, 8 and 12 as the owner ruled on 2026-11-11 | [`base/datasets/`](base/datasets/), [`after/datasets/`](after/datasets/): `checks.log`, `named-checks.txt`, `files.sha256`, `compare.txt`, `part-b-lines.tsv`, `part-b-summary.txt` |
+| C, the fuel-parity twins (section 8) | **MET**, on readings 1, 2, 9 and 10 below, reading 1 as the owner ruled on 2026-11-11 | [`base/fuel-parity.log`](base/fuel-parity.log), [`after/fuel-parity.log`](after/fuel-parity.log), each side's `local/partc/attempts.tsv` |
 
 *(Noted 2026-11-11, at the owner's rulings of that day, which the end of this section records.)* Each row's verdict
-read "**MET**", without the readings it rests on. Each now names those of the readings below that the part's verdict
-rests on, as `manifest.json` lists them, and that the owner ruled on, and ends "as the owner ruled on 2026-11-11": part
-A's "**MET**, on readings 1, 3, 6 and 11 below", part B's "**MET**, on readings 1, 3, 7, 8 and 12 below" and part C's
-"**MET**, on reading 1 below". No verdict moves. Sections 6 to 8 are left as written.
+read "**MET**", without the readings it rests on. Each now names the readings below that the part's verdict rests on,
+as `manifest.json` lists them, and then those of them the owner ruled on: part A's "**MET**, on readings 1 to 6 and 9
+to 11 below, readings 1, 3, 6 and 11 as the owner ruled on 2026-11-11", part B's "**MET**, on readings 1 to 3, 7, 8
+and 12 below, readings 1, 3, 7, 8 and 12 as the owner ruled on 2026-11-11" and part C's "**MET**, on readings 1, 2, 9
+and 10 below, reading 1 as the owner ruled on 2026-11-11". No verdict moves. Sections 6 to 8 are left as written.
 
 No part needs an exclusion (section 9).
 
@@ -354,7 +355,8 @@ for the owner to rule on.", reads for them with this paragraph. The readings abo
   re-runs and (e)". Reading 11 reads "*Taken:* "a (c') row whose re-runs agree is admitted", whatever they agree on, so
   the row is admitted without (e)". The owner ruled that a split between a fuel exhaustion and a wall-clock exhaustion
   is (c'), and that a (c') row whose re-runs agree on a wall-clock exhaustion is admitted without (e). Not taken:
-  "Strict readings". With the question, the owner was told that the stage's verifier had raced row 13 of section 6's
+  "Strict readings", under which part A would be NOT MET (reading 6), or would rest open on a race of row 13 (reading
+  11). With the question, the owner was told that the stage's verifier had raced row 13 of section 6's
   (c') table once more at each commit, with the allowances of section 6's race, and that it gave a fuel exhaustion at
   both; this bundle retains no record of that race and reads nothing from it, so reading 11's "no race of it was taken"
   stays true of this bundle's runs and is left as written.
@@ -366,16 +368,18 @@ for the owner to rule on.", reads for them with this paragraph. The readings abo
   options' `language` is the language of the locale built." Reading 12 reads "*Taken:* a header rewritten at greater
   length, with its dated quote of the old text, is "rewritten" under Z8; the dated quote is how this family rewrites any
   text it keeps a record of." The owner ruled that all three stand as taken. Not taken: "Strict readings", under which
-  part B would be NOT MET.
+  part B would be NOT MET. The ruling takes reading 7's comparison. The gap reading 7 lists in JSD-0082's record, that
+  it says nothing of `intl/i4/locales-match-icu`'s count moving under decision D32's L18 lines, was not put to the
+  owner and stays open; JSD-0082 is still not edited to cover it.
 
 **Parts A, B and C's verdicts now rest on the owner's rulings for readings 1, 3, 6, 7, 8, 11 and 12, not on open
-readings**: each part on readings 1 and 3, part A also on readings 6 and 11, and part B also on readings 7, 8 and 12.
-No verdict moves; the State paragraph at the head of this README and the verdict table above say so by dated notes.
-**Readings 2, 4, 5, 9, 10 and 13 stay as taken, unruled**: the owner was not asked about them, since the question
-named only the readings a verdict was found to turn on, and each stands as SJL-9.6 took it, none the owner's own dated
-answer. Two of their alternatives say more than that: reading 4's says that "every changed verdict ... is listed"
-could not be met, and reading 9's that the local parts and part A's re-runs would not be the rule's. Neither was put to
-the owner, and neither is taken here.
+readings**: parts A and B on readings 1 and 3, part C on reading 1, part A also on readings 6 and 11, and part B also on
+readings 7, 8 and 12. No verdict moves; the State paragraph at the head of this README and the verdict table above say
+so by dated notes. **Readings 2, 4, 5, 9, 10 and 13 stay as taken, unruled**: the owner was not asked about them, since
+the question named only the readings a verdict was found to turn on, and each stands as SJL-9.6 took it, none the
+owner's own dated answer. Two of their alternatives say more than that: reading 4's says that "every changed verdict ...
+is listed" could not be met, and reading 9's that the local parts and part A's re-runs would not be the rule's. Neither
+was put to the owner, and neither is taken here.
 
 ## 3. Engine-level vectors on the Intl area (SJL-9.2)
 
