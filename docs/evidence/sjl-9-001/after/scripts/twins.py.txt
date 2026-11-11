@@ -1,0 +1,101 @@
+"""Part C of bundle sjl-9-001 (SJL-9.6): the fuel-parity twins of src/tests/forms/wide, as bundles sjl-5-001 and
+sjl-4-001's collectors take them (their base_twins and after_twins steps, restated here with the same commands,
+allowances and output lines; nothing of theirs is changed).
+
+usage: twins.py base <tree> <out-log> <attempts-log>
+       twins.py after <tree> <base fuel-parity.log> <out-log> <attempts-log>
+
+base:  every *.small.js twin of <tree>/src/tests/forms/wide, its smallest completing fuel allowance bisected under the
+       bytecode form between 1 and 1,000,000,000, then each form run at that figure and at one less, with the answer
+       it completes with (the last line of its output).
+after: every twin of the base's log, in each form at its base figure and at one less, with its answer beside the
+       base's.
+The command-line root is <tree>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0, as the
+tree's Release build left it; each attempt is one process with --fuel <n> --wall 600000, and the native form adds
+--native x86-64-sysv. Every attempt's command, exit code and last line go to <attempts-log>."""
+import os, platform, subprocess, sys
+
+CEILING, WALL = 1_000_000_000, 600_000
+BACKEND = {"Windows": "x86-64-win64"}.get(platform.system(), "x86-64-sysv")
+EXHAUSTED = "AllowanceExhausted on Fuel"
+mode, tree = sys.argv[1], os.path.abspath(sys.argv[2])
+binary = os.path.join(tree, "src", "compositions", "Broiler.VM.Composition.JavaScript.Cli", "bin", "Release", "net10.0",
+                      "Broiler.VM.Composition.JavaScript.Cli")
+folder = os.path.join(tree, "src", "tests", "forms", "wide")
+if mode == "base":
+    out_log, attempts_log = sys.argv[3], sys.argv[4]
+else:
+    base_log, out_log, attempts_log = sys.argv[3], sys.argv[4], sys.argv[5]
+attempts = open(attempts_log, "w", encoding="utf-8", newline="\n")
+env = dict(os.environ)
+env.setdefault("DOTNET_CLI_TELEMETRY_OPTOUT", "1")
+env["DOTNET_CLI_UI_LANGUAGE"] = "en"
+
+
+def last(output):
+    return (output.strip().splitlines() or ["(no output)"])[-1]
+
+
+def attempt(form, path, fuel):
+    command = [binary] + (["--native", BACKEND] if form == "native" else []) + ["--fuel", str(fuel), "--wall", str(WALL), path]
+    r = subprocess.run(command, cwd=tree, capture_output=True, encoding="utf-8", errors="replace", env=env)
+    output = (r.stdout or "") + (r.stderr or "")
+    attempts.write("%s\texit %d\t%s\n" % (" ".join(c.replace(tree, "<tree>") for c in command), r.returncode, last(output)))
+    attempts.flush()
+    return r.returncode, output
+
+
+lines, verdict = [], 0
+if mode == "base":
+    lines = ["# fuel-parity twins at the base commit, src/tests/forms/wide",
+             "# twin | form | smallest completing allowance (bytecode, bisected) | at that figure | at one less | answer"]
+    for twin in sorted(n for n in os.listdir(folder) if n.endswith(".small.js")):
+        path, label = os.path.join(folder, twin), "wide/" + twin
+        code, output = attempt("bytecode", path, CEILING)
+        if code != 0:
+            lines.append("%s | bytecode | does not complete under %d | exit %d | - | %s" % (label, CEILING, code, last(output)))
+            verdict = 1
+            continue
+        low, high = 1, CEILING
+        while low < high:
+            middle = (low + high) // 2
+            if attempt("bytecode", path, middle)[0] == 0:
+                high = middle
+            else:
+                low = middle + 1
+        for form in ("bytecode", "native"):
+            done, answer = attempt(form, path, low)
+            refused, said = attempt(form, path, low - 1)
+            below = ("refused with %s" % EXHAUSTED if refused != 0 and EXHAUSTED in said
+                     else "exit %d: %s" % (refused, last(said)))
+            lines.append("%s | %s | %d | %s | %s | %s" % (label, form, low, "completes" if done == 0 else "exit %d" % done,
+                                                          below, last(answer) if done == 0 else "-"))
+            print("base-twins: %s %s %d" % (label, form, low), flush=True)
+else:
+    figures, answers = {}, {}
+    for line in open(base_log, encoding="utf-8"):
+        if line.startswith("#") or "|" not in line:
+            continue
+        cells = [c.strip() for c in line.split("|")]
+        if len(cells) >= 6 and cells[2].isdigit():
+            figures[cells[0]] = int(cells[2])
+            answers[(cells[0], cells[1])] = cells[5]
+    lines = ["# fuel-parity twins at the after commit, at the base's figures (base/fuel-parity.log) and one less, src/tests/forms/wide",
+             "# twin | form | base figure | at that figure | at one less | answer | base answer"]
+    for label, figure in sorted(figures.items()):
+        path = os.path.join(tree, "src", "tests", "forms", label)
+        for form in ("bytecode", "native"):
+            done, said_done = attempt(form, path, figure)
+            refused, said = attempt(form, path, figure - 1)
+            below = ("refused with %s" % EXHAUSTED if refused != 0 and EXHAUSTED in said
+                     else "exit %d: %s" % (refused, last(said)))
+            at = "completes" if done == 0 else "exit %d: %s" % (done, last(said_done))
+            answer = last(said_done) if done == 0 else "-"
+            was = answers.get((label, form), "(absent)")
+            lines.append("%s | %s | %d | %s | %s | %s | %s" % (label, form, figure, at, below, answer, was))
+            if done != 0 or not below.startswith("refused") or answer != was:
+                verdict = 1
+            print("after-twins: %s %s %d" % (label, form, figure), flush=True)
+lines.append("# load average at the end: " + open("/proc/loadavg").read().strip())
+open(out_log, "w", encoding="utf-8", newline="\n").write("\n".join(lines) + "\n")
+sys.exit(verdict)
