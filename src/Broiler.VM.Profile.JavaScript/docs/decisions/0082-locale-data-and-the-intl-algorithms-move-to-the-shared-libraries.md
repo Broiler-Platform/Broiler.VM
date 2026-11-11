@@ -317,17 +317,22 @@ The list above is left as written.
 - **Code no input reaches:** T41; T42, Broiler.JS's members with no caller.
 
 *(Noted 2026-11-11, at SJL-9.6, when this family's vectors pin moved to Broiler.JS's corpus revision 38.)* This list
-puts rows T10, T16 and T37 under data policy and T13 under the implementation-defined. The owner's decision of
-2026-11-09, **"Keep + fix library first"** (the alternative not taken, "Revert 8.5, fix later"), held Broiler.JS's
-cut-over of sub-areas (d) and (e) at its stage 3 while the shared library and the data home took, in a merge of their
-own (Broiler-Platform/Broiler.JS#1108, merged as `b9ae4b5a`), the places where its date-time format departed from the
-pinned CLDR 48.2.0 data:
+reads "**Data policy (C5):** T10, T12 (U+202F and the `atTime` joins), T15, T16, T17, T22, T24, T31, T36, T37" and
+"**Implementation-defined:** ... T13, T18, T20, T23, T30 and T33, which the library takes from this family". The owner's
+decision of 2026-11-09, **"Keep + fix library first"** (the alternative not taken, "Revert 8.5, fix later"), held
+Broiler.JS's cut-over of sub-areas (d) and (e) at its stage 3 while the shared library and the data home took, in a
+merge of their own (Broiler-Platform/Broiler.JS#1108, merged as `b9ae4b5a`), the places where its date-time format was
+found departing from the pinned CLDR 48.2.0 data. These changed:
 - the hour cycle, read from CLDR's time data for the data locale's language and region before the region's (row T10);
 - the region of a data locale without one, the likely region of the whole locale where it was that of its language;
 - the default calendar, the region's first preference where an engine hands ResolveLocale the library's
   `CalendarKeyValuesOf` (row T16), from the file the ruling "Add file, same tarball" archives (decision D10's note of
   this date);
 - a fractional second, written with the numbering system's own decimal symbol (row T37, decision D21).
+
+One more place the decision named, the widths of an interval's fields, did not change: the pinned reference answers with
+the widths ICU's interval patterns give, as the library already did (Broiler.JS's
+`Broiler.ECMAScript/docs/intl/design.md`).
 
 The owner ruled on 2026-11-10, **"Accept, follows CLDR"** (the alternative not taken, "Revert the test change"), that
 `fa`'s default `persian` calendar, whose CLDR `availableFormats` have `ms` `m:ss` and no `mmss`, writes `{minute:
@@ -567,15 +572,21 @@ each kind of host is a corpus revision's:
   system's: a vector whose expected value is the reference's answer, which resolves both locales to `en-US`, and which
   Broiler.JS answers there from CLDR 48.2.0's own data for the locale, carries a `divergence.broiler-js` field under
   that data's row, naming this decision and the owner's decision of 2026-11-04 as Broiler.JS's record. Revision 37
-  applies that decision to such a host and needed no new one.
+  applies that decision to such a host and needed no new one. Revision 36 had given one `en-FR` vector such a field, for
+  CI's Ubuntu 26.04 host, which lists the locale, under row N3c's data and the owner's decision of 2026-11-08 "Revision
+  36: follow CLDR" (reason `js-n3c-cldr-ci-ubuntu`).
 - Corpus revision 38 keeps both kinds of field, since each still classifies a difference on some host.
 
-**This family's expectation is unchanged by either.** Its list resolves every extra locale to its default `en-US`,
-which answers as the reference does, so neither revision adds or changes a `divergence.broiler-vm` field, an `out` or
-a `per-engine.broiler-vm` field, and no verdict of this family's moves with them (bundle `sjl-9-001`, section 5).
+**This family's expectation is unchanged by any of them.** Its list (decision D5) resolves each extra locale as
+LookupMatcher finds it, to `en` (`en-FR`, `en-Shaw` and `en-Shaw-GB` among them) or to its default `en-US` (`aa` and
+`pap` among them), and its expectation of each vector those revisions classify is the reference's answer for the locale
+it resolves to: the vector's `out` where the reference answers the same, as for `aa` and `pap` at revision 37 and the
+`en-FR` vector of revision 36, and its `per-engine.broiler-vm` field where it does not, as for the `en-FR` vectors of
+revision 35. So none of these revisions adds or changes a `divergence.broiler-vm` field, an `out` or a
+`per-engine.broiler-vm` field, and no verdict of this family's moves with them (bundle `sjl-9-001`, section 5).
 Broiler.JS's records of the decision are its plan's dated note of 2026-11-04 under its decision D7
-(`docs/roadmap/SharedLibraries.md`), rows 35 and 37 of the corpus's revision log and the schema's dated note of
-revision 35 in its section 4; this note is this record's alone. The decision above is left as written.
+(`docs/roadmap/SharedLibraries.md`), rows 35 to 37 of the corpus's revision log and the schema's dated note of revision
+35 in its section 5; this note is this record's alone. The decision above is left as written.
 
 **Decision D8 - the data contract.** **Two layers.** First, `IIntlDataSet`, a version and one span per `IntlTable`,
 whose enum keeps `JsIntlTable`'s numbers, with 7, 23 and 24 retired and not reused, and appends values only for tables
@@ -1112,14 +1123,14 @@ part B's class admits both. In Broiler.JS, L9's inputs move at SJL-9.5 with the 
 listed under row L8, to the corrected form.
 
 *(Noted 2026-11-11, at SJL-9.6, when this family's vectors pin moved to Broiler.JS's corpus revision 38.)* This
-decision names this family's corrections, rows Z8, L18 and L9, which SJL-9.4 made (Broiler-Platform/Broiler.VM#190,
-merged as `68cad8b`). Broiler.JS's corpus revision 38 (Broiler-Platform/Broiler.JS#1112, merged as `3493462a`) retires
-every `divergence.broiler-vm` field of the Intl area, each under one of those rows, since this family's run on revision
-37 at `a8d8398` reported each as no longer holding; Broiler.JS's
-`docs/evidence/corpus-revision-38/retired-divergences-revision-38.tsv` lists them, with the reason each field gave.
-From that revision the Intl area holds no `divergence.broiler-vm` field. This family's vectors pin moved to revision
-38 in `61394d0`: each of those vectors matches there, every verdict that moved against the pin at revision 32 is
-attributed, and no vector finds a difference the correspondence does not classify, which "Falsified if" names (bundle
+decision's heading reads "this family's corrections are rows Z8, L18 and L9", which SJL-9.4 made
+(Broiler-Platform/Broiler.VM#190, merged as `68cad8b`). Broiler.JS's corpus revision 38
+(Broiler-Platform/Broiler.JS#1112, merged as `3493462a`) retires every `divergence.broiler-vm` field of the Intl area,
+each under one of those rows, since this family's run on revision 37 at `a8d8398` reported each as no longer holding;
+Broiler.JS's `docs/evidence/corpus-revision-38/retired-divergences-revision-38.tsv` lists them, with the reason each
+field gave. From that revision the Intl area holds no `divergence.broiler-vm` field. This family's vectors pin moved to
+revision 38 in `61394d0`: each of those vectors matches there, every verdict that moved against the pin at revision 32
+is attributed, and no vector finds a difference the correspondence does not classify, which "Falsified if" names (bundle
 `sjl-9-001`, section 5, and decision D15's note of this date). The decision above is left as written.
 
 **Decision D33 - where a passing test262 file and the pinned text part** (finding F5). For a row where a test262 file
