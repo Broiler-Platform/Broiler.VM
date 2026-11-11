@@ -169,7 +169,7 @@ reads, on reading 1 below for the third of the base's conditions. So no part is 
 
 | Commit | Condition (the rule's header) | The git read, and what it shows |
 |---|---|---|
-| Rule commit `4cf9ca449fc96a1a5be810f6d0ca31c42b855c8f` (Broiler-Platform/Broiler.VM#171) | carries `decision-rule-area.md`; a later bundle shows the file unchanged | `git log --diff-filter=A` names `f0023e28`, and the file's two later edits, `61fab9fb` and `8edfcb79`, are SJL-9.1's too; all three are in `4cf9ca4` and none in its first parent. The file's blob is `feb83f64…` at the rule commit, the base, the after commit and this branch's head (reading 2) |
+| Rule commit `4cf9ca449fc96a1a5be810f6d0ca31c42b855c8f` (Broiler-Platform/Broiler.VM#171) | carries `decision-rule-area.md`; a later bundle shows the file unchanged | `git log --diff-filter=A` names `f0023e28`, and the file's two later edits, `61fab9fb` and `8edfcb79`, are SJL-9.1's too; all three are in `4cf9ca4` and none in its first parent. The file's blob is `feb83f64…` at the rule commit, the base, the after commit and `797c637b`, this branch's head when the read was taken; no later commit of this branch changes it (reading 2) |
 | After commit `68cad8baf7403125d44d5007441d30ff07bc4edf` (#190) | the default-branch merge that lands SJL-9.4's cut-over, one merge (decision D3) | on the default branch's first-parent line; parents `3b33530d` and `791d8b9d`, the branch that carries SJL-9.4's code, records, rule revision and closures |
 | Base commit `3b33530d354431675667087a0044648b8f617c2e` (#189) | the after commit's first parent | `git rev-parse 68cad8b^1` is `3b33530d` |
 | | descends from the rule commit | `git merge-base --is-ancestor 4cf9ca4 3b33530d`: yes |
@@ -242,7 +242,9 @@ on. No reading changes a verdict as far as the files show, except where the item
    first parent is the base; a condition read over every later commit would change its answer with each merge after
    the cut-over. *Alternative:* every first-parent descendant of the base on the default branch today. Eight of the
    nine merges after `68cad8b` change such paths ([`commit-conditions.txt`](after/commits/commit-conditions.txt)), the
-   SJL-13 and record merges among them, so the condition would fail and **every part would be void**.
+   SJL-13 and record merges among them, so the condition would fail and **every part would be void**. This change
+   would count too: it changes JSD-0082, under `src/Broiler.VM.Profile.JavaScript/docs/`, and so would every later
+   records change to that file.
 2. **The rule commit.** *Taken:* `4cf9ca4`, the merge that carries the file into the default branch, as section 3
    names it. *Alternative:* `f0023e28`, the commit that adds the file, or `8edfcb79`, its last edit. All three are
    ancestors of the base and the file's blob is the same at each that holds it, so nothing turns on it.
@@ -271,11 +273,22 @@ on. No reading changes a verdict as far as the files show, except where the item
    *Taken:* part B compares each check's verdict and holds the programs, retained answers and divergences files byte
    for byte; a count that grows by exactly the lines class L18 or Z8 adds less those it removes (section 7) is no
    difference outside those classes. JSD-0082's note of 2026-11-04 on decision D15 says the same of the tzdb check.
+   It says that of the tzdb check alone: neither it nor any other part of JSD-0082, its note of 2026-11-11 on the
+   settling condition included, says anything of `intl/i4/locales-match-icu`'s count moving under decision D32's L18
+   lines. That is a gap in the record, listed here for the owner; JSD-0082 is not edited to cover it.
    *Alternative:* each check's output line held byte for byte; the two checks would be regressions and part B NOT MET.
 8. **Part B: whose primary, and which language.** *Taken:* a Z8 key's primary is the name the base answers for it,
    since the base reports a zone's primary (decision D15); an L18 key's language is the options' `language` when they
-   give one, else the tag's first subtag. *Alternative:* the primary read from the time-zone tables, and the language
-   after alias replacement. No line's class depends on the choice: no alias in the file replaces to `und`, `de` or `en`.
+   give one, else the tag's first subtag, since the options' `language` is the language of the locale built.
+   *Alternative:* the primary read from the time-zone tables, and the language after alias replacement. No line's
+   class depends on that alternative: no alias in the file replaces to `und`, `de` or `en`. *A second alternative,*
+   the language read from the tag's first subtag alone, moves one line: the added
+   `61 en-US {"language":"fr","script":"Cyrl","region":"BE","variants":"Fonipa-1996"} collations => []` of
+   `src/tests/cldr/locales/divergences.txt`, whose tag's language is `en`, which the Collator supports, while its
+   options give `fr` and the locale built is `fr-Cyrl-BE-1996-fonipa`, as the same file's line for that key without a
+   method reads it (`=> fr-Cyrl-BE-1996-fonipa base=fr-Cyrl-BE-1996-fonipa language=fr ...`). Its class rests on
+   reading the language of the locale built: under the taken reading it is L18, and read from the tag alone it would be
+   outside L18 and part B NOT MET.
 9. **The local machine.** The rule names it "by its processor count, its SDK and its operating system", the machine
    bundles `sjl-5-001` to `sjl-10-001` were taken on. This one has the same processor count, operating system and
    native backend, and .NET SDK 10.0.404 where those bundles had 10.0.401; it was installed again after the machine
@@ -283,6 +296,32 @@ on. No reading changes a verdict as far as the files show, except where the item
    *Alternative:* a different machine; the local parts and part A's re-runs would then not be the rule's.
 10. **The wall allowances.** *Taken:* part C's "ample" wall allowance is 600,000 ms at both commits, as bundles
     `sjl-5-001` to `sjl-13-001` took it; part A's re-runs use the part's 5,000 ms and the race ten times it, 50,000 ms.
+11. **A (c') row whose re-runs agree on a wall-clock exhaustion.** *(Added 2026-11-11, at SJL-9.6's review.)* Row 13
+    of section 6's (c') table, `staging/sm/TypedArray/sort_large_countingsort.js` [strict] in the native pair, is
+    exhausted on the wall clock in all six of its re-runs
+    ([`rerun-wide-native.tsv`](after/parta/rerun/rerun-wide-native.tsv)).
+    *Taken:* "a (c') row whose re-runs agree is admitted", whatever they agree on, so the row is admitted without (e),
+    as bundle `sjl-10-001` admitted rows whose re-runs agree on the wall clock. *Why:* the clause names agreement
+    alone, and sends to (e) only "a (c') row whose re-runs differ". *Alternative:* an agreement on a wall-clock
+    exhaustion settles nothing, for the reason (e) refuses a wall-clock verdict, so the row is raced under (e) or counts
+    as a regression. Under it, part A's verdict rests on this one native row and is open: no race of it was taken, so
+    its result is not known.
+12. **Part B: how much of a header "rewritten" covers in class Z8.** *(Added 2026-11-11, at SJL-9.6's review.)* The
+    time-zone divergences' group header is six comment lines at the base and fifteen after: eight that give decision
+    D15's reason, and a seven-line dated note quoting the old header
+    ([`part-b-lines.tsv`](after/datasets/part-b-lines.tsv), the comment rows `base:4` to `base:9` and `after:4` to
+    `after:18`). Class Z8 admits "the comment lines that head those lines, rewritten to give decision D15's reason";
+    class L18 reads "rewritten or added". *Taken:* a header rewritten at greater length, with its dated quote of the old
+    text, is "rewritten" under Z8; the dated quote is how this family rewrites any text it keeps a record of. *Why:*
+    the lines are one header, rewritten in one change to give D15's reason, and the note is that rewriting's own record.
+    *Alternative:* the comment lines beyond the base header's six, or the quoting note's lines, are outside Z8, since
+    Z8, unlike L18, does not say "added"; they would be differences outside Z8 and L18 and part B NOT MET.
+13. **Which figures section 2 quotes (rule H5).** *(Added 2026-11-11, at SJL-9.6's review.)* *Taken:* section 2
+    reads the logs it quotes, the machine records and the allowances the runs' commands set, which sections 6 and 8 read
+    too; and an archive's file count, which section 6 quotes from [`commands.log`](after/parta/commands.log), is a
+    property of the pin, not a suite total, as bundle `vm-5-002` quotes the same count. *Alternative:* H5 read strictly,
+    under which readings 9 and 10's figures move to sections 6 and 8 and the file count is dropped. No verdict turns on
+    it.
 
 ## 3. Engine-level vectors on the Intl area (SJL-9.2)
 
@@ -531,7 +570,7 @@ the conformance root does when no variant reaches a verdict about the engine. Pa
 
 Every re-run is an exhaustion; the table gives its dimension. **Twelve rows' re-runs agree**, so C4 (c') admits them.
 Row 13's agree on the wall clock: the rule admits a (c') row whose re-runs agree, whatever they agree on, as bundle
-`sjl-10-001` read it, so it is not raced.
+`sjl-10-001` read it, so it is not raced (section 2's reading 11, which gives the alternative).
 
 **C4 (e)** ([`race/`](after/parta/race/)). Row 11, `staging/sm/Date/dst-offset-caching-4-of-8.js` [strict] in the
 native pair, ran alone once more at each commit with the part's fuel allowance and ten times its wall clock, 50,000
@@ -571,7 +610,7 @@ under src/tests/cldr/ and src/tests/temporal/ is in Z8 or L18 and is listed."
 | File | Class | Lines | How |
 |---|---|---|---|
 | `src/tests/cldr/timezones/divergences.txt` | **Z8** | 152 data lines | 7 rewritten, 19 removed where the retained answer already resolves the identifier to itself, 126 added where it resolves it to another name |
-| | header of Z8 | 21 comment lines | the group's header rewritten to give decision D15's reason, with a dated note quoting the old one |
+| | header of Z8 | 21 comment lines | the group's header rewritten to give decision D15's reason, with a dated note quoting the old one (section 2's reading 12) |
 | `src/tests/cldr/locales/divergences.txt` | **L18** | 38 data lines | 12 rewritten from `[emoji,eor]`, 26 added where the retained answer reads `[emoji,eor]`; none removed |
 | | header of L18 | 10 comment lines | the group's header rewritten to give decision D32's reading of CollationsOfLocale, with a dated note quoting the old one |
 
