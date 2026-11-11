@@ -2,7 +2,7 @@
   "bundle": "sjl-13-001",
   "milestone": "SJL-13",
   "step": "step 1 of SJL-13.3 (the adapter); bundle sjl-13-002 judges step 2",
-  "collected-at": "5f64efbe7c37a86c03f3fbc87c8fd9628618aae3",
+  "collected-at": "0df64bcc81c91b0bdab0913bf6bc4a66470add1c",
   "describes": "the tree of collected-at under docs/evidence/sjl-13-001/: every file there but this manifest, which is committed on top of it; each file listed by its path in the bundle and the SHA-256 of the bytes git stores for it at collected-at",
   "worktree-clean": true,
   "hash-method": "sources: the git blob id of each path at source-revision, the after commit; the bundle's files: sha256 of each blob as git stores it at collected-at (LF line endings, as the repository stores text; correspondence-runs/ is stored unconverted, as .gitattributes says)",
@@ -44,7 +44,7 @@
   },
   "files": {
     ".gitattributes": "50869f2c728bb1bfbd106d67eb82ad32debac5652829c329d50d010dec26952f",
-    "README.md": "a866c64818be220a63c1eb64a160cbf9c9b19e6444c65fcdf480b83690f83923",
+    "README.md": "648371a99aae8a95ad1e9f5635f255622dca758b66a7bae8418ec44883655eab",
     "after/differential/binaries-cli.sha256": "86b822178a2cbc5bf1ad459fe6295363938a500c47b6141a539c8a6910d7535a",
     "after/differential/build-cli-warnings.txt": "b3455ca395c87eb87626a1ce1300ae320876cf3e04a5c978d44ccbd5726688c5",
     "after/differential/build-cli.log.gz": "0a668089c59c4304b4d6549f78b20d4964b64f83b64f2e7ca8949529d3b15783",
