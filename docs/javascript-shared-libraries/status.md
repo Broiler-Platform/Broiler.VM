@@ -3226,15 +3226,15 @@ merged as `11c53897` (Broiler-Platform/Broiler.VM#199, observed). The rule is
   complete. The only corrections are row Z8's `canonical-tz` variants, skipped at the base and passing after in both
   forms, each listed with its path, variant, row and clause; no other correction, and so no finding against JSD-0082's
   correspondence. Every other changed verdict is a race between the wall clock and another allowance, admitted under
-  class C4 (c') by its re-runs at both commits on the local machine, or, for one native row, under (e). **Met.**
+  class C4 (c') by its re-runs at both commits on the local machine, or, for a native row, under (e). **Met.**
 - **Part B**, the reference datasets and the Intl checks: every named check passes at both commits, and every changed
   line under `src/tests/cldr/` and `src/tests/temporal/` is in class Z8 or L18 and is listed with its line at both
-  commits and the retained answer's line, with the one guard the revision admits. **Met.**
+  commits and the retained answer's line, with the guard the revision admits. **Met.**
 - **Part C**, the wide twins: each gives the base's verdict at its base figure and one less, in both forms, with the
   base's answer. **Met.**
 - **No part needs an exclusion.** The bundle records the readings each verdict rests on, each with the reading taken
-  and the alternative, for the owner to rule on; one of them, on the base's third condition, would void every part if
-  ruled the other way.
+  and the alternative, for the owner to rule on; the reading of the base's third condition would void every part if
+  ruled the other way, and others would turn a part's verdict.
 - **How it was taken.** The local steps ran from clean archives of each commit, built in Release with
   `--disable-build-servers`, behind an idle gate, with no warning in any build; the bundle keeps every script as run and
   every run's record.
@@ -3244,7 +3244,7 @@ accepted. Next:
 - the branch's merge;
 - the rest of SJL-9.6 in this repository the entry of 2026-11-04 lists: the closures at the after commit and the
   exclusion for the code that left this component's assurance coverage, and the datasets' READMEs and the time-zone
-  divergences' group header that entry says stay as committed until SJL-9.6's after runs;
+  divergences' third group header that entry says stay as committed until SJL-9.6's after runs;
 - the owner's ruling on the bundle's readings;
 - SJL-9's exit reading.
 
