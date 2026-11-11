@@ -118,7 +118,9 @@ Revision 34 classifies both engines' first runs, on Broiler.JS's branch `sjl-17-
   revision 34, after Broiler.JS merges it (rule N13). *(Note of 2026-11-11: SJL-9's work package SJL-9.6 moved it from
   revision 32 to revision 38 (`61394d0`), which carries revisions 33 and 34's collation vectors unchanged; bundle
   [`sjl-9-001`](../sjl-9-001/README.md)'s section 5 retains the run on it, where every collation vector matches with
-  the expected value, rendering and verdict of the revision 34 run below. No task moved it to revision 34.)*
+  the expected value, rendering and verdict of the revision 34 run below. Those revision 34 classified from CI's
+  `windows-latest` host after that run's scratch pin are `divergence` there where they are `normative` in that run,
+  through `divergence.broiler-js` fields this family's run does not read. No task moved it to revision 34.)*
 
 **The runs.** Each was taken at `b43d0bb`, this repository's default branch (Broiler-Platform/Broiler.VM#180), from a
 scratch archive of the Broiler.JS commit the run names. The archive was written twice by `git archive`, byte for byte

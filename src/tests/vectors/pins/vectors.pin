@@ -17,9 +17,9 @@
 # files `content-sha256` is over: the number area's ten vector files, the numerics area's eight, the
 # text area's six, the Date area's seven, the Unicode area's five, the time-zone area's seven, the
 # Temporal area's six, the Intl area's five, the syntax area's six, the regular-expression area's
-# eight, the collation vectors' four (under `collation/`, of the area `intl`), the schema, the README,
-# the revision log, the prelude and the five source pins. The negative
-# controls stay in Broiler.JS; the home's validator is the one that reads them.
+# eight, the collation vectors' four (under `collation/`, of the area `intl`), the schema, the
+# README, the revision log, the prelude and the five source pins. The negative controls stay in
+# Broiler.JS; the home's validator is the one that reads them.
 #
 # HOW IT IS READ. `--vectors <archive> --expect <this file>` of the conformance root checks both
 # digests and the count before any vector runs. `content-sha256` is over the files' paths below
@@ -149,18 +149,18 @@
 # vector files, the numerics area's eight, the text area's six, the Date area's seven, the Unicode area's five, the
 # time-zone area's seven, the Temporal area's six, the Intl area's five, the syntax area's six, the schema, the
 # README, the revision log, the prelude and the five source pins."
-# Moved to revision 38 on 2026-11-11, at milestone SJL-9.6: revision 33 adds the collation vectors
-# of milestone SJL-17.2, four files under `collation/`, of the area `intl`, and revision 34 classifies both engines'
-# first runs on them, where this profile's run had no difference, so that no `divergence.broiler-vm` field is written;
-# revisions 35, 36 and 37 classify, for Broiler.JS alone, Intl vectors whose answer depends on whether the host lists
-# one of decision D5's extra locales (decision D7 of JSD-0082) or which the pinned CLDR 48.2.0 contradicts, and leave
-# this profile's expectations as they were; and revision 38 retires this profile's 41 divergence fields of the Intl
-# area, rows Z8, L9 and L18, which its SJL-9.4 cut-over corrected (Broiler-Platform/Broiler.VM#190, `68cad8b`), and
-# 1,705 of Broiler.JS's, which its SJL-9.5 cut-over corrected (Broiler-Platform/Broiler.JS#1110, `a5f2692e`), and
-# makes row Z8's 157 time-zone vectors `normative` with one `out`, the identifier as given, case-normalised (decision
-# D15 of JSD-0082), where this profile's `per-engine.broiler-vm` expectation was the primary identifier. The commit
-# is Broiler.JS's default branch after the change that carries revision 38 merged (Broiler-Platform/Broiler.JS#1112);
-# its corpus is that of `5a15483f`, revision 38 as completed before the merge. Its header read, for revision 32: "the
+# Moved to revision 38 on 2026-11-11, at milestone SJL-9.6: revision 33 adds the collation vectors of milestone
+# SJL-17.2, four files under `collation/`, of the area `intl`, and revision 34 classifies both engines' first runs on
+# them, where this profile's run had no difference, so that no `divergence.broiler-vm` field is written; revisions 35,
+# 36 and 37 classify, for Broiler.JS alone, Intl vectors whose answer depends on whether the host lists one of
+# decision D5's extra locales (decision D7 of JSD-0082) or which the pinned CLDR 48.2.0 contradicts, and leave this
+# profile's expectations as they were; and revision 38 retires this profile's 41 divergence fields of the Intl area,
+# rows Z8, L9 and L18, which its SJL-9.4 cut-over corrected (Broiler-Platform/Broiler.VM#190, `68cad8b`), and 1,705 of
+# Broiler.JS's, which its SJL-9.5 cut-over corrected (Broiler-Platform/Broiler.JS#1110, `a5f2692e`), and makes row
+# Z8's 157 time-zone vectors `normative` with one `out`, the identifier as given, case-normalised (decision D15 of
+# JSD-0082), where this profile's `per-engine.broiler-vm` expectation was the primary identifier. The commit is
+# Broiler.JS's default branch after the change that carries revision 38 merged (Broiler-Platform/Broiler.JS#1112); its
+# corpus is that of `5a15483f`, revision 38 as completed before the merge. Its header read, for revision 32: "the
 # corpus at that commit is at corpus revision 32", "On 2026-11-02" and "One file of 2,238,846 bytes hashing to
 # `archive-sha256`, which extracts to the 77 files `content-sha256` is over: the number area's ten vector files, the
 # numerics area's eight, the text area's six, the Date area's seven, the Unicode area's five, the time-zone area's

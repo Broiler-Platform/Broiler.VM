@@ -235,6 +235,11 @@ every file's SHA-256, which `sha256sum -c` verifies.
 - **The run on revision 38** was taken at `61394d0`, clean, on the committed pin, with the root built in Release with
   `--disable-build-servers` in that tree ([`vectors/build-conformance-revision-38.log`](vectors/build-conformance-revision-38.log)).
   `61394d0`'s code is `0ffc037f`'s: the two differ in the pin's folder and the notices alone.
+  *(Added 2026-11-11, at review.)* The SHA-256 its log records for `vectors.pin` is that of the pin `61394d0` commits.
+  The later commits of this change edit the pin's header comments alone, so the file at their head hashes otherwise; its
+  data lines, the `revision`, `archive-sha256`, `content-sha256`, `files` and `archived-at` lines that the runner and
+  `SharedVectorsPinTests` read, are unchanged, and a run on the pin as they leave it, with the root built in Release at
+  their head, writes this run's report byte for byte.
 
 | Run | Taken | Result | Files |
 |---|---|---|---|
@@ -258,16 +263,18 @@ corpora record by record. Every verdict that moves is attributed there, and none
   are the differences the runs on revision 32 have shown since SJL-9.4 (JSD-0085, section 9).
 
 No other verdict moves, and no vector's expected value or rendering changes but those 157 expected values. The 2,398
-collation vectors, which only revision 38's run holds, all match, and each has the expected value, rendering and
-verdict of bundle `sjl-17-001`'s run on revision 34 (its `vectors/run-revision-34.tsv.gz`). Other vectors change only in
-their class, each matching at both pins: those whose last divergence field, Broiler.JS's, revision 38 retires become
-`normative`; and 16 become `divergence` through a `divergence.broiler-js` field Broiler.JS's revisions 36 and 37 add,
-which this family's run does not read. The 61 classified divergences, of the regular-expression area, and the 24
-matches where a divergence no longer holds, 2 of the regular-expression area and 22 of the syntax area, are the same
-vectors at both pins: SJL-11's and SJL-13's fields, which no revision since 32 touches. The figures of the run on
-revision 38 are those revision 38's row gives for this family's run at `a8d8398` over a scratch archive of the revision:
-111,072 matching, 24 matching where a divergence no longer holds and 61 classified divergences. Its negative control
-reports the mutated vector alone.
+collation vectors, which only revision 38's run holds, all match, and each has the expected value, rendering and verdict
+of bundle `sjl-17-001`'s run on revision 34 (its `vectors/run-revision-34.tsv.gz`). *(Added 2026-11-11, at review.)* Of
+those, 35 are `normative` in that run and `divergence` here: they change class alone, through the
+`divergence.broiler-js` fields revision 34 adds from CI's `windows-latest` host after the scratch pin that run read
+(`60fc3a5b`), which this family's run does not read. Other vectors change only in their class, each matching at both
+pins: those whose last divergence field, Broiler.JS's, revision 38 retires become `normative`; and 16 become
+`divergence` through a `divergence.broiler-js` field Broiler.JS's revisions 36 and 37 add, which this family's run does
+not read. The 61 classified divergences, of the regular-expression area, and the 24 matches where a divergence no longer
+holds, 2 of the regular-expression area and 22 of the syntax area, are the same vectors at both pins: SJL-11's and
+SJL-13's fields, which no revision since 32 touches. The figures of the run on revision 38 are those revision 38's row
+gives for this family's run at `a8d8398` over a scratch archive of the revision: 111,072 matching, 24 matching where a
+divergence no longer holds and 61 classified divergences. Its negative control reports the mutated vector alone.
 
 So the vectors find no difference of this family's that the correspondence does not classify, which JSD-0082 names as
 falsifying it. This section is no part of the rule's parts A to C, and nothing in it is a verdict.
