@@ -1,0 +1,13 @@
+# part A, SJL-9.6: completeness of each hosted run as the rule states it (bundle sjl-6-001's reading), read from the imported artifacts
+.github/workflows/test262-evidence.yml: blob 740a70f8d919ced6cd4bdf31f8bb2408f12fdcf7 at the base commit, 740a70f8d919ced6cd4bdf31f8bb2408f12fdcf7 at the after commit, 740a70f8d919ced6cd4bdf31f8bb2408f12fdcf7 at 0ffc037f (the base run's dispatched ref), 740a70f8d919ced6cd4bdf31f8bb2408f12fdcf7 at 11c53897 (the after run's)
+eng/test262-evidence.py: blob 55f71ee3da6844dd3e3aeb23ea98d24143222a88 at the base commit, 55f71ee3da6844dd3e3aeb23ea98d24143222a88 at the after commit, 55f71ee3da6844dd3e3aeb23ea98d24143222a88 at 0ffc037f (the base run's dispatched ref), 55f71ee3da6844dd3e3aeb23ea98d24143222a88 at 11c53897 (the after run's)
+## base (workflow run: https://github.com/Broiler-Platform/Broiler.VM/actions/runs/42993744643 (attempt 1), dispatched 2026-11-11T09:16:10Z, completed 2026-11-11T09:24:00Z, conclusion success)
+run.txt: dispatched ref: refs/heads/main at 0ffc037ff0c3fb1a70e090bcfefd66a885f52eee; tested commit: 3b33530d354431675667087a0044648b8f617c2e; tested tree: clean; inputs: {"commit": "3b33530d354431675667087a0044648b8f617c2e", "forms": "both"}
+wide-bytecode: shard logs 16 of 16; merge took 16 shard reports; run log exit code 1; retention retainable=True; coverage whole=True; every variant accounted=True; distinct assembly lists 1
+wide-native: shard logs 16 of 16; merge took 16 shard reports; run log exit code 4; retention retainable=True; coverage whole=True; every variant accounted=True; distinct assembly lists 1
+## after (workflow run: https://github.com/Broiler-Platform/Broiler.VM/actions/runs/42994885592 (attempt 1), dispatched 2026-11-11T09:24:18Z, completed 2026-11-11T09:30:34Z, conclusion success)
+run.txt: dispatched ref: refs/heads/main at 11c53897dc7f19e5ef195aa584df0aaabe4ab2c5; tested commit: 68cad8baf7403125d44d5007441d30ff07bc4edf; tested tree: clean; inputs: {"commit": "68cad8baf7403125d44d5007441d30ff07bc4edf", "forms": "both"}
+wide-bytecode: shard logs 16 of 16; merge took 16 shard reports; run log exit code 1; retention retainable=True; coverage whole=True; every variant accounted=True; distinct assembly lists 1
+wide-native: shard logs 16 of 16; merge took 16 shard reports; run log exit code 4; retention retainable=True; coverage whole=True; every variant accounted=True; distinct assembly lists 1
+the comparison wide-bytecode: variants present in only one report, ignored by it: 57; its exit: ['0']
+the comparison wide-native: variants present in only one report, ignored by it: 57; its exit: ['0']

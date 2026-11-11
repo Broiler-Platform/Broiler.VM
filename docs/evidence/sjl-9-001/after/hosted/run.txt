@@ -1,0 +1,12 @@
+repository: Broiler-Platform/Broiler.VM
+workflow run: https://github.com/Broiler-Platform/Broiler.VM/actions/runs/42994885592 (attempt 1)
+dispatched ref: refs/heads/main at 11c53897dc7f19e5ef195aa584df0aaabe4ab2c5
+tested commit: 68cad8baf7403125d44d5007441d30ff07bc4edf
+tested tree: clean
+inputs: {"commit": "68cad8baf7403125d44d5007441d30ff07bc4edf", "forms": "both"}
+forms: bytecode native
+partition: 4 runners of 4 shards per form, 16 shards
+allowance: fuel=100000000 wallClockMs=5000
+suite pin: src/tests/conformance/pins/test262.pin sha256=794eea961c9a912f28034312f5b044135111494d23deb83474d29ad6f03ee7b6
+merging job: image ubuntu24 20261101.360.1; Linux-7.0.0-1017-azure-x86_64-with-glibc2.39 x86_64 cpus=4; sdk 10.0.404
+runners: each form's <run>.runners.txt

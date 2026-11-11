@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# parts-bc.sh <base|after>: part B's slice compiler --checks --verbose, then part C's twins, each behind the gate, in
+# the tree whose Release build build-roots.sh left. Output under <scratch>/<side>/partb and <scratch>/<side>/partc.
+S=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96
+side=$1; T=/dev/shm/sjl96/$side
+SC=$T/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0
+mkdir -p $S/$side/partb $S/$side/partc
+sha256sum $SC/Broiler.VM.Composition.JavaScript.SliceCompiler.dll > $S/$side/partb/slicecompiler.sha256
+$S/scripts/run.sh checks-$side $S/$side/partb $T -- $SC/Broiler.VM.Composition.JavaScript.SliceCompiler --checks --verbose
+if [ "$side" = base ]; then
+  $S/scripts/run.sh twins-$side $S/$side/partc $T -- python3 -I $S/scripts/twins.py base $T $S/$side/partc/fuel-parity.log $S/$side/partc/attempts.tsv
+else
+  $S/scripts/run.sh twins-$side $S/$side/partc $T -- python3 -I $S/scripts/twins.py after $T $S/base/partc/fuel-parity.log $S/$side/partc/fuel-parity.log $S/$side/partc/attempts.tsv
+fi
+echo DONE > $S/$side/parts-bc.DONE

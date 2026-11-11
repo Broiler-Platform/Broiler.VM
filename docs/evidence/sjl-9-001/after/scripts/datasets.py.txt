@@ -1,0 +1,45 @@
+"""Part B of bundle sjl-9-001 (SJL-9.6): from one run of the slice compiler's --checks --verbose, the files bundle
+sjl-8-001's datasets step writes (its code restated, nothing of it changed): checks.log, the whole output with the
+digest of the binary; named-checks.txt, the line of each check the rule names, or its absence; files.sha256, the
+SHA-256 of every file under src/tests/cldr/ and src/tests/temporal/. The rule names its checks by prefix, "every check
+of IntlChecks.cs whose name begins intl/i0/, intl/i1/, intl/i2/, intl/i3/, intl/i4/, tzdb/ or temporal/, as the base
+commit names them": NAMES is the list of names the base commit's IntlChecks.cs spells, two of them templates
+(`{kind}`, `{granularity}`) that stand for every check the template names.
+
+usage: datasets.py <tree> <commit> <names-file> <run-out> <run-exit> <slicecompiler.sha256> <started> <out-dir>"""
+import hashlib, os, re, sys
+tree, commit, names_file, out_txt, exit_txt, digest_txt, started, out = sys.argv[1:9]
+names = [l.strip().strip('"') for l in open(names_file) if l.strip()]
+output = open(out_txt, encoding='utf-8').read()
+code = int(open(exit_txt).read().strip())
+digest = open(digest_txt).read().split()[0]
+os.makedirs(out, exist_ok=True)
+with open(os.path.join(out, 'checks.log'), 'w', encoding='utf-8', newline='\n') as o:
+    o.write('# Broiler.VM.Composition.JavaScript.SliceCompiler.dll sha256=%s, at %s, started %s\n# --checks --verbose\n%s\nexit code: %d\n'
+            % (digest, commit, started, output.rstrip(), code))
+lines = ['# part B\'s checks at %s, as checks.log beside this file prints them: every check of IntlChecks.cs whose name begins'
+         ' intl/i0/ to intl/i4/, tzdb/ or temporal/, as the base commit names them (a template name stands for every check it names)' % commit]
+outl = output.splitlines()
+for name in names:
+    if '{' in name:
+        pattern = re.compile('^\\S+\\s+' + re.escape(name.split('{')[0]) + '[^:]*' + re.escape(name.split('}')[1]) + ':')
+    else:
+        pattern = re.compile('^\\S+\\s+' + re.escape(name) + ':')
+    found = [l for l in outl if pattern.match(l)]
+    if not found:
+        lines.append('ABSENT %s: no line names it' % name)
+    elif '{' not in name and len(found) != 1:
+        lines.append('ABSENT %s: %d lines name it' % (name, len(found)))
+    else:
+        lines.extend(found)
+lines.append('slice-compiler exit code %d' % code)
+open(os.path.join(out, 'named-checks.txt'), 'w', encoding='utf-8', newline='\n').write('\n'.join(lines) + '\n')
+digests = []
+for dataset in ('src/tests/cldr', 'src/tests/temporal'):
+    for root, _, files in os.walk(os.path.join(tree, dataset)):
+        for f in files:
+            p = os.path.join(root, f)
+            digests.append('%s  %s' % (hashlib.sha256(open(p, 'rb').read()).hexdigest(), os.path.relpath(p, tree)))
+open(os.path.join(out, 'files.sha256'), 'w', newline='\n').write('\n'.join(sorted(digests, key=lambda l: l[66:])) + '\n')
+ok = sum(1 for l in lines if l.startswith('ok  '))
+print('%s: %d named-check lines ok of %d, %d absent, %d dataset files, exit %d' % (commit, ok, len(lines) - 2, sum(1 for l in lines if l.startswith('ABSENT')), len(digests), code))

@@ -1,0 +1,16 @@
+# part B, SJL-9.6: every difference between the base 3b33530d354431675667087a0044648b8f617c2e and the after commit 68cad8baf7403125d44d5007441d30ff07bc4edf under src/tests/cldr and src/tests/temporal, by `git diff`
+# changed paths: 2
+#   src/tests/cldr/locales/divergences.txt
+#   src/tests/cldr/timezones/divergences.txt
+# lines by path, kind and class:
+src/tests/cldr/locales/divergences.txt	comment	header of L18	10
+src/tests/cldr/locales/divergences.txt	data	L18	38
+src/tests/cldr/timezones/divergences.txt	comment	header of Z8	21
+src/tests/cldr/timezones/divergences.txt	data	Z8	152
+# data lines by path, class and how the change made them:
+src/tests/cldr/locales/divergences.txt	L18	added	26
+src/tests/cldr/locales/divergences.txt	L18	rewritten	12
+src/tests/cldr/timezones/divergences.txt	Z8	added	126
+src/tests/cldr/timezones/divergences.txt	Z8	removed	19
+src/tests/cldr/timezones/divergences.txt	Z8	rewritten	7
+# lines outside Z8 and L18 (OTHER): 0

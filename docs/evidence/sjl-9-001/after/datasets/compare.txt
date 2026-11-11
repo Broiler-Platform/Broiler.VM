@@ -1,0 +1,86 @@
+# part B, SJL-9.6: the named checks at the base 3b33530d354431675667087a0044648b8f617c2e and the after commit 68cad8baf7403125d44d5007441d30ff07bc4edf, line by line, and the dataset files
+
+## the named checks (verdict: base, after; line identical or not)
+same	ok	ok	intl/i0/a-door-handed-no-data-builds-no-intl
+same	ok	ok	intl/i0/a-door-naming-intl-without-data-is-refused
+same	ok	ok	intl/i0/canonicalization-replaces-aliases
+same	ok	ok	intl/i1/german-and-english-orderings-match-icu
+same	ok	ok	intl/i1/german-phonebook-and-search-order
+same	ok	ok	intl/i1/the-root-collation-orders-collationtest-non-ignorable
+same	ok	ok	intl/i1/the-root-collation-orders-collationtest-shifted
+same	ok	ok	intl/i2/german-and-english-numbers-match-icu
+same	ok	ok	intl/i3/german-and-english-dates-match-icu
+same	ok	ok	intl/i4/a-variants-option-is-lowered-by-ascii-rules
+same	ok	ok	intl/i4/german-and-english-display-names-match-icu
+same	ok	ok	intl/i4/german-and-english-durations-match-icu
+same	ok	ok	intl/i4/german-and-english-lists-match-icu
+same	ok	ok	intl/i4/german-and-english-plurals-match-icu
+same	ok	ok	intl/i4/german-and-english-relative-times-match-icu
+DIFFERS	ok	ok	intl/i4/locales-match-icu
+  base:  ok   intl/i4/locales-match-icu: all 780 lines answer as ICU 77.1 did, 132 of them as the divergences name
+  after: ok   intl/i4/locales-match-icu: all 780 lines answer as ICU 77.1 did, 158 of them as the divergences name
+same	ok	ok	intl/i4/segments-match-icu
+same	ok	ok	intl/i4/the-segmenter-passes-grapheme-break-test
+same	ok	ok	intl/i4/the-segmenter-passes-sentence-break-test
+same	ok	ok	intl/i4/the-segmenter-passes-word-break-test
+same	slice-compiler	slice-compiler	slice-compiler exit code 0
+same	ok	ok	temporal/t1/a-day-span-a-zone-skips-is-a-range-error
+same	ok	ok	temporal/t1/a-day-window-a-zone-skips-is-a-range-error
+same	ok	ok	temporal/t1/a-door-handed-no-data-builds-no-temporal
+same	ok	ok	temporal/t1/a-duration-designator-is-upper-cased-by-ascii-rules
+same	ok	ok	temporal/t1/a-year-past-2-to-the-53-is-a-range-error
+DIFFERS	ok	ok	temporal/t1/data-without-the-tz-release-reads-its-zones
+  base:  ok   temporal/t1/data-without-the-tz-release-reads-its-zones: the family's data answered `-04:00 3 Asia/Kolkata`, and the same data without the release `-04:00 3 Asia/Kolkata`
+  after: ok   temporal/t1/data-without-the-tz-release-reads-its-zones: the family's data answered `-04:00 3 Asia/Calcutta`, and the same data without the release `-04:00 3 Asia/Calcutta`
+same	ok	ok	temporal/t1/temporal-matches-the-reference-polyfill
+same	ok	ok	temporal/t1/temporal-without-intl-and-bigint-is-refused
+same	ok	ok	temporal/t2/intl-over-temporal-matches-the-reference-polyfill
+same	ok	ok	temporal/t3/calendar-conversions-match-icu4x
+same	ok	ok	temporal/t3/calendars-match-the-reference-polyfill
+same	ok	ok	temporal/t4/calendar-formats-match-the-reference-polyfill
+same	ok	ok	temporal/t5/zone-names-match-the-reference-polyfill
+DIFFERS	ok	ok	tzdb/time-zone-offsets-match-icu
+  base:  ok   tzdb/time-zone-offsets-match-icu: all 610 lines answer as ICU 77.1 did, 51 of them as the divergences name
+  after: ok   tzdb/time-zone-offsets-match-icu: all 610 lines answer as ICU 77.1 did, 158 of them as the divergences name
+# 32 lines identical, 3 differ
+
+## files.sha256 (181 files at the base, 181 after)
+DIFFERS	15793d18d72039b6198b7b0b8558ac3a38480987ca668b0230760cd4a6cece61	bd1cfc863b13d68169cbc74e10c2599dd96d2952c89e1376a922a8d1b08e396f	src/tests/cldr/locales/divergences.txt
+DIFFERS	b020772f515fb822de8a7edb06e41649e167f31e437e03420be62c921b387a58	e6585502de2d6a1a60044298160e1fe97f9c5f1b52722e9affc67fc3b7466c3b	src/tests/cldr/timezones/divergences.txt
+# 2 files differ
+
+## git diff --name-only 3b33530d354431675667087a0044648b8f617c2e 68cad8baf7403125d44d5007441d30ff07bc4edf -- src/tests/cldr src/tests/temporal (exit 0)
+src/tests/cldr/locales/divergences.txt
+src/tests/cldr/timezones/divergences.txt
+
+## git diff --stat
+ src/tests/cldr/locales/divergences.txt   |  60 ++++++++---
+ src/tests/cldr/timezones/divergences.txt | 180 +++++++++++++++++++++++++------
+ 2 files changed, 194 insertions(+), 46 deletions(-)
+
+## the guard temporal/t1/data-without-the-tz-release-reads-its-zones: git diff 3b33530d354431675667087a0044648b8f617c2e 68cad8baf7403125d44d5007441d30ff07bc4edf -- src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IntlChecks.cs (the whole diff of the file)
+diff --git a/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IntlChecks.cs b/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IntlChecks.cs
+index 4490adf0..68716d62 100644
+--- a/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IntlChecks.cs
++++ b/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IntlChecks.cs
+@@ -300,9 +300,18 @@ internal static class IntlChecks
+         var own = Evaluate(Program, With(JsCldrData.Instance));
+         var without = Evaluate(Program, With(new DataWithoutTheTzRelease()));
+ 
++        // THE FORMAT REPORTS THE ZONE AS GIVEN, in the database's case, since SJL-9.4's row Z8 (JSD-0082
++        // decision D15): 'asia/calcutta' is Asia/Calcutta. (Revised 2026-11-03, at SJL-9.4's row Z8; the
++        // answer read "-04:00 3 Asia/Kolkata", the Link's primary identifier, which the format reported
++        // before. What the check holds, both data answering alike, is unchanged.) (Noted 2026-11-03, at
++        // SJL-9.4's review of sub-areas (d) and (e): this is one of the guards part B of
++        // docs/evidence/sjl-9-001/decision-rule-area.md holds unchanged, every temporal/t1/ check, and its
++        // expected literal and its output moved with row Z8, which neither part B's class Z8, divergence
++        // lines alone, nor decision D15, "only the resolved-name lines of its divergences files and their
++        // headers", foresaw. Its verdict is ok at both commits; the cut-over's record lists the move.)
+         return (
+             Name,
+-            own == "-04:00 3 Asia/Kolkata" && without == own,
++            own == "-04:00 3 Asia/Calcutta" && without == own,
+             $"the family's data answered `{own}`, and the same data without the release `{without}`");
+     }
+ 
+slice-compiler exit codes: base slice-compiler exit code 0, after slice-compiler exit code 0

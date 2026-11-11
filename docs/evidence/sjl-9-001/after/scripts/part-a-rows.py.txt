@@ -1,0 +1,28 @@
+"""Part A of bundle sjl-9-001 (SJL-9.6): the rows the rule's "How it is read" names, read from the imported reports:
+rows S7's and T8's files (JSD-0082 decision D33), which keep their base verdicts; the files that call getCollations
+(rows L18), which claim Intl.Locale-info; and how many variants are skipped at each commit as claiming each of the three
+proposals the rule names. Reads files; runs nothing. usage: part-a-rows.py <bundle>"""
+import gzip, sys
+B = sys.argv[1]
+files = {'S7': ['test/intl402/RelativeTimeFormat/prototype/format/en-us-numeric-always.js', 'test/intl402/RelativeTimeFormat/prototype/formatToParts/en-us-numeric-always.js'],
+         'T8': ['test/intl402/DateTimeFormat/prototype/resolvedOptions/hourCycle-dateStyle.js', 'test/intl402/DateTimeFormat/prototype/resolvedOptions/hourCycle.js']}
+print('# part A, SJL-9.6: rows S7, T8 and L18 and the skipped proposals, per form, base -> after (part-a-rows.py)')
+for form in ('wide-bytecode', 'wide-native'):
+    R = {}
+    for s in ('base', 'after'):
+        d = {}
+        for l in gzip.open('%s/%s/hosted/%s.report.gz' % (B, s, form), 'rt'):
+            if l.startswith('result|'):
+                c = l.rstrip('\n').split('|'); d[(c[1], c[2])] = c
+        R[s] = d
+    for row, fs in files.items():
+        for f in fs:
+            for k in sorted(x for x in R['base'] if x[0] == f):
+                print('%s\trow %s\t%s [%s]\t%s -> %s' % (form, row, f, k[1], R['base'][k][3], R['after'].get(k, ['', '', '', '(absent)'])[3]))
+    for k in sorted(x for x in R['base'] if 'getCollations' in x[0]):
+        print('%s\trow L18 (calls getCollations)\t%s [%s]\t%s -> %s\tfeatures %s' % (form, k[0], k[1], R['base'][k][3], R['after'].get(k, ['', '', '', '(absent)'])[3], R['base'][k][7]))
+    for feat in ('Intl.NumberFormat-v3', 'Intl.Locale-info', 'canonical-tz'):
+        nb = sum(1 for c in R['base'].values() if c[3] == 'Skipped' and c[-1].endswith('`%s`' % feat))
+        na = sum(1 for c in R['after'].values() if c[3] == 'Skipped' and c[-1].endswith('`%s`' % feat))
+        same = sorted(k for k, c in R['base'].items() if c[3] == 'Skipped' and c[-1].endswith('`%s`' % feat)) == sorted(k for k, c in R['after'].items() if c[3] == 'Skipped' and c[-1].endswith('`%s`' % feat))
+        print('%s\tskipped as claiming %s\tbase %d rows, after %d rows, the same rows: %s' % (form, feat, nb, na, same))

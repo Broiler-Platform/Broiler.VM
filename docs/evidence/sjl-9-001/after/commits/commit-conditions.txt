@@ -1,0 +1,121 @@
+# bundle sjl-9-001, SJL-9.6: the commit conditions of the rule's header, read with git on 2026-11-11T10:34:09Z
+## the rule commit
+the commits that add or change docs/evidence/sjl-9-001/decision-rule-area.md: 8edfcb79 61fab9fb f0023e28 
+git log --diff-filter=A -- docs/evidence/sjl-9-001/decision-rule-area.md: f0023e28cda2c53047028663f4a2ea91fc24196a SJL-9.1: bundle sjl-9-001's area rule, the programme's dated notes, and the ledger's SJL-9.1 entry
+4cf9ca449fc96a1a5be810f6d0ca31c42b855c8f: f2ce6e9268d3e5241abbd459c1e0298d38f8184a 8edfcb799d2e3c52287d8f506570c124af01a9a6 | Merge pull request #171 from Broiler-Platform/claude/busy-lamport-m3yprr
+  f0023e28 in 4cf9ca449fc96a1a5be810f6d0ca31c42b855c8f: yes; in its first parent f2ce6e92: no
+  61fab9fb in 4cf9ca449fc96a1a5be810f6d0ca31c42b855c8f: yes; in its first parent f2ce6e92: no
+  8edfcb79 in 4cf9ca449fc96a1a5be810f6d0ca31c42b855c8f: yes; in its first parent f2ce6e92: no
+  blob of docs/evidence/sjl-9-001/decision-rule-area.md at 4cf9ca44: feb83f64e14ef07041aa87eb5150427f6d52412a
+  blob of docs/evidence/sjl-9-001/decision-rule-area.md at 3b33530d: feb83f64e14ef07041aa87eb5150427f6d52412a
+  blob of docs/evidence/sjl-9-001/decision-rule-area.md at 68cad8ba: feb83f64e14ef07041aa87eb5150427f6d52412a
+  blob of docs/evidence/sjl-9-001/decision-rule-area.md at 797c637b: feb83f64e14ef07041aa87eb5150427f6d52412a
+the revision docs/evidence/sjl-9-001/decision-rule-area-revised-2026-11-04.md: added by 0c3d9828 SJL-9.4: part B's class Z8 takes one guard's literal, by a dated revision of bundle sjl-9-001's rule; in the base: no; in the after commit: yes; its blob at the after commit 095bf3391c2e2f0f1132d9211576e6ddf6f23550, at HEAD 095bf3391c2e2f0f1132d9211576e6ddf6f23550
+## the after commit
+68cad8baf7403125d44d5007441d30ff07bc4edf: parents 3b33530d354431675667087a0044648b8f617c2e 791d8b9d7497b54ceb295b44e1c60b3b3c139e8a; Merge pull request #190 from Broiler-Platform/claude/busy-lamport-m3yprr
+  on the default branch's first-parent line: yes
+## the base commit
+68cad8baf7403125d44d5007441d30ff07bc4edf^1 = 3b33530d354431675667087a0044648b8f617c2e (the base: yes)
+  descends from the rule commit 4cf9ca449fc96a1a5be810f6d0ca31c42b855c8f: yes
+  descends from bundle sjl-12-001's after commit 1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f: yes
+  git rev-list --first-parent 3b33530d354431675667087a0044648b8f617c2e..68cad8baf7403125d44d5007441d30ff07bc4edf: 68cad8baf7403125d44d5007441d30ff07bc4edf 
+  first-parent commits of the default branch after the base, to origin/main, each with how many paths under :(glob)src/Broiler.VM.Profile.JavaScript*/** :(glob)src/compositions/** :(glob)eng/packages/** Directory.Packages.props it changes against its first parent:
+    68cad8ba 51 Merge pull request #190 from Broiler-Platform/claude/busy-lamport-m3yprr
+    983d690a 9 Merge pull request #191 from Broiler-Platform/claude/busy-lamport-m3yprr
+    9775735a 4 Merge pull request #192 from Broiler-Platform/claude/busy-lamport-m3yprr
+    31c47792 1 Merge pull request #193 from Broiler-Platform/claude/busy-lamport-m3yprr
+    f71edf66 1 Merge pull request #194 from Broiler-Platform/claude/busy-lamport-m3yprr
+    df75f8ce 2 Merge pull request #195 from Broiler-Platform/claude/busy-lamport-m3yprr
+    a8d8398b 62 Merge pull request #196 from Broiler-Platform/claude/busy-lamport-m3yprr
+    acfc986b 1 Merge pull request #197 from Broiler-Platform/claude/busy-lamport-m3yprr
+    0ffc037f 0 Merge pull request #198 from Broiler-Platform/claude/busy-lamport-m3yprr
+    11c53897 2 Merge pull request #199 from Broiler-Platform/claude/busy-lamport-m3yprr
+  paths under :(glob)src/Broiler.VM.Profile.JavaScript*/** :(glob)src/compositions/** :(glob)eng/packages/** Directory.Packages.props the after commit changes against the base: 51
+    Directory.Packages.props
+    eng/packages/README.md
+    src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj
+    src/Broiler.VM.Profile.JavaScript/JsDateData.cs
+    src/Broiler.VM.Profile.JavaScript/JsDateIntervalFormat.cs
+    src/Broiler.VM.Profile.JavaScript/JsDatePatternGenerator.cs
+    src/Broiler.VM.Profile.JavaScript/JsDateTimeFormatter.cs
+    src/Broiler.VM.Profile.JavaScript/JsDecimal.cs
+    src/Broiler.VM.Profile.JavaScript/JsIntlDataSet.cs
+    src/Broiler.VM.Profile.JavaScript/JsIntlTables.cs
+    src/Broiler.VM.Profile.JavaScript/JsLocaleInfo.cs
+    src/Broiler.VM.Profile.JavaScript/JsLocaleTag.cs
+    src/Broiler.VM.Profile.JavaScript/JsNumberData.cs
+    src/Broiler.VM.Profile.JavaScript/JsNumberFormatter.cs
+    src/Broiler.VM.Profile.JavaScript/JsPluralRule.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.BigInt.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.DateTimeFormat.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.DisplayNames.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.DurationFormat.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.ListFormat.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.Locale.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.Number.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.NumberFormat.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.PluralRules.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.RelativeTimeFormat.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalDuration.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalInstant.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalPlainDate.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalPlainDateTime.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalPlainTime.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalYearMonthDay.cs
+    src/Broiler.VM.Profile.JavaScript/JsRealm.TemporalZonedDateTime.cs
+    src/Broiler.VM.Profile.JavaScript/JsZoneNames.cs
+    src/Broiler.VM.Profile.JavaScript/docs/decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md
+    src/Broiler.VM.Profile.JavaScript/docs/decisions/0085-the-profile-on-the-shared-intl-library.md
+    src/Broiler.VM.Profile.JavaScript/docs/decisions/README.md
+    src/Broiler.VM.Profile.JavaScript/docs/evidence/js-10-015/README.md
+    src/Broiler.VM.Profile.JavaScript/docs/evidence/js-10-015/consumer.log
+    src/Broiler.VM.Profile.JavaScript/docs/evidence/js-10-015/contents.txt
+    src/Broiler.VM.Profile.JavaScript/docs/evidence/js-10-015/hashes.txt
+    src/Broiler.VM.Profile.JavaScript/docs/evidence/js-10-015/manifest.txt
+    src/Broiler.VM.Profile.JavaScript/docs/evidence/js-10-015/nuspecs.txt
+    src/Broiler.VM.Profile.JavaScript/docs/evidence/js-10-015/pack.log
+    src/Broiler.VM.Profile.JavaScript/docs/packages.md
+    src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md
+    src/Broiler.VM.Profile.JavaScript/docs/support.md
+    src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SuiteFeatures.cs
+    src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/IntlChecks.cs
+## part A's dispatches: the workflow and the driver
+  3b33530d: .github/workflows/test262-evidence.yml 740a70f8d919ced6cd4bdf31f8bb2408f12fdcf7, eng/test262-evidence.py 55f71ee3da6844dd3e3aeb23ea98d24143222a88, eng/run-test262.py 695674a86701368e4ee19536198c446c77cbeee1, eng/collect-js-release-candidate.py cd5d8c0a797ea018d04a51382b5693347952fdb7, eng/compare-test262-forms.py 48e3091a872921849bab1f903b46698be0c69e33, src/tests/conformance/pins/test262.pin f8678de1ad261b1774f68cb46ec43b66f3a4d539
+  68cad8ba: .github/workflows/test262-evidence.yml 740a70f8d919ced6cd4bdf31f8bb2408f12fdcf7, eng/test262-evidence.py 55f71ee3da6844dd3e3aeb23ea98d24143222a88, eng/run-test262.py 695674a86701368e4ee19536198c446c77cbeee1, eng/collect-js-release-candidate.py cd5d8c0a797ea018d04a51382b5693347952fdb7, eng/compare-test262-forms.py 48e3091a872921849bab1f903b46698be0c69e33, src/tests/conformance/pins/test262.pin f8678de1ad261b1774f68cb46ec43b66f3a4d539
+  0ffc037f: .github/workflows/test262-evidence.yml 740a70f8d919ced6cd4bdf31f8bb2408f12fdcf7, eng/test262-evidence.py 55f71ee3da6844dd3e3aeb23ea98d24143222a88, eng/run-test262.py 695674a86701368e4ee19536198c446c77cbeee1, eng/collect-js-release-candidate.py cd5d8c0a797ea018d04a51382b5693347952fdb7, eng/compare-test262-forms.py 48e3091a872921849bab1f903b46698be0c69e33, src/tests/conformance/pins/test262.pin f8678de1ad261b1774f68cb46ec43b66f3a4d539
+  11c53897: .github/workflows/test262-evidence.yml 740a70f8d919ced6cd4bdf31f8bb2408f12fdcf7, eng/test262-evidence.py 55f71ee3da6844dd3e3aeb23ea98d24143222a88, eng/run-test262.py 695674a86701368e4ee19536198c446c77cbeee1, eng/collect-js-release-candidate.py cd5d8c0a797ea018d04a51382b5693347952fdb7, eng/compare-test262-forms.py 48e3091a872921849bab1f903b46698be0c69e33, src/tests/conformance/pins/test262.pin f8678de1ad261b1774f68cb46ec43b66f3a4d539
+  0ffc037f and 11c53897 on the default branch's first-parent line: 2 of 2
+## the data and the admitted proposals
+  src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs: base d1dbd56ddf2608d8287928462130c22c11646bae, after d1dbd56ddf2608d8287928462130c22c11646bae
+  src/tests/cldr/pins/cldr.pin: base 0ecbcdaeecd73c246c8d9dcb4316503f71b38133, after 0ecbcdaeecd73c246c8d9dcb4316503f71b38133
+  src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SuiteFeatures.cs: base a8ca25643b89cb61fe3b6de9737d10c3a4ef4eec, after c448d84e9016ec9944287c18f146db429b75f907
+    diff --git a/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SuiteFeatures.cs b/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SuiteFeatures.cs
+    index a8ca2564..c448d84e 100644
+    --- a/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SuiteFeatures.cs
+    +++ b/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SuiteFeatures.cs
+    @@ -80,6 +80,14 @@ internal sealed record SuiteFeatures(
+         /// arithmetic in every calendar its Table 1 lists was built.
+         /// </para>
+         /// <para>
+    +    /// <i>Noted 2026-11-03, at SJL-9.4's row Z8:</i> the <c>canonical-tz</c> proposal is admitted by
+    +    /// JSD-0082's decision D15, with the change that makes <c>Intl.DateTimeFormat</c> report a time
+    +    /// zone identifier as given, case-normalised, as <c>tc39/proposal-temporal@e8cc03fc</c>'s
+    +    /// <c>intl.html:434</c> has it, where the profile reported its primary identifier. The entry names
+    +    /// JSD-0082, the record that decides it; the cut-over's own record, which SJL-9.4's task 7.6 files,
+    +    /// records the admission again.
+    +    /// </para>
+    +    /// <para>
+         /// <b>An entry needs a record, and the record is named beside it</b>, so this set cannot grow
+         /// the way JSD-0018 feared a hand-written list would: quietly, whenever something failed. It can
+         /// only move tests from the skipped column into the scored ones, never out of them. The
+    @@ -94,6 +102,7 @@ internal sealed record SuiteFeatures(
+                 ["ShadowRealm"] = "JSD-0040",
+                 ["Temporal"] = "JSD-0054",
+                 ["Intl.Era-monthcode"] = "JSD-0056",
+    +            ["canonical-tz"] = "JSD-0082",
+             };
+     
+         /// <summary>The proposed flags a <c>--test262</c> run skips: every proposal not admitted.</summary>

@@ -1,0 +1,8 @@
+2026-11-11T10:01:49Z gate build-SliceCompiler-base PASS load1=0.17 procs=none checks=0
+2026-11-11T10:02:31Z stop-servers: done, remaining:
+2026-11-11T10:02:31Z gate build-Cli-base WAIT load1=2.29 procs=none
+2026-11-11T10:03:22Z gate build-Cli-base PASS load1=0.99 procs=none checks=5
+2026-11-11T10:03:30Z stop-servers: done, remaining:
+2026-11-11T10:03:31Z gate build-Conformance-base WAIT load1=1.63 procs=none
+2026-11-11T10:04:01Z gate build-Conformance-base PASS load1=0.99 procs=none checks=3
+2026-11-11T10:04:11Z stop-servers: done, remaining:
