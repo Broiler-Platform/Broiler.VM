@@ -1,0 +1,7 @@
+# the SHA-256 of each list of the conformance root's assemblies, wide-native; one distinct list is one build
+53d92e00eb834f2fe9a827bcb4e01748073c9b218018b34abab0504706bc7045  merge
+53d92e00eb834f2fe9a827bcb4e01748073c9b218018b34abab0504706bc7045  slice-native-0
+53d92e00eb834f2fe9a827bcb4e01748073c9b218018b34abab0504706bc7045  slice-native-1
+53d92e00eb834f2fe9a827bcb4e01748073c9b218018b34abab0504706bc7045  slice-native-2
+53d92e00eb834f2fe9a827bcb4e01748073c9b218018b34abab0504706bc7045  slice-native-3
+runners: 4; lists: 5; distinct lists: 1

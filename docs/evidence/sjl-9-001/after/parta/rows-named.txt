@@ -1,0 +1,33 @@
+# part A, SJL-9.6: rows S7, T8 and L18 and the skipped proposals, per form, base -> after (part-a-rows.py)
+wide-bytecode	row S7	test/intl402/RelativeTimeFormat/prototype/format/en-us-numeric-always.js [sloppy]	Passed -> Passed
+wide-bytecode	row S7	test/intl402/RelativeTimeFormat/prototype/format/en-us-numeric-always.js [strict]	Passed -> Passed
+wide-bytecode	row S7	test/intl402/RelativeTimeFormat/prototype/formatToParts/en-us-numeric-always.js [sloppy]	Passed -> Passed
+wide-bytecode	row S7	test/intl402/RelativeTimeFormat/prototype/formatToParts/en-us-numeric-always.js [strict]	Passed -> Passed
+wide-bytecode	row T8	test/intl402/DateTimeFormat/prototype/resolvedOptions/hourCycle-dateStyle.js [sloppy]	Passed -> Passed
+wide-bytecode	row T8	test/intl402/DateTimeFormat/prototype/resolvedOptions/hourCycle-dateStyle.js [strict]	Passed -> Passed
+wide-bytecode	row T8	test/intl402/DateTimeFormat/prototype/resolvedOptions/hourCycle.js [sloppy]	Passed -> Passed
+wide-bytecode	row T8	test/intl402/DateTimeFormat/prototype/resolvedOptions/hourCycle.js [strict]	Passed -> Passed
+wide-bytecode	row L18 (calls getCollations)	test/intl402/Locale/prototype/getCollations/branding.js [-]	Skipped -> Skipped	features Intl.Locale,Intl.Locale-info
+wide-bytecode	row L18 (calls getCollations)	test/intl402/Locale/prototype/getCollations/name.js [-]	Skipped -> Skipped	features Intl.Locale,Intl.Locale-info
+wide-bytecode	row L18 (calls getCollations)	test/intl402/Locale/prototype/getCollations/output-array-values.js [-]	Skipped -> Skipped	features Intl.Locale,Intl.Locale-info,Array.prototype.includes
+wide-bytecode	row L18 (calls getCollations)	test/intl402/Locale/prototype/getCollations/output-array.js [-]	Skipped -> Skipped	features Intl.Locale,Intl.Locale-info
+wide-bytecode	row L18 (calls getCollations)	test/intl402/Locale/prototype/getCollations/prop-desc.js [-]	Skipped -> Skipped	features Intl.Locale,Intl.Locale-info
+wide-bytecode	skipped as claiming Intl.NumberFormat-v3	base 102 rows, after 102 rows, the same rows: True
+wide-bytecode	skipped as claiming Intl.Locale-info	base 43 rows, after 43 rows, the same rows: True
+wide-bytecode	skipped as claiming canonical-tz	base 19 rows, after 0 rows, the same rows: False
+wide-native	row S7	test/intl402/RelativeTimeFormat/prototype/format/en-us-numeric-always.js [sloppy]	Passed -> Passed
+wide-native	row S7	test/intl402/RelativeTimeFormat/prototype/format/en-us-numeric-always.js [strict]	Passed -> Passed
+wide-native	row S7	test/intl402/RelativeTimeFormat/prototype/formatToParts/en-us-numeric-always.js [sloppy]	Passed -> Passed
+wide-native	row S7	test/intl402/RelativeTimeFormat/prototype/formatToParts/en-us-numeric-always.js [strict]	Passed -> Passed
+wide-native	row T8	test/intl402/DateTimeFormat/prototype/resolvedOptions/hourCycle-dateStyle.js [sloppy]	Passed -> Passed
+wide-native	row T8	test/intl402/DateTimeFormat/prototype/resolvedOptions/hourCycle-dateStyle.js [strict]	Passed -> Passed
+wide-native	row T8	test/intl402/DateTimeFormat/prototype/resolvedOptions/hourCycle.js [sloppy]	Passed -> Passed
+wide-native	row T8	test/intl402/DateTimeFormat/prototype/resolvedOptions/hourCycle.js [strict]	Passed -> Passed
+wide-native	row L18 (calls getCollations)	test/intl402/Locale/prototype/getCollations/branding.js [-]	Skipped -> Skipped	features Intl.Locale,Intl.Locale-info
+wide-native	row L18 (calls getCollations)	test/intl402/Locale/prototype/getCollations/name.js [-]	Skipped -> Skipped	features Intl.Locale,Intl.Locale-info
+wide-native	row L18 (calls getCollations)	test/intl402/Locale/prototype/getCollations/output-array-values.js [-]	Skipped -> Skipped	features Intl.Locale,Intl.Locale-info,Array.prototype.includes
+wide-native	row L18 (calls getCollations)	test/intl402/Locale/prototype/getCollations/output-array.js [-]	Skipped -> Skipped	features Intl.Locale,Intl.Locale-info
+wide-native	row L18 (calls getCollations)	test/intl402/Locale/prototype/getCollations/prop-desc.js [-]	Skipped -> Skipped	features Intl.Locale,Intl.Locale-info
+wide-native	skipped as claiming Intl.NumberFormat-v3	base 102 rows, after 102 rows, the same rows: True
+wide-native	skipped as claiming Intl.Locale-info	base 43 rows, after 43 rows, the same rows: True
+wide-native	skipped as claiming canonical-tz	base 19 rows, after 0 rows, the same rows: False

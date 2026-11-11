@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# part-a-rerun.sh <rerun|race> <paths-file> <reps>
+# Part A's class C4 for bundle sjl-9-001 (SJL-9.6): each (c') row's path run again alone, one process of the conformance
+# root over the path, at the base commit and at the after commit, under the wide manifest, the row's form and the
+# part's allowances (fuel 100,000,000, wall clock 5,000 ms), with --expect against the tree's retained pin; <reps>
+# processes per path and commit, alternating base and after. `race` is class (e): the same, once, with ten times the
+# wall clock (50,000 ms). <paths-file> lines: <form> <path>. Each process runs behind the gate (run.sh).
+S=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-sjl96
+mode=$1; paths=$2; reps=$3
+SUITE=$(cat $S/parta/suite-path.txt)
+O=$S/parta/$mode; mkdir -p $O/logs $O/reports
+wall=5000; [ "$mode" = race ] && wall=50000
+while read -r form path; do
+  [ -z "$form" ] && continue
+  slug=$(echo "$path" | tr '/' '_' | sed 's/\.js$//')
+  for rep in $(seq 1 $reps); do
+    for side in base after; do
+      T=/dev/shm/sjl96/$side
+      DLL=$T/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll
+      label=$mode-$form-$side-$slug-$rep
+      rep_file=$O/reports/$label.report
+      $S/scripts/run.sh $label $O/logs $T -- dotnet $DLL --test262 $SUITE --manifest broiler.javascript.wide --test $path --report $rep_file --fuel 100000000 --wall $wall --form ${form#wide-} --expect $T/src/tests/conformance/pins/test262.pin
+      grep '^result|' $rep_file 2>/dev/null | while read -r row; do printf '%s\t%s\t%s\t%s\n' "$side" "$form" "$rep" "$row"; done >> $O/$mode-$form.tsv
+    done
+  done
+done < $paths
+echo DONE > $O/DONE

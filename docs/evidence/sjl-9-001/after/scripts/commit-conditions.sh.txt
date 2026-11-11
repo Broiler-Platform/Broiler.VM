@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# commit-conditions.sh <repo>: the git reads behind bundle sjl-9-001's commit conditions (the rule's header), SJL-9.6.
+# Git reads alone; runs nothing else.
+R=$1; g() { git -C $R "$@"; }
+RULE=4cf9ca449fc96a1a5be810f6d0ca31c42b855c8f; S12=1de3af6278fda8ef0cca9d1009c3803ed6fc8c2f
+A=68cad8baf7403125d44d5007441d30ff07bc4edf; B=3b33530d354431675667087a0044648b8f617c2e
+F=docs/evidence/sjl-9-001/decision-rule-area.md; F2=docs/evidence/sjl-9-001/decision-rule-area-revised-2026-11-04.md
+NAMED=(':(glob)src/Broiler.VM.Profile.JavaScript*/**' ':(glob)src/compositions/**' ':(glob)eng/packages/**' 'Directory.Packages.props')
+echo "# bundle sjl-9-001, SJL-9.6: the commit conditions of the rule's header, read with git on $(date -u +%FT%TZ)"
+echo "## the rule commit"
+echo "the commits that add or change $F: $(g log --format='%h' -- $F | tr '\n' ' ')"
+echo "git log --diff-filter=A -- $F: $(g log --diff-filter=A --format='%H %s' -- $F)"
+echo "$RULE: $(g log -1 --format='%P | %s' $RULE)"
+for c in f0023e28 61fab9fb 8edfcb79; do echo "  $c in $RULE: $(g merge-base --is-ancestor $c $RULE && echo yes || echo NO); in its first parent $(g rev-parse --short $RULE^1): $(g merge-base --is-ancestor $c $RULE^1 && echo yes || echo no)"; done
+for c in $RULE $B $A $(g rev-parse HEAD); do echo "  blob of $F at $(g rev-parse --short $c): $(g rev-parse $c:$F)"; done
+echo "the revision $F2: added by $(g log --diff-filter=A --format='%h %s' -- $F2); in the base: $(g merge-base --is-ancestor $(g log --diff-filter=A --format=%H -- $F2) $B && echo yes || echo no); in the after commit: $(g merge-base --is-ancestor $(g log --diff-filter=A --format=%H -- $F2) $A && echo yes || echo NO); its blob at the after commit $(g rev-parse $A:$F2), at HEAD $(g rev-parse HEAD:$F2)"
+echo "## the after commit"
+echo "$A: parents $(g log -1 --format=%P $A); $(g log -1 --format=%s $A)"
+echo "  on the default branch's first-parent line: $(g rev-list --first-parent origin/main | grep -qx $A && echo yes || echo NO)"
+echo "## the base commit"
+echo "$A^1 = $(g rev-parse $A^1) (the base: $([ $(g rev-parse $A^1) = $B ] && echo yes || echo NO))"
+echo "  descends from the rule commit $RULE: $(g merge-base --is-ancestor $RULE $B && echo yes || echo NO)"
+echo "  descends from bundle sjl-12-001's after commit $S12: $(g merge-base --is-ancestor $S12 $B && echo yes || echo NO)"
+echo "  git rev-list --first-parent $B..$A: $(g rev-list --first-parent $B..$A | tr '\n' ' ')"
+echo "  first-parent commits of the default branch after the base, to origin/main, each with how many paths under ${NAMED[*]} it changes against its first parent:"
+for c in $(g rev-list --first-parent --reverse $B..origin/main); do echo "    $(g rev-parse --short $c) $(g diff --name-only $c^1 $c -- "${NAMED[@]}" | wc -l) $(g log -1 --format=%s $c)"; done
+echo "  paths under ${NAMED[*]} the after commit changes against the base: $(g diff --name-only $B $A -- "${NAMED[@]}" | wc -l)"
+g diff --name-only $B $A -- "${NAMED[@]}" | sed 's/^/    /'
+echo "## part A's dispatches: the workflow and the driver"
+for c in $B $A 0ffc037ff0c3fb1a70e090bcfefd66a885f52eee 11c53897dc7f19e5ef195aa584df0aaabe4ab2c5; do echo "  $(g rev-parse --short $c): .github/workflows/test262-evidence.yml $(g rev-parse $c:.github/workflows/test262-evidence.yml), eng/test262-evidence.py $(g rev-parse $c:eng/test262-evidence.py), eng/run-test262.py $(g rev-parse $c:eng/run-test262.py), eng/collect-js-release-candidate.py $(g rev-parse $c:eng/collect-js-release-candidate.py), eng/compare-test262-forms.py $(g rev-parse $c:eng/compare-test262-forms.py), src/tests/conformance/pins/test262.pin $(g rev-parse $c:src/tests/conformance/pins/test262.pin)"; done
+echo "  0ffc037f and 11c53897 on the default branch's first-parent line: $(g rev-list --first-parent origin/main | grep -cx -e 0ffc037ff0c3fb1a70e090bcfefd66a885f52eee -e 11c53897dc7f19e5ef195aa584df0aaabe4ab2c5) of 2"
+echo "## the data and the admitted proposals"
+for p in src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs src/tests/cldr/pins/cldr.pin src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SuiteFeatures.cs; do echo "  $p: base $(g rev-parse $B:$p), after $(g rev-parse $A:$p)"; done
+g diff $B $A -- src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SuiteFeatures.cs | sed 's/^/    /'

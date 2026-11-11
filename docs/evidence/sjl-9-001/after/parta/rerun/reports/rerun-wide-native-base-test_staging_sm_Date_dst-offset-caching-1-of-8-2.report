@@ -1,0 +1,30 @@
+# broiler-js-conformance test262 report 2
+# run|suite|revision|upstream|upstreamRevision|shardIndex|shardCount|partition
+# edition|standard|year|source|revision|document|digest|archived
+# manifest|id|formatVersion|harness|admitted|declined
+# form|name|backend
+# allowance|fuel|wallClockMs
+# narrowing|reason
+# selection|candidates|selected|sharded|files
+# coverage|whole, or partial and why
+# total|files|variants|passed|failed|unsupported|exhausted|skipped
+# family|name|count|example
+# exhausted|dimension|count|example
+# failure|kind|count|example
+# area|directory|count|example
+# feature|name|count|example
+# result|path|variant|verdict|family|dimension|kind|features|detail
+# config|failure|detail
+edition|ECMA-262|ES2026|tc39/ecma262|0248456c758431e4bb8e5d26333ff1865123c9cd|spec.html|ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0|archived
+run|test262|46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93|tc39/test262|ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e|-1|1|FNV-1a over the normalized suite-relative path, modulo the shard count, one whole file per shard
+manifest|broiler.javascript.wide|2|loaded|broiler.javascript.bigint,broiler.javascript.binary,broiler.javascript.dynamic,broiler.javascript.intl,broiler.javascript.modules,broiler.javascript.native,broiler.javascript.shadowrealm,broiler.javascript.shared,broiler.javascript.temporal|-
+form|native|x86-64-sysv
+allowance|100000000|5000
+narrowing|a named selection rather than the whole test tree: test/staging/sm/Date/dst-offset-caching-1-of-8.js
+selection|1|1|2|1
+coverage|partial|a named selection rather than the whole test tree: test/staging/sm/Date/dst-offset-caching-1-of-8.js; configuration failure NoExecutedTests
+total|1|2|0|0|0|2|0
+exhausted|Fuel|2|test/staging/sm/Date/dst-offset-caching-1-of-8.js [sloppy]
+result|test/staging/sm/Date/dst-offset-caching-1-of-8.js|sloppy|Exhausted||Fuel|||the allowance was spent running the test
+result|test/staging/sm/Date/dst-offset-caching-1-of-8.js|strict|Exhausted||Fuel|||the allowance was spent running the test
+config|NoExecutedTests|2 variants ran and none of them reached a verdict about the engine
