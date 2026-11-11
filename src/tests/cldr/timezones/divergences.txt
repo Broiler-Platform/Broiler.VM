@@ -175,11 +175,16 @@ Zulu => Zulu | GMT GMT GMT GMT GMT GMT GMT GMT
 Africa/Casablanca => Africa/Casablanca | GMT-00:30:20 GMT-00:30:20 GMT+01:00 GMT GMT GMT+01:00 GMT+01:00 GMT
 Africa/El_Aaiun => Africa/El_Aaiun | GMT-00:52:48 GMT-00:52:48 GMT-01:00 GMT-01:00 GMT GMT+01:00 GMT+01:00 GMT
 
-# The same resolution, in the lists: a region's zones are zone.tab's, which are IANA Zone names
+# The primary identifiers, in the lists: a region's zones are zone.tab's, which are IANA Zone names
 # (15.5.13 TimeZonesOfLocale asks for canonical Zone names), and the identifiers Intl lists are the
 # primary ones (6.5.3), so Asia/Kolkata, Europe/Kyiv and America/Indiana/Indianapolis where V8 lists
 # CLDR's older names. V8 also leaves UTC and the 26 Etc/GMT offset zones out of the list, though each
-# is a primary identifier.
+# is a primary identifier. A list still names primaries where a format, since row Z8, reports a name
+# as given (the first group above): no line of this group moved with it.
+# (Rewritten 2026-11-11, at SJL-9.6, after bundle sjl-9-001's runs at the base and after commits,
+# because row Z8 changed the first group's reason alone (JSD-0085). It opened "The same resolution,
+# in the lists:", the resolution of the first group's header as it read before SJL-9.4, and ended
+# at "is a primary identifier."; the rest is as it read.)
 zones of US => America/Adak America/Anchorage America/Boise America/Chicago America/Denver America/Detroit America/Indiana/Indianapolis America/Indiana/Knox America/Indiana/Marengo America/Indiana/Petersburg America/Indiana/Tell_City America/Indiana/Vevay America/Indiana/Vincennes America/Indiana/Winamac America/Juneau America/Kentucky/Louisville America/Kentucky/Monticello America/Los_Angeles America/Menominee America/Metlakatla America/New_York America/Nome America/North_Dakota/Beulah America/North_Dakota/Center America/North_Dakota/New_Salem America/Phoenix America/Sitka America/Yakutat Pacific/Honolulu
 zones of IN => Asia/Kolkata
 zones of UA => Europe/Kyiv Europe/Simferopol

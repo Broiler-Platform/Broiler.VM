@@ -23,15 +23,25 @@ keeps for the IANA Time Zone Database data the profile generates.
 
   Node 22 has `Intl.Locale`'s older `timeZones` accessor rather than `getTimeZones`, so the program
   uses whichever the engine has.
-- [`divergences.txt`](divergences.txt) names the 51 of its 610 lines on which the profile answers
+- [`divergences.txt`](divergences.txt) names the 158 of its 610 lines on which the profile answers
   otherwise, in three groups, each under its reason:
-  - ECMA-402 resolves a name to its IANA Zone, and V8 to CLDR's older canonical name (45 lines, on
-    every one of which the offsets agree);
+  - `Intl.DateTimeFormat` reports a name as given, case-normalised, as ECMA-402 with
+    tc39/proposal-temporal@e8cc03fc reads it (row Z8, JSD-0082 decision D15), where V8 answers CLDR's
+    own canonical identifier, which for a Zone and for many Links is another name (152 lines, on every
+    one of which the offsets agree);
   - Morocco's permanent +00 from 2026-09-20, which tzdb 2026e has and Node's 2025b does not (2);
-  - the same resolution in the region lists and the listed identifiers, which V8 also gives without
-    UTC and the `Etc/GMT` offset zones (4).
+  - the primary identifiers in the region lists and the listed identifiers, where V8 lists CLDR's older
+    names, and which V8 also gives without UTC and the `Etc/GMT` offset zones (4).
 
   Each line is the profile's answer.
+
+  *(Revised 2026-11-11, at SJL-9.6, after bundle sjl-9-001's runs at the base and after commits, which
+  hold this folder's divergences to rows Z8 and L18 until then (JSD-0085). SJL-9.4's row Z8 rewrote,
+  removed and added lines of the first group, and changed its reason. The paragraph read "names the 51
+  of its 610 lines", its first item "ECMA-402 resolves a name to its IANA Zone, and V8 to CLDR's older
+  canonical name (45 lines, on every one of which the offsets agree);", and its third "the same
+  resolution in the region lists and the listed identifiers, which V8 also gives without UTC and the
+  `Etc/GMT` offset zones (4).")*
 
 The slice compiler's check `tzdb/time-zone-offsets-match-icu` runs the same program under the profile
 and compares every line: Node's, or the divergence that replaces it.
