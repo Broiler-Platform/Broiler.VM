@@ -756,7 +756,7 @@ the rest of this decision, are left as written.
 
 *(Noted 2026-11-11, at SJL-9.6, when this family's vectors pin moved to Broiler.JS's corpus revision 38.)* This
 decision says "The vectors' per-engine Z8 expectations become one at the next revision." They became one at corpus
-revision 38, the revision that retires the cut-overs' Intl divergence fields (plan task 9.6), not at the revision
+revision 38, the revision that retires the cut-overs' Intl divergence fields (SJL-9.6), not at the revision
 after this record: revisions 27 to 37 kept them. Broiler.JS's corpus revision 38 (Broiler-Platform/Broiler.JS#1112,
 merged as `3493462a`) writes row Z8's time-zone vectors `normative`, their `per-engine.broiler-js` field, the
 identifier as given, and their `per-engine.broiler-vm` field, the primary, merged into `out`, the identifier as given,

@@ -197,7 +197,7 @@ reproduces every closure, and why the collection from `b3fd2ba` stays.)*
 
 ## 5. Engine-level vectors on the pin at corpus revision 38 (SJL-9.6)
 
-*(Added 2026-11-11, at SJL-9.6, the last step of its plan task 9.6.)* Broiler.JS's corpus revision 38 retires both
+*(Added 2026-11-11, at SJL-9.6.)* Broiler.JS's corpus revision 38 retires both
 engines' Intl divergence fields that the SJL-9 cut-overs answer, this family's among them: the fields of rows Z8, L9
 and L18, which SJL-9.4 corrected (Broiler-Platform/Broiler.VM#190, merged as `68cad8b`). It also makes row Z8's
 per-engine expectations one, as JSD-0082's decision D15 says it would: the time-zone area's vectors of the row are

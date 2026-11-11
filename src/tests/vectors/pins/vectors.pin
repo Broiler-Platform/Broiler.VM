@@ -149,7 +149,7 @@
 # vector files, the numerics area's eight, the text area's six, the Date area's seven, the Unicode area's five, the
 # time-zone area's seven, the Temporal area's six, the Intl area's five, the syntax area's six, the schema, the
 # README, the revision log, the prelude and the five source pins."
-# Moved to revision 38 on 2026-11-11, at milestone SJL-9 (its plan task 9.6): revision 33 adds the collation vectors
+# Moved to revision 38 on 2026-11-11, at milestone SJL-9.6: revision 33 adds the collation vectors
 # of milestone SJL-17.2, four files under `collation/`, of the area `intl`, and revision 34 classifies both engines'
 # first runs on them, where this profile's run had no difference, so that no `divergence.broiler-vm` field is written;
 # revisions 35, 36 and 37 classify, for Broiler.JS alone, Intl vectors whose answer depends on whether the host lists
