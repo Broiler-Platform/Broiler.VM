@@ -287,6 +287,15 @@ globalization (decision D22); there is no measurement part, as at SJL-8.7 and SJ
 measurement clause and SJL-3's clause 7 is unmet, and the tables' decoding cost is held by tests that decode each
 table once per process, lazily and thread-safely (decision D23).
 
+*(Noted 2026-11-11, at SJL-9.6, Broiler.VM's run of its area rule.)* Broiler.VM's bundle
+[`sjl-9-001`](../../evidence/sjl-9-001/README.md) takes and judges every part of its rule,
+`decision-rule-area.md` as its revision of 2026-11-04 reads it, at the commits the rule names: part A, whole-suite
+test262 in both forms by the hosted workflow at the base and after commits, and parts B and C, the Intl reference
+datasets with the slice compiler's checks and the wide twins, locally from a clean archive of each. Parts A, B and C
+each read met, on readings the bundle names for the owner, and no part needs an exclusion. This reads clause 13's
+evidence and meets no clause: SJL-9's exit reading follows, and nothing is accepted. The paragraph above is left as
+written.
+
 ---
 
 ## Exit gate

@@ -1363,6 +1363,19 @@ Each is corrected beside the reading, which is quoted there, in this record's ch
 This record is settled when SJL-9.4's and SJL-9.5's cut-overs have landed with both deletion lists absent, and every
 part of both repositories' `sjl-9-001` rules has been judged, whatever each decides.
 
+*(Noted 2026-11-11, at SJL-9.6, Broiler.VM's run of its rule.)* The condition's second clause reads "every part of both
+repositories' `sjl-9-001` rules has been judged, whatever each decides". Broiler.VM's parts are judged: bundle
+[`sjl-9-001`](../../../../docs/evidence/sjl-9-001/README.md), sections 2 and 6 to 8, takes and judges parts A, B and C
+of its `decision-rule-area.md`, as its revision of 2026-11-04 reads it, at the after commit `68cad8b` (the merge of
+Broiler-Platform/Broiler.VM#190, SJL-9.4's cut-over) and its first parent, the base. Each part reads met, on readings
+the bundle names for the owner. Part A's only corrections are row Z8's `canonical-tz` variants, as decision D15 names
+them, so it finds no correction this record's correspondence missed; part B's changed lines are rows Z8's and L18's,
+as decisions D15 and D32 name them, and the one guard the revision admits, so this record's falsifier "This family's
+datasets move at its cut-over outside rows Z8 and L18" is not met; part C finds no charge moved, as decision D18
+requires. Broiler.JS's parts were judged in its bundle (Broiler-Platform/Broiler.JS#1111). This note does not settle
+the record: its first clause, both cut-overs landed with both deletion lists absent, is read at SJL-9's exit reading,
+and nothing is accepted. The condition above is left as written.
+
 ## Correction entries
 
 None in this profile's plan documents at this record. SJL-9.2c takes the next free JSC, and SJL-9.4's cut-over its
