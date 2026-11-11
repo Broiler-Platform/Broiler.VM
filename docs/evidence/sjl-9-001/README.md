@@ -33,16 +33,20 @@ name the machine's worktrees as run.
 
 **Owner and reviewer:** one person holds every role (EX-30), and nobody independent has read this bundle.
 
-**State:** rules and correspondence, 2026-10-26, at SJL-9.1, and this family's engine-level run of the vectors on its
-pin at corpus revision 28, 2026-10-27, at SJL-9.2 (section 3). **Nothing here is a verdict, and no run of the rule
-has been taken.** *(Revised 2026-10-27, at SJL-9.2, when the pin moved to revision 28. It read "rules and
-correspondence only, 2026-10-26, at SJL-9.1. **Nothing here is a verdict, and nothing has been taken.**")*
+**State:** rules and correspondence, 2026-10-26, at SJL-9.1; this family's engine-level run of the vectors on its pin
+at corpus revision 28, 2026-10-27, at SJL-9.2 (section 3); and its runs on the pin before and after it moved to corpus
+revision 38, 2026-11-11, at SJL-9.6 (section 5). **Nothing here is a verdict, and no run of the rule has been taken.**
+*(Revised 2026-10-27, at SJL-9.2, when the pin moved to revision 28. It read "rules and correspondence only,
+2026-10-26, at SJL-9.1. **Nothing here is a verdict, and nothing has been taken.**")* *(Revised 2026-11-11, at SJL-9.6,
+when the pin moved to revision 38. It read "rules and correspondence, 2026-10-26, at SJL-9.1, and this family's
+engine-level run of the vectors on its pin at corpus revision 28, 2026-10-27, at SJL-9.2 (section 3).")*
 - Every run of the rule is taken at the base commit or the after commit, which the rule defines before either exists
   (JSD-0082 decision D4): the after commit is the default-branch merge that lands SJL-9.4's cut-over, and the base
   commit is its first parent.
 - A collector joins this bundle when there is a run of the rule to take. Section 3's run is no run of the rule, and
   was taken without one. *(Revised 2026-10-27, at SJL-9.2. It read "A collector joins this bundle when there is a run
-  to take.")*
+  to take.")* Section 5's runs are no run of the rule either, and were taken without one. *(Added 2026-11-11, at
+  SJL-9.6.)*
 
 Broiler.JS's clauses, and the data home's and the home's, are judged in Broiler.JS's bundle of the same name. This
 bundle reads none of their runs.
@@ -190,6 +194,90 @@ taken again at the branch's last change to a product source, from a clean checko
 README says so; this paragraph, which names the first collection, is kept as written.)* *(Noted 2026-11-04, later:
 one change to an architecture test, `65ad719`, follows `b3fd2ba`; `cutover/`'s README records a retake after it that
 reproduces every closure, and why the collection from `b3fd2ba` stays.)*
+
+## 5. Engine-level vectors on the pin at corpus revision 38 (SJL-9.6)
+
+*(Added 2026-11-11, at SJL-9.6.)* Broiler.JS's corpus revision 38 retires both
+engines' Intl divergence fields that the SJL-9 cut-overs answer, this family's among them: the fields of rows Z8, L9
+and L18, which SJL-9.4 corrected (Broiler-Platform/Broiler.VM#190, merged as `68cad8b`). It also makes row Z8's
+per-engine expectations one, as JSD-0082's decision D15 says it would: the time-zone area's vectors of the row are
+`normative`, and their `out` is the identifier as given, case-normalised. It is on Broiler.JS's default branch since
+Broiler-Platform/Broiler.JS#1112 merged as `3493462a`, whose corpus is that of `5a15483f`, revision 38 as completed
+before the merge. The retired fields are listed, with their engine and reason, in Broiler.JS's
+`docs/evidence/corpus-revision-38/retired-divergences-revision-38.tsv`. Between revision 32, where the pin stood, and
+revision 38:
+- revision 33 adds the collation vectors, which bundle [`sjl-17-001`](../sjl-17-001/README.md) reads, and revision 34
+  classifies both engines' first runs on them, with no difference of this family's;
+- revisions 35, 36 and 37 classify Intl vectors for Broiler.JS alone: those whose answer depends on whether the host
+  lists one of decision D5's extra locales (35 and 37, decision D7), and those the pinned CLDR 48.2.0 contradicts (36);
+- revision 38 is the retirement above.
+
+**The pin** is at revision 38 since `61394d0`, and was at revision 32 from `a4ce976` (SJL-11's task 3.5). Its archive
+was taken twice, byte-identical, and its files hashed from an extracted copy; the same method, applied to revision 32's
+commit, `b2c2e224`, gives that pin's two digests and its count exactly. Its content digest is that of the scratch pin
+of `5a15483f` from which revision 38's row in Broiler.JS's revision log records this family's run on the revision.
+Against revision 32 the archive adds the collation vectors' four files and changes ten: the corpus's README, revision
+log and schema, the Intl area's five files and the time-zone area's `identifiers.vectors` and `lookup.vectors`; every
+other file is revision 32's byte for byte. No vector's `out`, script, input or operation changes. This family's
+expectations move only where row Z8's `per-engine.broiler-vm` fields go.
+
+**The runs.** Each was taken by a script that wrote its log whole: a header naming the commit, the tree, the build, the
+pin and its archive with their SHA-256, the host and the command; then the runner's output; then the exit code and the
+end time. Each was run under `TZ=UTC`, with no `LANG`, `LANGUAGE` or `LC_ALL`, with the report written outside the tree
+and kept here gzip-compressed. This family's Intl reads no host's ICU. [`vectors/hashes.txt`](vectors/hashes.txt) holds
+every file's SHA-256, which `sha256sum -c` verifies.
+- **The base** is `0ffc037f`, this repository's default branch (the merge of Broiler-Platform/Broiler.VM#198), on the
+  pin it commits, revision 32. Its answers were taken first, before the pin moved, in a clean checkout of that commit,
+  by a script whose log had no header. The run kept here was taken again afterwards, so that its log has one, in a tree
+  that `git archive` wrote of that commit, `docs/evidence/` left out, where the conformance root was built in Release
+  with `--disable-build-servers` ([`vectors/build-conformance-base-revision-32.log`](vectors/build-conformance-base-revision-32.log));
+  its report is the first one's byte for byte.
+- **The run on revision 38** was taken at `61394d0`, clean, on the committed pin, with the root built in Release with
+  `--disable-build-servers` in that tree ([`vectors/build-conformance-revision-38.log`](vectors/build-conformance-revision-38.log)).
+  `61394d0`'s code is `0ffc037f`'s: the two differ in the pin's folder and the notices alone.
+  *(Added 2026-11-11, at review.)* The SHA-256 its log records for `vectors.pin` is that of the pin `61394d0` commits.
+  The later commits of this change edit the pin's header comments alone, so the file at their head hashes otherwise; its
+  data lines, the `revision`, `archive-sha256`, `content-sha256`, `files` and `archived-at` lines that the runner and
+  `SharedVectorsPinTests` read, are unchanged, and a run on the pin as they leave it, with the root built in Release at
+  their head, writes this run's report byte for byte.
+
+| Run | Taken | Result | Files |
+|---|---|---|---|
+| Revision 32, the base | At `0ffc037f`, from its archive, on its pin, from 07:50Z on 2026-11-11 | 108,759 vectors: 108,541 match, 65 of them where a divergence no longer holds, 61 classified divergences and 157 unclassified differences; exit code 1 | [`run-base-revision-32.log`](vectors/run-base-revision-32.log), [`run-base-revision-32.tsv.gz`](vectors/run-base-revision-32.tsv.gz) |
+| Revision 38 | At `61394d0`, clean, on the committed pin, from 07:34Z on 2026-11-11 | 111,157 vectors: 111,096 match, 24 of them where a divergence no longer holds, 61 classified divergences and 0 unclassified differences | [`run-revision-38.log`](vectors/run-revision-38.log), [`run-revision-38.tsv.gz`](vectors/run-revision-38.tsv.gz) |
+| Its negative control | The same, with `--mutate time-zones/formatter-zone/0001` | 111,095 match, the same 61 classified divergences, and 1 unclassified difference, the mutated vector | [`run-negative-control-revision-38.log`](vectors/run-negative-control-revision-38.log), [`run-negative-control-revision-38.tsv.gz`](vectors/run-negative-control-revision-38.tsv.gz) |
+
+The 18 vectors whose `out` is a status are skipped in each run and named in its summary line.
+
+**This family matches every vector of revision 38 or differs exactly as its `divergence.broiler-vm` field says, and
+leaves none unclassified.** [`vectors/comparison-revision-38.txt`](vectors/comparison-revision-38.txt), written by
+[`vectors/compare-revision-38.py`](vectors/compare-revision-38.py), compares the two runs row by row and reads the two
+corpora record by record. Every verdict that moves is attributed there, and none is left unattributed:
+- **the 41 vectors of the retired fields**, 18 of row Z8 in `intl/date-times/zones/`, 18 of row L9 in
+  `intl/locales/subdivision/` and 5 of row L18 in `intl/locales/collations/`, move from a match where the divergence no
+  longer holds to a match. Each matched at the base, as since SJL-9.4, and revision 38 removes the field, so none is
+  reported as no longer holding;
+- **the 157 time-zone vectors of row Z8**, 152 in `time-zones/formatter-zone/` and 5 in `time-zones/case/`, move from an
+  unclassified difference to a match. The rendering is the same at both pins, the identifier as given; at revision 32
+  the expectation was the vector's `per-engine.broiler-vm` field, the primary, and at revision 38 it is `out`. These
+  are the differences the runs on revision 32 have shown since SJL-9.4 (JSD-0085, section 9).
+
+No other verdict moves, and no vector's expected value or rendering changes but those 157 expected values. The 2,398
+collation vectors, which only revision 38's run holds, all match, and each has the expected value, rendering and verdict
+of bundle `sjl-17-001`'s run on revision 34 (its `vectors/run-revision-34.tsv.gz`). *(Added 2026-11-11, at review.)* Of
+those, 35 are `normative` in that run and `divergence` here: they change class alone, through the
+`divergence.broiler-js` fields revision 34 adds from CI's `windows-latest` host after the scratch pin that run read
+(`60fc3a5b`), which this family's run does not read. Other vectors change only in their class, each matching at both
+pins: those whose last divergence field, Broiler.JS's, revision 38 retires become `normative`; and 16 become
+`divergence` through a `divergence.broiler-js` field Broiler.JS's revisions 36 and 37 add, which this family's run does
+not read. The 61 classified divergences, of the regular-expression area, and the 24 matches where a divergence no longer
+holds, 2 of the regular-expression area and 22 of the syntax area, are the same vectors at both pins: SJL-11's and
+SJL-13's fields, which no revision since 32 touches. The figures of the run on revision 38 are those revision 38's row
+gives for this family's run at `a8d8398` over a scratch archive of the revision: 111,072 matching, 24 matching where a
+divergence no longer holds and 61 classified divergences. Its negative control reports the mutated vector alone.
+
+So the vectors find no difference of this family's that the correspondence does not classify, which JSD-0082 names as
+falsifying it. This section is no part of the rule's parts A to C, and nothing in it is a verdict.
 
 ## 9. Exclusions
 

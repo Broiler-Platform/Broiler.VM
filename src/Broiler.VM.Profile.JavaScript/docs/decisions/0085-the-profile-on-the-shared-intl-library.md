@@ -403,6 +403,14 @@ Settled in the change that files it. **This record is reopened only by a new dat
 - **Broiler.JS's cut-over**, SJL-9.5, which its own changelog records with its corrections (decision D25).
 - **The vectors' per-engine Z8, L9 and L18 expectations**, which the corpus's next revision retires (decision D15;
   SJL-9.6).
+  *(Noted 2026-11-11, at SJL-9.6, when this family's vectors pin moved to Broiler.JS's corpus revision 38. This bullet's
+  "which the corpus's next revision retires", and section 9's "Decision D15 makes the per-engine Z8 expectations one at
+  the corpus's next revision, which SJL-9.6 takes in Broiler.JS", name corpus revision 38
+  (Broiler-Platform/Broiler.JS#1112, merged as `3493462a`), the revision that retires the cut-overs' Intl divergence
+  fields, and not the revision after this record: the revisions between kept them. Revision 38 makes row Z8's per-engine
+  expectations one and retires this family's divergence fields of rows Z8, L9 and L18, and this family's vectors pin
+  moved to it in `61394d0`; JSD-0082's notes of this date on its decisions D15 and D32 record it. This reopens no
+  decision of this record, and the bullet and section 9 are left as written.)*
 - **Collation** (SJL-17), and **optionality of Intl code** (a later decision).
 - **A move of the test262 pin, the CLDR pin or this family's tables.** None moves.
 

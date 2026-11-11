@@ -200,6 +200,36 @@ holds every file Broiler.JS passes at its base.
   Collator's collations, SJL-17's; L43, the charges (decision D18).
 - **Code no input reaches:** L42.
 
+*(Noted 2026-11-11, at SJL-9.6, when this family's vectors pin moved to Broiler.JS's corpus revision 38.)* This list
+puts row L19, `getHourCycles` with no keyword, under data policy, CLDR's time data, and the row's column for this
+family reads "CLDR 48.2.0's time data for the language and region, then the region". The shared library did not read
+it so: its HourCyclesOfLocale looked the entry up under the key `language_region`, which names none in either engine's
+table, and so always read the region's. The owner's ruling of 2026-11-09, **"Fix both consumers"** (the alternative
+not taken, "DateTimeFormat only"), with the decision of that day "Keep + fix library first", has it read the entry for
+the locale's language and each preferred region, the `rg` override first, before the region's, as the date-time format
+now does under row T10 (Broiler-Platform/Broiler.JS#1108, merged as `b9ae4b5a`).
+- **What moves in this family, and when.** This family's `getHourCycles` calls the library's `LocaleInfo.HourCycles`
+  over its own tables (`JsRealm.Locale.cs`), whose time data holds CLDR's entries keyed by language and region. Its
+  package pin, `Broiler.ECMAScript.Intl` `0.1.0-preview.10`, from Broiler.JS `29061d65`, predates `b9ae4b5a` and reads
+  the region alone, so no answer of this family's has moved; a probe through the conformance root at `61394d0`, which
+  is not evidence, answers `["h12", "h23"]` for `fr-CA`. Read from the library's code at `b9ae4b5a` over this family's
+  table, the answers that move when it takes a stream version carrying the fix are those of the tags whose language and
+  preferred region name an entry whose cycles differ from the region's: `ar-001` and `en-001`, from `["h23", "h12"]` to
+  `["h12", "h23"]`, and `fr-CA` and `ku-SY`, from `["h12", "h23"]` to `["h23", "h12"]`, and any other tag that reaches
+  those four entries through its likely subtags or an `rg` override. Every other entry of the table keyed by language
+  and region answers as its region's does. Each move is data policy (C5) under row L19.
+- **The ruling of 2026-11-10, "Dated part C revision"** (the alternative not taken, "Keep old answer"). Broiler.JS's
+  part C expects of the `locales` program's line `11 fr-CA hourCycles`, its `locales:128`, this family's answer as
+  this family's `4cf9ca44` holds it in `src/tests/cldr/locales/divergences.txt`, `[h12,h23]`; Broiler.JS answers
+  `[h23,h12]` from `b9ae4b5a` on. A dated revision of Broiler.JS's bundle `sjl-9-001`'s rule,
+  `decision-rule-revised-2026-11-10.md`, filed on its default branch before its judged runs, admits that one line by
+  name as class L19. Its expected answer stays the pinned copy's, so the class still admits the line once this
+  family's answer moves the same way.
+- **This family's own rule is not touched.** Its datasets' `fr-CA` line moves when this family takes the fixed library,
+  in a change after this rule's after commit, `68cad8b`, which its runs read; that change records the move.
+
+The list above is left as written.
+
 **X6 - extended** (decision D24).
 - **This family:** `JsLocaleTag`; `JsIntlTables`' decoders of likely subtags, aliases and types; the `JsRealm.Intl` and
   `JsRealm.Locale` cores; `SupportedValuesOf`'s core. `NewCollator` and `CollatorKeyData` stay, SJL-17's.
@@ -285,6 +315,34 @@ holds every file Broiler.JS passes at its base.
 - **Engine policy, a parameter:** T3, Broiler.JS's string options, its extension; T11, the host zone (SJL-D-19); T40,
   the charges (decision D18).
 - **Code no input reaches:** T41; T42, Broiler.JS's members with no caller.
+
+*(Noted 2026-11-11, at SJL-9.6, when this family's vectors pin moved to Broiler.JS's corpus revision 38.)* This list
+reads "**Data policy (C5):** T10, T12 (U+202F and the `atTime` joins), T15, T16, T17, T22, T24, T31, T36, T37" and
+"**Implementation-defined:** ... T13, T18, T20, T23, T30 and T33, which the library takes from this family". The owner's
+decision of 2026-11-09, **"Keep + fix library first"** (the alternative not taken, "Revert 8.5, fix later"), held
+Broiler.JS's cut-over of sub-areas (d) and (e) at its stage 3 while the shared library and the data home took, in a
+merge of their own (Broiler-Platform/Broiler.JS#1108, merged as `b9ae4b5a`), the places where its date-time format was
+found departing from the pinned CLDR 48.2.0 data. These changed:
+- the hour cycle, read from CLDR's time data for the data locale's language and region before the region's (row T10);
+- the region of a data locale without one, the likely region of the whole locale where it was that of its language;
+- the default calendar, the region's first preference where an engine hands ResolveLocale the library's
+  `CalendarKeyValuesOf` (row T16), from the file the ruling "Add file, same tarball" archives (decision D10's note of
+  this date);
+- a fractional second, written with the numbering system's own decimal symbol (row T37, decision D21).
+
+One more place the decision named, the widths of an interval's fields, did not change: the pinned reference answers with
+the widths ICU's interval patterns give, as the library already did (Broiler.JS's
+`Broiler.ECMAScript/docs/intl/design.md`).
+
+The owner ruled on 2026-11-10, **"Accept, follows CLDR"** (the alternative not taken, "Revert the test change"), that
+`fa`'s default `persian` calendar, whose CLDR `availableFormats` have `ms` `m:ss` and no `mmss`, writes `{minute:
+"2-digit", second: "2-digit"}` as `۳:۰۵`, with `minute` resolved `"numeric"` (rows T16 and T13); no part of either
+engine's rule reads that answer. **This family's date-time answers move with none of them**: its tables carry no
+calendar preference and no numbering system's own symbols, and none of its data locales has a script or a time data
+entry of its own, so its formats answer as before for its list, and decision D21's limitation stays. They reach this
+family only through Intl.Locale's hour cycles, row L19 (sub-area (a)'s note of this date). The day's ruling on row T12,
+"Follow CLDR, dated ruling", is already recorded, in decision D21's note of 2026-11-09, and is not repeated here. The
+list above is left as written.
 
 **X6 - extended** (decision D24).
 - **This family:** `JsDatePatternGenerator`, `JsDateTimeFormatter`, `JsDateIntervalFormat`, `JsZoneNames`,
@@ -498,6 +556,38 @@ do". Availability stays the host's, so under invariant globalization Broiler.JS 
 shows that under invariant globalization `en-US` is not in Broiler.JS's list (F2), and row L35 that its casing reads
 another default than its Intl services (F3).
 
+*(Noted 2026-11-11, at SJL-9.6, when this family's vectors pin moved to Broiler.JS's corpus revision 38.)* This
+decision gives Broiler.JS's available locales as "the host's cultures". The owner kept it so on 2026-11-04, **"Host
+only, fix vectors"**, the owner's own dated choice, asked and answered that day at Broiler.JS's corpus revision 35;
+the alternative not taken, "Host + embedded", was a reading of this decision that would have made decision D5's extra
+locales available on every host. So decision D5's data for an extra locale answers in Broiler.JS only where the host
+lists a culture for it; where the host lists none, Broiler.JS resolves the locale as LookupMatcher finds it among the
+host's cultures (row L29), to `en` or to the default `en-US`, as this family's list does. The decision's reading on
+each kind of host is a corpus revision's:
+- **A host that lacks an extra locale** (corpus revision 35): a vector whose Broiler.JS expectation is that locale's own
+  answer, where the answer for the locale Broiler.JS resolves to there differs, so that the expectation holds only where
+  the host lists the locale, carries a `divergence.broiler-js` field that classifies the host lacking it and names this
+  decision as Broiler.JS's record, since no task answers it there.
+- **A host that lists one** (corpus revision 37), `aa` and `pap` on CI's windows-latest, whose ICU is the operating
+  system's: a vector whose expected value is the reference's answer, which resolves both locales to `en-US`, and which
+  Broiler.JS answers there from CLDR 48.2.0's own data for the locale, carries a `divergence.broiler-js` field under
+  that data's row, naming this decision and the owner's decision of 2026-11-04 as Broiler.JS's record. Revision 37
+  applies that decision to such a host and needed no new one. Revision 36 had given one `en-FR` vector such a field, for
+  CI's Ubuntu 26.04 host, which lists the locale, under row N3c's data and the owner's decision of 2026-11-08 "Revision
+  36: follow CLDR" (reason `js-n3c-cldr-ci-ubuntu`).
+- Corpus revision 38 keeps both kinds of field, since each still classifies a difference on some host.
+
+**This family's expectation is unchanged by any of them.** Its list (decision D5) resolves each extra locale as
+LookupMatcher finds it, to `en` (`en-FR`, `en-Shaw` and `en-Shaw-GB` among them) or to its default `en-US` (`aa` and
+`pap` among them), and its expectation of each vector those revisions classify is the reference's answer for the locale
+it resolves to: the vector's `out` where the reference answers the same, as for `aa` and `pap` at revision 37 and the
+`en-FR` vector of revision 36, and its `per-engine.broiler-vm` field where it does not, as for the `en-FR` vectors of
+revision 35. So none of these revisions adds or changes a `divergence.broiler-vm` field, an `out` or a
+`per-engine.broiler-vm` field, and no verdict of this family's moves with them (bundle `sjl-9-001`, section 5).
+Broiler.JS's records of the decision are its plan's dated note of 2026-11-04 under its decision D7
+(`docs/roadmap/SharedLibraries.md`), rows 35 to 37 of the corpus's revision log and the schema's dated note of revision
+35 in its section 5; this note is this record's alone. The decision above is left as written.
+
 **Decision D8 - the data contract.** **Two layers.** First, `IIntlDataSet`, a version and one span per `IntlTable`,
 whose enum keeps `JsIntlTable`'s numbers, with 7, 23 and 24 retired and not reused, and appends values only for tables
 this family's data never carries; each engine answers an empty span for a table it lacks. Second, the library decodes it
@@ -507,6 +597,32 @@ library's skeleton orders it. **This family keeps `IJsIntlData` and `JsIntlTable
 internally. The reason: SJL-D-6 (c), decoding stays in shared code; `IJsIntlData`, `JsIntlTable` and
 `JsComposition.IntlData` are in `public-api.txt`, and replacing them breaches rule I6 and the baseline, as SJL-8.5
 avoided.
+
+*(Noted 2026-11-11, at SJL-9.6, when this family's vectors pin moved to Broiler.JS's corpus revision 38.)* This
+decision's enum "appends values only for tables this family's data never carries". Two changes of the shared library
+and its generator, merged in Broiler.JS after the stream version this family's package pin names, `0.1.0-preview.10`
+(from Broiler.JS `29061d65`), read it; this family takes both only when it takes a stream version that carries them.
+- **A currency's name in every plural form, and the currency style's grouping separator** (Broiler-Platform/Broiler.JS#1107,
+  merged as `055a51c7`), on the owner's decision of 2026-11-08, **"Keep + fix library first"**, on rows N4 and N3c (the
+  alternatives not taken, "Keep, record as gap" and "Revert those members"). In Broiler.JS's tables each line of the
+  `Currencies` table carries the name's `zero`, `two`, `few` and `many` forms after the fields this family's tables write;
+  the number formatter names a currency by the formatted number's plural category, falling back to `other`'s form, and
+  groups a currency's digits with CLDR's `currencyGroup`. The owner ruled on 2026-11-09, **"Additive: extend D8"** (the
+  alternative not taken, "Format change: major"): fields appended to a text table's line, after the fields this family's
+  tables write, keep the data format, as an appended `IntlTable` value does under this decision, whose exception the
+  ruling extends to them, so the change is a minor version. The generator chooses the forms by
+  `IntlGeneratorOptions.CurrencyNamePlurals`: `IntlCurrencyNamePlurals.OneAndOther`, the default and this family's,
+  writes `one` and `other` alone, as this family's tables do, and `Every` is Broiler.JS's. So this family's
+  `JsCldrTables.g.cs` keeps its bytes under rule N28, and over its tables no answer moves: `de` and `en` give no other
+  form, and none of this family's locales states a `currencyGroup`.
+- **The calendar preference table** (Broiler-Platform/Broiler.JS#1108, merged as `b9ae4b5a`), on the owner's decision of
+  2026-11-09, "Keep + fix library first", and the ruling of that day "Add file, same tarball". `IntlTable.CalendarPreferences`
+  is a new appended value, for a table this family's data never carries, which this decision admits as written, and
+  `ILocaleData.CalendarPreferences` answers `null` by default. `IntlGeneratorOptions.CalendarPreferences` is
+  `IntlCalendarPreferences.None` by default and for this family, so its tables carry none, and `Regions` for Broiler.JS.
+  Its input is the file decision D10's note of this date names.
+
+The decision above is left as written.
 
 **Decision D9 - the package.** **A new `Broiler.ECMAScript.Intl`**, referencing `Broiler.ECMAScript.Algorithms` and
 `Broiler.Unicode.Algorithms`. This family's profile project references it as a product entry, and every root that
@@ -523,6 +639,19 @@ family's entries and header lines equals the home's, read at a recorded Broiler.
 48.2.0. The reason: it follows SJL-8.5's `timezone.json` clause, keeps this family's pin unchanged and stays
 mechanical; a whole-file identity would break on the superset; it is the least churn for SL7 and the time home. The
 plan's text counted this family's entries; the count is not a record's (validation principle 5).
+
+*(Noted 2026-11-11, at SJL-9.6, when this family's vectors pin moved to Broiler.JS's corpus revision 38.)* This
+decision's superset pin holds "plus Broiler.JS's extra files from the same packages". The owner's ruling of
+2026-11-09, **"Add file, same tarball"** (the alternative not taken, "Leave calendars out"), with the decision of that
+day "Keep + fix library first", adds one: CLDR 48.2.0's `supplemental/calendarPreferenceData.json`, the member of the
+`cldr-core` 48.2.0 tarball the home's pin already names, retrieved twice and checked against that tarball's
+`json-integrity` line, which `Broiler.ECMAScript/data/intl/cldr/cldr.pin` gains under a dated `file` line after this
+family's lines (Broiler-Platform/Broiler.JS#1108, merged as `b9ae4b5a`). **It is an input of the shared library's
+tables**: the generator writes Broiler.JS's calendar preference table from it (decision D8's note of this date), and
+Broiler.JS's date-time format takes a locale's default calendar from that table (row T16). This family's pin,
+`src/tests/cldr/pins/cldr.pin`, does not name the file, and its tables carry no calendar preference. Rule I4's CLDR
+clause is entry-wise and reads the home's lines at the commit it records, `ff54e1d8`; the home's entries for this
+family's files do not change, so the clause holds as it did. The decision above is left as written.
 
 **Decision D11 - the generator.** **It moves whole**, collation included, with parameters for the main-data locales,
 the supplemental locales, numbering systems, calendars and tailorings. This family's options reproduce
@@ -635,6 +764,18 @@ written and record the move as a finding against this decision and class Z8; par
 read as holding the guard's output unchanged, and so as reading a correction this record decided, with a verdict
 that does not move, as a regression. The sentence quoted above, and
 the rest of this decision, are left as written.
+
+*(Noted 2026-11-11, at SJL-9.6, when this family's vectors pin moved to Broiler.JS's corpus revision 38.)* This
+decision says "The vectors' per-engine Z8 expectations become one at the next revision." They became one at corpus
+revision 38, the revision that retires the cut-overs' Intl divergence fields (SJL-9.6), not at the revision
+after this record: revisions 27 to 37 kept them. Broiler.JS's corpus revision 38 (Broiler-Platform/Broiler.JS#1112,
+merged as `3493462a`) writes row Z8's time-zone vectors `normative`, their `per-engine.broiler-js` field, the
+identifier as given, and their `per-engine.broiler-vm` field, the primary, merged into `out`, the identifier as given,
+case-normalised, with `e8cc03fc`'s CreateDateTimeFormat in their provenance and this decision's reading in their note.
+This family's vectors pin moved to it in `61394d0`. Those vectors, which this family's runs on revision 32 reported as
+unclassified differences from SJL-9.4's correction on (JSD-0085, section 9), match there, and no other verdict moves
+with them (bundle `sjl-9-001`, section 5). The sentence quoted above, and the rest of this decision, are left as
+written.
 
 **Decision D16 - the reference datasets as acceptance data.** Copy every `src/tests/cldr/` area except `orderings`
 (SJL-17's) and `timezones` (already copied, SJL-8.4), plus the three Temporal Intl programs, into Broiler.JS's
@@ -981,6 +1122,17 @@ language other than `und`, `de` or `en` whose retained answer is `[emoji,eor]`, 
 part B's class admits both. In Broiler.JS, L9's inputs move at SJL-9.5 with the generated alias table, a data change
 listed under row L8, to the corrected form.
 
+*(Noted 2026-11-11, at SJL-9.6, when this family's vectors pin moved to Broiler.JS's corpus revision 38.)* This
+decision's heading reads "this family's corrections are rows Z8, L18 and L9", which SJL-9.4 made
+(Broiler-Platform/Broiler.VM#190, merged as `68cad8b`). Broiler.JS's corpus revision 38
+(Broiler-Platform/Broiler.JS#1112, merged as `3493462a`) retires every `divergence.broiler-vm` field of the Intl area,
+each under one of those rows, since this family's run on revision 37 at `a8d8398` reported each as no longer holding;
+Broiler.JS's `docs/evidence/corpus-revision-38/retired-divergences-revision-38.tsv` lists them, with the reason each
+field gave. From that revision the Intl area holds no `divergence.broiler-vm` field. This family's vectors pin moved to
+revision 38 in `61394d0`: each of those vectors matches there, every verdict that moved against the pin at revision 32
+is attributed, and no vector finds a difference the correspondence does not classify, which "Falsified if" names (bundle
+`sjl-9-001`, section 5, and decision D15's note of this date). The decision above is left as written.
+
 **Decision D33 - where a passing test262 file and the pinned text part** (finding F5). For a row where a test262 file
 of `ccaac100` that both engines pass asks for an answer the decision D14 text does not give, the file is the arbiter.
 The library keeps both engines' answer.
@@ -1133,6 +1285,17 @@ Each is corrected beside the reading, which is quoted there, in this record's ch
 - **JSD-0046 §5** (decision D27, finding F16):
   - **`getCalendars`** answers `gregory` because the profile's data holds no CLDR calendar preference data (row L16),
     not because the profile formats the Gregorian calendar alone, which it has not done since SJL-10.4;
+    *(Noted 2026-11-11, at SJL-9.6, when this family's vectors pin moved to Broiler.JS's corpus revision 38. This
+    reading's cause, "because the profile's data holds no CLDR calendar preference data", and row L16's in the
+    correspondence, "Neither engine's data carries that table, so both answer the empty list's fallback", no longer
+    hold as the cause. From Broiler-Platform/Broiler.JS#1108 (`b9ae4b5a`) Broiler.JS's tables carry CLDR's calendar
+    preferences and its date-time format's default calendar reads them, while the shared library's CalendarsOfLocale
+    answers the `ca` keyword, else `["gregory"]`, whatever the data carries, by choice, as row L16 and part C of
+    Broiler.JS's rule hold it: the cause Broiler.JS's bundle `sjl-9-001`'s rule revision of 2026-11-09 states in its
+    item 4. So in both engines `getCalendars` answers `["gregory"]` by that choice; that this family's data holds no
+    calendar preference is true and not the cause. Row L16 stays "Same". Over Broiler.JS's tables `getCalendars` and
+    the date-time format's default calendar disagree for `fa` and `th`; over this family's, which carry no preference,
+    they agree. The reading above and the correspondence's row are left as written.)*
   - **`getCollations`**, for a language the Collator does not support, answers DefaultLocale's collations (`[]`), with
     `emoji` and `eor` only for `und`: the correction of SJL-9.4 (decision D32, row L18);
   - **`getTimeZones`** answers the region's zones from tzdb's `zone.tab` through SJL-8's shared database, in code-unit

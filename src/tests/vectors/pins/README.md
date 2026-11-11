@@ -21,7 +21,7 @@ repository holds it the way it holds test262: as the archive of one named revisi
 
 ```bash
 dotnet run --project src/compositions/Broiler.VM.Composition.JavaScript.Conformance -c Release -- \
-  --vectors src/tests/vectors/pins/broiler-js-vectors-b2c2e2243a086285d806866a64b83297791a8ec5.tar.gz \
+  --vectors src/tests/vectors/pins/broiler-js-vectors-3493462a120f3169fe36c4c437ac578fd9d39f23.tar.gz \
   --expect src/tests/vectors/pins/vectors.pin --report vectors-report.tsv
 ```
 
@@ -86,5 +86,16 @@ script is the corpus's own, with none of test262's text. Its 18 `status: exhaust
 conformance root skips each and names it in its summary line. The corpus holds the reference's answers and none of
 the specification's or test262's text, as it holds the other areas'. *(Added 2026-11-02, at SJL-11.3, when the pin
 moved to revision 32.)*
+The collation vectors, from revision 33, are of the area `intl`, in four files under `collation/`. They name clauses of
+ECMA-402 at `3d4c558` and, for the vectors that sort, ECMA-262's `Array.prototype.sort`, by identifier, and quote none
+of them. Every `out` is the Intl area's reference's answer, ICU through the reference Node.js release bundle
+`sjl-9-001` names (`ref:intlref@1`); 1,146 root vectors take their two strings from consecutive lines of CLDR 48.2.0's
+archived CollationTest files and cite them (`ref:collationtest@1`). Two kinds of vector are `impl-defined`, each with
+this profile's expectation its own data's answer: where the order of Han characters is the implementation's choice,
+the UCA's implicit-weight order over CLDR 48.2.0's `allkeys_CLDR.txt` (`ref:ucaimplicit@1`); and under `es`, `sv` and
+`th`, which this profile's collator does not list, the reference's answer for `en-US`, the locale it resolves them to
+(decision E3 of JSD-0084). No vector of the area cites test262.
+The corpus holds those answers and none of ICU's code or CLDR's files, as it holds the Intl area's. *(Added 2026-11-11,
+at SJL-9.6, when the pin moved to revision 38.)*
 [`THIRD_PARTY_NOTICES.md`](../../../../THIRD_PARTY_NOTICES.md) lists it with the other material this
 repository ingests.
