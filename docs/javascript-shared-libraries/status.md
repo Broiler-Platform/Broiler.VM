@@ -3116,6 +3116,23 @@ work package 7, on the branch `sjl-13-evidence`, not yet merged, as JSD-0087 pla
   local machine; no verdict turns on it. The list of readings above is left as written. The sentence below, "clauses 4
   to 6 wait on step 2 as well", reads with this: the bundle judges, at step 1, every clause its rule names, clauses 4
   to 7 and 9 and clause 8's rule `I3`, and of them clauses 4 to 6 wait on step 2 as well.
+- *(Added 2026-11-11, at the owner's rulings of that day.)* **The owner's rulings.** The owner ruled on five of the
+  readings above, each time taking the reading the bundle took, so no verdict moves: control K4's "must still make the
+  fifth row fail" is met by the harness narrowed to that row under the same library patch, the configured run's stack
+  overflow being a second defect of the same patch ("Narrowed run counts", part C); class R's "unchanged between the
+  registry commit and the after commit" means a renumbering not undone, and later changes to the same input are
+  classified on their own ("Not undone", part B); the code pairs class N reads between the registry and the after
+  commit are R2's alone, from the rows of the library's shared code, and that the registry commit's code swaps stand at
+  the sites decision D12 names rests on JSD-0087's statement ("Accept both", part B, for both readings); and part H's
+  "match (divergence no longer holds)" counts as a match, the corpus revision that retires those divergence fields
+  following at WP9.4 ("Counts as match", part H). The bundle's README records each ruling against its reading,
+  quoting it, and parts B, C and H's verdicts now rest on these rulings, not on open readings. **The readings that stay
+  open**, the owner not having ruled on them, are kind (F)'s "first diagnostic", the stages and the library's messages,
+  the one process class N names, the binder message several sites share, the idle compiler servers during parts I and
+  J, and the replaced machine taken as the rule's local machine; the bundle marks none of them as one a part's verdict
+  turns on. The first item of the list below, "the owner's ruling on the readings above", is given for these five and
+  stays for the others, and no dated revision naming K4's narrowed harness is needed. The bullets above are left as
+  written.
 
 This change meets no clause: clauses 4 to 6 wait on step 2 as well, and no other ledger's row moves. No pin moves.
 SJL-13 stays `In progress`, every clause unmet. Nothing is accepted. Next:
