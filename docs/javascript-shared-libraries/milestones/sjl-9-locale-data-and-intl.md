@@ -238,9 +238,12 @@ resolution leaves this list for [SJL-17](sjl-17-collation.md)'s, at SJL-17.5: `G
 `RemoveUnicodeExtensionKeyword` and `ReflectExtensionKeyword`, `ResolveLocaleFromCanonical`'s keyword filter over
 `CollatorRelevantKeys`, and `JSIntlCollator`'s `StripUnicodeExtension`. It is a revision of the list, weaker evidence
 for those entries than the list as written. The entry "its uses of `Broiler.Unicode.Cldr.LocaleData` for Intl data, and
-the package reference itself" is met in code by the ruling's other half: `Intl.supportedValuesOf`'s currency and unit
-lists are the shared library's, and the use and the reference are gone (Broiler-Platform/Broiler.JS#1114, merged as
-`caa3863c`, observed). The list above is left as written.
+the package reference itself once SJL-8 has removed the calendar uses" is met in code by the ruling's other half:
+`Intl.supportedValuesOf`'s currency and unit lists are the shared library's, and the use and the reference are gone,
+whatever the entry's condition on SJL-8 (Broiler-Platform/Broiler.JS#1114, merged as `caa3863c`, observed). The
+alternatives not taken were "Fix both in code now" and "Revise the list for both". Broiler.JS's record is its plan's
+dated note on SJL-9's deletion list (`docs/roadmap/SharedLibraries.md`, under "Locale data and the Intl algorithms
+(SJL-9.1)"), merged in the same change. The list above is left as written.
 
 **Embedded instead:** the CLDR tables the shared generator produces, in Broiler.JS's own assemblies
 ([SJL-D-6](../decisions.md#sjl-d-6) (c)).
@@ -377,12 +380,15 @@ bundle of the repository whose group holds it, at the commit each piece of evide
 Broiler.JS's bundle `sjl-9-001` (observed, Broiler-Platform/Broiler.JS#1113 and #1114), clauses 11 to 15 in this
 repository's bundle [`sjl-9-001`](../../evidence/sjl-9-001/README.md), section 10, and clause 5 over both there, as
 JSD-0082's decision D22 reads it. Clauses 7 and 9 and Broiler.JS's share of clause 5 read met on revisions, each on the
-owner's ruling, which is weaker evidence; clauses 1 and 3 rest on the owner's ruling "Confirm both", and clause 13 on
-the rule's revision of 2026-11-04 and the owner's rulings on its bundle's readings; clause 8 reads met as written after
-the changes the owner's rulings asked for; clause 12 rests on the revision of 2026-10-11 noted above, and clause 14 on
-EX-126 for the Android root. Every clause read met on the bundles; the gate waits on SJL-7 and SJL-8 meeting theirs, and
-so on SJL-3 meeting SJL-3's, and on review (EX-30). The programme ledger's entry of 2026-11-12 is the record over both,
-with each clause's reading and the open items. The clauses above are left as written.
+owner's ruling, which is weaker evidence; clauses 1 and 3 rest on the owner's ruling "Confirm both"; clauses 4 and 6
+rest, for rule SL8's assurance half, on an observed workflow run that is not retained; clause 13 on the rule's revision
+of 2026-11-04 and the owner's rulings on its bundle's readings; clause 8 reads met as written after the changes the
+owner's rulings asked for; clause 12 rests on the revision of 2026-10-11 noted above, and clause 14 on EX-126 for the
+Android root. JSD-0082's settling condition reads met on the bundles, on a reading of its first clause the owner has not
+ruled on, which the ledger's entry names among its open items. Every clause read met on the bundles; the gate waits on
+SJL-7 and SJL-8 meeting theirs, and so on SJL-3 meeting SJL-3's, and on review (EX-30). The programme ledger's entry of
+2026-11-12 is the record over both, with each clause's reading and the open items. The clauses above are left as
+written.
 
 **Records.**
 
