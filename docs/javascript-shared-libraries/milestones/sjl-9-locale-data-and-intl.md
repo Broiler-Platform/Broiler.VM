@@ -390,6 +390,15 @@ SJL-7 and SJL-8 meeting theirs, and so on SJL-3 meeting SJL-3's, and on review (
 2026-11-12 is the record over both, with each clause's reading and the open items. The clauses above are left as
 written.
 
+*(Noted 2026-11-12, later, at the owner's ruling of that day.)* The note above reads "JSD-0082's settling condition reads
+met on the bundles, on a reading of its first clause the owner has not ruled on, which the ledger's entry names among its
+open items." On 2026-11-12 the owner ruled on that reading, "Each in own history" (not taken: "Stricter reading"): both
+deletion lists are read absent each in its own repository's history, this family's at `68cad8b` and `7461cf86` and
+Broiler.JS's at `556eba43` (merged as `caa3863c`). The condition reads met on the bundles on the owner's ruling, the
+ledger's open item on it closes, and JSD-0082 records the ruling by a dated note. No clause moves; the gate still waits
+on SJL-7 and SJL-8 meeting theirs, and so on SJL-3 meeting SJL-3's, and on review (EX-30). The clauses and the note
+above are left as written.
+
 **Records.**
 
 - The area-verdict JSD, which revisits JSD-0027 §4.
