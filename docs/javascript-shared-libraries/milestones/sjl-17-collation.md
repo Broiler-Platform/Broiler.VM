@@ -134,6 +134,21 @@ symbols (O5a), `base` keeping width differences (O5b), the constructor's reads (
 (O12, decision E8), and code-unit comparison under invariant globalization (O14, decision E4). The text above is left
 as written.
 
+*(Noted 2026-11-12, at SJL-9's exit reading, on the owner's ruling of 2026-11-11 on SJL-9's clause 7, **"Fix (1); move
+(2) to SJL-17"**, the owner's own dated choice, asked and answered.)* The note above reads "The deletion list is read by
+decision E11: `ResolveCompareInfo` for the covered locales, `StripIgnorablePunctuation`'s tie-break, the
+`CompareOptions` mapping and the hard-coded Thai default go; `NetCollationSuffix` moves into the host provider." From
+the ruling the list also holds the Collator's hand resolution of its `co`, `kf` and `kn` keys, which SJL-9's deletion
+list named, as negotiation's, and SJL-9.5 kept: `GetUnicodeExtensionType`, `RemoveUnicodeExtensionKeyword` and
+`ReflectExtensionKeyword`, `ResolveLocaleFromCanonical`'s keyword filter over `CollatorRelevantKeys`, and
+`JSIntlCollator`'s `StripUnicodeExtension`. SJL-17.5 deletes them, the Collator resolving those keys through the shared
+ResolveLocale, and clause 3's "The deletion list is absent" reads them; SJL-9's list no longer does (its SJL-9.5 note of
+this date, and
+[JSD-0082](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)'s
+decision D24). The alternatives not taken were "Fix both in code now" and "Revise the list for both". Broiler.JS's
+record is its plan's dated note on SJL-17's deletion list (`docs/roadmap/SharedLibraries.md`, merged in
+Broiler-Platform/Broiler.JS#1114 as `caa3863c`, observed). The notes above are left as written.
+
 ### SJL-17.6 — Evidence
 
 As in SJL-3.6, plus three items:

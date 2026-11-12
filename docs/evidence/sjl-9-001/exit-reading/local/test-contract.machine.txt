@@ -1,0 +1,16 @@
+=== test-contract before
+time: 2026-11-12T09:26:55Z
+loadavg: 0.98 1.44 0.78 1/111 10357
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 20284 MiB free
+procs-matching:
+=== test-contract after (rc=0 started=2026-11-12T09:26:55Z)
+time: 2026-11-12T09:27:01Z
+loadavg: 1.06 1.45 0.78 1/113 10845
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 20284 MiB free
+procs-matching:

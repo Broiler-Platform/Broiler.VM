@@ -50,6 +50,11 @@ correspondence, 2026-10-26, at SJL-9.1; this family's engine-level run of the ve
 2026-10-26, at SJL-9.1. **Nothing here is a verdict, and nothing has been taken.**")* *(Revised 2026-11-11, at SJL-9.6,
 when the pin moved to revision 38. It read "rules and correspondence, 2026-10-26, at SJL-9.1, and this family's
 engine-level run of the vectors on its pin at corpus revision 28, 2026-10-27, at SJL-9.2 (section 3).")*
+*(Noted 2026-11-12, at SJL-9's exit reading.)* The State above says that these verdicts "are not SJL-9's exit reading,
+and they meet no clause by themselves". Section 10 is this family's half of that reading: it reads the milestone's
+clauses 11 to 15 met on this bundle, and clause 5 met over both repositories with Broiler.JS's half, and the programme
+ledger's entry of 2026-11-12 holds the record over both. That meets no gate, and nothing is accepted. The State above is
+left as written.
 - Every run of the rule is taken at the base commit or the after commit, which the rule defines before either exists
   (JSD-0082 decision D4): the after commit is the default-branch merge that lands SJL-9.4's cut-over, and the base
   commit is its first parent.
@@ -168,6 +173,11 @@ No `controls/` folder is added: no part of the rule defines a control.
 commit (section 4), is added after the manifest's `collected-at`, so `manifest.json` does not list it, as it does not
 list this README; its own [`hashes.txt`](after-closures/hashes.txt) holds the SHA-256 of every other file of it, which
 `sha256sum -c` verifies. The list above is left as written.
+
+*(Noted 2026-11-12, at SJL-9's exit reading.)* [`exit-reading/`](exit-reading/), the head's rule checks and the deletion
+search that section 10 reads, is added after `after-closures/`, so `manifest.json` does not list it either; its own
+[`hashes.txt`](exit-reading/hashes.txt) holds the SHA-256 of every other file of it, which `sha256sum -c` verifies. The
+list above and the note before this one are left as written.
 
 ### The commits, and the conditions the rule's header sets
 
@@ -759,3 +769,76 @@ The table above is left as written.
 free identifier: EX-133 is bundle `sjl-13-001`'s, and no bundle defines a later one. It is still no part of the rule:
 parts A, B and C read nothing of this component's assurance coverage, and no verdict of sections 6 to 8 moves with it.
 The note above is left as written.
+
+## 10. SJL-9's exit reading, Broiler.VM's half, 2026-11-12
+
+*(Added 2026-11-12, after SJL-9.6 had nothing left in this repository and Broiler.JS's half had read the milestone's
+clauses 1 to 10 in its own bundle of this name.)* It reads the milestone's clauses 11 to 15, this family's, against this
+bundle's evidence at the commit each piece was taken, and completes clause 5 as JSD-0082's decision D22 reads it. It
+changes no rule, widens none, revises no clause and declares nothing of SJL-9 met. The record over both repositories,
+each clause 1 to 15 with its reading and where it is recorded, is the programme ledger's entry of this date, as the
+ledger placed SJL-8's and SJL-10's (its entries of 2026-10-18 and 2026-10-19), each bundle reading its own half.
+
+**What it reads.** The milestone's words are
+[`sjl-9-locale-data-and-intl.md`](../../javascript-shared-libraries/milestones/sjl-9-locale-data-and-intl.md) at the
+default branch's `7461cf86fae5b207dbc0ffc0852c3fae13f4b4d2` (the merge of Broiler-Platform/Broiler.VM#201), the head
+when this reading was taken. The evidence is this bundle's:
+- the run of the rule at the base `3b33530d` and the after commit `68cad8b` (sections 2 and 6 to 8);
+- the closures at the after commit, [`after-closures/`](after-closures/README.md), with rule I3 run there on the image
+  records and the whole architecture suite with it (its "Rule I3 on the image records");
+- **the head's rule checks**, [`exit-reading/`](exit-reading/), taken for this reading: a clean `git archive` of
+  `7461cf86` on a tmpfs ([`local/archive.txt`](exit-reading/local/archive.txt)), whose scratch folder and TRX folder
+  are named `base` in the retained records though they hold the head `7461cf86`, not the rule's base commit
+  `3b33530d`, the solution built there in Release with `--disable-build-servers`, with no warning
+  ([`build-solution.out.txt`](exit-reading/local/build-solution.out.txt),
+  [`build-warnings.txt`](exit-reading/local/build-warnings.txt), empty), then the architecture suite and the contract
+  tests with `--no-build`, each passing ([`test-architecture.out.txt`](exit-reading/local/test-architecture.out.txt),
+  [`test-contract.out.txt`](exit-reading/local/test-contract.out.txt)). The architecture suite wrote a TRX of every
+  test, which is not retained ([`architecture-trx.sha256`](exit-reading/architecture-trx.sha256)); its rows for rules I1
+  to I7, N27 and N28 are [`rules.tsv`](exit-reading/rules.tsv), each `Passed`, by
+  [`rules-from-trx.py.txt`](exit-reading/scripts/rules-from-trx.py.txt). Each step ran behind the idle gate section 2
+  describes ([`gate.log`](exit-reading/local/gate.log), [`checks.sh.txt`](exit-reading/scripts/checks.sh.txt)), whose
+  `stop-servers` lines name no leftover process;
+- [`exit-reading/deletion-search.txt`](exit-reading/deletion-search.txt), git reads alone at `7461cf86`
+  ([`deletion-search.sh.txt`](exit-reading/scripts/deletion-search.sh.txt)): every file and type of this family's
+  deletion list, as the milestone's SJL-9.4 and JSD-0082's decision D24 give it, searched in the tree.
+
+The head carries the merges after the after commit, SJL-13's step 1 among them, and the commits that carry this section
+change documents and `exit-reading/` alone, so the code they hold is `7461cf86`'s. Between the after commit and the
+head, `JsCldrTables.g.cs` and `src/tests/cldr/pins/cldr.pin` keep their blobs. [`exit-reading/hashes.txt`](exit-reading/hashes.txt)
+holds the SHA-256 of every other file of that folder, which `sha256sum -c` verifies; `manifest.json` does not list it,
+as it does not list `after-closures/`.
+
+| Clause | Its words | Read from, at the commit | Reading, and what it rests on |
+|---|---|---|---|
+| 11 | "Rules `I1` to `I7` hold, and rule `I4` agrees with the CLDR pin." | [`rules.tsv`](exit-reading/rules.tsv) and the architecture suite at `7461cf86`; at the after commit `68cad8b`, the whole suite passing with the image records in place ([`after-closures/local/i3-architecture-2.out.txt`](after-closures/local/i3-architecture-2.out.txt)); [`deletion-search.txt`](exit-reading/deletion-search.txt) | **Read met** at `7461cf86`, and at `68cad8b`: every test of rules I1 to I7 passes, in a suite that passes whole. Rule I4's CLDR clause (`I4_The_Cldr_Pin_Equals_The_Homes_And_Every_Declared_Intl_Version_The_Pins`) holds this family's `cldr.pin` equal to the home's, header line by header line and entry by entry, at the Broiler.JS commit the rule records, `ff54e1d8`, and the generator's declared CLDR release to the pin, and its witness of a pin and a generator that differ is reported. Of SJL-9.4's deletion list, the files and types are read by the search, which finds no listed file and no declaration of a listed type in the tree, and the members, the `JsIntlTables` decoders and their lazies, the cores of the `JsRealm.*` Intl files and `SupportedValuesOf`'s core, through rule I5's register alone, which holds SJL-9.4's deleted types and members, none declared again; at the after commit the list is read through the register alone. Rule I3 holds on the project graph at the head and, at the after commit, on the image records of the four roots it reads. It rests on no revision and no ruling |
+| 12 | "N27 and N28 regenerate the `.Intl` table with the home's generator from Broiler.VM's pins, and hold it byte for byte under its budget." | [`rules.tsv`](exit-reading/rules.tsv) at `7461cf86`; section 2's "The data and the admitted proposals"; the blob reads above | **Read met** at `7461cf86`, on the clause as revised on 2026-10-11, before SJL-9 began, which the milestone records with the text it replaced ("N27 and N28 are re-homed."). Rule N27's tests hold the archive the pin describes, declared binary and recorded, and refuse a changed input byte and a file stating another release; rule N28's regenerate `JsCldrTables.g.cs` with the home's generator, the test-only package `Broiler.ECMAScript.Generation` that `Directory.Packages.props` pins, from this family's pins, byte for byte and alike twice, refuse a hand edit and a changed archive, carry the archived CLDR licence in the notices and hold the table data under rule N28's budget, which its register row states (JSC-321, SJL-9.2c). The table and the pin are the same blobs at the base, the after commit and the head. It rests on no ruling |
+| 13 | "Whole-suite test262 in both forms, and the Intl reference datasets, meet the area rule." | parts A and B of [`decision-rule-area.md`](decision-rule-area.md), as [`decision-rule-area-revised-2026-11-04.md`](decision-rule-area-revised-2026-11-04.md) reads it, at `3b33530d` and `68cad8b` (sections 2, 6 and 7) | **Read met.** Part A is MET (section 6): all four hosted runs complete, every changed verdict in class C1, row Z8's `canonical-tz` variants, or C4. Part B is MET (section 7): every named check passes at both commits, and every difference under `src/tests/cldr/` and `src/tests/temporal/` is in class Z8 or L18 and is listed. Part C, the rule's third part, is MET too (section 8). It rests on a revision and on rulings: on the rule's revision of 2026-11-04, filed before any of its runs on the owner's decision of that day, for part B's class Z8, which the owner's ruling "Revised rule governs" (reading 3) makes the rule for every part; and on the owner's rulings of 2026-11-11 on readings 1 ("Up to after commit"), 6 and 11 ("Accept both", part A) and 7, 8 and 12 ("Accept all three", part B). Readings 2, 4, 5, 9, 10 and 13 stay as taken, unruled; two of their alternatives say more than that, reading 4's and reading 9's, as section 2 records, and neither was put to the owner |
+| 14 | "Every root is published and run in three modes." | [`after-closures/`](after-closures/README.md), at `68cad8b` | **Read met** at `68cad8b` for every JavaScript root this machine can publish (as the bundles of SJL-3, SJL-8 and SJL-10 read the clause), ExecutionOnly, SliceCompiler, Conformance, Cli and PolyglotCli, each published and run under the JIT, trimming and Native AOT, every publish and run exiting as it should; every closure, catalog and admitted package's identity is SJL-9.4's (`cutover/closures/`) byte for byte, and every other difference is attributed. It rests on no revision and no ruling, and on an exclusion: the Android root is EX-126 (bundle `sjl-3-001`), as at SJL-8's clause 16 |
+| 15 | "Optionality is unchanged, as rule `I3` shows." | [`after-closures/`](after-closures/README.md)'s rule I3 on the image records at `68cad8b`; rule I3 at `7461cf86` ([`rules.tsv`](exit-reading/rules.tsv)) | **Read met.** At the after commit rule I3 holds on the Native AOT images of ExecutionOnly, SliceCompiler, Conformance and Cli as on the project graph: no compiler-free root holds a shared frontend assembly, and no root carries optional data `docs/compositions.md` does not declare. At the head it holds on the graph, with its witnesses. The `.Intl` assembly keeps its table byte for byte (clause 12). It rests on no revision and no ruling |
+
+**Clause 5, completed.** Clause 5 reads "Its vectors and reference datasets pass.", and JSD-0082's decision D22 reads
+it as "the vectors at library level, plus the differential check over the dataset inputs, plus both engines' dataset
+runs after the cut-overs". Broiler.JS's half read the first two pieces and Broiler.JS's dataset run, part C of its rule,
+and read the clause met for Broiler.JS's share only (observed, its bundle `sjl-9-001`, merged in
+Broiler-Platform/Broiler.JS#1113 as `6758d47e`). The last piece is this family's dataset run after its cut-over, part B:
+the slice compiler's checks over this family's Intl reference datasets under `src/tests/cldr/` and the Temporal Intl
+programs under `src/tests/temporal/`, every Intl, tzdb and Temporal check `IntlChecks.cs` names, run once at each
+commit from a clean archive. **At the after commit every named check passes**
+([`after/datasets/checks.log`](after/datasets/checks.log), [`named-checks.txt`](after/datasets/named-checks.txt)), as at
+the base ([`base/datasets/named-checks.txt`](base/datasets/named-checks.txt)), and the datasets' programs and retained
+answers are the base's byte for byte, the divergences files moving only by classes Z8 and L18, each line listed
+([`part-b-lines.tsv`](after/datasets/part-b-lines.tsv)). So this family's datasets pass after its cut-over, as part B
+reads them, on the revision and the rulings clause 13 names for part B. **Clause 5 reads met over both repositories**:
+for Broiler.JS's share on its part C as revised on 2026-11-10, after its local pre-check runs had been seen, which is
+weaker evidence (the owner's ruling "Dated part C revision"), and for this family's on part B as clause 13 reads it.
+This family's engine-level runs of the vectors (sections 3 and 5) are no piece of decision D22's reading, which takes
+the vectors at library level, and are not read for it.
+
+**So, of this family's clauses 11 to 15:** each reads met on this bundle. Clauses 11 and 15 rest on no revision and no
+ruling; clause 12 on the clause's revision of 2026-10-11, filed before SJL-9 began; clause 13 on the rule's revision of
+2026-11-04, filed before any of its runs, and on the owner's rulings of 2026-11-11; clause 14 on exclusion EX-126 for
+the Android root. Clause 5 reads met over both repositories. This reading meets no gate and accepts nothing: SJL-9 may
+not meet its gate before SJL-7 and SJL-8 meet theirs, and so not before SJL-3 meets SJL-3's, and review is deferred
+(EX-30). The ledger's entry of this date gives the record over both repositories, JSD-0082's settling condition read,
+and the open items.

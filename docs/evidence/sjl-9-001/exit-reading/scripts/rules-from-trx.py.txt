@@ -1,0 +1,14 @@
+# rules-from-trx.py <trx> <commit>: every test of rules I1 to I7, N27 and N28 in the architecture suite's TRX, with its outcome.
+import re, sys, xml.etree.ElementTree as ET
+ns = {'t': 'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'}
+root = ET.parse(sys.argv[1]).getroot()
+rows = []
+for r in root.iterfind('.//t:UnitTestResult', ns):
+    name = r.get('testName'); short = name.rsplit('.', 1)[-1]
+    m = re.match(r'(I[1-7]|N2[78])_', short)
+    if m: rows.append((m.group(1), short, r.get('outcome')))
+c = root.find('.//t:ResultSummary/t:Counters', ns)
+print('# rules I1 to I7, N27 and N28 in the architecture suite at %s, from its TRX (%s); the suite: outcome %s, total %s, passed %s, failed %s, not executed %s'
+      % (sys.argv[2], sys.argv[1].rsplit('/', 1)[-1], root.find('.//t:ResultSummary', ns).get('outcome'), c.get('total'), c.get('passed'), c.get('failed'), c.get('notExecuted')))
+for rule, short, outcome in sorted(rows):
+    print(rule, outcome, short, sep='\t')
