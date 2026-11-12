@@ -1031,9 +1031,10 @@ lists are the shared library's, and Broiler.JS's use of `Broiler.Unicode.Cldr.Lo
 reference are gone, so that entry is absent as written (Broiler-Platform/Broiler.JS#1114, merged as `caa3863c`,
 observed). The alternatives not taken were "Fix both in code now" and "Revise the list for both". Broiler.JS's records
 of the ruling are its plan's dated notes on SJL-9's and SJL-17's deletion lists (`docs/roadmap/SharedLibraries.md`) and
-its bundle `sjl-9-001`'s section "Clauses 7 and 8 read again, 2026-11-11 (after the owner's rulings)"; SJL-17.5's list
-is [JSD-0084](0084-collation-moves-to-the-shared-intl-library.md)'s decision E11, which carries its own note of this
-date. This family's list does not change. The decision above is left as written.
+its bundle `sjl-9-001`'s section "Clauses 7 and 8 read again, 2026-11-11 (after the owner's rulings)", merged in
+Broiler-Platform/Broiler.JS#1114 as `caa3863c` (observed); SJL-17.5's list is
+[JSD-0084](0084-collation-moves-to-the-shared-intl-library.md)'s decision E11, which carries its own note of this date.
+This family's list does not change. The decision above is left as written.
 
 **Decision D25 - Broiler.JS's correction list** *(revised 2026-10-26, findings F6 and F7)*. SJL-9.5's correction list
 is the correspondence's column "Correction of Broiler.JS", row by row:
@@ -1437,18 +1438,22 @@ as written.
 *(Noted 2026-11-12, at SJL-9's exit reading, over both repositories' bundles.)* The notes above leave the condition's
 first clause, "SJL-9.4's and SJL-9.5's cut-overs have landed with both deletion lists absent", to the exit reading. Both
 cut-overs have landed, this family's as `68cad8b` and Broiler.JS's as `a5f2692e` (Broiler-Platform/Broiler.JS#1110,
-observed). This family's list, as decision D24 gives it, is absent: no listed file and no declaration of a listed type
-is in the tree at the default branch's `7461cf86`, and rule I5's register holds SJL-9.4's entries, none declared again,
-there and at the after commit (bundle [`sjl-9-001`](../../../../docs/evidence/sjl-9-001/README.md), section 10).
-Broiler.JS's list is absent at `556eba43` (Broiler-Platform/Broiler.JS#1114, merged as `caa3863c`, observed), with the
-Collator's hand resolution moved to SJL-17's list by the owner's ruling of 2026-11-11 that decision D24's note of this
-date records, a revision of the list and weaker evidence for those entries; it was not absent at its cut-over's own
-merge, where two entries stood. The clause is read as both lists absent once both cut-overs have landed, at the first
-commit where both are; read at each cut-over's own merge, it could not now be met. That reading is the exit reading's,
-named for the owner, and not the owner's. The second clause is met, as the notes above say for this family's parts and
-Broiler.JS's bundle shows for its parts A to D (Broiler-Platform/Broiler.JS#1111, observed). So the condition reads met
-on both repositories' bundles, on that reading and the ruling; the programme ledger's entry of 2026-11-12 records it.
-It moves no gate, revises no decision, and accepts nothing. The condition and the notes above are left as written.
+observed). This family's list, as decision D24 gives it, is absent: for its files and types, no listed file and no
+declaration of a listed type is in the tree at the default branch's `7461cf86`, by a search; for its members, the
+`JsIntlTables` decoders and their lazies, the cores of the `JsRealm.*` Intl files and `SupportedValuesOf`'s core,
+through rule I5's register alone, which holds SJL-9.4's entries, none declared again, there and at the after commit
+(bundle [`sjl-9-001`](../../../../docs/evidence/sjl-9-001/README.md), section 10). Broiler.JS's list is absent at
+`556eba43` (Broiler-Platform/Broiler.JS#1114, merged as `caa3863c`, observed), with the Collator's hand resolution moved
+to SJL-17's list by the owner's ruling of 2026-11-11 that decision D24's note of this date records, a revision of the
+list and weaker evidence for those entries; it was not absent at its cut-over's own merge, where two entries stood. The
+clause is read as both lists absent once both cut-overs have landed, each list in its own repository's history, since no
+one commit holds both: this family's at `68cad8b` and `7461cf86`, and Broiler.JS's at `556eba43` (merged as `caa3863c`).
+Read at each cut-over's own merge, it could not now be met. That reading is the exit reading's, named for the owner, and
+not the owner's; the owner has not ruled on it, and the programme ledger's entry of 2026-11-12 lists it among the open
+items. The second clause is met, as the notes above say for this family's parts and Broiler.JS's bundle shows for its
+parts A to D (Broiler-Platform/Broiler.JS#1111, observed). So the condition reads met on both repositories' bundles, on
+that reading and the ruling; the programme ledger's entry of 2026-11-12 records it. It moves no gate, revises no
+decision, and accepts nothing. The condition and the notes above are left as written.
 
 ## Correction entries
 
