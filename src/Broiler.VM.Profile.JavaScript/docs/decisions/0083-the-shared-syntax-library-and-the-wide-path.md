@@ -1584,18 +1584,18 @@ judges them." Of the corrections step 1 makes, no test262 file reaches any, and 
 vectors no part could show them (finding F19).
 
 *(Noted 2026-11-12, at SJL-13's work package 9.4, when this family's vectors pin moved to Broiler.JS's corpus revision
-39.)* This decision says "**A revision after each engine's cut-over retires the divergence fields that no longer
-hold** (after step 1; after SJL-14's cut-over), with this family's pin move". After step 1 that revision is corpus
-revision 39, merged in Broiler-Platform/Broiler.JS#1116 as `e4b6b49e`. It retires every `divergence.broiler-vm`
-field of the `syntax` area, the corrections step 1 makes, which bundle
+39.)* This decision says "**A revision after each engine's cut-over retires the divergence fields that no longer hold**
+(after step 1; after SJL-14's cut-over), with this family's pin move". After step 1 that revision is corpus revision
+39, merged in Broiler-Platform/Broiler.JS#1116 as `e4b6b49e`. It retires every `divergence.broiler-vm` field of the
+`syntax` area, the corrections step 1 makes, which bundle
 [`sjl-13-001`](../../../../docs/evidence/sjl-13-001/README.md)'s part H found no longer holding, under the owner's
 ruling of 2026-11-11 on its reading 7 ("Counts as match"; not taken: "Verdict of its own"), which names SJL-13's WP9.4
 for it. It also retires those of the regular-expression area's row S9b, which step 1's delimiting of a literal that
 ends in a backslash corrects (the bundle's row T33, and its section 5's finding). Among the retired fields are row
 P15b's, which the decision's list of the rows the vectors carry does not name, though the `syntax` vectors carry it.
 Revision 38, merged after step 1, kept them. This family's vectors pin moved to revision 39 in `b781ebb`, before step
-2's base, and on it the conformance root matches those vectors with no divergence field and moves no other verdict.
-The retirement after SJL-14's cut-over is still to come. The decision is left as written.
+2's base, and on it the conformance root matches those vectors with no `divergence.broiler-vm` field and moves no other
+verdict. The retirement after SJL-14's cut-over is still to come. The decision is left as written.
 
 **Decision D26 - the classification of the corpus** *(revised 2026-10-26, item S1)*. Built at SJL-13.1 by
 `scripts/frontend/classify_parse_corpus.py` from test262 metadata, the stage table and both engines' SJL-12 after
