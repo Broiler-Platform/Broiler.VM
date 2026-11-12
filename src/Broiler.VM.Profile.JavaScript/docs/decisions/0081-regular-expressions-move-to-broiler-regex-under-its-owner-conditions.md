@@ -228,6 +228,15 @@ risk D10's stop.** Nothing here weakens either.
   row T33 (the library refuses `/a[bc\` with the unterminated literal's diagnostic where this family's tokenizer
   threw), so it is expected to pass at both commits of SJL-11.4, which descend from step 1. It is still no C1 row, and a
   change of its verdict between them is still a finding against this record.
+  *(Noted 2026-11-12, at SJL-13's work package 9.4, when this family's vectors pin moved to Broiler.JS's corpus
+  revision 39.)* The bullet reads "S9b, this family's scanner, which is SJL-12's and SJL-13's front end", and the note
+  above says that step 1 corrects S9b's test262 file by bundle `sjl-13-001`'s row T33. The same correction reaches row
+  S9b's vectors: corpus revision 39, merged in Broiler-Platform/Broiler.JS#1116 as `e4b6b49e`, retires their
+  `divergence.broiler-vm` fields on that bundle's section 5's finding, and this family's vectors pin moved to it in
+  `b781ebb`, where they are a plain match. Row S9b, which "What the correspondence found" lists as this family's
+  scanner's defect, is no longer a difference of this family on the vectors; it was no C1 row, and is none now. This
+  family's divergence fields of the regular-expression area that remain are those of rows S1, S10, M4, M7 and T3, its
+  corrections, which SJL-11.4 makes. No decision is revised, and the text above is left as written.
 
 **X6 - extended.**
 - **This family:** the parser in `JsRegExpMatcher.cs` and the public `JsRegExpSyntaxError`, deleted with the file.
