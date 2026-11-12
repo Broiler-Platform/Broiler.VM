@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# deletion-search.sh <commit>: git reads alone. Broiler.VM's SJL-9.4 deletion list, as the milestone's SJL-9.4 and JSD-0082's decision D24 give it,
+# searched in the tree of <commit>: each listed file by name, each listed type by a declaration of it, outside docs/ and outside the I5 register.
+c=$(git -C /home/user/vm-exit9 rev-parse "$1"); cd /home/user/vm-exit9
+echo "# Broiler.VM's SJL-9 deletion list searched at $c ($(date -u +%FT%TZ)), by git reads alone"
+echo "# 1. listed files: any path in the tree whose file name is one of them"
+for f in JsLocaleTag.cs JsDecimal.cs JsRawDecimal.cs JsNumberData.cs JsNumberFormatter.cs JsPluralRule.cs JsDatePatternGenerator.cs JsDateTimeFormatter.cs JsDateIntervalFormat.cs JsZoneNames.cs JsDateData.cs JsLocaleInfo.cs CldrTableGenerator.cs UnicodeDatabase.cs CldrPin.cs; do
+  n=$(git ls-tree -r --name-only "$c" | grep -c "/$f\$"); echo "$f	paths=$n"; git ls-tree -r --name-only "$c" | grep "/$f\$" | sed 's/^/  /'
+done
+echo "# 2. listed types: a declaration (class, struct, record, enum or interface) of the name in a .cs file outside docs/"
+for t in JsLocaleTag JsDecimal JsRawDecimal JsNumberData JsNumberFormatter JsPluralRule JsDatePatternGenerator JsDateTimeFormatter JsDateIntervalFormat JsZoneNames JsDateData JsLocaleInfo JsDecimalKind JsRawFormat JsNumberPart JsCurrencyNames JsAffixKind JsAffixToken JsNumberPattern JsPluralOperands JsDatePart JsDateField JsZoneKind JsLocalTime JsZoneNaming JsDayPeriodRule CldrTableGenerator UnicodeDatabase CldrPin; do
+  hits=$(git grep -n -E "\b(class|struct|record|enum|interface) +$t\b" "$c" -- '*.cs' ':!docs' | wc -l); echo "$t	declarations=$hits"
+  git grep -n -E "\b(class|struct|record|enum|interface) +$t\b" "$c" -- '*.cs' ':!docs' | sed 's/^/  /'
+done
+echo "# 3. kept by the list's own words: NewCollator and CollatorKeyData (SJL-17's), JsRealm.Segmenter.cs (SJL-7's)"
+git grep -n -E "\bNewCollator\b|\bCollatorKeyData\b" "$c" -- 'src/Broiler.VM.Profile.JavaScript*/*.cs' | cut -c1-160 | head -5
+git ls-tree -r --name-only "$c" | grep 'JsRealm.Segmenter.cs$'
+echo "# 4. rule I5's register: entries by milestone"
+git show "$c:src/tests/Broiler.VM.Architecture.Tests/retired-members.json" | python3 -I -c "import json,sys,collections; r=json.load(sys.stdin)['retired']; [print(k, v, sep='\t') for k, v in sorted(collections.Counter(e['milestone'] for e in r).items())]"

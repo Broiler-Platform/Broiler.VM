@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# checks.sh <commit> <name>: clean git archive of <commit> on tmpfs, Release build of the solution, architecture tests (with a trx of every test) and contract tests, each behind the gate.
+E=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-exit9
+c=$1; n=$2; T=/dev/shm/vmexit9/$n; O=$E/$n
+rm -rf "$T"; mkdir -p "$T" "$O"
+git -C /home/user/vm-exit9 archive --format=tar "$c" | tar -x -C "$T"
+{ echo "commit $(git -C /home/user/vm-exit9 rev-parse $c)"; echo "archived $(date -u +%FT%TZ) into $T"; echo "files $(find $T -type f | wc -l)"; } > $O/archive.txt
+$E/scripts/run.sh build-solution $O $T -- dotnet build Broiler.VM.slnx -c Release --disable-build-servers -nologo || echo "build rc=$?" >> $O/notes.txt
+grep -E 'warning [A-Z]+[0-9]+' $O/build-solution.out.txt | sort -u > $O/build-warnings.txt
+$E/scripts/run.sh test-architecture $O $T -- dotnet test src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj -c Release --no-build --disable-build-servers -nologo --logger "trx;LogFileName=architecture.trx" --results-directory $O/trx || echo "arch rc=$?" >> $O/notes.txt
+$E/scripts/run.sh test-contract $O $T -- dotnet test src/tests/Broiler.VM.Contract.Tests/Broiler.VM.Contract.Tests.csproj -c Release --no-build --disable-build-servers -nologo || echo "contract rc=$?" >> $O/notes.txt
+echo DONE > $O/DONE

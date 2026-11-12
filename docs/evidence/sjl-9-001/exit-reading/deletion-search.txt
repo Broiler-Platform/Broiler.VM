@@ -1,0 +1,65 @@
+# Broiler.VM's SJL-9 deletion list searched at 7461cf86fae5b207dbc0ffc0852c3fae13f4b4d2 (2026-11-12T09:22:19Z), by git reads alone
+# 1. listed files: any path in the tree whose file name is one of them
+JsLocaleTag.cs	paths=0
+JsDecimal.cs	paths=0
+JsRawDecimal.cs	paths=0
+JsNumberData.cs	paths=0
+JsNumberFormatter.cs	paths=0
+JsPluralRule.cs	paths=0
+JsDatePatternGenerator.cs	paths=0
+JsDateTimeFormatter.cs	paths=0
+JsDateIntervalFormat.cs	paths=0
+JsZoneNames.cs	paths=0
+JsDateData.cs	paths=0
+JsLocaleInfo.cs	paths=0
+CldrTableGenerator.cs	paths=0
+UnicodeDatabase.cs	paths=0
+CldrPin.cs	paths=0
+# 2. listed types: a declaration (class, struct, record, enum or interface) of the name in a .cs file outside docs/
+JsLocaleTag	declarations=0
+JsDecimal	declarations=0
+JsRawDecimal	declarations=0
+JsNumberData	declarations=0
+JsNumberFormatter	declarations=0
+JsPluralRule	declarations=0
+JsDatePatternGenerator	declarations=0
+JsDateTimeFormatter	declarations=0
+JsDateIntervalFormat	declarations=0
+JsZoneNames	declarations=0
+JsDateData	declarations=0
+JsLocaleInfo	declarations=0
+JsDecimalKind	declarations=0
+JsRawFormat	declarations=0
+JsNumberPart	declarations=0
+JsCurrencyNames	declarations=0
+JsAffixKind	declarations=0
+JsAffixToken	declarations=0
+JsNumberPattern	declarations=0
+JsPluralOperands	declarations=0
+JsDatePart	declarations=0
+JsDateField	declarations=0
+JsZoneKind	declarations=0
+JsLocalTime	declarations=0
+JsZoneNaming	declarations=0
+JsDayPeriodRule	declarations=0
+CldrTableGenerator	declarations=0
+UnicodeDatabase	declarations=0
+CldrPin	declarations=0
+# 3. kept by the list's own words: NewCollator and CollatorKeyData (SJL-17's), JsRealm.Segmenter.cs (SJL-7's)
+7461cf86fae5b207dbc0ffc0852c3fae13f4b4d2:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:119:            static (engine, thisValue, arguments) => NewCollator(
+7461cf86fae5b207dbc0ffc0852c3fae13f4b4d2:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:120:            static (engine, newTarget, arguments) => NewCollator(
+7461cf86fae5b207dbc0ffc0852c3fae13f4b4d2:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:205:    internal static JsValue NewCollator(JsEngine engine, JsValue 
+7461cf86fae5b207dbc0ffc0852c3fae13f4b4d2:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:227:        // as CollatorKeyData and the choice of a tailoring here 
+7461cf86fae5b207dbc0ffc0852c3fae13f4b4d2:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:286:    /// <c>CollatorKeyData</c>", which SJL-17.4 deleted; they are
+src/Broiler.VM.Profile.JavaScript/JsRealm.Segmenter.cs
+# 4. rule I5's register: entries by milestone
+SJL-10.4	147
+SJL-13.3	23
+SJL-17.4	6
+SJL-3.4	34
+SJL-4.4	44
+SJL-5.4	44
+SJL-6.4	53
+SJL-7.4	29
+SJL-8.5	24
+SJL-9.4	148

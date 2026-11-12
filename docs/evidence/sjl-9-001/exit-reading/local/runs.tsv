@@ -1,0 +1,3 @@
+build-solution	rc=0	wall=91.4s maxrss=451MB	started=2026-11-12T09:22:01Z	ended=2026-11-12T09:23:32Z
+test-architecture	rc=0	wall=38.2s maxrss=1946MB	started=2026-11-12T09:25:25Z	ended=2026-11-12T09:26:03Z
+test-contract	rc=0	wall=6.3s maxrss=254MB	started=2026-11-12T09:26:55Z	ended=2026-11-12T09:27:02Z

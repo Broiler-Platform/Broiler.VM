@@ -1,0 +1,16 @@
+=== test-architecture before
+time: 2026-11-12T09:25:25Z
+loadavg: 0.89 1.44 0.70 1/110 6789
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 20284 MiB free
+procs-matching:
+=== test-architecture after (rc=0 started=2026-11-12T09:25:25Z)
+time: 2026-11-12T09:26:03Z
+loadavg: 2.18 1.70 0.81 1/114 7947
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 20284 MiB free
+procs-matching:
