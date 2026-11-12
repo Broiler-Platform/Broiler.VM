@@ -1434,6 +1434,22 @@ and the note's reading of decisions D15, D18 and D32 and of this record's falsif
 the record either: its first clause is read at SJL-9's exit reading, and nothing is accepted. The notes above are left
 as written.
 
+*(Noted 2026-11-12, at SJL-9's exit reading, over both repositories' bundles.)* The notes above leave the condition's
+first clause, "SJL-9.4's and SJL-9.5's cut-overs have landed with both deletion lists absent", to the exit reading. Both
+cut-overs have landed, this family's as `68cad8b` and Broiler.JS's as `a5f2692e` (Broiler-Platform/Broiler.JS#1110,
+observed). This family's list, as decision D24 gives it, is absent: no listed file and no declaration of a listed type
+is in the tree at the default branch's `7461cf86`, and rule I5's register holds SJL-9.4's entries, none declared again,
+there and at the after commit (bundle [`sjl-9-001`](../../../../docs/evidence/sjl-9-001/README.md), section 10).
+Broiler.JS's list is absent at `556eba43` (Broiler-Platform/Broiler.JS#1114, merged as `caa3863c`, observed), with the
+Collator's hand resolution moved to SJL-17's list by the owner's ruling of 2026-11-11 that decision D24's note of this
+date records, a revision of the list and weaker evidence for those entries; it was not absent at its cut-over's own
+merge, where two entries stood. The clause is read as both lists absent once both cut-overs have landed, at the first
+commit where both are; read at each cut-over's own merge, it could not now be met. That reading is the exit reading's,
+named for the owner, and not the owner's. The second clause is met, as the notes above say for this family's parts and
+Broiler.JS's bundle shows for its parts A to D (Broiler-Platform/Broiler.JS#1111, observed). So the condition reads met
+on both repositories' bundles, on that reading and the ruling; the programme ledger's entry of 2026-11-12 records it.
+It moves no gate, revises no decision, and accepts nothing. The condition and the notes above are left as written.
+
 ## Correction entries
 
 None in this profile's plan documents at this record. SJL-9.2c takes the next free JSC, and SJL-9.4's cut-over its

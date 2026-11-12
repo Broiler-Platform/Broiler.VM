@@ -372,6 +372,18 @@ and 15's evidence and meets no clause; nothing is accepted. The text above is le
 re-homed." The records listed "Broiler.Unicode's CLDR records (conditional)", which no longer
 apply.)*
 
+*(Noted 2026-11-12, at SJL-9's exit reading, over both repositories' bundles.)* Each clause above is read against the
+bundle of the repository whose group holds it, at the commit each piece of evidence was taken: clauses 1 to 10 in
+Broiler.JS's bundle `sjl-9-001` (observed, Broiler-Platform/Broiler.JS#1113 and #1114), clauses 11 to 15 in this
+repository's bundle [`sjl-9-001`](../../evidence/sjl-9-001/README.md), section 10, and clause 5 over both there, as
+JSD-0082's decision D22 reads it. Clauses 7 and 9 and Broiler.JS's share of clause 5 read met on revisions, each on the
+owner's ruling, which is weaker evidence; clauses 1 and 3 rest on the owner's ruling "Confirm both", and clause 13 on
+the rule's revision of 2026-11-04 and the owner's rulings on its bundle's readings; clause 8 reads met as written after
+the changes the owner's rulings asked for; clause 12 rests on the revision of 2026-10-11 noted above, and clause 14 on
+EX-126 for the Android root. Every clause read met on the bundles; the gate waits on SJL-7 and SJL-8 meeting theirs, and
+so on SJL-3 meeting SJL-3's, and on review (EX-30). The programme ledger's entry of 2026-11-12 is the record over both,
+with each clause's reading and the open items. The clauses above are left as written.
+
 **Records.**
 
 - The area-verdict JSD, which revisits JSD-0027 §4.
