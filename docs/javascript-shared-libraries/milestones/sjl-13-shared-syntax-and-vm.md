@@ -162,6 +162,20 @@ machine taken as the rule's local machine; the README marks none of them with th
 it, but the alternative of the reading on the idle compiler servers would void parts I and J. The owner's ruling on
 these stays owed before bundle `sjl-13-002`'s runs. The text above is left as written.
 
+*(Noted 2026-11-12, at the owner's rulings of that day.)* The note above reads "The readings that stay open are kind
+(F)'s "first diagnostic", the stages and the library's messages, the one process class N names, the binder message
+several sites share, the idle compiler servers during parts I and J, and the machine taken as the rule's local machine"
+and "The owner's ruling on these stays owed before bundle `sjl-13-002`'s runs." On 2026-11-12 the owner ruled on all
+six, each time taking the reading the bundle took: the five no verdict turns on, "Accept all five" (not taken: "Leave
+them open"), and the idle compiler servers during parts I and J, which do not void them, "Accept as taken" (not taken:
+"Void I and J, retake"). Every reading of the bundle is now the owner's own dated answer, which the README's section 5
+records against each reading; parts I and J's verdicts rest on the second ruling, and no verdict moves. The native
+floor's `atMost unsupported` row, which the bundle records as not re-set in the after commit, is re-set by hand to the
+bytecode floor's row, late, in `c0bf379` on the branch `vm-s13r`, a change that is not part of step 2 and is to land
+before step 2's base, by that branch merging before step 2's merge. Next: step 2 (WP8), under bundle `sjl-13-002`'s
+rule, whose base is the first parent of step 2's merge, and WP9.4's corpus revision retiring the `syntax` divergence
+fields. No clause is met, and nothing is accepted. The text above is left as written.
+
 ### SJL-13.4 — Admission and closures
 
 - The allow-list admits the frontend for `Broiler.VM.Profile.JavaScript.Compiler` only.

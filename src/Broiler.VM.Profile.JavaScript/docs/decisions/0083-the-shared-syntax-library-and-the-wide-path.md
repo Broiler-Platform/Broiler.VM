@@ -1283,6 +1283,16 @@ three constructs first. The binder's remarks say its 2104 sites are reached by n
 2104 the wide path reports over the parse corpus at the base is the tokenizer's refusal of a decorator, in test262's
 decorator files, which the run skips. No floor moves for a regrade.
 
+*(Noted 2026-11-12: the native floor's row, re-set late; bundle
+[`sjl-13-001`](../../../../docs/evidence/sjl-13-001/README.md)'s finding 1.)* This decision says the native floor's row
+"is re-set by hand to the bytecode floor's row in step 1's merge, before the after runs, with its reason", and that "the
+hosted workflow holds each form to its floor". Step 1's after commit, `a8d8398`, left the row as it was, which the
+bundle records as its finding 1. Commit `c0bf379`, on the branch `vm-s13r`, re-sets it by hand to the bytecode floor's
+row, late, after the after runs, with its reason in a `retired` line; it is no part of step 2, and is to land before
+step 2's base by merging before step 2's merge. The floor names the `x86-64-win64` convention, and part A's hosted
+native runs, taken in `x86-64-sysv`, are refused by the ratchet as a moved form: no row of the native floor is compared
+and nothing is re-based. No decision is revised, and the text above is left as written.
+
 ### This family's request and cut-over
 
 **Decision D16 - this family's request mapping** *(revised 2026-10-26, finding F21)*. `SliceParseOptions` stays this

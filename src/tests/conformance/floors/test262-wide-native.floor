@@ -46,5 +46,6 @@ atLeast files 53469
 atLeast variants 94545
 atLeast passed 70834
 atMost failed 13315
-atMost unsupported 1990
+atMost unsupported 0
 atMost skipped 8346
+retired 2026-11-12 atMost unsupported 1990 - set on 2026-09-15 with --admit from the native run of 444f9c9, before BigInt was admitted, and counting exactly the variants the BigInt literal refusal named, the row the bytecode floor retired by hand on 2026-09-21 when JSeal B05 implemented and admitted BigInt (JSD-0033 section 7); re-set by hand to the bytecode floor's row, 0, as decision D13 of JSD-0083 as revised and bundle sjl-13-001's rule say it is in SJL-13 step 1's after commit, which left it as it was (a8d8398, that bundle's finding 1), so late, after step 1 and before step 2's base; --admit re-bases only on a suite, manifest or form move.

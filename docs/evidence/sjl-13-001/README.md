@@ -1066,6 +1066,57 @@ what it names before bundle `sjl-13-002`'s runs, the rulings on readings 2, 3, 6
 having taken reading 2, no dated revision naming K4's narrowed harness is needed; the owner's ruling on the open
 readings and the native floor's row (finding 1) remain.
 
+**The owner's rulings of 2026-11-12** *(2026-11-12)*. On 2026-11-12 the owner ruled on readings 1, 4, 5, 8, 9 and 10,
+each the owner's own dated choice, asked and answered, not one taken under the standing direction of 2026-10-18, and
+each time taking the reading task 7.3 took; the alternative named with each was not taken. The paragraph above reads
+"**Readings 1, 4, 5, 8, 9 and 10 stay open**: the owner has not ruled on them, and each stands as task 7.3 took it
+under the standing direction of 2026-10-18, none the owner's own dated answer." With these rulings and those of
+2026-11-11, every reading of this section, 1 to 11, is the owner's own dated answer, and the section's opening, "Each
+reading below was taken by task 7.3 under the owner's standing direction of 2026-10-18; none is the owner's own dated
+answer, and the owner may rule otherwise.", reads for all of them with this paragraph and the one above. The readings
+above are left as written.
+- **Readings 1, 4, 5, 8 and 10: "Accept all five".** Reading 1 reads "taken: the first diagnostic is what the
+  one-process run reports for the variant, its report's detail field (the failure at the base, none after)."; reading
+  4, "Taken: a scratch copy of each commit that tags every diagnostic's message with its stage, run as run 1, whose
+  untagged report equals run 1 byte for byte."; reading 5, "Taken: the tagged run of the after commit, one process over
+  every unit, as run 1."; reading 8, "Taken: B21 where the text before the place on its line ends a `for` statement's
+  head, B18 otherwise."; and reading 10, "Taken: it is the rule's local machine, each run recording its SDK." The owner
+  ruled that each is taken as task 7.3 took it, no verdict turning on any of them, so that step 2 can run on the same
+  terms. Not taken: "Leave them open".
+- **Reading 9, the idle compiler servers during parts I and J: "Accept as taken".** The reading reads "taken as not
+  voiding either part, because no build, test or run was under way and the parts' readings are counts, answers,
+  outcomes and hashes, or, for part J, a NOT MET the rule does not re-run." The owner ruled that the compiler servers,
+  idle and not stopped during parts I and J, do not void them, and that both parts stand. Not taken: "Void I and J,
+  retake", under which both parts would be void and taken again.
+
+**Parts I and J's verdicts now rest on reading 9's ruling** where they turned on its alternative, which would have
+voided them: part I, MET, and part J, NOT MET, stand as section 4 judges them, and part J is no gate clause (decision
+D24). No verdict moves. Section 4's table and its headings for parts I and J are left as written: they marked no
+reading for those parts, and the ruling takes the reading their verdicts were judged on. The parts' own text, part I's
+"This part reads the run as taken (section 5)." and part J's "section 5's reading 9 takes that as not voiding the
+part", is left as written and now reads with the owner's ruling "Accept as taken". The paragraph "What step 2 (WP8)
+needs next" reads with this and the paragraph above: of what it names before bundle `sjl-13-002`'s runs, every ruling
+is given, and the native floor's row is re-set, as the next paragraph says. Its "Bundle `sjl-13-002`'s rule takes this
+after commit as its base." reads as that rule defines the base: the first parent of step 2's merge, which descends from
+this after commit, `a8d8398`, and, with the branch `vm-s13r` merged before step 2's merge, holds the re-set below. That
+paragraph is left as written.
+
+**The native floor's row, re-set late** *(2026-11-12)*. The first finding reads "At the after commit
+`src/tests/conformance/floors/test262-wide-native.floor` still reads `atMost unsupported 1990`, unchanged since
+2026-10-18, where the bytecode floor reads 0." Commit `c0bf379fec38199d9eb238d69200c8f20d2d9d86`, on the branch
+`vm-s13r`, re-sets that row by hand to the bytecode floor's row, `atMost unsupported 0`, and keeps the old row as a
+`retired` line with its reason: the BigInt literal refusal it counted, which the bytecode floor retired by hand on
+2026-09-21; this finding; and decision D13 of JSD-0083 as revised. Nothing else in the floor changes. The rule says
+the row is re-set "in the after commit"; it is re-set late, after step 1's after commit `a8d8398`. It is no part of
+SJL-13's step 2: it is to land before step 2's base, by the branch `vm-s13r` merging before step 2's merge, so that
+bundle `sjl-13-002`'s base holds it and that rule's after commit stays the only first-parent commit carrying step 2.
+The floors decided no part of this bundle, and the re-set moves no verdict here. What reads the file is the conformance
+composition's `--floor` ratchet, through `eng/test262-evidence.py` and `eng/collect-js-release-candidate.py`, never
+automatically: the floor names the `x86-64-win64` convention, and part A's hosted native runs, taken in
+`x86-64-sysv`, are refused by the ratchet as a moved form (exit 1, `base/hosted/wide-native.floor.log` and
+`after/hosted/wide-native.floor.log`): no row is compared and nothing is re-based, since no reader passes `--admit`,
+so the re-set row is compared only by a native run in the form the floor names. The finding is left as written.
+
 ## 9. Exclusions
 
 Sections 3 to 8 are added as the bundle's runs are taken. The exclusions keep this section's number, where rule H2

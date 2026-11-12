@@ -1455,6 +1455,17 @@ parts A to D (Broiler-Platform/Broiler.JS#1111, observed). So the condition read
 that reading and the ruling; the programme ledger's entry of 2026-11-12 records it. It moves no gate, revises no
 decision, and accepts nothing. The condition and the notes above are left as written.
 
+*(Noted 2026-11-12, later, at the owner's ruling of that day.)* The note above reads "The clause is read as both lists
+absent once both cut-overs have landed, each list in its own repository's history, since no one commit holds both" and
+"That reading is the exit reading's, named for the owner, and not the owner's; the owner has not ruled on it". The exit
+reading merged as `00685495` (Broiler-Platform/Broiler.VM#202, observed). On 2026-11-12 the owner ruled on that reading,
+the owner's own dated choice, asked and answered, "Each in own history": both deletion lists are read absent each in its
+own repository's history, this family's at `68cad8b` and `7461cf86`, and Broiler.JS's at `556eba43` (merged as
+`caa3863c`). Not taken: "Stricter reading", both lists read at each cut-over's own merge, under which the clause could
+not now be met. So the condition reads met on both repositories' bundles on the owner's ruling, and the programme
+ledger's open item on it closes. It moves no gate: SJL-9's gate still waits on SJL-7, SJL-8 and SJL-3 and on review
+under EX-30. It revises no decision and accepts nothing. The condition and the notes above are left as written.
+
 ## Correction entries
 
 None in this profile's plan documents at this record. SJL-9.2c takes the next free JSC, and SJL-9.4's cut-over its
