@@ -171,10 +171,10 @@ them open"), and the idle compiler servers during parts I and J, which do not vo
 "Void I and J, retake"). Every reading of the bundle is now the owner's own dated answer, which the README's section 5
 records against each reading; parts I and J's verdicts rest on the second ruling, and no verdict moves. The native
 floor's `atMost unsupported` row, which the bundle records as not re-set in the after commit, is re-set by hand to the
-bytecode floor's row, late, in `c0bf379` on the branch `vm-s13r`, a change that is not part of step 2 and lands before
-step 2's base. Next: step 2 (WP8), under bundle `sjl-13-002`'s rule, whose base is the first parent of step 2's merge,
-and WP9.4's corpus revision retiring the `syntax` divergence fields. No clause is met, and nothing is accepted. The text
-above is left as written.
+bytecode floor's row, late, in `c0bf379` on the branch `vm-s13r`, a change that is not part of step 2 and is to land
+before step 2's base, by that branch merging before step 2's merge. Next: step 2 (WP8), under bundle `sjl-13-002`'s
+rule, whose base is the first parent of step 2's merge, and WP9.4's corpus revision retiring the `syntax` divergence
+fields. No clause is met, and nothing is accepted. The text above is left as written.
 
 ### SJL-13.4 — Admission and closures
 
