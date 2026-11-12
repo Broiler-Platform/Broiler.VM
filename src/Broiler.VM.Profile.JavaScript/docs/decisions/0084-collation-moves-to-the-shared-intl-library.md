@@ -244,6 +244,19 @@ public member (SJL-D-25 (a)). The reason: X6. *Reading (finding F4):* the plan's
 `JsRealm.Intl.cs:165-235` and `CollatorKeyData` as `:240-246`; at `83290f9` the constructor is `:168-227`, its core
 `:202-215`, and `CollatorKeyData` `:235-242`. The hard-coded Thai default goes with decision E5.
 
+*(Noted 2026-11-12, at SJL-9's exit reading, on the owner's ruling of 2026-11-11 on SJL-9's clause 7, **"Fix (1); move
+(2) to SJL-17"**, the owner's own dated choice, asked and answered.)* This decision reads "Broiler.JS:
+`ResolveCompareInfo` for the covered locales, `StripIgnorablePunctuation`'s tie-break, the `CompareOptions` mapping;
+`NetCollationSuffix` moves into the host provider.", and X6 above reads it so, with the hard-coded Thai default. From
+the ruling Broiler.JS's list also holds the Collator's hand resolution of its `co`, `kf` and `kn` keys, which SJL-9's
+deletion list named and SJL-9.5 kept: `GetUnicodeExtensionType`, `RemoveUnicodeExtensionKeyword` and
+`ReflectExtensionKeyword`, `ResolveLocaleFromCanonical`'s keyword filter over `CollatorRelevantKeys`, and
+`JSIntlCollator`'s `StripUnicodeExtension`. SJL-17.5 deletes them, the Collator resolving those keys through the shared
+ResolveLocale; none is public. They leave
+[JSD-0082](0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)'s decision D24, whose note of this
+date records the ruling, with the alternatives not taken; Broiler.JS's record is its plan's dated note on SJL-17's
+deletion list. This family's list does not change. The decision above and X6 are left as written.
+
 **Decision E12 - records.** A verdict JSD amending JSD-0043 §5 to §7; a dated note on SJL-17.5's normalization item;
 the area design's section 3.4 corrected. The reason: the roadmap's section 11. *Reading:* SJL-17.5's normalization item
 already carries JSD-0082's dated note of 2026-10-26, and the area design's section 3.4 its note on the stale "Today"

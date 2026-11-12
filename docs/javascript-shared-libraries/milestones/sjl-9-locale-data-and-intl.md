@@ -229,6 +229,19 @@ public static `Get(CultureInfo)` and `ApplyAllDefaults` among them (SJL-D-25, di
 ending at "its uses of `Broiler.Unicode.Cldr.LocaleData` for Intl data, and the package reference itself once SJL-8 has
 removed the calendar uses."
 
+*(Noted 2026-11-12, at SJL-9's exit reading, on the owner's ruling of 2026-11-11 on clause 7, **"Fix (1); move (2) to
+SJL-17"**, the owner's own dated choice, asked and answered, which
+[JSD-0082](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)'s
+decision D24 records by a note of this date.)* The list above reads "negotiation;", and Broiler.JS's records read the
+Collator's hand resolution of its `co`, `kf` and `kn` keys, which SJL-9.5 kept, as that entry's. From the ruling that
+resolution leaves this list for [SJL-17](sjl-17-collation.md)'s, at SJL-17.5: `GetUnicodeExtensionType`,
+`RemoveUnicodeExtensionKeyword` and `ReflectExtensionKeyword`, `ResolveLocaleFromCanonical`'s keyword filter over
+`CollatorRelevantKeys`, and `JSIntlCollator`'s `StripUnicodeExtension`. It is a revision of the list, weaker evidence
+for those entries than the list as written. The entry "its uses of `Broiler.Unicode.Cldr.LocaleData` for Intl data, and
+the package reference itself" is met in code by the ruling's other half: `Intl.supportedValuesOf`'s currency and unit
+lists are the shared library's, and the use and the reference are gone (Broiler-Platform/Broiler.JS#1114, merged as
+`caa3863c`, observed). The list above is left as written.
+
 **Embedded instead:** the CLDR tables the shared generator produces, in Broiler.JS's own assemblies
 ([SJL-D-6](../decisions.md#sjl-d-6) (c)).
 

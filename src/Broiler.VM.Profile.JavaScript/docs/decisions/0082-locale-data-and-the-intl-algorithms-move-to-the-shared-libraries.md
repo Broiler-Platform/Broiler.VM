@@ -653,6 +653,20 @@ Broiler.JS's date-time format takes a locale's default calendar from that table 
 clause is entry-wise and reads the home's lines at the commit it records, `ff54e1d8`; the home's entries for this
 family's files do not change, so the clause holds as it did. The decision above is left as written.
 
+*(Noted 2026-11-12, at SJL-9's exit reading, Broiler.VM's half, on the owner's ruling of 2026-11-11, **"Confirm both"**,
+the owner's own dated choice, asked and answered.)* This decision describes the superset pin's extra files as "plus
+Broiler.JS's extra files from the same packages". The data home also pins CLDR's `common/main` XML files for its list's
+main-data locales and their parents, which decision D21's note of this date names, and takes them from the CLDR
+repository at the tag `release-48-2`, the tag on this family's pin's `repository-source` line, from which its `root.xml`
+comes, not from a `cldr-json` package. The owner confirmed that reading as the home took it: the CLDR repository at that
+tag is this decision's "from the same packages". The alternatives not taken were "Confirm, revise text", dated revisions
+of this decision and of decision D21, and "Do not confirm". Broiler.JS's records of the ruling are its plan's dated note
+under "The data home" (`docs/roadmap/SharedLibraries.md`) and its bundle `sjl-9-001`'s dated note in its section "The
+data home", merged in Broiler-Platform/Broiler.JS#1113 as `6758d47e` (observed); that bundle's exit reading reads exit
+clauses 1 and 3 on the ruling for those files. Nothing of this family's moves with it: its pin is unchanged, and rule
+I4's CLDR clause reads only this family's entries and header lines, which the home holds unchanged. The decision above
+is left as written, and its text and the home are reconciled by the ruling, not by a revision.
+
 **Decision D11 - the generator.** **It moves whole**, collation included, with parameters for the main-data locales,
 the supplemental locales, numbering systems, calendars and tailorings. This family's options reproduce
 `JsCldrTables.g.cs` byte for byte through `TableSourceOptions` (rules N27 and N28), as SJL-8.5 did. Broiler.JS's
@@ -922,6 +936,19 @@ space of the patterns before CLDR 42.
   Intl algorithms onto the library (`68cad8b`). The ruling moves nothing of this family's DateTimeFormat, its data or
   its rules.
 
+*(Noted 2026-11-12, at SJL-9's exit reading, Broiler.VM's half, on the owner's ruling of 2026-11-11, **"Confirm both"**,
+the owner's own dated choice, asked and answered.)* This decision reads "Broiler.JS's embedding carries each numbering
+system's own CLDR 48.2.0 symbols, for every locale of its list, through the locale's parent chain to root", and "Root
+holds `arab`'s and `arabext`'s in `common/main/root.xml`, which this family's CLDR pin already archives. [...] the
+generator reads root's from that file." The data home also pins CLDR's `common/main` XML files for its list's main-data
+locales and their parents, `en-001` among them, beside the `root.xml` this decision names, and its generator writes each
+locale's own symbols from them. The owner confirmed that reading as the home took it: those files are this decision's
+"through the locale's parent chain to root". The alternatives not taken were "Confirm, revise text", dated revisions of
+this decision and of decision D10, and "Do not confirm". Broiler.JS's records of the ruling are those decision D10's
+note of this date names; Broiler.JS's bundle `sjl-9-001` reads exit clauses 1 and 3 on the ruling for those files and
+the symbols read from them. This family's limitation stays as the decision's first paragraph keeps it, and nothing of
+this family's moves with the ruling. The decision above is left as written.
+
 **Decision D22 - the L2 form, and the gate of each library stage.** **A differential check against this family's
 code** (its code at its rule commit, beside the library, test-only, JIT only) over a declared population: every Intl
 vector, every dataset input as a library call, and seeded random tags, numbers, dates and durations. It runs as
@@ -989,6 +1016,24 @@ keeps."
 Finding F14 narrows the plan's last sentence, "Nothing is removed.", to "Nothing public is removed.": the members of
 T42 that are not public join Broiler.JS's deletion list, and its public ones stay. The paragraph marked *New* and the
 reason's sentence on ToDurationRecord are added.
+
+*(Noted 2026-11-12, at SJL-9's exit reading, Broiler.VM's half, on the owner's ruling of 2026-11-11 on SJL-9's clause 7,
+**"Fix (1); move (2) to SJL-17"**, the owner's own dated choice, asked and answered.)* This decision reads
+"**Broiler.JS:** the area design's list, plus `JSIntlDefaultNumberingSystems.g.cs` and its script." The area design's
+list names negotiation, and Broiler.JS's records read the Collator's hand resolution of its `co`, `kf` and `kn` keys,
+which SJL-9.5 kept, as that entry's. From the ruling that resolution is no longer on this decision's list: it is
+SJL-17's, deleted at SJL-17.5, when the Collator resolves those keys through the shared ResolveLocale. It is
+`GetUnicodeExtensionType`, `RemoveUnicodeExtensionKeyword` and `ReflectExtensionKeyword`, `ResolveLocaleFromCanonical`'s
+keyword filter over `CollatorRelevantKeys`, and `JSIntlCollator`'s `StripUnicodeExtension`. That half of the ruling,
+(2), revises the list and changes no code, so for those entries Broiler.JS's clause 7 rests on a revision, which is
+weaker evidence than the list as written. Its other half, (1), is code: `Intl.supportedValuesOf`'s currency and unit
+lists are the shared library's, and Broiler.JS's use of `Broiler.Unicode.Cldr.LocaleData` for Intl data and its package
+reference are gone, so that entry is absent as written (Broiler-Platform/Broiler.JS#1114, merged as `caa3863c`,
+observed). The alternatives not taken were "Fix both in code now" and "Revise the list for both". Broiler.JS's records
+of the ruling are its plan's dated notes on SJL-9's and SJL-17's deletion lists (`docs/roadmap/SharedLibraries.md`) and
+its bundle `sjl-9-001`'s section "Clauses 7 and 8 read again, 2026-11-11 (after the owner's rulings)"; SJL-17.5's list
+is [JSD-0084](0084-collation-moves-to-the-shared-intl-library.md)'s decision E11, which carries its own note of this
+date. This family's list does not change. The decision above is left as written.
 
 **Decision D25 - Broiler.JS's correction list** *(revised 2026-10-26, findings F6 and F7)*. SJL-9.5's correction list
 is the correspondence's column "Correction of Broiler.JS", row by row:
