@@ -176,6 +176,21 @@ before step 2's base, by that branch merging before step 2's merge. Next: step 2
 rule, whose base is the first parent of step 2's merge, and WP9.4's corpus revision retiring the `syntax` divergence
 fields. No clause is met, and nothing is accepted. The text above is left as written.
 
+*(Noted 2026-11-12, later, at work package 9.4, this repository's half.)* The note above ends "Next: step 2 (WP8),
+under bundle `sjl-13-002`'s rule, whose base is the first parent of step 2's merge, and WP9.4's corpus revision
+retiring the `syntax` divergence fields." WP9.4's corpus revision is Broiler.JS's corpus revision 39, merged in
+Broiler-Platform/Broiler.JS#1116 as `e4b6b49e` (observed). It retires every `divergence.broiler-vm` field of the
+`syntax` area and those of the regular-expression area's row S9b, which step 1 corrects, on bundle `sjl-13-001`'s
+part H and its section 5's finding and the owner's ruling of 2026-11-11, "Counts as match". Its row 39 also records
+the owner's answers of 2026-11-12 to the questions it raised, none of which concerns this family's fields. This
+family's vectors pin moved to it on the branch `vm-pin39` (`b781ebb`), not yet merged, where the conformance root
+matches every vector of those fields with no divergence field and moves no other verdict, which ends WP9.4 in this
+repository. The order: the pin moves before step 2's base, taken under the owner's standing direction of 2026-10-18 as
+the recommended choice (not taken: "move the pin after step 2's merge"). A pin move merged before step 2 lands in
+step 2's base and its after commit alike. No part of bundle `sjl-13-002`'s rule judges the vectors pin or the vector
+runner's report; its part D runs the architecture tests, which read the pin, at both commits. Next: step 2 (WP8),
+under bundle `sjl-13-002`'s rule. No clause is met, and nothing is accepted. The text above is left as written.
+
 ### SJL-13.4 — Admission and closures
 
 - The allow-list admits the frontend for `Broiler.VM.Profile.JavaScript.Compiler` only.

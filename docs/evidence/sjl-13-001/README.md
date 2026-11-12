@@ -1117,6 +1117,26 @@ automatically: the floor names the `x86-64-win64` convention, and part A's hoste
 `after/hosted/wide-native.floor.log`): no row is compared and nothing is re-based, since no reader passes `--admit`,
 so the re-set row is compared only by a native run in the form the floor names. The finding is left as written.
 
+**Corpus revision 39 retires the `syntax` fields part H lists and row S9b's, and this family's pin takes it**
+*(2026-11-12, later, at SJL-13's work package 9.4)*. Part H reads "Each field no longer holds and is retired by the
+corpus's next revision (decision D25).", and the second finding reads "Step 1's literal delimiting reaches a correction
+bundle `sjl-11-001` names for SJL-11.4; the next corpus revision and SJL-11's records should take it up." Broiler.JS's
+corpus revision 39, merged in Broiler-Platform/Broiler.JS#1116 as `e4b6b49ed290983e02525ca1a9318fd46517dc2c`
+(observed), retires every `divergence.broiler-vm` field of the `syntax` area, the 22 part H lists, and the two of row
+S9b, `regexp/literals/s9b-literal-grammar/0001` and `0002`. Its row 39 in the corpus's `REVISIONS.md` cites part H,
+this finding, row T33 and the owner's ruling of 2026-11-11 on reading 7, "Counts as match", and
+`docs/evidence/corpus-revision-39/retired-divergences-revision-39.tsv` there holds each retired field's text. It is
+the revision that ruling names, at WP9.4; revision 38, merged after step 1, kept those fields. Revision 39 changes no
+`out`, `per-engine` field, script or id. This family's vectors pin moved to it in `b781ebb`, on the branch
+`vm-pin39`. The conformance root, built and run there from a clean archive, matches each of those vectors plainly,
+with no divergence field left to no longer hold, and moves no other verdict; that run is kept outside this bundle, is
+no part of this rule, and nothing in it is a verdict. Part H is not judged again and its verdict does not move: its
+population is the area at the pin step 1's base commit holds. The move lands before step 2's base, taken under the
+owner's standing direction of 2026-10-18 as the recommended order (not taken: "move the pin after step 2's merge"), so
+bundle `sjl-13-002`'s base and after commit hold the same pin; no part of that bundle's rule judges the vectors pin or
+the vector runner's report, and its part D runs the architecture tests, which read the pin, at both commits alike.
+Part H and the finding are left as written.
+
 ## 9. Exclusions
 
 Sections 3 to 8 are added as the bundle's runs are taken. The exclusions keep this section's number, where rule H2
