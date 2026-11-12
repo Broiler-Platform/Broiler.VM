@@ -215,6 +215,16 @@ admit nothing: P26 and D61 (H18), P32's item 10 (H19), D30 (H20), R19 (H21, SJL-
 defects, its half of row T33 and its acceptance of strict `\8` and `\08`, which bundle `sjl-13-001`'s part F lists as
 `J000262` and `J001009` (H25, SJL-15.4).
 
+*(Noted 2026-11-12, at SJL-13's work package 9.4, when this family's vectors pin moved to Broiler.JS's corpus revision
+39.)* The table shows rows T6, T7, T8, T13, T16, T24d to T24f, D32 and P31 by "the `syntax` vectors (part H)", and row
+T33 by test262's file alone. Corpus revision 39, merged in Broiler-Platform/Broiler.JS#1116 as `e4b6b49e`, retires the
+`divergence.broiler-vm` fields those vectors carried, and row P15b's, which the table shows by the parse corpus and
+test262 and which the `syntax` vectors carry too. By row T33's correction, the library's delimiting of a literal that
+ends in a backslash at the end of the source, it also retires those of the regular-expression area's row S9b
+([JSD-0081](0081-regular-expressions-move-to-broiler-regex-under-its-owner-conditions.md)), whose vectors that
+correction reaches. This family's vectors pin moved to it in `b781ebb`, where every one of those vectors is a plain
+match. The table is left as written.
+
 ### 6. Deleted, and rule I5 (JSD-0083 decision D20 and X6)
 
 The cut-over, `c090c9a`, deletes decision D20's list. The rows were taken from the assurance manifests before the cut-over

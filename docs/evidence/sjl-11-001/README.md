@@ -260,6 +260,20 @@ verifies it.
 So the conformance root on the pin leaves no vector unclassified, which is task 3.5's check. The run is no part of
 the area rule, and nothing in it is a verdict.
 
+*(Noted 2026-11-12, at SJL-13's work package 9.4, when this family's vectors pin moved to corpus revision 39.)* This
+section's first bullet reads "Row S9b's two are the exception, its scanner's, outside SJL-11.", and the runs above
+count "S9b (2)" among the regular-expression area's differences and classified divergences. Step 1 of SJL-13.3, this
+family's wide path on the shared syntax library (Broiler-Platform/Broiler.VM#196, merged as `a8d8398`), corrects row
+S9b: the library delimits a literal that ends in a backslash at the end of the source, bundle
+[`sjl-13-001`](../sjl-13-001/README.md)'s row T33, and that bundle's section 5 found row S9b's two vectors matching
+with their fields no longer holding. Broiler.JS's corpus revision 39, merged in Broiler-Platform/Broiler.JS#1116 as
+`e4b6b49ed290983e02525ca1a9318fd46517dc2c` (observed), retires both fields,
+`regexp/literals/s9b-literal-grammar/0001` and `0002`, and this family's pin moved to it in `b781ebb`, where the
+conformance root reports both as a plain match. So row S9b is now a plain match, and no longer an exception. This
+family's `divergence.broiler-vm` fields of the area that remain are its corrections that SJL-11.4 makes, the 61 of rows
+S1 (33), S10 (14), M4 (7), M7 (5) and T3 (2), each the field revision 32 wrote; no other field of the area moved for
+this family. The bullet and the runs above, of revisions 31 and 32, are left as written, and no rule is revised.
+
 ## 9. Exclusions
 
 Sections 3 to 8 are added as the bundle's runs are taken (section 3 since 2026-11-01). The exclusions keep this section's number, where rule H2
