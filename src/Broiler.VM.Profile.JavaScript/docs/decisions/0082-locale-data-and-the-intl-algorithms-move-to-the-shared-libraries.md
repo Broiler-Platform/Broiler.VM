@@ -246,10 +246,13 @@ owner published the shared stream's `0.1.0-preview.11` to nuget.org on 2026-11-1
   tags.
 - **What did not move.** The conformance root's report on the vectors pin, Broiler.JS's corpus revision 39, is byte for
   byte the report before the move, so no vector reads one of those tags' hour cycles; no test262 verdict of the wide
-  manifest moved in either form, the native form's wall-clock exhaustions aside, which a re-run of one build moves
-  alike; and every other check of the slice compiler answers as before. Those runs were taken
-  locally from clean archives before and after the move, are kept outside this repository, and are no part of any area
-  rule.
+  manifest moved in either form, and in the native form the allowance some exhausted variants spend moves between the
+  wall clock and fuel or nested loads, and a re-run of one build moves one of them back; and every other check of the
+  slice compiler answers as before. Those runs were taken locally from clean archives before and after the move, are
+  kept outside this repository, and are no part of any area rule. *(Revised 2026-11-13, later: it read "no test262
+  verdict of the wide manifest moved in either form, the native form's wall-clock exhaustions aside, which a re-run of
+  one build moves alike", which read as if those were verdict moves set apart; the variants stay exhausted on both
+  sides.)*
 - **Broiler.JS's part C.** Its rule's dated revision of 2026-11-10 admits `locales:128` by name as class L19, its expected
   answer the pinned copy's; this family's answer now moves the same way as Broiler.JS's, from `b9ae4b5a` on, as the
   ruling "Dated part C revision" foresaw.
