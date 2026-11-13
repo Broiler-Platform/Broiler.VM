@@ -512,6 +512,20 @@ The dispositions of the public types it empties (SJL-D-25, applied by decision D
 Each deleted member of this family is registered in rule I5 in the change that deletes it (bundle `sjl-13-001`'s
 rule, part D).
 
+*(Noted 2026-11-13, at SJL-13.3's step 2, before any of its runs.)* **Where step 2's facts are computed.** X6's line
+for this family at step 2 reads "`JsSyntax` and the adapter; the two constants move to the lowering's module code, and
+`SawTopLevelAwait` becomes the lowering's." This record reads "becomes the lowering's" as the compiler assembly's
+post-parse code over the shared tree, by `JsParser`'s rule: the admission walk, `JsAdmissionWalk`, computes the
+top-level-`await` fact and the BigInt values, and a side table keyed by the shared tree's nodes holds strictness. None
+of the three is computed in `JsCompiler`'s own files. The two constants move to the lowering's module code as the line
+says, and the deletion list does not change. The reading is taken under the owner's standing direction of 2026-10-18
+("Please do all recommended decisions and skip waiting for review") and recorded as the owner's dated decision under
+it, not as the owner's own dated answer. Bundle `sjl-13-002`'s
+[`README.md`](../../../../docs/evidence/sjl-13-002/README.md) records it among its readings taken before any run
+(reading 7), with that rule's "The lowering computes from the shared tree, by `JsParser`'s rules, every fact the
+adapter computed at step 1" read the same way, and decisions D15 and D20 carry notes of this date that read their "the
+lowering's at step 2" so. Not taken: "compute them in `JsCompiler`'s own files", as the line's text reads.
+
 ### X7 - owners accept
 
 The JavaScript profile owner, the Broiler.JS maintainer, the verification-boundary owner, the conformance owner and
@@ -1055,6 +1069,20 @@ the library at the parse with `2101:15:6`, in sub-populations B1 and B2. No clas
 - **Not taken: "Record as findings"** (for the three test262 files). Part A would have recorded each as a finding the
   correspondence missed, and so as a regression, and would not have been met.
 
+*(Noted 2026-11-13, at SJL-13.3's step 2, before any of its runs.)* This decision reads that the adapter reproduces
+"**every fact `JsParser` computes into `JsSyntax`** (the correspondence's P32: strictness, from the library's side
+fact, decision D10; function kinds, names and keys; parenthesisation; the chain wrappers; the desugarings and
+synthetic names; the top-level-`await` fact), each by `JsParser`'s rule, the adapter's at step 1 and the lowering's at
+step 2." For the top-level-`await` fact, the BigInt values and strictness, this record reads "the lowering's at step
+2" as the compiler assembly's post-parse code over the shared tree, by `JsParser`'s rule: the admission walk,
+`JsAdmissionWalk`, computes the flag and the BigInt values, and a side table keyed by the shared tree's nodes holds
+strictness, from the library's side fact as decision D10 says. They are not computed in `JsCompiler`'s own files. The
+rule stays `JsParser`'s, an `await` inside an async arrow at a module's top level counted as before, and hand-off H19
+is unchanged. The reading is taken under the owner's standing direction of 2026-10-18 ("Please do all recommended
+decisions and skip waiting for review") and recorded as the owner's dated decision under it, not as the owner's own
+dated answer; X6's note of this date gives it in full, and bundle `sjl-13-002`'s README records it (reading 7). Not
+taken: "compute them in `JsCompiler`'s own files", as the decision's text reads.
+
 **Decision D17 - proposal flags, the lexer extension, the switches** *(revised 2026-10-26, finding F16)*. Proposal
 flags off by default. This family admits none (the decorator is JSE7201, mapped to 2104 within meaning), and reports
 it where the parse reaches it. **One flag per form for the import phases**, one per catalogue row (the declaration
@@ -1379,6 +1407,39 @@ asked that "I5 registers every member the verdict's deletion list gives step 1, 
 among them, member by member (decision D20)", by its revision of 2026-11-10,
 [`decision-rule-area-revised-2026-11-10.md`](../../../../docs/evidence/sjl-13-001/decision-rule-area-revised-2026-11-10.md),
 filed before any of its runs. The deletions themselves do not change.
+
+*(Noted 2026-11-13, at SJL-13.3's step 2, before any of its runs.)* **What rule I5 registers at step 2.** The decision
+gives its reason as "code nothing reaches is deleted in the merge that strands it (roadmap section 6 item 11: no
+fallback copy, no switch and no dead path survives it); I5 registers it", and bundle `sjl-13-002`'s area rule, part D,
+asks that "I5 registers every member of JsSyntax and of the adapter". Step 2 deletes `JsSyntax.cs` and the adapter's
+four files. Almost every member of `JsSyntax` is a positional parameter of a record, and rule I5's reader yields no
+positional parameter, no member of an enumeration and no constructor; its register holds one row per distinct name,
+and the adapter declares some names more than once. This record reads "I5 registers it", at step 2, as step 1's
+convention: each type those five files declare directly in a namespace is registered by type, which refuses each of
+its members, since none can be declared again without its type; each member that step 2 deletes from a type the after
+commit still declares, whose kind the reader reads, is registered by member, one row per distinct name; and the
+positional record parameters, enumeration members and constructors the reader does not read are named in rule I5's
+register paragraph for SJL-13.3's step 2, by kind for each type deleted whole and member by member for a type that
+stays, and are not registered. The reading is taken under the owner's standing direction of 2026-10-18 ("Please do all
+recommended decisions and skip waiting for review") and recorded as the owner's dated decision under it, not as the
+owner's own dated answer. Bundle `sjl-13-002`'s area rule writes it into part D's MET line, and pins part D's control
+(the type `JsMemberExpression` declared again with its member `NameSpan`, and `JsNumberLiteral` declared again, each
+to be refused), by its revision of 2026-11-13,
+[`decision-rule-area-revised-2026-11-13.md`](../../../../docs/evidence/sjl-13-002/decision-rule-area-revised-2026-11-13.md),
+filed before any of its runs. Not taken: "register each adapter member the reader reads as well", whose rows would
+refuse nothing the adapter's type row does not; and "a row for every positional parameter", whose rows the reader
+could never match. The deletions themselves do not change.
+
+*(Noted 2026-11-13, at SJL-13.3's step 2, before any of its runs.)* **"The lowering's at step 2."** The decision reads
+"`SawTopLevelAwait` becomes the adapter's, by `JsParser`'s rule (decision D15), and the lowering's at step 2." This
+record reads "the lowering's at step 2" as the compiler assembly's post-parse code over the shared tree, by
+`JsParser`'s rule: the admission walk, `JsAdmissionWalk`, computes the top-level-`await` fact, as it does the BigInt
+values, and a side table keyed by the shared tree's nodes holds strictness; none of the three is computed in
+`JsCompiler`'s own files. `JsParser.DefaultBindingName` and `StarName` move "to the lowering's module code at step 2"
+as the decision says. The reading is taken under the owner's standing direction of 2026-10-18 ("Please do all
+recommended decisions and skip waiting for review") and recorded as the owner's dated decision under it, not as the
+owner's own dated answer; X6's note of this date gives it in full. Not taken: "compute them in `JsCompiler`'s own
+files", as the decision's text reads.
 
 **Decision D21 - "the shared tokenizer's behaviour must match the slice path's"** *(revised 2026-10-26, finding
 F17)*. **A checks row added at step 1** compares the two tokenizers' streams over every input the slice path accepts
