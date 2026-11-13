@@ -124,6 +124,43 @@ any run, on the reading of decision D20 that JSD-0083's dated note of 2026-11-13
    JSD-0083's dated notes of 2026-11-13 on X6, D15 and D20 record it. Not taken: "compute them in `JsCompiler`'s own
    files", as JSD-0083's text reads.
 
+*(Noted 2026-11-13, later, when the shared stream's `0.1.0-preview.11` was taken before step 2.)* The passage above
+reads "These readings are filed on the branch whose merge is to be the after commit, before any run of step 2 that the
+rule judges and before the development reference that reading 6 names was taken"; reading 1 reads "Nothing else merges
+into Broiler.VM's default branch until this bundle's evidence merges"; reading 6 reads "The development reference taken
+at `686533fad10a17600ce67e5a774892f62cb08006` after these readings and the revision above were filed is such a check";
+section 1's note on the rule commit reads "the note names it on the branch whose merge is to be the after commit"; and
+the revision's "Written" line reads "It is filed on the branch whose merge is to be this rule's after commit, before
+that merge", with "Step 2 is built on the branch `sjl-13-3-step2`, cut from
+`686533fad10a17600ce67e5a774892f62cb08006`". The owner published the shared stream's `0.1.0-preview.11` on 2026-11-13,
+and its move was taken first, in its own merge, before step 2's base, as the owner's dated decision under the standing
+direction of 2026-10-18, taken as the recommended choice (not taken: "step 2 on preview.10, the stream move after step
+2's evidence merges"), because step 2's code reads the shared syntax library's tree directly and the stream's new
+version changes that library's sources (in comments only, so its code is `0.1.0-preview.10`'s, and the parse corpus's
+report over B1 to B5 and both census outputs are byte for byte the same before and after the move, in local runs from
+clean archives that are no part of this rule).
+- **Where these readings land.** The two commits that filed this section's readings and the revision,
+  `233b6629c5bac0ca921dd82c9ccbc8aa1ac01d11` and `90c4d07cfb38d916bcc804c17b2f5726a01c1933`, land in that change's
+  merge, with the move, before step 2's base and before any run of this rule. They are not on the branch whose merge is
+  the after commit, and the sentences quoted above that say so read as of the day they were written.
+- **The base.** Step 2's base is the first parent of step 2's own merge, as the rule's "The commits" says, and that
+  merge descends from the move's. The base therefore holds the move, the readings and the revision; the after commit is
+  still the only first-parent commit that carries any part of step 2. The move is no part of step 2, and changes none of
+  this rule's pins, which are bundle `sjl-13-001`'s: test262, ECMA-262, the parse corpus's manifest, the early-error
+  catalogue and the registry.
+- **Reading 1** reads from step 2's branch point: the move's merge, which carries the readings themselves, lands before
+  it, and the reading's purpose, that no other change lands between the base and the after commit, or after the after
+  commit while this bundle's runs are taken, is unchanged.
+- **Reading 6's reference.** No development reference was taken at `686533fad10a17600ce67e5a774892f62cb08006`: its
+  builds were stopped when the owner's publication arrived, and nothing of them is seen or cited. Step 2's stage 1 takes
+  its development reference at step 2's branch point instead, the default branch's head once the move has merged, under
+  reading 6 as written otherwise.
+- **The revision file is not edited.** Rule files, revisions included, are never edited once filed, so its "Written"
+  line keeps its words, and this note is its dated record.
+
+No part, class, control or condition of the rule changes, and no part is voided or judged otherwise by the move landing
+before the base. The readings above are left as written.
+
 ## 2. What this bundle will hold
 
 - **`base/`** and **`after/`**: part A's dispatches, imported unchanged with the digest of each zip; parts B to E and
