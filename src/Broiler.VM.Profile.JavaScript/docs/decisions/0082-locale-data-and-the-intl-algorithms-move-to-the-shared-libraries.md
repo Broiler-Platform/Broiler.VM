@@ -230,6 +230,35 @@ now does under row T10 (Broiler-Platform/Broiler.JS#1108, merged as `b9ae4b5a`).
 
 The list above is left as written.
 
+*(Noted 2026-11-13, when this family took the shared stream's `0.1.0-preview.11`.)* The note above reads "Its package
+pin, `Broiler.ECMAScript.Intl` `0.1.0-preview.10`, from Broiler.JS `29061d65`, predates `b9ae4b5a` and reads the region
+alone, so no answer of this family's has moved", and "Its datasets' `fr-CA` line moves when this family takes the fixed
+library, in a change after this rule's after commit, `68cad8b`, which its runs read; that change records the move." The
+owner published the shared stream's `0.1.0-preview.11` to nuget.org on 2026-11-13 from Broiler.JS `e4b6b49e` (tag
+`ecmascript-v0.1.0-preview.11`), the stream version that carries the library's changes of 2026-11-08 and 2026-11-09,
+`055a51c7` and `b9ae4b5a`. This family's packages moved to it, every package of the stream it references, on the branch
+`vm-stream11`, and that change records the move, as the note says it would:
+- **What moved.** Of the locales dataset's lines (`src/tests/cldr/locales/`), `11 fr-CA hourCycles` alone, from
+  `[h12,h23]` to `[h23,h12]`, the answer of `fr_CA`'s entry in CLDR 48.2.0's time data, where it answered Canada's. Its
+  line in `divergences.txt` moved with a dated note under its group's header, as data policy (C5) under row L19; Node's
+  answer for it is still one cycle, `[h23]`, so it stays a divergence line. No other line of the dataset moved: none of
+  its other tags reaches one of the four entries the note names, and `ar-001`, `en-001` and `ku-SY` are not among its
+  tags.
+- **What did not move.** The conformance root's report on the vectors pin, Broiler.JS's corpus revision 39, is byte for
+  byte the report before the move, so no vector reads one of those tags' hour cycles; no test262 verdict of the wide
+  manifest moved in either form, and in the native form the allowance some exhausted variants spend moves between the
+  wall clock and fuel or nested loads, and a re-run of one build moves one of them back; and every other check of the
+  slice compiler answers as before. Those runs were taken locally from clean archives before and after the move, are
+  kept outside this repository, and are no part of any area rule. *(Revised 2026-11-13, later: it read "no test262
+  verdict of the wide manifest moved in either form, the native form's wall-clock exhaustions aside, which a re-run of
+  one build moves alike", which read as if those were verdict moves set apart; the variants stay exhausted on both
+  sides.)*
+- **Broiler.JS's part C.** Its rule's dated revision of 2026-11-10 admits `locales:128` by name as class L19, its expected
+  answer the pinned copy's; this family's answer now moves the same way as Broiler.JS's, from `b9ae4b5a` on, as the
+  ruling "Dated part C revision" foresaw.
+
+The notes above are left as written.
+
 **X6 - extended** (decision D24).
 - **This family:** `JsLocaleTag`; `JsIntlTables`' decoders of likely subtags, aliases and types; the `JsRealm.Intl` and
   `JsRealm.Locale` cores; `SupportedValuesOf`'s core. `NewCollator` and `CollatorKeyData` stay, SJL-17's.
@@ -343,6 +372,13 @@ entry of its own, so its formats answer as before for its list, and decision D21
 family only through Intl.Locale's hour cycles, row L19 (sub-area (a)'s note of this date). The day's ruling on row T12,
 "Follow CLDR, dated ruling", is already recorded, in decision D21's note of 2026-11-09, and is not repeated here. The
 list above is left as written.
+
+*(Noted 2026-11-13, when this family took the shared stream's `0.1.0-preview.11`, which carries `b9ae4b5a`.)* The note
+above reads "**This family's date-time answers move with none of them**" and "They reach this family only through
+Intl.Locale's hour cycles, row L19". At `0.1.0-preview.11` both held: no date-time answer of this family's datasets, of
+the vectors on corpus revision 39 or of the wide manifest's test262 verdicts in either form moved, and the hour cycles
+moved for `fr-CA` alone among the tags its datasets name (sub-area (a)'s note of this date). The notes above are left as
+written.
 
 **X6 - extended** (decision D24).
 - **This family:** `JsDatePatternGenerator`, `JsDateTimeFormatter`, `JsDateIntervalFormat`, `JsZoneNames`,
@@ -623,6 +659,15 @@ and its generator, merged in Broiler.JS after the stream version this family's p
   Its input is the file decision D10's note of this date names.
 
 The decision above is left as written.
+
+*(Noted 2026-11-13, when this family took the shared stream's `0.1.0-preview.11`.)* The note above reads "this family
+takes both only when it takes a stream version that carries them". The owner published `0.1.0-preview.11` on 2026-11-13
+from Broiler.JS `e4b6b49e`, which carries both, `055a51c7` and `b9ae4b5a`, and this family's packages moved to it on the
+branch `vm-stream11`. As the note reads it, over this family's tables neither change moves an answer: with the
+generator's defaults, `IntlCurrencyNamePlurals.OneAndOther` and `IntlCalendarPreferences.None`, `JsCldrTables.g.cs`
+keeps its bytes under rule N28, and rule I4's CLDR clause holds, the home's lines for this family's files unchanged at
+`e4b6b49e`; the number, list, relative-time, duration and display-name datasets answer as before. The decision and the
+note above are left as written.
 
 **Decision D9 - the package.** **A new `Broiler.ECMAScript.Intl`**, referencing `Broiler.ECMAScript.Algorithms` and
 `Broiler.Unicode.Algorithms`. This family's profile project references it as a product entry, and every root that

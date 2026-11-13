@@ -213,6 +213,15 @@ three modes at the after commit and moves the four rows in the same commit, as J
 commit the bullet "The composition register declares it for the compiler-bearing roots." holds; the after commit
 itself does not hold it. The text above is left as written.
 
+*(Noted 2026-11-13, when this family took the shared stream's `0.1.0-preview.11`.)* The first note above reads "The
+allow-list admits `Broiler.ECMAScript.Frontend` `0.1.0-preview.10` for `Broiler.VM.Profile.JavaScript.Compiler` alone".
+From the change of this date on the branch `vm-stream11` it admits `0.1.0-preview.11`, published to nuget.org on
+2026-11-13 from Broiler.JS `e4b6b49e`, for the same project alone, and the notices row names it. The files of the
+library's project change from `0.1.0-preview.10` only in comments; the slice compiler's parse-corpus report over
+sub-populations B1 to B5 and both census outputs are byte for byte the ones before the move, taken locally from clean
+archives and no part of any area rule. The move lands in its own merge, before step 2's base, which is the first parent
+of step 2's merge (the ledger's entry of this date). The notes above are left as written.
+
 ### SJL-13.5 — JS-2 closes
 
 The profile's ledger row JS-2 was `Blocked` on the seed copy. It closes under the gate that decision

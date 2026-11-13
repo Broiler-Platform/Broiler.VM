@@ -171,10 +171,11 @@ rather than a decision record.
 | [JSC-323](#jsc-323) | the package baseline's bundle and its account of the shared algorithms package's version; support section 9's bundle | The baseline is bundle JS-10-014's candidate pack, taken at the change that moved the shared packages to `0.1.0-preview.9`, and the two documents name it where they still named JS-10-011 or a version's commit wrongly | release gate 8 and rule N37 |
 | [JSC-324](#jsc-324) | the records of the profile's admission of `Broiler.ECMAScript.Intl` and of what its cut-over deleted: `packages.md`, `support.md`, `eng/packages/README.md`, ADR 0001, the notices row, the composition register, rule I5's register, and the programme's inventory and architecture documents | The profile references the shared Intl library from SJL-9.4, the package baseline is bundle JS-10-015's, `canonical-tz` is admitted, the register's rows carry the library, the code it replaced is gone and registered, and a stale Unicode version in `packages.md` is corrected | [JSD-0085](decisions/0085-the-profile-on-the-shared-intl-library.md), applying [JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md) |
 | [JSC-326](#jsc-326) | backends' sentence naming `JsParser.Parse` in the wide compile's order, parity's sentence naming `JsParser.cs`'s primary-expression switch, and rule I5's register | From SJL-13.3's step 1 the wide path parses through the shared syntax library and `JsParser` is deleted, and rule I5 registers the types and members the step deleted | [JSD-0087](decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md), applying [JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md) |
+| [JSC-327](#jsc-327) | the records of the four admitted stream packages' version and identity: `Directory.Packages.props`, the allow-list, rule I1's witnesses, the feed's README and the notices rows; the locales dataset's divergence line for `fr-CA`'s hour cycles | The stream's four packages move to `0.1.0-preview.11` as published on 2026-11-13, the algorithms and syntax packages' code unchanged, the Intl library carrying its changes of 2026-11-08 and 2026-11-09 and the generator two options whose defaults are this family's; Intl.Locale's hour cycles move under row L19 | the owner's publication of 2026-11-13; the admission procedure of `9d0f80e`; [JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)'s note on row L19 |
 
 *(Added 2026-10-25, with JSC-319's row.)* The index holds rows for JSC-01 to JSC-80 and for JSC-319. JSC-81 to
 JSC-318 are not indexed here, and each is found by its heading below. *(Added 2026-10-26, with JSC-320's row: the
-index holds JSC-320's row too.)* *(Added 2026-11-01, with JSC-321's row: the index holds JSC-321's row too.)* *(Added 2026-11-03, with JSC-322's row: the index holds JSC-322's row too.)* *(Added 2026-11-03, later, with JSC-323's row: the index holds JSC-323's row too.)* *(Added 2026-11-04, with JSC-324's row: the index holds JSC-324's row too.)* *(Added 2026-11-10, with JSC-326's row: the index holds JSC-326's row too. JSC-325, filed on 2026-11-04, was given no row, and has none.)*
+index holds JSC-320's row too.)* *(Added 2026-11-01, with JSC-321's row: the index holds JSC-321's row too.)* *(Added 2026-11-03, with JSC-322's row: the index holds JSC-322's row too.)* *(Added 2026-11-03, later, with JSC-323's row: the index holds JSC-323's row too.)* *(Added 2026-11-04, with JSC-324's row: the index holds JSC-324's row too.)* *(Added 2026-11-10, with JSC-326's row: the index holds JSC-326's row too. JSC-325, filed on 2026-11-04, was given no row, and has none.)* *(Added 2026-11-13, with JSC-327's row: the index holds JSC-327's row too.)*
 
 ### JSC-01
 
@@ -14067,3 +14068,48 @@ or whose code replaced them.
 and D20, taken by the owner on 2026-10-26 under the direction of 2026-10-18; rule I5; the programme's work package
 SJL-13.3, step 1, as [JSD-0087](decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md) records it.
 2026-11-10.
+
+### JSC-327
+
+**Where:** the records that carry the four admitted stream packages' version and identity: `Directory.Packages.props`,
+the allow-list's four entries, the two rule I1 witnesses that are otherwise entries of it, `eng/packages/README.md`'s
+rows for the packages, and `THIRD_PARTY_NOTICES.md`'s rows for them; and the locales dataset's divergence list,
+`src/tests/cldr/locales/divergences.txt`, its line for `fr-CA`'s hour cycles. No decision is edited.
+
+**What the plan said.** `Broiler.ECMAScript.Algorithms`, `.Frontend`, `.Intl` and `.Generation` were admitted at
+`0.1.0-preview.10`, published to nuget.org on 2026-11-04 from Broiler.JS `29061d65` (tag
+`ecmascript-v0.1.0-preview.10`), the stream SJL-13.3's step 1 moved to on 2026-11-08 (`26b436f`). That version predates
+the shared Intl library's changes of 2026-11-08 and 2026-11-09 (Broiler-Platform/Broiler.JS#1107 and #1108, merged as
+`055a51c7` and `b9ae4b5a`), so the locales dataset's divergence list answered `fr-CA`'s hour cycles as Canada's,
+`[h12,h23]`.
+
+**What replaced it.** All four are `0.1.0-preview.11`, published to nuget.org on 2026-11-13 from Broiler.JS `e4b6b49e`,
+the merge of its corpus revision 39, at the owner's publication of that day, and tagged `ecmascript-v0.1.0-preview.11`.
+Between `29061d65` and `e4b6b49e` the files of the algorithms and syntax packages' projects change only in comments,
+their assurance annotations' prefixes, so their code is `0.1.0-preview.10`'s. The Intl library carries the changes of
+2026-11-08 and 2026-11-09, the owner's decisions "Keep + fix library first": a currency's name in every plural form
+and the currency style's grouping separator, and a date-time format that follows the pinned CLDR data, its hour cycle
+and Intl.Locale's read from the time data for the locale's language and region before the region's. The generator gains
+the options for a currency's name in every plural form and for the calendar preference table, whose defaults are this
+family's, so `JsCldrTables.g.cs` keeps its bytes under rule N28; its time code is unchanged. No package of the stream
+carries a new third-party component.
+
+Each package was downloaded from nuget.org twice, the copies byte-identical, and its archive hashes to the SHA-512
+nuget.org's catalog publishes for it; the allow-list's `archiveHash` holds that hash, and its `contentHash` the one a
+restore into an empty package cache recorded in `obj/project.assets.json` and beside the restored package. The version,
+the `pin` field's name and the hashes move together in each entry, each `admittedBy` gaining a first sentence that says
+so before the text it had; the use and the projects do not move. Rule I1's two witnesses that copy an entry move to the
+new version and hashes. No `.nupkg`, `.pin` or lock file is placed in the tree.
+
+Over this family's tables only Intl.Locale's hour cycles move, under row L19, as JSD-0082's note on that row reads it:
+of the locales dataset's lines, `11 fr-CA hourCycles` alone, from `[h12,h23]` to `[h23,h12]`, `fr_CA`'s entry in
+CLDR's time data. Its divergence line moves with a dated note under its group's header, which is left as written; Node's
+answer for the line is still one cycle, so the line stays a divergence.
+
+Rule N37 holds the package baseline's candidate to declaring the version the allow-list pins or a later one, and bundle
+JS-10-016's declares `0.1.0-preview.10`, so the baseline moves in the next change, collected at this change's tree.
+
+**Authority and date.** The owner's publication of `0.1.0-preview.11` on 2026-11-13; the admission procedure this
+repository's main has used since `9d0f80e`, as `eng/packages/README.md` states it since 2026-11-01;
+[JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)'s note of 2026-11-11 on
+row L19, with the owner's ruling of 2026-11-09 "Fix both consumers". 2026-11-13.
