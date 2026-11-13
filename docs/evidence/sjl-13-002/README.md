@@ -17,8 +17,11 @@ the area verdict; its decision D19 reads step 2.
 
 **Owner and reviewer:** one person holds every role (EX-30), and nobody independent has read this bundle.
 
-**State:** rules only, 2026-10-26, at SJL-13.1. **Rules only. Nothing here is a verdict, and nothing has been taken.**
-A collector joins this bundle when there is a run to take.
+**State:** rules, with the readings taken before any run; nothing taken. The rules are of 2026-10-26, at SJL-13.1,
+and the readings of 2026-11-13, at SJL-13.3's step 2 (section 1). **Nothing here is a verdict, and no run of the rule
+has been taken.** A collector joins this bundle when there is a run to take. *(Revised 2026-11-13, when section 1's
+readings taken before any run were filed. It read "rules only, 2026-10-26, at SJL-13.1. **Rules only. Nothing here is
+a verdict, and nothing has been taken.**")*
 
 ## 1. SJL-13's area rule for step 2 (SJL-13.1)
 
@@ -27,7 +30,17 @@ but part A's harness classes.
 
 **The commits the rule names.**
 - **The rule commit** carries [`decision-rule-area.md`](decision-rule-area.md). It is named in this section, by all
-  forty digits, when the change that carries it has merged.
+  forty digits, when the change that carries it has merged. *(Note of 2026-11-13, late, at SJL-13.3's step 2: the
+  sentence "It is named in this section, by all forty digits, when the change that carries it has merged." is
+  fulfilled here. That change, the SJL-13.1 records, merged in Broiler-Platform/Broiler.VM#172 as
+  `faa8af78cddc32d460a7299f088b18b9e4407d7a`, the rule commit. The commit of that change's branch that added the file
+  is `ef3f0567a5eba0dca7fa4fc584bd53e94ce81281`, and `af2420b292c3cbcd5476943ce92c8798f6aeb847`, on the same branch
+  and before the merge, revised it (part B's sub-population B5). The file's blob is
+  `a6b2a086c5775b3e4ca7450da530bb9510bc5095` at the rule commit, at bundle `sjl-13-001`'s after commit
+  `a8d8398bd59e7f5600cb0aa9e733ff8948859cf4`, and at `686533fad10a17600ce67e5a774892f62cb08006`, the default branch's
+  head from which step 2's branch was cut. This section did not name the rule commit when #172 merged, as it should
+  have; the note names it on the branch whose merge is to be the after commit, and section 1's readings taken before
+  any run record that choice.)*
 - **The base commit** and **the after commit** do not exist yet. The after commit is the default-branch merge that
   lands step 2, and the base commit is its first parent, which descends from the commit bundle `sjl-13-001` names as
   its after commit. This README names each, by all forty digits, when it lands.
@@ -51,6 +64,65 @@ artifact hash changed, one diagnostic's column moved, in place of the outcome fl
 and one specifier of a B5 input changed with its hash and length, which the comparison reports as three differences,
 the third a `specifiers` one. With `--specifier note-only` the specifier changes alone and the report is refused.
 *(Added 2026-11-01.)*
+
+### Readings taken before any run (2026-11-13)
+
+*(Added 2026-11-13, at SJL-13.3's step 2.)* These readings are filed on the branch whose merge is to be the after
+commit, before any run of step 2 that the rule judges and before the development reference that reading 6 names was
+taken. Each is recorded as the owner's dated decision under the owner's standing direction of 2026-10-18 ("Please do
+all recommended decisions and skip waiting for review"), taken as the recommended choice, with the alternative not
+taken; none is the owner's own dated answer, asked and answered, and the owner may rule otherwise. They change no part,
+class, control or condition of the rule. Part D's clause on rule I5, and its control, are revised by
+[`decision-rule-area-revised-2026-11-13.md`](decision-rule-area-revised-2026-11-13.md), filed on the same branch before
+any run, on the reading of decision D20 that JSD-0083's dated note of 2026-11-13 records.
+
+1. **Every run of this bundle is taken after step 2's merge.** The base's runs and the after commit's, part A's
+   dispatches among them, are taken once step 2 has merged. Nothing else merges into Broiler.VM's default branch until
+   this bundle's evidence merges, so that no other change lands between the base and the after commit, or after the
+   after commit while this bundle's runs are taken, and part A's dispatched ref holds the base's workflow and driver. If step 2 has to land in a second
+   merge, both merges are named in this bundle, the base stays the first merge's first parent, and every after run is
+   taken again at the last, as the rule's "The commits" says. Not taken: "take the base column now", at
+   `686533fad10a17600ce67e5a774892f62cb08006`, before step 2's merge.
+2. **The rule commit is named on this branch**, by the note above: `faa8af78cddc32d460a7299f088b18b9e4407d7a`, the
+   merge of #172, which carries `ef3f0567a5eba0dca7fa4fc584bd53e94ce81281`, with the rule file's blob
+   `a6b2a086c5775b3e4ca7450da530bb9510bc5095`. Not taken: "a separate docs merge before the base", which would have
+   named it on the default branch before step 2's branch.
+3. **Part D's clause on rule I5 is revised**, by the revision named above. Its control is pinned: a scratch copy of
+   the after commit declares the type `JsMemberExpression` again, with its member `NameSpan`, and must be refused; a
+   second control declares `JsNumberLiteral` again. The revision records its alternatives.
+4. **Which of bundle `sjl-13-001`'s readings carry.** That bundle's section 5 took readings 1 to 11, each now the
+   owner's own dated answer by the rulings of 2026-11-11 and 2026-11-12. For this bundle:
+   - **Reading 10 carries**: the rule's local machine is this family's machine as replaced, each run recording its
+     SDK.
+   - **Reading 2 carries**: part C's control K4 is applied as configured, and the adjunct, the same patch under a
+     harness narrowed to the fifth row, is used only if K4 as configured fails to make the fifth row fail.
+   - **Readings 1, 3, 4, 5, 6, 7, 8 and 11 have no object at step 2.** They read part A's kind (F) of class C1, part
+     B's classes R, S and N, part H and the registry commit. This rule's part A admits only class C4, its part B
+     admits no class, and it has no part H and no registry commit.
+   - **Reading 9 does not carry.** Every local part of this bundle is taken with no compiler server alive, as the idle
+     gate reads it.
+   - Not taken: "rule each again", which would have asked the owner on each before step 2's runs; and "carry them
+     all", which would have carried reading 9's idle servers into this bundle.
+5. **Part F, a reading; there is nothing to decide.** Part F is no gate clause (decision D24). The owner's words of
+   2026-11-03, "Please defer the measurement", answered decision D48 of SJL-13's plan, on SJL-14's clause 6, for
+   Broiler.JS (`docs/javascript-shared-libraries/decisions.md`, decision SJL-D-23's dated note of 2026-11-03; the
+   milestone `sjl-14-broiler-js-syntax.md`, its note of that day), not this rule's part F; and the owner's ruling of
+   2026-11-12 on bundle `sjl-13-001`'s reading 9 let that bundle's part J, taken after 2026-11-03, stand. Part F is
+   taken after step 2's merge, as the rule's B and A arms name the base's and the after commit's builds, and is read as
+   no gate clause.
+6. **Development checks before the merge** are taken from scratch archives, kept outside this bundle and never cited
+   by it, and decide nothing. They are not runs the rule judges. The development reference taken at
+   `686533fad10a17600ce67e5a774892f62cb08006` after these readings and the revision above were filed is such a check:
+   it is not a judged run, nothing of it is under `docs/evidence/`, and it is not this bundle's base. Any revision of
+   the rule filed after that reference states that it was written after the reference was seen. Not taken: "no checks
+   before the merge".
+7. **Where the facts are computed.** At step 2, the top-level-`await` fact, the BigInt values and strictness are
+   computed in the compiler assembly's post-parse code, by `JsParser`'s rule: the admission walk (`JsAdmissionWalk`)
+   computes the flag and the BigInt values, and a side table keyed by the shared tree's nodes holds strictness. This
+   reads JSD-0083's "the lowering's at step 2" (X6, decision D15 and decision D20), and the rule's "The lowering
+   computes from the shared tree, by `JsParser`'s rules, every fact the adapter computed at step 1", as that code;
+   JSD-0083's dated notes of 2026-11-13 on X6, D15 and D20 record it. Not taken: "compute them in `JsCompiler`'s own
+   files", as JSD-0083's text reads.
 
 ## 2. What this bundle will hold
 
