@@ -136,9 +136,12 @@ that merge", with "Step 2 is built on the branch `sjl-13-3-step2`, cut from
 and its move was taken first, in its own merge, before step 2's base, as the owner's dated decision under the standing
 direction of 2026-10-18, taken as the recommended choice (not taken: "step 2 on preview.10, the stream move after step
 2's evidence merges"), because step 2's code reads the shared syntax library's tree directly and the stream's new
-version changes that library's sources (in comments only, so its code is `0.1.0-preview.10`'s, and the parse corpus's
-report over B1 to B5 and both census outputs are byte for byte the same before and after the move, in local runs from
-clean archives that are no part of this rule).
+version changes that library's sources (in comments only, so its code is `0.1.0-preview.10`'s; the ledger's entry of
+2026-11-13 records the move's own local checks). *(Revised 2026-11-13, later still: the parenthetical read "(in
+comments only, so its code is `0.1.0-preview.10`'s, and the parse corpus's report over B1 to B5 and both census
+outputs are byte for byte the same before and after the move, in local runs from clean archives that are no part of
+this rule)". Those words are withdrawn: reading 6 keeps development checks outside this bundle and never cited by it,
+and this bundle cites none of the move's runs.)*
 - **Where these readings land.** The two commits that filed this section's readings and the revision,
   `233b6629c5bac0ca921dd82c9ccbc8aa1ac01d11` and `90c4d07cfb38d916bcc804c17b2f5726a01c1933`, land in that change's
   merge, with the move, before step 2's base and before any run of this rule. They are not on the branch whose merge is
@@ -160,6 +163,37 @@ clean archives that are no part of this rule).
 
 No part, class, control or condition of the rule changes, and no part is voided or judged otherwise by the move landing
 before the base. The readings above are left as written.
+
+*(Noted 2026-11-13, later still, on review of the note above, which is read with these corrections and additions.)*
+- **Whose choice it is.** The order above, and the reading of reading 1 below, are each taken under the owner's
+  standing direction of 2026-10-18 ("Please do all recommended decisions and skip waiting for review") as the
+  recommended choice, and recorded as the owner's dated decision under that direction, with the alternative not taken;
+  neither is the owner's own dated answer, asked and answered, and the owner may rule otherwise, as for the readings
+  above.
+- **Reading 1.** It reads "Nothing else merges into Broiler.VM's default branch until this bundle's evidence merges".
+  It is read from step 2's branch point, the default branch's head once the move has merged: the move's merge, which
+  carries the readings themselves, lands before that point and is no part of step 2, and the reading's purpose, that
+  no other change lands between the base and the after commit, or after the after commit while this bundle's runs are
+  taken, is unchanged. Not taken: "reading 1 as written when `233b6629c5bac0ca921dd82c9ccbc8aa1ac01d11` filed it",
+  which would forbid the move's merge and hold the move until this bundle's evidence merges.
+- **Reading 2.** It reads "The rule commit is named on this branch" and "Not taken: "a separate docs merge before the
+  base", which would have named it on the default branch before step 2's branch". Section 1's note on the rule commit
+  also reads "at `686533fad10a17600ce67e5a774892f62cb08006`, the default branch's head from which step 2's branch was
+  cut". Under the order above, the note that names the rule commit lands on the default branch in the move's merge,
+  before step 2's branch is cut, which is in substance the alternative reading 2 did not take. That follows from the
+  order decision, not from a new reading of reading 2. The rule commit is as the note names it, and the rule file's
+  blob, `a6b2a086c5775b3e4ca7450da530bb9510bc5095`, is the same at this change's head, which does not touch the file.
+  `686533fad10a17600ce67e5a774892f62cb08006` is the head from which the branch carrying the readings was cut; step 2's
+  branch is cut from the default branch's head once the move has merged. The note above's "read as of the day they
+  were written" covers these sentences too.
+- **No run of step 2 was taken**, and no development reference: nothing of either is seen or cited here.
+- **What the revision read at `686533fad10a17600ce67e5a774892f62cb08006`.** The move changes no source file of this
+  repository: no `.cs` or `.csproj` file changes between that commit and this change's head. The files the revision's
+  "What was seen, and where" reads, `I5RetiredDuplicatesRuleTests`, `JsSyntax.cs` and `JsFrontendAdapter*.cs`, are
+  the same at this change's head, so what it read holds at step 2's branch point once this change has merged with
+  nothing between.
+
+The note above and the readings are left as written, but for the parenthetical revised in place.
 
 ## 2. What this bundle will hold
 
