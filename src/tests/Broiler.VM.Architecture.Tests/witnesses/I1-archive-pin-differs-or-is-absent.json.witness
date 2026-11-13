@@ -9,8 +9,8 @@
   "packages": [
     {
       "id": "Broiler.ECMAScript.Generation",
-      "version": "0.1.0-preview.10",
-      "contentHash": "TiiqJKWNa3ZdI38Y6hLMGtY777++/qWdgGSH+POaWCoC9dkNKODTdONjZEKTHE4SyZxWVr3yOTPCCpOZ8qMaUg==",
+      "version": "0.1.0-preview.11",
+      "contentHash": "GAXNpf9spC2k0kN0UxmUmnCRNL3Dn+RBgnwbJlP07kOTtQOaMcCE5Cj3OgE2du7PMWu7rAyeWVQlcM8e9JN7yg==",
       "use": "test-only",
       "projects": [
         "Broiler.VM.Architecture.Tests"
@@ -19,8 +19,8 @@
         "committed-feed",
         "nuget.org"
       ],
-      "pin": "eng/packages/Broiler.ECMAScript.Generation.0.1.0-preview.10.pin",
-      "archiveHash": "AAheI1LzjufJL83FHT4PP/s92/gO7+xSgxwJiYJohHX7KBUo/2L4mEZEX9DWT/m8tbWApSD4Pe7PoBW4a7YI8A=="
+      "pin": "eng/packages/Broiler.ECMAScript.Generation.0.1.0-preview.11.pin",
+      "archiveHash": "AAYd4Su4tvTBFzzwrYpPcmvWZsg61wUj1d6PnyJmRJAtO5RE2J3BJtM9OPBp2BH166U+DWBQH+qqRvXhWotADQ=="
     },
     {
       "id": "Broiler.Unicode.Generation",

@@ -8,13 +8,13 @@
   ],
   "version": 3,
   "libraries": {
-    "Broiler.ECMAScript.Algorithms/0.1.0-preview.10": {
-      "sha512": "AA2wM76fzF6GNQppZ0wIwYtbbbMgTCUuTec6L7r53rEPZkz9o65U9wBJ/2pZaCPMAKoHDkVAbt3sTHiZiVfk4w==",
+    "Broiler.ECMAScript.Algorithms/0.1.0-preview.11": {
+      "sha512": "AAj/EZG+YEKmzCfgfWEKC8XJmaml+mCAoswvCP3C1OXHv2JxMfAizZ426ZH6ViuQFhSSthqDtJ/oab+pkmN3Ug==",
       "type": "package",
-      "path": "broiler.ecmascript.algorithms/0.1.0-preview.10",
+      "path": "broiler.ecmascript.algorithms/0.1.0-preview.11",
       "files": [
         ".nupkg.metadata",
-        "broiler.ecmascript.algorithms.0.1.0-preview.10.nupkg.sha512",
+        "broiler.ecmascript.algorithms.0.1.0-preview.11.nupkg.sha512",
         "broiler.ecmascript.algorithms.nuspec"
       ]
     }

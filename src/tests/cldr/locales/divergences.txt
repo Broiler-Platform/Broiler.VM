@@ -134,6 +134,12 @@
 # ECMA-402 (15.5.11 HourCyclesOfLocale) answers the hour cycles in common use in the region, most
 # preferred first; the profile reads them from CLDR's time data, the preferred cycle and then the
 # allowed ones. Node 22 answers only the preferred cycle.
+# (Noted 2026-11-13, when this family took the shared stream's 0.1.0-preview.11, whose Intl library
+# reads CLDR's time data for the locale's language and region before the region's, under row L19 and
+# the owner's ruling of 2026-11-09, "Fix both consumers" (JSD-0082, sub-area (a)'s note on row L19,
+# data policy, C5). Line 11 read "11 fr-CA hourCycles => [h12,h23]", Canada's cycles; it now answers
+# fr_CA's entry. No other line of the dataset moved, and Node's answer for it is still one cycle. The
+# header above is left as written.)
 1 en hourCycles => [h12,h23]
 2 en-US hourCycles => [h12,h23]
 3 en-GB hourCycles => [h23,h12]
@@ -144,7 +150,7 @@
 8 de-AT hourCycles => [h23,h12]
 9 de-CH hourCycles => [h23,h12]
 10 fr hourCycles => [h23,h12]
-11 fr-CA hourCycles => [h12,h23]
+11 fr-CA hourCycles => [h23,h12]
 12 es-419 hourCycles => [h12,h23]
 13 pt-BR hourCycles => [h23,h12]
 14 ar hourCycles => [h12,h23]
