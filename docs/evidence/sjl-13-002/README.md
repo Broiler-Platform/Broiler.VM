@@ -29,10 +29,12 @@ taken.** Its branch, `sjl-13-3-step2`, is cut from the default branch's `389b55c
 carried section 1's readings and the rule's revision of 2026-11-13), and lands as one merge, which is the after commit;
 the merge's first parent is the base. `389b55c9ec9bb77409bb2487067fbebc0868849b` descends from the rule commit and from
 bundle `sjl-13-001`'s after commit `a8d8398bd59e7f5600cb0aa9e733ff8948859cf4`, and the branch's first commit,
-`db7a6f0eaf516d6113c2d11c986fe3232be9f6df`, is directly on it. The base and the after commit are named here, by all
-forty digits, when the merge lands. This holds only while the default branch is still `389b55c9` when the branch
-merges: if anything lands on it first, the merge's first parent is not `389b55c9`, and the branch is built again on
-the new tip, with these records, before it merges; reading 1 holds the default branch meanwhile. The branch's commits
+`db7a6f0eaf516d6113c2d11c986fe3232be9f6df`, is directly on it. The base is named here by all forty digits as the
+branch holds it; the after commit is named when the merge lands. *(Revised 2026-11-14, later, at the branch's review:
+it read "The base and the after commit are named here, by all forty digits, when the merge lands.")* This holds only
+while the default branch is still `389b55c9` when the branch merges: if anything lands on it first, the merge's
+first parent is not `389b55c9`, and the branch is built again on the new tip, with these records, before it merges;
+reading 1 holds the default branch meanwhile. The branch's commits
 from `db7a6f0eaf516d6113c2d11c986fe3232be9f6df` to `c452294b3ca1fefa9aa5e3db41ab5e3264903d25` move the admission walk,
 the numeric admission, the binder and the lowering onto the shared tree, delete `JsSyntax.cs` and `JsFrontendAdapter.cs`
 with its parts, and register what they deleted in rule I5; step 2's records follow them and change no product source.

@@ -462,12 +462,14 @@ new or changed unit carries its annotation lines, every human line PENDING.
 - **The lowering.** Every site reads the shared tree, at the place the adapter gave: the program's first retained token,
   a function at its container's span, a concise body's and a field's return through one `CompileReturn`, a static
   block's own source offsets, a shorthand at its identifier, a pattern leaf at its inner expression, a `for`
-  initialiser at its span before unwrapping, the export spans, a namespace import at its `*` and `export * as` at its
-  `as`, a dotted member's name span, an object literal's method at its entry, and a field's initialiser with no source
-  span. The last directive's completion value is compiled only where the adapter's tree compiled it. One core
-  `CompileFunction` takes a `FunctionNode`, a `FieldDefinition` or a `StaticBlock` as its key. The lowering's
-  refusals of what it has no arm for stay as they were; only sites that replace the adapter's own refusal of an
-  unexpected node throw.
+  initialiser's expression at the place of the expression its parentheses hold, the export spans, a namespace import
+  at its `*` and `export * as` at its `as`, a dotted member's name span, an object literal's method at its entry, and a
+  field's initialiser with no source span. The last directive's completion value is compiled only where the adapter's
+  tree compiled it. One core `CompileFunction` takes a `FunctionNode`, a `FieldDefinition` or a `StaticBlock` as its
+  key. The lowering's refusals of what it has no arm for stay as they were; only sites that replace the adapter's own
+  refusal of an unexpected node throw. *(Revised 2026-11-14, later, at the branch's review: the list read "a `for`
+  initialiser at its span before unwrapping"; the adapter's statement around the initialiser held that span, and
+  nothing read it, at the base or after.)*
 - **Deleted**: `JsSyntax.cs`, and `JsFrontendAdapter.cs` with `JsFrontendAdapter.Expressions.cs`,
   `JsFrontendAdapter.Functions.cs` and `JsFrontendAdapter.Modules.cs`; `JsFrontend` keeps the request, the parse and
   the side tables. `JsModuleNames`' constants are `JsCompiler.DefaultBindingName` and `JsCompiler.StarName`, in the
@@ -549,7 +551,9 @@ decision under the direction what the direction does not cover, with an alternat
   `Program`, the adapted tree, which its positional parameter `Tree`, the library's tree, replaces; and
   `JsAdmissionWalk`'s internal constructor of one parameter, whose walk the static `Walk` makes through a private
   constructor that also takes the function depth. The constructors of `JsBinder`, `JsBinder.Declarations` and
-  `JsBinder.HoistingScope` take the library's nodes in place of the adapted tree's and are not deleted.
+  `JsBinder.HoistingScope` take the parse or the library's nodes in place of the adapted tree's and are not deleted
+  (`JsBinder`'s takes `JsFrontend.Parsed`). *(Revised 2026-11-14, later, at the branch's review: it read "take the
+  library's nodes in place of the adapted tree's".)*
 - The register's paragraph for SJL-13.3's step 2 names the same, with a dated note on step 1's paragraph, whose list
   of what stays named the adapter; the register's row in `rules.register.json` carries a dated revision; and rule
   I5's list of the files it reads replaces `JsFrontendAdapter.Expressions.cs` with `JsTreeFacts.cs` and adds

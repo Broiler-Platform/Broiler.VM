@@ -1106,10 +1106,12 @@ dated answer; X6's note of this date gives it in full, and bundle `sjl-13-002`'s
 taken: "compute them in `JsCompiler`'s own files", as the decision's text reads.
 
 *(Noted 2026-11-14, at SJL-13.3's step 2's records, on its branch `sjl-13-3-step2`, not yet merged.)* This decision
-reads that this family's adapter reproduces "**every anchor and offset `JsParser` gave** (a call at its member name,
+reads "This family's adapter reproduces every anchor and offset `JsParser` gave (a call at its member name,
 `NameSpan`, function and class source offsets, cooked and raw template text, numeric-key spellings by `NumberText`)
-**and every fact `JsParser` computes into `JsSyntax`**", "each by `JsParser`'s rule, the adapter's at step 1 and the
-lowering's at step 2". At step 2 the adapter is deleted, and the lowering, the binder and the numeric admission read
+and every fact `JsParser` computes into `JsSyntax`", "each by `JsParser`'s rule, the adapter's at step 1 and the
+lowering's at step 2", here without its emphasis. *(Revised 2026-11-14, later, at the branch's review: the first
+quotation began at "every anchor" and moved the decision's bold, which begins at "This family's".)* At step 2 the
+adapter is deleted, and the lowering, the binder and the numeric admission read
 each anchor, offset and fact from the shared tree by the adapter's rule: through `JsTreeFacts`, which holds the
 readings they share, among them a member's name span, the program's place, the end of the source, numeric-key
 spellings by `NumberText` and the unwrapping of parentheses; through the side table of strictness, from the library's
