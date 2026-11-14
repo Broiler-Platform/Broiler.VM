@@ -3,19 +3,18 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   17
-// Annotated:        17/17
+// Relevant units:   13
+// Annotated:        13/13
 // Exempt:           0
-// Human-reviewed:   0/17
+// Human-reviewed:   0/13
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         4/4
 // Resource impact:  3/10 max
-// Unverified:       17
+// Unverified:       13
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-using Broiler.ECMAScript.Numbers;
 using Broiler.ECMAScript.Syntax;
 using NumericLiteral = Broiler.ECMAScript.Syntax.NumericLiteral;
 
@@ -28,17 +27,17 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 internal sealed partial class JsFrontendAdapter
 {
     /// <summary>One expression: a parenthesised one is the expression it holds, as the wide parser read it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=BB2DD0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=9C112D
     // Broiler-Falsified-If: an expression the wide parser accepted adapts to a different node, or a parenthesis survives as a node
     // Broiler-Human:        PENDING
     private JsExpression Expression(Expression expression)
     {
-        var span = At(expression);
+        var span = JsTreeFacts.At(expression);
 
         switch (expression)
         {
             case ParenthesizedExpression parenthesised:
-                return Expression(parenthesised.Expression);
+                return Expression(JsTreeFacts.Unwrap(parenthesised));
             case Identifier identifier:
                 return new JsIdentifier(span, identifier.Name);
             case ThisExpression:
@@ -96,23 +95,23 @@ internal sealed partial class JsFrontendAdapter
             case UpdateExpression update:
                 return new JsUpdateExpression(
                     span,
-                    update.Operator == UpdateOperator.Increment ? SliceTokenKind.PlusPlus : SliceTokenKind.MinusMinus,
+                    JsTreeFacts.Update(update.Operator),
                     Expression(update.Operand),
                     update.IsPrefix);
             case UnaryExpression unary:
-                return new JsUnaryExpression(span, Unary(unary.Operator), Expression(unary.Operand));
+                return new JsUnaryExpression(span, JsTreeFacts.Unary(unary.Operator), Expression(unary.Operand));
             case AwaitExpression awaited:
                 return new JsAwaitExpression(span, Expression(awaited.Argument));
             case BinaryExpression binary:
             {
                 var left = Expression(binary.Left);
-                return new JsBinaryExpression(span, Binary(binary.Operator), left, Expression(binary.Right));
+                return new JsBinaryExpression(span, JsTreeFacts.Binary(binary.Operator), left, Expression(binary.Right));
             }
 
             case LogicalExpression logical:
             {
                 var left = Expression(logical.Left);
-                return new JsLogicalExpression(span, Logical(logical.Operator), left, Expression(logical.Right));
+                return new JsLogicalExpression(span, JsTreeFacts.Logical(logical.Operator), left, Expression(logical.Right));
             }
 
             case PrivateInExpression brand:
@@ -142,7 +141,7 @@ internal sealed partial class JsFrontendAdapter
                 return new JsYieldExpression(
                     span, yield.Argument is null ? null : Expression(yield.Argument), yield.IsDelegate);
             default:
-                throw Unexpected(expression, "an expression");
+                throw JsTreeFacts.Unexpected(expression, "an expression");
         }
     }
 
@@ -150,12 +149,12 @@ internal sealed partial class JsFrontendAdapter
     /// A numeric literal, or a BigInt literal with the value the admission walk recorded for it; a unit
     /// the walk refused any BigInt in is not adapted.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=CF30CC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=E39C75
     // Broiler-Falsified-If: a numeric literal's value or legacy flag differs from the wide parser's, or a BigInt literal's value differs from the one the walk recorded for it
     // Broiler-Human:        PENDING
     private JsExpression Number(NumericLiteral number)
     {
-        var span = At(number);
+        var span = JsTreeFacts.At(number);
 
         if ((number.Flags & NumericLiteralFlags.BigInt) != 0)
         {
@@ -169,13 +168,13 @@ internal sealed partial class JsFrontendAdapter
     }
 
     /// <summary>A string literal, with its raw text, quotes included, which a directive is told apart by.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=1BDEC1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=08D3DF
     // Broiler-Human:        PENDING
     private JsStringLiteral String(StringLiteral literal) =>
-        new(At(literal), literal.Value, text.Substring(literal.Span.Offset, literal.Span.Length));
+        new(JsTreeFacts.At(literal), literal.Value, text.Substring(literal.Span.Offset, literal.Span.Length));
 
     /// <summary>A template: its cooked and raw chunks, and its substitutions between them.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=609E02
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1293AC
     // Broiler-Human:        PENDING
     private JsTemplateLiteral Template(TemplateLiteral template)
     {
@@ -194,14 +193,14 @@ internal sealed partial class JsFrontendAdapter
             }
         }
 
-        return new JsTemplateLiteral(At(template), cooked, raw, substitutions);
+        return new JsTemplateLiteral(JsTreeFacts.At(template), cooked, raw, substitutions);
     }
 
     /// <summary>
     /// An array literal: a hole is <see langword="null"/>, and the trailing comma is the wide parser's
     /// reading, whether a comma followed the last element that is not a hole.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7C95CC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DE9267
     // Broiler-Human:        PENDING
     private JsExpression Array(ArrayLiteral array)
     {
@@ -217,7 +216,7 @@ internal sealed partial class JsFrontendAdapter
                     break;
                 case SpreadElement spread:
                     anyElement = true;
-                    elements.Add(new JsSpreadElement(At(spread), Expression(spread.Argument)));
+                    elements.Add(new JsSpreadElement(JsTreeFacts.At(spread), Expression(spread.Argument)));
                     break;
                 default:
                     anyElement = true;
@@ -228,11 +227,11 @@ internal sealed partial class JsFrontendAdapter
 
         var trailing = elements.Count != 0 && elements[^1] is null ? anyElement : array.TrailingComma;
 
-        return new JsArrayLiteral(At(array), elements, trailing);
+        return new JsArrayLiteral(JsTreeFacts.At(array), elements, trailing);
     }
 
     /// <summary>An object literal and its entries.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B5F412
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=8028B4
     // Broiler-Human:        PENDING
     private JsExpression Object(ObjectLiteral literal)
     {
@@ -240,7 +239,7 @@ internal sealed partial class JsFrontendAdapter
 
         foreach (var property in literal.Properties)
         {
-            var span = At(property);
+            var span = JsTreeFacts.At(property);
 
             switch (property)
             {
@@ -251,18 +250,18 @@ internal sealed partial class JsFrontendAdapter
                     entries.Add(Entry(definition, span));
                     break;
                 default:
-                    throw Unexpected(property, "an object literal's entry");
+                    throw JsTreeFacts.Unexpected(property, "an object literal's entry");
             }
         }
 
-        return new JsObjectLiteral(At(literal), entries, literal.TrailingComma);
+        return new JsObjectLiteral(JsTreeFacts.At(literal), entries, literal.TrailingComma);
     }
 
     /// <summary>
     /// One entry of an object literal: a value, a shorthand, or a method, getter or setter, whose
     /// function is named by its key and begins where the entry does.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=351616
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=10ABAD
     // Broiler-Human:        PENDING
     private JsObjectEntry Entry(PropertyDefinition definition, SliceSourceSpan span)
     {
@@ -278,7 +277,7 @@ internal sealed partial class JsFrontendAdapter
             {
                 var function = definition.Value is FunctionExpression expression
                     ? expression.Function
-                    : throw Unexpected(definition.Value, "a method's function");
+                    : throw JsTreeFacts.Unexpected(definition.Value, "a method's function");
 
                 var kind = definition.PropertyKind switch
                 {
@@ -302,42 +301,25 @@ internal sealed partial class JsFrontendAdapter
     /// A property key: a name, a string's value, a number by <c>NumberText</c>, a BigInt by its decimal
     /// digits, a private name with its <c>#</c>, or the empty key and the expression of a computed one.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=71A963
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=02659B
     // Broiler-Falsified-If: a key's spelling differs from the wide parser's for any literal key
     // Broiler-Human:        PENDING
     private string Key(SyntaxNode key, out JsExpression? computed)
     {
-        computed = null;
-
-        switch (key)
-        {
-            case IdentifierName name:
-                return name.Name;
-            case PrivateIdentifier name:
-                return name.Name;
-            case StringLiteral literal:
-                return literal.Value;
-            case NumericLiteral number when (number.Flags & NumericLiteralFlags.BigInt) != 0:
-                return bigInts[number].ToString(System.Globalization.CultureInfo.InvariantCulture);
-            case NumericLiteral number:
-                return NumberText.ToString(number.Value);
-            case ComputedPropertyName name:
-                computed = Expression(name.Expression);
-                return string.Empty;
-            default:
-                throw Unexpected(key, "a property key");
-        }
+        var spelled = JsTreeFacts.Key(key, bigInts, out var written);
+        computed = written is null ? null : Expression(written);
+        return spelled;
     }
 
     /// <summary>
     /// A member access: <c>super.x</c> and <c>super[x]</c>, a private name, a computed key, or a dotted
     /// name with the span of the name after the dot.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6C0882
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CFFF4E
     // Broiler-Human:        PENDING
     private JsExpression Member(MemberExpression member)
     {
-        var span = At(member);
+        var span = JsTreeFacts.At(member);
 
         if (member.Object is SuperExpression)
         {
@@ -353,19 +335,19 @@ internal sealed partial class JsFrontendAdapter
             PrivateIdentifier name => new JsPrivateMemberExpression(span, target, name.Name, member.IsOptional),
             IdentifierName name => new JsMemberExpression(span, target, name.Name, null, member.IsOptional)
             {
-                NameSpan = At(name),
+                NameSpan = JsTreeFacts.At(name),
             },
             Expression key => new JsMemberExpression(span, target, string.Empty, Expression(key), member.IsOptional),
-            _ => throw Unexpected(member.Property, "a member's property"),
+            _ => throw JsTreeFacts.Unexpected(member.Property, "a member's property"),
         };
     }
 
     /// <summary>A call, or <c>super(...)</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=07E310
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8DE011
     // Broiler-Human:        PENDING
     private JsExpression Call(CallExpression call)
     {
-        var span = At(call);
+        var span = JsTreeFacts.At(call);
 
         if (call.Callee is SuperExpression)
         {
@@ -378,7 +360,7 @@ internal sealed partial class JsFrontendAdapter
     }
 
     /// <summary>An argument list, a spread argument at its <c>...</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=A3952A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E1D772
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<JsExpression> Arguments(
         System.Collections.Generic.IReadOnlyList<Expression> arguments)
@@ -388,7 +370,7 @@ internal sealed partial class JsFrontendAdapter
         foreach (var argument in arguments)
         {
             all.Add(argument is SpreadElement spread
-                ? new JsSpreadElement(At(spread), Expression(spread.Argument))
+                ? new JsSpreadElement(JsTreeFacts.At(spread), Expression(spread.Argument))
                 : Expression(argument));
         }
 
@@ -399,11 +381,11 @@ internal sealed partial class JsFrontendAdapter
     /// An assignment: to a pattern, a destructuring assignment; otherwise to a reference, whose name
     /// written in parentheses is recorded as the wide parser recorded it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C1269D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2A8BFC
     // Broiler-Human:        PENDING
     private JsExpression Assignment(AssignmentExpression assignment)
     {
-        var span = At(assignment);
+        var span = JsTreeFacts.At(assignment);
 
         if (assignment.Target is ArrayPattern or ObjectPattern)
         {
@@ -415,94 +397,16 @@ internal sealed partial class JsFrontendAdapter
         {
             TargetPattern target => target.Target,
             Expression expression => expression,
-            _ => throw Unexpected(assignment.Target, "an assignment's target"),
+            _ => throw JsTreeFacts.Unexpected(assignment.Target, "an assignment's target"),
         };
 
         var target2 = Expression(written);
         var value = Expression(assignment.Value);
 
-        return new JsAssignmentExpression(span, Compound(assignment.Operator), target2, value)
+        return new JsAssignmentExpression(span, JsTreeFacts.Compound(assignment.Operator), target2, value)
         {
             ParenthesisedTarget = written is ParenthesizedExpression && target2 is JsIdentifier,
         };
     }
 
-    /// <summary>An assignment operator, as the token of its compound form.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=0118D7
-    // Broiler-Human:        PENDING
-    private static SliceTokenKind Compound(AssignmentOperator op) => op switch
-    {
-        AssignmentOperator.Assign => SliceTokenKind.Equals,
-        AssignmentOperator.AddAssign => SliceTokenKind.Plus,
-        AssignmentOperator.SubtractAssign => SliceTokenKind.Minus,
-        AssignmentOperator.MultiplyAssign => SliceTokenKind.Star,
-        AssignmentOperator.DivideAssign => SliceTokenKind.Slash,
-        AssignmentOperator.RemainderAssign => SliceTokenKind.Percent,
-        AssignmentOperator.LeftShiftAssign => SliceTokenKind.LessThanLessThan,
-        AssignmentOperator.SignedRightShiftAssign => SliceTokenKind.GreaterThanGreaterThan,
-        AssignmentOperator.UnsignedRightShiftAssign => SliceTokenKind.GreaterThanGreaterThanGreaterThan,
-        AssignmentOperator.BitwiseAndAssign => SliceTokenKind.Ampersand,
-        AssignmentOperator.BitwiseOrAssign => SliceTokenKind.Bar,
-        AssignmentOperator.BitwiseXorAssign => SliceTokenKind.Caret,
-        AssignmentOperator.ExponentAssign => SliceTokenKind.StarStar,
-        AssignmentOperator.AndAssign => SliceTokenKind.AmpersandAmpersand,
-        AssignmentOperator.OrAssign => SliceTokenKind.BarBar,
-        AssignmentOperator.CoalesceAssign => SliceTokenKind.QuestionQuestion,
-        _ => throw new System.ArgumentOutOfRangeException(nameof(op), op, "an assignment operator"),
-    };
-
-    /// <summary>A unary operator, as its token.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=DB4652
-    // Broiler-Human:        PENDING
-    private static SliceTokenKind Unary(UnaryOperator op) => op switch
-    {
-        UnaryOperator.Delete => SliceTokenKind.Delete,
-        UnaryOperator.Void => SliceTokenKind.Void,
-        UnaryOperator.Typeof => SliceTokenKind.Typeof,
-        UnaryOperator.Plus => SliceTokenKind.Plus,
-        UnaryOperator.Minus => SliceTokenKind.Minus,
-        UnaryOperator.BitwiseNot => SliceTokenKind.Tilde,
-        UnaryOperator.LogicalNot => SliceTokenKind.Bang,
-        _ => throw new System.ArgumentOutOfRangeException(nameof(op), op, "a unary operator"),
-    };
-
-    /// <summary>A binary operator, as its token.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=349C88
-    // Broiler-Human:        PENDING
-    private static SliceTokenKind Binary(BinaryOperator op) => op switch
-    {
-        BinaryOperator.Exponent => SliceTokenKind.StarStar,
-        BinaryOperator.Multiply => SliceTokenKind.Star,
-        BinaryOperator.Divide => SliceTokenKind.Slash,
-        BinaryOperator.Remainder => SliceTokenKind.Percent,
-        BinaryOperator.Add => SliceTokenKind.Plus,
-        BinaryOperator.Subtract => SliceTokenKind.Minus,
-        BinaryOperator.LeftShift => SliceTokenKind.LessThanLessThan,
-        BinaryOperator.SignedRightShift => SliceTokenKind.GreaterThanGreaterThan,
-        BinaryOperator.UnsignedRightShift => SliceTokenKind.GreaterThanGreaterThanGreaterThan,
-        BinaryOperator.LessThan => SliceTokenKind.LessThan,
-        BinaryOperator.GreaterThan => SliceTokenKind.GreaterThan,
-        BinaryOperator.LessThanOrEqual => SliceTokenKind.LessThanEquals,
-        BinaryOperator.GreaterThanOrEqual => SliceTokenKind.GreaterThanEquals,
-        BinaryOperator.Instanceof => SliceTokenKind.Instanceof,
-        BinaryOperator.In => SliceTokenKind.In,
-        BinaryOperator.Equal => SliceTokenKind.EqualsEquals,
-        BinaryOperator.NotEqual => SliceTokenKind.BangEquals,
-        BinaryOperator.StrictEqual => SliceTokenKind.EqualsEqualsEquals,
-        BinaryOperator.StrictNotEqual => SliceTokenKind.BangEqualsEquals,
-        BinaryOperator.BitwiseAnd => SliceTokenKind.Ampersand,
-        BinaryOperator.BitwiseXor => SliceTokenKind.Caret,
-        BinaryOperator.BitwiseOr => SliceTokenKind.Bar,
-        _ => throw new System.ArgumentOutOfRangeException(nameof(op), op, "a binary operator"),
-    };
-
-    /// <summary>A logical operator, as its token.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=D8DA74
-    // Broiler-Human:        PENDING
-    private static SliceTokenKind Logical(LogicalOperator op) => op switch
-    {
-        LogicalOperator.And => SliceTokenKind.AmpersandAmpersand,
-        LogicalOperator.Or => SliceTokenKind.BarBar,
-        _ => SliceTokenKind.QuestionQuestion,
-    };
 }

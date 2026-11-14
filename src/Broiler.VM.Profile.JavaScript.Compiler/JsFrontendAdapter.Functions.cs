@@ -33,7 +33,7 @@ internal sealed partial class JsFrontendAdapter
     /// <param name="function">The library's function.</param>
     /// <param name="span">Where the wide parser began it: its declaration, its expression or its entry.</param>
     /// <param name="name">The name a method takes from its key, or the empty name.</param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=A30BE0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=1AD10F
     // Broiler-Falsified-If: a function's name, parameters, body, directives, strictness, kind or source offsets differ from the wide parser's
     // Broiler-Human:        PENDING
     private JsFunctionNode Function(FunctionNode function, SliceSourceSpan span, string name)
@@ -54,7 +54,7 @@ internal sealed partial class JsFrontendAdapter
             function.IsAsync)
         {
             SourceStart = function.Span.Offset,
-            SourceEnd = EndOf(function),
+            SourceEnd = JsTreeFacts.EndOf(function),
         };
     }
 
@@ -62,7 +62,7 @@ internal sealed partial class JsFrontendAdapter
     /// An arrow function: its parameters, and its body, or the expression it returns as one
     /// <c>return</c> at the arrow's own span.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=1FB988
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=BE2F06
     // Broiler-Falsified-If: an arrow's parameters, body, directives, strictness, kind or source offsets differ from the wide parser's
     // Broiler-Human:        PENDING
     private JsFunctionNode Arrow(FunctionNode function, SliceSourceSpan span)
@@ -93,7 +93,7 @@ internal sealed partial class JsFrontendAdapter
             function.IsAsync)
         {
             SourceStart = function.Span.Offset,
-            SourceEnd = EndOf(function),
+            SourceEnd = JsTreeFacts.EndOf(function),
         };
     }
 
@@ -101,7 +101,7 @@ internal sealed partial class JsFrontendAdapter
     /// A formal parameter list: each parameter at its first token, its default, and the rest parameter
     /// at its <c>...</c>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DC5273
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5AB1DB
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<JsParameter> Parameters(
         System.Collections.Generic.IReadOnlyList<Pattern> parameters)
@@ -110,7 +110,7 @@ internal sealed partial class JsFrontendAdapter
 
         foreach (var parameter in parameters)
         {
-            var span = At(parameter);
+            var span = JsTreeFacts.At(parameter);
 
             all.Add(parameter switch
             {
@@ -128,12 +128,12 @@ internal sealed partial class JsFrontendAdapter
     /// A binding or assignment pattern: a name or a reference is a leaf, and each element and property
     /// value carries its default; a rest element is the pattern's rest.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=15C003
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=EFF750
     // Broiler-Falsified-If: a pattern's shape, keys, defaults, rest or spans differ from the wide parser's
     // Broiler-Human:        PENDING
     private JsPattern Pattern(Pattern pattern)
     {
-        var span = At(pattern);
+        var span = JsTreeFacts.At(pattern);
 
         switch (pattern)
         {
@@ -183,14 +183,14 @@ internal sealed partial class JsFrontendAdapter
                             break;
                         case PatternProperty entry:
                         {
-                            var entrySpan = At(entry);
+                            var entrySpan = JsTreeFacts.At(entry);
                             var key = Key(entry.Key, out var computed);
                             properties.Add(new JsPatternProperty(entrySpan, key, computed, Element(entry.Value)));
                             break;
                         }
 
                         default:
-                            throw Unexpected(property, "an object pattern's property");
+                            throw JsTreeFacts.Unexpected(property, "an object pattern's property");
                     }
                 }
 
@@ -198,19 +198,19 @@ internal sealed partial class JsFrontendAdapter
             }
 
             default:
-                throw Unexpected(pattern, "a pattern");
+                throw JsTreeFacts.Unexpected(pattern, "a pattern");
         }
     }
 
     /// <summary>One element of an array pattern, or one property value of an object pattern, with its default.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=9D0090
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=164F8D
     // Broiler-Human:        PENDING
     private JsPatternElement Element(Pattern element)
     {
         switch (element)
         {
             case AssignmentPattern defaulted:
-                return new JsPatternElement(At(defaulted), Pattern(defaulted.Target), Expression(defaulted.Initializer));
+                return new JsPatternElement(JsTreeFacts.At(defaulted), Pattern(defaulted.Target), Expression(defaulted.Initializer));
             case TargetPattern:
             {
                 // A reference's element begins where the reference does, inside any parentheses around
@@ -220,7 +220,7 @@ internal sealed partial class JsFrontendAdapter
             }
 
             default:
-                return new JsPatternElement(At(element), Pattern(element), null);
+                return new JsPatternElement(JsTreeFacts.At(element), Pattern(element), null);
         }
     }
 
@@ -228,12 +228,12 @@ internal sealed partial class JsFrontendAdapter
     /// A class: its name, or <paramref name="name"/> where it has none, its heritage, its members in
     /// source order, and the source offsets of its whole text.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=820729
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=E21F2F
     // Broiler-Falsified-If: a class's name, heritage, members, keys, kinds, functions or source offsets differ from the wide parser's
     // Broiler-Human:        PENDING
     private JsClassNode Class(ClassNode declared, string name)
     {
-        var span = At(declared);
+        var span = JsTreeFacts.At(declared);
         var heritage = declared.Heritage is null ? null : Expression(declared.Heritage);
         var members = new System.Collections.Generic.List<JsClassMember>(declared.Elements.Count);
 
@@ -245,7 +245,7 @@ internal sealed partial class JsFrontendAdapter
         return new JsClassNode(span, declared.Name?.Name ?? name, heritage, declared.Heritage is not null, members)
         {
             SourceStart = declared.Span.Offset,
-            SourceEnd = EndOf(declared),
+            SourceEnd = JsTreeFacts.EndOf(declared),
         };
     }
 
@@ -254,12 +254,12 @@ internal sealed partial class JsFrontendAdapter
     /// does and whose text begins after <c>static</c>; a field, whose initialiser is a strict function
     /// returning it at the member's span; or a static block, a strict function of its own.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=CBDD33
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=16D4F7
     // Broiler-Falsified-If: a member's kind, key, privacy, staticness, function or source offsets differ from the wide parser's
     // Broiler-Human:        PENDING
     private JsClassMember ClassMember(SyntaxNode element)
     {
-        var span = At(element);
+        var span = JsTreeFacts.At(element);
 
         switch (element)
         {
@@ -314,7 +314,7 @@ internal sealed partial class JsFrontendAdapter
                     directives)
                 {
                     SourceStart = block.Span.Offset,
-                    SourceEnd = EndOf(block),
+                    SourceEnd = JsTreeFacts.EndOf(block),
                 };
 
                 return new JsClassMember(
@@ -322,7 +322,7 @@ internal sealed partial class JsFrontendAdapter
             }
 
             default:
-                throw Unexpected(element, "a class member");
+                throw JsTreeFacts.Unexpected(element, "a class member");
         }
     }
 }

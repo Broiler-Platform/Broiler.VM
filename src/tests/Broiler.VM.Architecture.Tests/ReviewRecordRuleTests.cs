@@ -1393,7 +1393,12 @@ public sealed class ReviewRecordRuleTests
         // diagnostics, make the admission walk and validate its regular expressions. Each is covered on the
         // same terms as every other product file, and nothing in them has been read by a human. The count
         // read 318 before.
-        Assert.Equal(326, AssuranceSources.Files.Count);
+        //
+        // AND THE TREE'S FACTS (SJL-13's step 2, 2026-11-14, JSD-0083 decisions D15 and D20) ADDED ONE:
+        // JsTreeFacts.cs, the readings of the shared tree that step 1's adapter made, which the adapter calls and
+        // the lowering will. It is covered on the same terms as every other product file, and nothing in it has
+        // been read by a human. The count read 326 before.
+        Assert.Equal(327, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

@@ -861,7 +861,12 @@ public sealed class DiagnosticRegistryRuleTests
         // walk; and JsRegularExpressionValidator.cs, the validator the library is handed. Each is made
         // per call or holds frozen tables in static read-only references, which this rule reads and
         // correctly does not report.
-        Assert.Equal(62, lowering.Length);
+        //
+        // THE SIXTY-THIRD IS THE TREE'S FACTS, added 2026-11-14 by SJL-13's step 2 (JSD-0083 decisions D15 and
+        // D20): JsTreeFacts.cs, the readings of the shared tree that step 1's adapter made once, as pure static
+        // functions of the tree and the unit's text, tokens and admission facts, which the adapter calls and the
+        // lowering will. It holds frozen code and no field at all. The count read 62 before.
+        Assert.Equal(63, lowering.Length);
         Assert.Contains(
             ArchitectureRules.N12([], filesScanned: 0),
             violation => violation.Contains(

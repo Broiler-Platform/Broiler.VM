@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   22
-// Annotated:        22/22
+// Relevant units:   16
+// Annotated:        16/16
 // Exempt:           4
-// Human-reviewed:   0/22
+// Human-reviewed:   0/16
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  3/10 max
-// Unverified:       22
+// Unverified:       16
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -99,7 +99,7 @@ internal sealed partial class JsFrontendAdapter
     }
 
     /// <summary>The program: its directive prologue, its statements and its strictness.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E5AA76
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=CACD00
     // Broiler-Human:        PENDING
     internal JsProgramNode Program()
     {
@@ -107,57 +107,7 @@ internal sealed partial class JsFrontendAdapter
         var body = new System.Collections.Generic.List<JsStatement>(tree.Body.Count);
         var directives = Prologue(tree.Body, body);
 
-        return new JsProgramNode(ProgramSpan(tree), directives, body, Strict(tree));
-    }
-
-    /// <summary>
-    /// The wide parser's program span: its first token, which the module's retained tokens give, and
-    /// otherwise the first statement, or the end of the source where it has none.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BF7B3C
-    // Broiler-Human:        PENDING
-    private SliceSourceSpan ProgramSpan(ProgramNode tree)
-    {
-        if (result.Tokens is { Count: > 0 } tokens)
-        {
-            return new SliceSourceSpan(tokens[0].Line, tokens[0].Column);
-        }
-
-        return tree.Body.Count != 0 ? At(tree.Body[0]) : EndOfSource();
-    }
-
-    /// <summary>
-    /// The line and column just past the source's last character, which is where the wide parser's
-    /// end-of-source token stood: every line terminator of the specification starts a line, and CRLF
-    /// starts one.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=55E8C3
-    // Broiler-Human:        PENDING
-    private SliceSourceSpan EndOfSource()
-    {
-        var line = 1;
-        var column = 1;
-
-        for (var at = 0; at < text.Length; at++)
-        {
-            var c = text[at];
-
-            if (c == '\r' && at + 1 < text.Length && text[at + 1] == '\n')
-            {
-                continue;
-            }
-
-            if (c is '\n' or '\r' or '\u2028' or '\u2029')
-            {
-                line++;
-                column = 1;
-                continue;
-            }
-
-            column++;
-        }
-
-        return new SliceSourceSpan(line, column);
+        return new JsProgramNode(JsTreeFacts.ProgramSpan(tree, result.Tokens, text), directives, body, Strict(tree));
     }
 
     /// <summary>
@@ -165,7 +115,7 @@ internal sealed partial class JsFrontendAdapter
     /// of statements that are a string literal alone, each a directive, and everything after them the
     /// body, adapted into <paramref name="body"/>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=144C89
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E2A141
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<JsStringLiteral> Prologue(
         System.Collections.Generic.IReadOnlyList<Statement> statements,
@@ -174,10 +124,11 @@ internal sealed partial class JsFrontendAdapter
         var directives = new System.Collections.Generic.List<JsStringLiteral>();
         var at = 0;
 
-        while (at < statements.Count && statements[at] is ExpressionStatement { Expression: StringLiteral literal })
+        var prologue = JsTreeFacts.PrologueLength(statements);
+
+        for (; at < prologue; at++)
         {
-            directives.Add(String(literal));
-            at++;
+            directives.Add(String((StringLiteral)((ExpressionStatement)statements[at]).Expression));
         }
 
         for (; at < statements.Count; at++)
@@ -198,31 +149,14 @@ internal sealed partial class JsFrontendAdapter
                 "the library's declaration tables hold no facts for the " + node.Kind + " at " +
                 node.Span.Line + ":" + node.Span.Column);
 
-    /// <summary>Where a node begins, as this family's tree records it.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=F25A44
-    // Broiler-Human:        PENDING
-    private static SliceSourceSpan At(SyntaxNode node) => new(node.Span.Line, node.Span.Column);
-
-    /// <summary>The offset just past a node's last character.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=73B89C
-    // Broiler-Human:        PENDING
-    private static int EndOf(SyntaxNode node) => node.Span.Offset + node.Span.Length;
-
-    /// <summary>A node no arm of this adapter reads, which the library's grammar does not produce here.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=17CF82
-    // Broiler-Human:        PENDING
-    private static System.InvalidOperationException Unexpected(SyntaxNode node, string where) =>
-        new("the shared tree holds a " + node.Kind + " at " + node.Span.Line + ":" + node.Span.Column +
-            " where this adapter reads " + where);
-
     // ---- statements -----------------------------------------------------------------------------
 
     /// <summary>One statement.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=AF80FA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D9341D
     // Broiler-Human:        PENDING
     private JsStatement Statement(Statement statement)
     {
-        var span = At(statement);
+        var span = JsTreeFacts.At(statement);
 
         switch (statement)
         {
@@ -285,7 +219,7 @@ internal sealed partial class JsFrontendAdapter
             case ExportAllDeclaration export:
                 return ExportAll(export);
             default:
-                throw Unexpected(statement, "a statement");
+                throw JsTreeFacts.Unexpected(statement, "a statement");
         }
     }
 
@@ -301,7 +235,7 @@ internal sealed partial class JsFrontendAdapter
             : statement;
 
     /// <summary>A braced statement list.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=7AECF6
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=5F17E6
     // Broiler-Human:        PENDING
     private JsBlockStatement Block(BlockStatement block)
     {
@@ -312,36 +246,24 @@ internal sealed partial class JsFrontendAdapter
             body.Add(Statement(statement));
         }
 
-        return new JsBlockStatement(At(block), body);
+        return new JsBlockStatement(JsTreeFacts.At(block), body);
     }
 
     /// <summary>
     /// A variable statement: a <c>using</c> or an <c>await using</c> declaration is a <c>const</c> one
     /// with its disposal recorded.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A1C9C1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5203E4
     // Broiler-Human:        PENDING
     private JsVariableStatement Variables(VariableDeclaration declaration)
     {
-        var (kind, resource) = Kind(declaration.DeclarationKind);
+        var (kind, resource) = JsTreeFacts.Kind(declaration.DeclarationKind);
 
-        return new JsVariableStatement(At(declaration), kind, Declarators(declaration), resource);
+        return new JsVariableStatement(JsTreeFacts.At(declaration), kind, Declarators(declaration), resource);
     }
 
-    /// <summary>A declaration's kind, and whether it registers its bindings for disposal.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=73F32E
-    // Broiler-Human:        PENDING
-    private static (SliceDeclarationKind Kind, JsUsing Using) Kind(DeclarationKind kind) => kind switch
-    {
-        DeclarationKind.Var => (SliceDeclarationKind.Var, JsUsing.None),
-        DeclarationKind.Let => (SliceDeclarationKind.Let, JsUsing.None),
-        DeclarationKind.Const => (SliceDeclarationKind.Const, JsUsing.None),
-        DeclarationKind.Using => (SliceDeclarationKind.Const, JsUsing.Sync),
-        _ => (SliceDeclarationKind.Const, JsUsing.Async),
-    };
-
     /// <summary>A declaration's declarators: a name, or a pattern, and the initialiser.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=6F1070
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=BD077C
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<JsDeclarator> Declarators(VariableDeclaration declaration)
     {
@@ -353,7 +275,7 @@ internal sealed partial class JsFrontendAdapter
             var name = declarator.Target is BindingIdentifier identifier ? identifier.Name : string.Empty;
 
             declarators.Add(new JsDeclarator(
-                At(declarator),
+                JsTreeFacts.At(declarator),
                 name,
                 pattern,
                 declarator.Initializer is null ? null : Expression(declarator.Initializer)));
@@ -363,7 +285,7 @@ internal sealed partial class JsFrontendAdapter
     }
 
     /// <summary><c>for (init; test; update) body</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CCC61B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=423D01
     // Broiler-Human:        PENDING
     private JsStatement For(ForStatement loop)
     {
@@ -371,21 +293,21 @@ internal sealed partial class JsFrontendAdapter
         {
             null => null,
             VariableDeclaration declaration => Variables(declaration),
-            Expression expression => new JsExpressionStatement(At(expression), Expression(expression)),
-            _ => throw Unexpected(loop.Init, "a for head"),
+            Expression expression => new JsExpressionStatement(JsTreeFacts.At(expression), Expression(expression)),
+            _ => throw JsTreeFacts.Unexpected(loop.Init, "a for head"),
         };
 
         var test = loop.Test is null ? null : Expression(loop.Test);
         var update = loop.Update is null ? null : Expression(loop.Update);
 
-        return new JsForStatement(At(loop), initialiser, test, update, Statement(loop.Body));
+        return new JsForStatement(JsTreeFacts.At(loop), initialiser, test, update, Statement(loop.Body));
     }
 
     /// <summary>
     /// The left side of a <c>for … in</c> or <c>for … of</c> head: a declaration's kind, name, pattern and
     /// Annex B initialiser, or an assignment target, a pattern when it destructures.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=34D769
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8CC1A8
     // Broiler-Human:        PENDING
     private (SliceDeclarationKind? Kind, string Name, JsPattern? Pattern, JsExpression? Target, JsExpression? Initialiser, JsUsing Using)
         Head(SyntaxNode left)
@@ -394,7 +316,7 @@ internal sealed partial class JsFrontendAdapter
         {
             case VariableDeclaration declaration:
             {
-                var (kind, resource) = Kind(declaration.DeclarationKind);
+                var (kind, resource) = JsTreeFacts.Kind(declaration.DeclarationKind);
                 var declarator = Declarators(declaration)[0];
                 return (kind, declarator.Name, declarator.Pattern, null, declarator.Initialiser, resource);
             }
@@ -406,12 +328,12 @@ internal sealed partial class JsFrontendAdapter
             case Expression expression:
                 return (null, string.Empty, null, Expression(expression), null, JsUsing.None);
             default:
-                throw Unexpected(left, "a for-in or for-of head");
+                throw JsTreeFacts.Unexpected(left, "a for-in or for-of head");
         }
     }
 
     /// <summary><c>for (left in right) body</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EDC2D7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=885E59
     // Broiler-Human:        PENDING
     private JsStatement ForIn(ForInStatement loop)
     {
@@ -419,11 +341,11 @@ internal sealed partial class JsFrontendAdapter
         var right = Expression(loop.Right);
 
         return new JsForInStatement(
-            At(loop), head.Kind, head.Name, head.Pattern, head.Target, right, Statement(loop.Body), head.Initialiser);
+            JsTreeFacts.At(loop), head.Kind, head.Name, head.Pattern, head.Target, right, Statement(loop.Body), head.Initialiser);
     }
 
     /// <summary><c>for (left of right) body</c>, and <c>for await</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=218D50
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=980E25
     // Broiler-Human:        PENDING
     private JsStatement ForOf(ForOfStatement loop)
     {
@@ -431,12 +353,12 @@ internal sealed partial class JsFrontendAdapter
         var right = Expression(loop.Right);
 
         return new JsForOfStatement(
-            At(loop), head.Kind, head.Name, head.Pattern, head.Target, right, Statement(loop.Body), loop.IsAwait,
+            JsTreeFacts.At(loop), head.Kind, head.Name, head.Pattern, head.Target, right, Statement(loop.Body), loop.IsAwait,
             head.Using);
     }
 
     /// <summary><c>try</c>: the block, the catch parameter's name or pattern, the handler and the finaliser.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=1F1871
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=1F1B54
     // Broiler-Human:        PENDING
     private JsStatement Try(TryStatement attempt)
     {
@@ -464,11 +386,11 @@ internal sealed partial class JsFrontendAdapter
 
         var finaliser = attempt.Finalizer is null ? null : Block(attempt.Finalizer);
 
-        return new JsTryStatement(At(attempt), block, parameter, pattern, handler, finaliser);
+        return new JsTryStatement(JsTreeFacts.At(attempt), block, parameter, pattern, handler, finaliser);
     }
 
     /// <summary><c>switch</c> and its clauses.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=96CA87
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=901388
     // Broiler-Human:        PENDING
     private JsStatement Switch(SwitchStatement choice)
     {
@@ -485,9 +407,9 @@ internal sealed partial class JsFrontendAdapter
                 body.Add(Statement(statement));
             }
 
-            clauses.Add(new JsSwitchClause(At(clause), test, body));
+            clauses.Add(new JsSwitchClause(JsTreeFacts.At(clause), test, body));
         }
 
-        return new JsSwitchStatement(At(choice), discriminant, clauses);
+        return new JsSwitchStatement(JsTreeFacts.At(choice), discriminant, clauses);
     }
 }
