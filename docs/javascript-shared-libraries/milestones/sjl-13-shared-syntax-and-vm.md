@@ -191,6 +191,22 @@ the recommended choice (not taken: "move the pin after step 2's merge"). A pin m
 runner's report; its part D runs the architecture tests, which read the pin, at both commits. Next: step 2 (WP8), under
 bundle `sjl-13-002`'s rule. No clause is met, and nothing is accepted. The text above is left as written.
 
+*(Noted 2026-11-14, at step 2's records, on its branch `sjl-13-3-step2`, not yet merged, by [JSD-0087](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md)'s dated note of that day.)* The note above ends "Next:
+step 2 (WP8), under bundle `sjl-13-002`'s rule.", and the second step above reads "**The lowering reads the shared tree
+directly**, and the adapter and `JsSyntax`'s parse-only parts go", which the reading above takes as `JsSyntax` whole
+(decision D19). Step 2 is built on the branch `sjl-13-3-step2`, cut from the default branch's `389b55c`
+(Broiler-Platform/Broiler.VM#205, the merge that moved this family to the shared stream's `0.1.0-preview.11` before
+step 2's base). On it the admission walk, `JsNumericAdmission`, the binder and the lowering read the shared tree, the
+binder's facts and their order unchanged; `JsSyntax.cs` and `JsFrontendAdapter.cs` with its parts are deleted, and rule
+I5 registers what they declared; `CompilationStack` still wraps every entry point (rule N19); the registry takes no
+revision, since step 2 changes no meaning; and the slice path is unchanged. JSD-0087's dated note is the cut-over
+record's note at step 2, as decision D3 asks, with JSC-328, and bundle `sjl-13-002` defines EX-135 for the code that
+left this component's assurance coverage. The branch lands as one merge, that bundle's after commit, its first parent
+the base, while the default branch is still `389b55c`; nothing else merges into the default branch until the bundle's
+evidence merges (its reading 1). Its runs are taken after the merge, and the development checks the branch was built
+against are not evidence. This is the dated note on SJL-13.3 that decision D19 asks for. No clause is met, and nothing
+is accepted. The text above is left as written.
+
 ### SJL-13.4 — Admission and closures
 
 - The allow-list admits the frontend for `Broiler.VM.Profile.JavaScript.Compiler` only.
