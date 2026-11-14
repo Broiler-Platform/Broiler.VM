@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   16
-// Annotated:        16/16
-// Exempt:           4
-// Human-reviewed:   0/16
+// Relevant units:   17
+// Annotated:        17/17
+// Exempt:           6
+// Human-reviewed:   0/17
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  3/10 max
-// Unverified:       16
+// Unverified:       17
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -92,6 +92,37 @@ internal sealed partial class JsFrontendAdapter
         this.strictness = strictness;
     }
 
+    /// <summary>
+    /// Each adapted node's shared origin, for the binder's facts the lowering looks up until it reads the
+    /// shared tree itself (SJL-13.3, step 2; dropped when the lowering moves).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=157FC4
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.Dictionary<JsNode, SyntaxNode> Origins { get; } =
+        new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
+
+    /// <summary>Each shared function or function declaration's adapted node, the other way round.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=109DE2
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.Dictionary<SyntaxNode, JsNode> Adapted { get; } =
+        new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
+
+    /// <summary>Records an adapted node's origin, and the origin's adapted node unless another holds it.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=580331
+    // Broiler-Human:        PENDING
+    private T Record<T>(T adapted, SyntaxNode origin, bool reverse = true)
+        where T : JsNode
+    {
+        Origins[adapted] = origin;
+
+        if (reverse)
+        {
+            Adapted[origin] = adapted;
+        }
+
+        return adapted;
+    }
+
     /// <summary>The program: its directive prologue, its statements and its strictness.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=CACD00
     // Broiler-Human:        PENDING
@@ -146,7 +177,7 @@ internal sealed partial class JsFrontendAdapter
     // ---- statements -----------------------------------------------------------------------------
 
     /// <summary>One statement.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D9341D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1BE49F
     // Broiler-Human:        PENDING
     private JsStatement Statement(Statement statement)
     {
@@ -201,7 +232,7 @@ internal sealed partial class JsFrontendAdapter
             case DebuggerStatement:
                 return new JsDebuggerStatement(span);
             case FunctionDeclaration declared:
-                return new JsFunctionDeclaration(span, Function(declared.Function, span, string.Empty));
+                return Record(new JsFunctionDeclaration(span, Function(declared.Function, span, string.Empty)), declared);
             case ClassDeclaration declared:
                 return new JsClassDeclaration(span, Class(declared.Class, string.Empty));
             case ImportDeclaration import:
@@ -221,15 +252,15 @@ internal sealed partial class JsFrontendAdapter
     /// An <c>if</c> clause: a function declaration there is a block of its own, at the function's span,
     /// as the wide parser wrapped it (Annex B.3.3's FunctionDeclarations in IfStatement clauses).
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=E259A6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4C4833
     // Broiler-Human:        PENDING
-    private static JsStatement Clause(JsStatement statement) =>
+    private JsStatement Clause(JsStatement statement) =>
         statement is JsFunctionDeclaration
-            ? new JsBlockStatement(statement.Span, [statement])
+            ? Record(new JsBlockStatement(statement.Span, [statement]), Origins[statement], reverse: false)
             : statement;
 
     /// <summary>A braced statement list.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=5F17E6
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=D55CD4
     // Broiler-Human:        PENDING
     private JsBlockStatement Block(BlockStatement block)
     {
@@ -240,7 +271,7 @@ internal sealed partial class JsFrontendAdapter
             body.Add(Statement(statement));
         }
 
-        return new JsBlockStatement(JsTreeFacts.At(block), body);
+        return Record(new JsBlockStatement(JsTreeFacts.At(block), body), block);
     }
 
     /// <summary>
@@ -384,7 +415,7 @@ internal sealed partial class JsFrontendAdapter
     }
 
     /// <summary><c>switch</c> and its clauses.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=901388
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=83876C
     // Broiler-Human:        PENDING
     private JsStatement Switch(SwitchStatement choice)
     {
@@ -404,6 +435,6 @@ internal sealed partial class JsFrontendAdapter
             clauses.Add(new JsSwitchClause(JsTreeFacts.At(clause), test, body));
         }
 
-        return new JsSwitchStatement(JsTreeFacts.At(choice), discriminant, clauses);
+        return Record(new JsSwitchStatement(JsTreeFacts.At(choice), discriminant, clauses), choice);
     }
 }

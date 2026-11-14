@@ -32,13 +32,13 @@ public sealed partial class JsCompiler
     /// and the Annex B aliases one per name. The instructions below still create every binding; the
     /// row lets the executor run the specification's checks before the first of them.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0492AF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3590E5
     // Broiler-Human:        PENDING
     private (string[] LexicalNames, string[] VarNames, string[] FunctionNames, string[] AnnexBNames) HoistProgram(
         JsBinder.HoistingScope unit)
     {
         var names = unit.VarNames;
-        var functions = unit.Functions;
+        var functions = Adapted(unit.Functions);
 
         // A FUNCTION DECLARATION CREATES ITS GLOBAL BINDING BEFORE IT IS WRITTEN, and until
         // 2026-09-04 the write was the only step. It worked because a store to a name the global
@@ -153,12 +153,12 @@ public sealed partial class JsCompiler
     /// The parameters' record when the body has a variable environment of its own - the current
     /// scope, one record inside it - or <see langword="null"/> when one record holds both.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=36EEBD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1516C7
     // Broiler-Human:        PENDING
     private void HoistFunction(JsBinder.FunctionFacts facts, Scope? parameters = null)
     {
         var names = facts.Body.VarNames;
-        var functions = facts.Body.Functions;
+        var functions = Adapted(facts.Body.Functions);
 
         foreach (var name in names)
         {

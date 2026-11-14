@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   4
 // Annotated:        4/4
-// Exempt:           5
+// Exempt:           7
 // Human-reviewed:   0/4
 // IP risk:          Low
 // Security risk:    High
@@ -96,6 +96,16 @@ internal static class JsFrontend
         // Broiler-Human:        PENDING
         internal System.Collections.Generic.IReadOnlyDictionary<SyntaxNode, bool> Strictness { get; init; } =
             new System.Collections.Generic.Dictionary<SyntaxNode, bool>();
+
+        /// <summary>Each adapted node's shared origin, until the lowering reads the shared tree (SJL-13.3, step 2).</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=9A7670
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.IReadOnlyDictionary<JsNode, SyntaxNode>? Origins { get; init; }
+
+        /// <summary>Each shared function or function declaration's adapted node, until the lowering moves.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=723E8D
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.IReadOnlyDictionary<SyntaxNode, JsNode>? Adapted { get; init; }
     }
 
     /// <summary>
@@ -110,7 +120,7 @@ internal static class JsFrontend
     /// binder alike (decision D16).
     /// </param>
     /// <param name="admitsBigInt">Whether the request's manifest admits BigInt literals.</param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=72721C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=7B29B1
     // Broiler-Falsified-If: a unit with any library diagnostic or admission refusal answers a tree, a unit with none answers a refusal, or an accepted unit's top-level-await answer is not the admission walk's
     // Broiler-Human:        PENDING
     internal static Parsed Parse(string text, SliceParseOptions options, bool forceStrict, bool admitsBigInt)
@@ -161,6 +171,8 @@ internal static class JsFrontend
             Tokens = result.Tokens,
             BigInts = admission.BigIntValues,
             Strictness = strictness,
+            Origins = adapter.Origins,
+            Adapted = adapter.Adapted,
         };
     }
 

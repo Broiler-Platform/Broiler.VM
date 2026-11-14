@@ -33,7 +33,7 @@ internal sealed partial class JsFrontendAdapter
     /// <param name="function">The library's function.</param>
     /// <param name="span">Where the wide parser began it: its declaration, its expression or its entry.</param>
     /// <param name="name">The name a method takes from its key, or the empty name.</param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=1AD10F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=F9D520
     // Broiler-Falsified-If: a function's name, parameters, body, directives, strictness, kind or source offsets differ from the wide parser's
     // Broiler-Human:        PENDING
     private JsFunctionNode Function(FunctionNode function, SliceSourceSpan span, string name)
@@ -42,7 +42,7 @@ internal sealed partial class JsFrontendAdapter
         var body = new System.Collections.Generic.List<JsStatement>(function.Body.Count);
         var directives = Prologue(function.Body, body);
 
-        return new JsFunctionNode(
+        return Record(new JsFunctionNode(
             span,
             function.Name?.Name ?? name,
             parameters,
@@ -55,14 +55,14 @@ internal sealed partial class JsFrontendAdapter
         {
             SourceStart = function.Span.Offset,
             SourceEnd = JsTreeFacts.EndOf(function),
-        };
+        }, function);
     }
 
     /// <summary>
     /// An arrow function: its parameters, and its body, or the expression it returns as one
     /// <c>return</c> at the arrow's own span.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=BE2F06
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=854CF9
     // Broiler-Falsified-If: an arrow's parameters, body, directives, strictness, kind or source offsets differ from the wide parser's
     // Broiler-Human:        PENDING
     private JsFunctionNode Arrow(FunctionNode function, SliceSourceSpan span)
@@ -81,7 +81,7 @@ internal sealed partial class JsFrontendAdapter
             directives = Prologue(function.Body, body);
         }
 
-        return new JsFunctionNode(
+        return Record(new JsFunctionNode(
             span,
             string.Empty,
             parameters,
@@ -94,7 +94,7 @@ internal sealed partial class JsFrontendAdapter
         {
             SourceStart = function.Span.Offset,
             SourceEnd = JsTreeFacts.EndOf(function),
-        };
+        }, function);
     }
 
     /// <summary>
@@ -228,7 +228,7 @@ internal sealed partial class JsFrontendAdapter
     /// A class: its name, or <paramref name="name"/> where it has none, its heritage, its members in
     /// source order, and the source offsets of its whole text.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=E21F2F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=80DAFE
     // Broiler-Falsified-If: a class's name, heritage, members, keys, kinds, functions or source offsets differ from the wide parser's
     // Broiler-Human:        PENDING
     private JsClassNode Class(ClassNode declared, string name)
@@ -242,11 +242,11 @@ internal sealed partial class JsFrontendAdapter
             members.Add(ClassMember(element));
         }
 
-        return new JsClassNode(span, declared.Name?.Name ?? name, heritage, declared.Heritage is not null, members)
+        return Record(new JsClassNode(span, declared.Name?.Name ?? name, heritage, declared.Heritage is not null, members)
         {
             SourceStart = declared.Span.Offset,
             SourceEnd = JsTreeFacts.EndOf(declared),
-        };
+        }, declared);
     }
 
     /// <summary>
@@ -254,7 +254,7 @@ internal sealed partial class JsFrontendAdapter
     /// does and whose text begins after <c>static</c>; a field, whose initialiser is a strict function
     /// returning it at the member's span; or a static block, a strict function of its own.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=16D4F7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=6ED4E1
     // Broiler-Falsified-If: a member's kind, key, privacy, staticness, function or source offsets differ from the wide parser's
     // Broiler-Human:        PENDING
     private JsClassMember ClassMember(SyntaxNode element)
@@ -285,14 +285,14 @@ internal sealed partial class JsFrontendAdapter
 
                 if (field.Value is { } value)
                 {
-                    initialiser = new JsFunctionNode(
+                    initialiser = Record(new JsFunctionNode(
                         span,
                         key,
                         System.Array.Empty<JsParameter>(),
                         [new JsReturnStatement(span, Expression(value))],
                         IsArrow: false,
                         IsStrict: true,
-                        System.Array.Empty<JsStringLiteral>());
+                        System.Array.Empty<JsStringLiteral>()), field);
                 }
 
                 return new JsClassMember(
@@ -304,7 +304,7 @@ internal sealed partial class JsFrontendAdapter
                 var body = new System.Collections.Generic.List<JsStatement>(block.Body.Count);
                 var directives = Prologue(block.Body, body);
 
-                var function = new JsFunctionNode(
+                var function = Record(new JsFunctionNode(
                     span,
                     string.Empty,
                     new System.Collections.Generic.List<JsParameter>(),
@@ -315,7 +315,7 @@ internal sealed partial class JsFrontendAdapter
                 {
                     SourceStart = block.Span.Offset,
                     SourceEnd = JsTreeFacts.EndOf(block),
-                };
+                }, block);
 
                 return new JsClassMember(
                     span, JsMethodKind.StaticBlock, IsStatic: true, string.Empty, null, IsPrivate: false, function);

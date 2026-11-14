@@ -15,6 +15,8 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Syntax;
+
 namespace Broiler.VM.Profile.JavaScript.Compiler;
 
 /// <summary>
@@ -72,9 +74,9 @@ internal sealed partial class JsBinder
     /// The top-level function declarations of a sloppy evaluated program that a later one of the same
     /// name overrides, which the lowering never compiles.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=DDC92E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=7AD0E6
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.HashSet<JsFunctionNode> overridden =
+    private readonly System.Collections.Generic.HashSet<FunctionNode> overridden =
         new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
 
     /// <summary>Whether this unit is eval code whose caller is a class field initialiser.</summary>
@@ -157,17 +159,17 @@ internal sealed partial class JsBinder
     /// Every member is compiled as a method - a field's initialiser and a static block's body included
     /// - and the constructor the class body wrote is a derived one when the class has a heritage.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=53F3D4
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=EB0F69
     // Broiler-Human:        PENDING
     private static Use MemberUse(
-        JsClassMember member, JsFunctionNode body, JsFunctionNode? constructor, bool derived)
+        SyntaxNode member, SyntaxNode body, FunctionNode? constructor, bool derived)
     {
         if (ReferenceEquals(body, constructor))
         {
             return derived ? Use.Derived : Use.Method;
         }
 
-        return member.Kind == JsMethodKind.StaticBlock ? Use.StaticBlock : Use.Method;
+        return member is StaticBlock ? Use.StaticBlock : Use.Method;
     }
 
     /// <summary>
@@ -178,23 +180,25 @@ internal sealed partial class JsBinder
     /// is the field's code and an ordinary function's is not, and an arrow's parameter list is not
     /// searched, which is what the lowering asked. One refusal per member, at its body.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=34250C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F516F0
     // Broiler-Human:        PENDING
-    private void RefuseArgumentsIn(JsClassMember member, Context context)
+    private void RefuseArgumentsIn(SyntaxNode member, Context context)
     {
-        if (member.Function is not { } body ||
-            member.Kind is not (JsMethodKind.StaticBlock or JsMethodKind.Field))
+        if (member is not (StaticBlock or FieldDefinition { Value: not null }))
         {
             return;
         }
 
-        foreach (var statement in body.Body)
+        System.Collections.Generic.IReadOnlyList<SyntaxNode> statements =
+            member is StaticBlock block ? block.Body : [((FieldDefinition)member).Value!];
+
+        foreach (var statement in statements)
         {
             if (JsCompiler.Walk.Mentions(statement, "arguments"))
             {
                 Report(
                     context,
-                    body.Span,
+                    JsTreeFacts.At(member),
                     SliceSourceDiagnosticCode.ArgumentsInClassInitialiser,
                     "`arguments` names nothing inside a class field initialiser or a static block");
 
@@ -327,7 +331,7 @@ internal sealed partial class JsBinder
     /// Its <c>let</c>, <c>const</c> and <c>class</c> names always, and in strict code its <c>var</c>s
     /// and functions; a sloppy program's are its caller's.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=C6A309
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=364EE2
     // Broiler-Human:        PENDING
     private bool EvalRootDeclaresArguments(bool strict)
     {
@@ -354,7 +358,7 @@ internal sealed partial class JsBinder
 
         foreach (var function in Program.Functions)
         {
-            if (IsArguments(function.Name))
+            if (IsArguments(NameOf(function)))
             {
                 return true;
             }
@@ -364,15 +368,15 @@ internal sealed partial class JsBinder
     }
 
     /// <summary>Whether a parameter list binds the name <c>arguments</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=323AFD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=303985
     // Broiler-Human:        PENDING
-    private static bool ParametersBindArguments(JsFunctionNode function)
+    private static bool ParametersBindArguments(SyntaxNode function)
     {
         var names = new System.Collections.Generic.List<string>();
 
-        foreach (var parameter in function.Parameters)
+        foreach (var parameter in ParametersOf(function))
         {
-            PatternNames(parameter.Target, names);
+            PatternNames(Parameter(parameter, out _), names);
         }
 
         foreach (var name in names)
@@ -387,9 +391,9 @@ internal sealed partial class JsBinder
     }
 
     /// <summary>Whether a function's body declares <c>arguments</c> in its own record.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=B19B66
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=EF37BA
     // Broiler-Human:        PENDING
-    private static bool BodyDeclaresArguments(FunctionFacts facts)
+    private bool BodyDeclaresArguments(FunctionFacts facts)
     {
         foreach (var name in facts.Body.VarNames)
         {
@@ -409,7 +413,7 @@ internal sealed partial class JsBinder
 
         foreach (var function in facts.Body.Functions)
         {
-            if (IsArguments(function.Name))
+            if (IsArguments(NameOf(function)))
             {
                 return true;
             }
@@ -430,7 +434,7 @@ internal sealed partial class JsBinder
     /// Finds the top-level function declarations of a sloppy evaluated program that a later declaration
     /// of the same name overrides: the lowering instantiates the last of each name and no other.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=239FAA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=37F81F
     // Broiler-Human:        PENDING
     private void FindOverriddenFunctions()
     {
@@ -438,7 +442,7 @@ internal sealed partial class JsBinder
 
         for (var at = Program.Functions.Count - 1; at >= 0; at--)
         {
-            if (!seen.Add(Program.Functions[at].Name))
+            if (!seen.Add(NameOf(Program.Functions[at])))
             {
                 overridden.Add(Program.Functions[at]);
             }
@@ -450,11 +454,11 @@ internal sealed partial class JsBinder
     /// A name, a property - dotted, computed, private or <c>super</c>'s - and, in sloppy code only, a
     /// call, which Annex B lets stand as a target whose write throws when it runs.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=ACD45C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=D6E7CB
     // Broiler-Human:        PENDING
-    private static bool IsReference(JsExpression target, bool strict) =>
-        target is JsIdentifier or JsMemberExpression or JsPrivateMemberExpression or JsSuperMemberExpression ||
-        (target is JsCallExpression && !strict);
+    private static bool IsReference(Expression target, bool strict) =>
+        JsTreeFacts.Unwrap(target) is Identifier or MemberExpression ||
+        (JsTreeFacts.Unwrap(target) is CallExpression { Callee: not SuperExpression } && !strict);
 
     /// <summary>
     /// A module's export checks: an export name published twice, and a local export no declaration
@@ -493,10 +497,10 @@ internal sealed partial class JsBinder
     /// which is why <see cref="ModuleDeclarations"/> lists every name a pattern binds.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=009A8E
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=800470
     // Broiler-Falsified-If: a module the lowering's export checks admitted is refused here, or one they refused is admitted, or a refusal's code, message or place differs from theirs
     // Broiler-Human:        PENDING
-    private void CheckModule(System.Collections.Generic.IReadOnlyList<JsStatement> body)
+    private void CheckModule(System.Collections.Generic.IReadOnlyList<Statement> body)
     {
         var context = new Context(true, null, Frame.None, null);
         var imports = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
@@ -507,9 +511,9 @@ internal sealed partial class JsBinder
         // and B34), which refuses them before the binder runs.
         foreach (var statement in body)
         {
-            if (statement is JsImportDeclaration import)
+            if (statement is ImportDeclaration import)
             {
-                foreach (var specifier in import.Specifiers)
+                foreach (var specifier in JsTreeFacts.ImportBindings(import, parse.Tokens))
                 {
                     imports.Add(specifier.Local);
                 }
@@ -525,7 +529,7 @@ internal sealed partial class JsBinder
 
         foreach (var function in Program.Functions)
         {
-            Declares(declared, function.Name);
+            Declares(declared, NameOf(function));
         }
 
         foreach (var declaration in ModuleDeclarations)
@@ -535,7 +539,7 @@ internal sealed partial class JsBinder
 
         foreach (var statement in body)
         {
-            if (statement is JsExportDeclaration { Kind: JsExportKind.Default, Default: not null })
+            if (statement is ExportDefaultDeclaration { Declaration: Expression })
             {
                 declared.Add(JsModuleNames.DefaultBindingName);
             }
@@ -545,13 +549,13 @@ internal sealed partial class JsBinder
 
         foreach (var statement in body)
         {
-            if (statement is not JsExportDeclaration export ||
-                (export.Kind == JsExportKind.All && export.Specifiers.Count == 0))
+            if (JsTreeFacts.Exports(statement, parse.Tokens, out var from) is not { } specifiers ||
+                (statement is ExportAllDeclaration && specifiers.Count == 0))
             {
                 continue;
             }
 
-            foreach (var specifier in export.Specifiers)
+            foreach (var specifier in specifiers)
             {
                 if (!exported.Add(specifier.Exported))
                 {
@@ -564,7 +568,7 @@ internal sealed partial class JsBinder
                     continue;
                 }
 
-                if (export.From.Length != 0 || imports.Contains(specifier.Local) ||
+                if (from.Length != 0 || imports.Contains(specifier.Local) ||
                     declared.Contains(specifier.Local))
                 {
                     continue;

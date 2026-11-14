@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   23
-// Annotated:        23/23
-// Exempt:           47
-// Human-reviewed:   0/23
+// Relevant units:   26
+// Annotated:        26/26
+// Exempt:           48
+// Human-reviewed:   0/26
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         2/1
 // Resource impact:  3/10 max
-// Unverified:       23
+// Unverified:       26
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -450,6 +450,48 @@ public sealed partial class JsCompiler
     // Broiler-Human:        PENDING
     private JsBinder binder = null!;
 
+    /// <summary>The unit being lowered's parse, whose map the binder's facts are looked up through (SJL-13.3, step 2).</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=EA12D2
+    // Broiler-Human:        PENDING
+    private JsFrontend.Parsed unitParse = null!;
+
+    /// <summary>An adapted node's shared origin, which the binder's facts are keyed by.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=355455
+    // Broiler-Human:        PENDING
+    private Broiler.ECMAScript.Syntax.SyntaxNode Origin(JsNode node) => unitParse.Origins![node];
+
+    /// <summary>The adapted functions of shared ones the binder lists, in its order.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=88597D
+    // Broiler-Human:        PENDING
+    private System.Collections.Generic.List<JsFunctionNode> Adapted(
+        System.Collections.Generic.IReadOnlyList<Broiler.ECMAScript.Syntax.FunctionNode> functions)
+    {
+        var adapted = new System.Collections.Generic.List<JsFunctionNode>(functions.Count);
+
+        foreach (var function in functions)
+        {
+            adapted.Add((JsFunctionNode)unitParse.Adapted![function]);
+        }
+
+        return adapted;
+    }
+
+    /// <summary>The adapted function declarations of shared ones the binder lists, in its order.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=51B7BD
+    // Broiler-Human:        PENDING
+    private System.Collections.Generic.List<JsFunctionDeclaration> Adapted(
+        System.Collections.Generic.IReadOnlyList<Broiler.ECMAScript.Syntax.FunctionDeclaration> declarations)
+    {
+        var adapted = new System.Collections.Generic.List<JsFunctionDeclaration>(declarations.Count);
+
+        foreach (var declaration in declarations)
+        {
+            adapted.Add((JsFunctionDeclaration)unitParse.Adapted![declaration]);
+        }
+
+        return adapted;
+    }
+
     /// <summary>
     /// Whether the code being lowered is inside a method, so <c>super.x</c> resolves.
     /// </summary>
@@ -816,7 +858,7 @@ public sealed partial class JsCompiler
         });
 
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5AE167
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=25DB63
     // Broiler-Human:        PENDING
     private JsCompilation Run(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
@@ -874,7 +916,8 @@ public sealed partial class JsCompiler
             // request's strict flag for eval code - which is the imposition the parser was given. The
             // unit's lowering reads it from the binder, so the facts and the emission cannot be told
             // two different strictnesses.
-            binder = JsBinder.Bind(program, forceStrict, script.Options);
+            unitParse = parsed;
+            binder = JsBinder.Bind(parsed, forceStrict, script.Options);
 
             // A UNIT ITS BINDER REFUSES IS NOT LOWERED (SJL-12.6 item 2, JSD-0080 decisions D10 and
             // D12). An early error the binder reports is found once, in source order, before any of
@@ -979,7 +1022,7 @@ public sealed partial class JsCompiler
 
             // A MODULE IS BOUND AS A SCRIPT IS, and it is strict whatever it says. Whether its body is
             // an async unit is the parser's answer, which the binder reads as the lowering does.
-            binder = JsBinder.Bind(program, imposed: true, module.Options);
+            binder = JsBinder.Bind(unitParse, imposed: true, module.Options);
 
             // AND A MODULE ITS BINDER REFUSES IS NOT LOWERED EITHER: its declaration, collision and
             // export checks are the binder's with the rest.
@@ -1038,7 +1081,7 @@ public sealed partial class JsCompiler
         return new JsCompilation(false, null, diagnostics);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=34E655
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C5BE07
     // Broiler-Human:        PENDING
     private bool TryParse(
         string text, SliceParseOptions options, bool forceStrict, out JsProgramNode program)
@@ -1046,6 +1089,7 @@ public sealed partial class JsCompiler
         program = null!;
         var parsed = JsFrontend.Parse(text, options, forceStrict, request.AdmitsBigIntLiterals);
         awaited = parsed.SawTopLevelAwait;
+        unitParse = parsed;
 
         if (parsed.Diagnostics.Count == 0)
         {

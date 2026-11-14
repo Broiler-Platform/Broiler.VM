@@ -37,7 +37,7 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BF277E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1C7FB9
     // Broiler-Human:        PENDING
     private void CompileStatement(JsStatement statement, int completion)
     {
@@ -73,7 +73,7 @@ public sealed partial class JsCompiler
             // makes `if (x) { function f() { } }` leave `f` undefined when `x` is false, and what
             // makes the aliased value the block binding's CURRENT one rather than its first.
             case JsFunctionDeclaration declared:
-                if (binder.AdmitsAnnexB(declared))
+                if (binder.AdmitsAnnexB((Broiler.ECMAScript.Syntax.FunctionDeclaration)Origin(declared)))
                 {
                     EmitAnnexBAlias(declared.Function.Name);
                 }
@@ -422,11 +422,11 @@ public sealed partial class JsCompiler
     /// alias — where there is one — is written later, by the declaration itself.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=62B9A3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=03D1B9
     // Broiler-Human:        PENDING
     private void HoistBlockFunctions(JsBinder.Declarations declarations)
     {
-        var declared = declarations.Functions;
+        var declared = Adapted(declarations.Functions);
 
         if (declared.Count == 0)
         {
@@ -448,11 +448,11 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=825F2F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=ECC661
     // Broiler-Human:        PENDING
     private void CompileBlock(JsBlockStatement block, int completion)
     {
-        var declarations = binder.Block(block);
+        var declarations = binder.Block(Origin(block));
         var pushed = declarations.Lexical.Count != 0;
         var outer = scope;
 

@@ -438,7 +438,7 @@ public sealed partial class JsCompiler
     /// into the variable environment with <see cref="JsOpcode.StoreEvalVariable"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E6AA39
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B78448
     // Broiler-Human:        PENDING
     private (string[] VarNames, string[] LexicalNames, string[] FunctionNames, string[] AnnexBNames) HoistEval(
         JsBinder.HoistingScope unit)
@@ -456,7 +456,7 @@ public sealed partial class JsCompiler
         var lexicalNames = lexical.Names();
 
         var names = unit.VarNames;
-        var functions = unit.Functions;
+        var functions = Adapted(unit.Functions);
 
         if (strict)
         {

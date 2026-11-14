@@ -87,7 +87,7 @@ internal sealed partial class JsFrontendAdapter
     /// own, or of an expression, bound to <see cref="JsModuleNames.DefaultBindingName"/>; the specifier
     /// stands at the <c>export</c>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=672265
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=44A3BB
     // Broiler-Falsified-If: a default export's specifier, its declaration's name or its value differs from the wide parser's
     // Broiler-Human:        PENDING
     private JsStatement ExportDefault(ExportDefaultDeclaration export)
@@ -118,7 +118,7 @@ internal sealed partial class JsFrontendAdapter
                     JsExportKind.Default,
                     string.Empty,
                     new System.Collections.Generic.List<JsExportSpecifier> { new(span, node.Name, "default") },
-                    new JsFunctionDeclaration(at, node),
+                    Record(new JsFunctionDeclaration(at, node), declared),
                     null);
             }
 

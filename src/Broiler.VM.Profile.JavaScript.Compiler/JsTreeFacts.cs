@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   30
-// Annotated:        30/30
-// Exempt:           0
-// Human-reviewed:   0/30
+// Relevant units:   38
+// Annotated:        38/38
+// Exempt:           3
+// Human-reviewed:   0/38
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         7/7
+// Criteria:         12/12
 // Resource impact:  1/10 max
-// Unverified:       30
+// Unverified:       38
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -568,4 +568,191 @@ internal static class JsTreeFacts
         LogicalOperator.Or => SliceTokenKind.BarBar,
         _ => SliceTokenKind.QuestionQuestion,
     };
+
+    // ---- declarations, heads and exports -----------------------------------------------------------
+
+    /// <summary>
+    /// A module body with each <c>export</c> that carries a declaration read as that declaration, as the
+    /// wide parser's tree let the binder and the lowering read it; a script holds none.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=88C783
+    // Broiler-Human:        PENDING
+    internal static System.Collections.Generic.List<Statement> Unwrapped(
+        System.Collections.Generic.IReadOnlyList<Statement> body)
+    {
+        var flattened = new System.Collections.Generic.List<Statement>(body.Count);
+
+        foreach (var statement in body)
+        {
+            flattened.Add(statement switch
+            {
+                ExportNamedDeclaration { Declaration: { } declared } => declared,
+                ExportDefaultDeclaration { Declaration: Statement declared } => declared,
+                _ => statement,
+            });
+        }
+
+        return flattened;
+    }
+
+    /// <summary>
+    /// The class or function an <c>export default</c> declares without a name of its own, which the wide
+    /// parser named <c>default</c>; <see langword="null"/> where there is none.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=4AB1B6
+    // Broiler-Falsified-If: an anonymous default class or function is not found, or a named one, an expression or a nested declaration is taken for it
+    // Broiler-Human:        PENDING
+    internal static SyntaxNode? AnonymousDefault(ProgramNode tree)
+    {
+        foreach (var statement in tree.Body)
+        {
+            switch (statement)
+            {
+                case ExportDefaultDeclaration { Declaration: ClassDeclaration { Class: { Name: null } definition } }:
+                    return definition;
+                case ExportDefaultDeclaration { Declaration: FunctionDeclaration { Function: { Name: null } function } }:
+                    return function;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// A declared class's or function's name as the wide parser gave it: its own, <c>default</c> for the
+    /// anonymous default export, or empty.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=4D4E7D
+    // Broiler-Falsified-If: the anonymous default class or function is named anything but default, or another anonymous one is named default
+    // Broiler-Human:        PENDING
+    internal static string DeclaredName(BindingIdentifier? own, SyntaxNode node, SyntaxNode? anonymousDefault) =>
+        own?.Name ?? (ReferenceEquals(node, anonymousDefault) ? DefaultExportName : string.Empty);
+
+    /// <summary>
+    /// A class's written constructor's member: the first member that is a method, neither static nor private nor
+    /// computed, whose key reads <c>constructor</c>, its key read as <see cref="Key"/> reads it.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=7E928D
+    // Broiler-Falsified-If: a class's constructor differs from the one the wide parser's tree gave the lowering
+    // Broiler-Human:        PENDING
+    internal static MethodDefinition? FindConstructor(
+        ClassNode node,
+        System.Collections.Generic.IReadOnlyDictionary<NumericLiteral, System.Numerics.BigInteger> bigInts)
+    {
+        foreach (var element in node.Elements)
+        {
+            if (element is MethodDefinition { IsStatic: false, MethodKind: MethodKind.Method } method &&
+                method.Key is not (PrivateIdentifier or ComputedPropertyName) &&
+                string.Equals(Key(method.Key, bigInts, out _), "constructor", System.StringComparison.Ordinal))
+            {
+                return method;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// The left side of a <c>for … in</c> or <c>for … of</c> head as the wide parser's loop carried it: a
+    /// declaration's kind, its name or its pattern, Annex B's initialiser and its disposal; or an
+    /// assignment target, seen through its parentheses, or a pattern when it destructures.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=F869AB
+    // Broiler-Falsified-If: a loop head's kind, name, pattern, target, initialiser or disposal differs from the wide parser's
+    // Broiler-Human:        PENDING
+    internal static (SliceDeclarationKind? Declaration, string Name, Pattern? Pattern, Expression? Target, Expression? Initialiser, JsDisposal Disposal)
+        Head(SyntaxNode left)
+    {
+        switch (left)
+        {
+            case VariableDeclaration declaration:
+            {
+                var declarator = declaration.Declarations[0];
+                var name = declarator.Target is BindingIdentifier binding ? binding.Name : string.Empty;
+                var pattern = declarator.Target is BindingIdentifier ? null : declarator.Target;
+                return (Kind(declaration.DeclarationKind).Kind, name, pattern, null, declarator.Initializer, Disposal(declaration.DeclarationKind));
+            }
+
+            case ArrayPattern or ObjectPattern:
+                return (null, string.Empty, (Pattern)left, null, null, JsDisposal.None);
+            case TargetPattern target:
+                return (null, string.Empty, null, Unwrap(target.Target), null, JsDisposal.None);
+            case Expression expression:
+                return (null, string.Empty, null, Unwrap(expression), null, JsDisposal.None);
+            default:
+                throw Unexpected(left, "a for-in or for-of head");
+        }
+    }
+
+    /// <summary>Whether a declaration registers its bindings for disposal, and how.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=409774
+    // Broiler-Human:        PENDING
+    internal static JsDisposal Disposal(DeclarationKind kind) => kind switch
+    {
+        DeclarationKind.Using => JsDisposal.Sync,
+        DeclarationKind.AwaitUsing => JsDisposal.Async,
+        _ => JsDisposal.None,
+    };
+
+    /// <summary>
+    /// The names an <c>export</c> publishes, each with the place the wide parser gave it, and the module
+    /// specifier it re-exports from, through <see cref="SourceOrNone"/>; <see langword="null"/> for a
+    /// statement that exports nothing. A default export of a class or a function publishes its binding,
+    /// <c>default</c> where it has no name, and of an expression the binding no source can write.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=F4E341
+    // Broiler-Falsified-If: an export's names, their order, spans or local names, or its specifier, differ from the wide parser's
+    // Broiler-Human:        PENDING
+    internal static System.Collections.Generic.List<(SliceSourceSpan Span, string Local, string Exported)>? Exports(
+        Statement statement, System.Collections.Generic.IReadOnlyList<Token> tokens, out string from)
+    {
+        from = string.Empty;
+
+        switch (statement)
+        {
+            case ExportNamedDeclaration { Declaration: { } declared }:
+                return DeclarationExports(declared);
+            case ExportNamedDeclaration export:
+                from = SourceOrNone(export.Source);
+                return ClauseExports(export.Specifiers);
+            case ExportDefaultDeclaration export:
+            {
+                var local = export.Declaration switch
+                {
+                    ClassDeclaration declared => DefaultExportBinding(declared.Class.Name),
+                    FunctionDeclaration declared => DefaultExportBinding(declared.Function.Name),
+                    _ => JsModuleNames.DefaultBindingName,
+                };
+
+                return [(At(export), local, DefaultExportName)];
+            }
+
+            case ExportAllDeclaration export:
+                from = SourceOrNone(export.Source);
+                return export.Exported is { } exported
+                    ? [(TokenBefore(tokens, exported, Word.As), JsModuleNames.StarName, ExportName(exported))]
+                    : [];
+            default:
+                return null;
+        }
+    }
+}
+
+/// <summary>
+/// Whether a declaration registers what it binds for disposal, and how: none, <c>using</c> or
+/// <c>await using</c> (SJL-13.3, step 2; the step's enum, which the shared <c>DeclarationKind</c> does not
+/// map value for value).
+/// </summary>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6859A4
+// Broiler-Human:        PENDING
+internal enum JsDisposal
+{
+    /// <summary>An ordinary declaration.</summary>
+    None = 0,
+
+    /// <summary><c>using</c>: disposed through <c>Symbol.dispose</c>, synchronously.</summary>
+    Sync = 1,
+
+    /// <summary><c>await using</c>: disposed through <c>Symbol.asyncDispose</c>, awaited.</summary>
+    Async = 2,
 }

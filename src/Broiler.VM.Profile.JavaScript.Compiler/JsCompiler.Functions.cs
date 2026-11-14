@@ -117,7 +117,7 @@ public sealed partial class JsCompiler
     /// lowering - a class constructor named after its class, an anonymous function named after what it
     /// is assigned to. The binder knows a function by the node it bound.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B46D2A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B6FC33
     // Broiler-Human:        PENDING
     private int CompileFunction(
         JsFunctionNode function,
@@ -131,7 +131,7 @@ public sealed partial class JsCompiler
         // WHAT THE FUNCTION IS WAS DECIDED ONCE, BY THE BINDER (SJL-12.6 item 1): its strictness, its
         // parameter list's shape, its `arguments` object and its records. Each emission reads the
         // same answers - a function written in a `finally` block is compiled once per path out of it.
-        var facts = binder.Function(written ?? function);
+        var facts = binder.Function(Origin(written ?? function));
         var outerBuffer = buffer;
         var outerScope = scope;
         var outerDepth = blockDepth;

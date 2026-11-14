@@ -91,13 +91,13 @@ public sealed partial class JsCompiler
     /// was written would have collapsed the middle two and been wrong about both.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2F13A3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=26F3ED
     // Broiler-Human:        PENDING
     private void CompileClass(JsClassNode node, string inferredName)
     {
         var outer = scope;
         var named = node.Name.Length != 0;
-        var privates = binder.PrivateNames(node);
+        var privates = binder.PrivateNames((Broiler.ECMAScript.Syntax.ClassNode)Origin(node));
 
         // THE SCOPE EXISTS FOR THE PRIVATE NAMES TOO AND NOT ONLY FOR THE CLASS'S OWN BINDING. An
         // anonymous class with a `#x` in it has nowhere else to keep the name, and the name has to

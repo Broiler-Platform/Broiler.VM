@@ -292,7 +292,7 @@ public sealed partial class JsCompiler
     /// lexical ones are declared and left uninitialised, which is the temporal dead zone and is what
     /// an importer that reads too early has to meet.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2ACF46
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A81D7B
     // Broiler-Human:        PENDING
     private System.Collections.Generic.IReadOnlyList<string> DeclareModuleBindings(
         JsBinder.HoistingScope unit,
@@ -302,7 +302,7 @@ public sealed partial class JsCompiler
         // THE MODULE'S `var` NAMES AND FUNCTION DECLARATIONS ARE THE BINDER'S (SJL-12.6 item 1), read
         // from its top level with each exported declaration in the export's place.
         var names = unit.VarNames;
-        var functions = unit.Functions;
+        var functions = Adapted(unit.Functions);
 
         foreach (var name in names)
         {

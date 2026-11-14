@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   14
-// Annotated:        14/14
+// Relevant units:   15
+// Annotated:        15/15
 // Exempt:           0
-// Human-reviewed:   0/14
+// Human-reviewed:   0/15
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       14
+// Unverified:       15
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -167,7 +167,7 @@ public sealed partial class JsCompiler
         Mark(exit.Break!);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8FFA25
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7D127C
     // Broiler-Human:        PENDING
     private void CompileFor(JsForStatement loop, int completion, string label)
     {
@@ -178,7 +178,7 @@ public sealed partial class JsCompiler
         {
             foreach (var declarator in head.Declarators)
             {
-                JsBinder.DeclaratorNames(declarator, lexical);
+                AdaptedDeclaratorNames(declarator, lexical);
             }
         }
 
@@ -782,7 +782,7 @@ public sealed partial class JsCompiler
         DeclarePatternNames(pattern, constant);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B84431
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F6E2F2
     // Broiler-Human:        PENDING
     private void CompileSwitch(JsSwitchStatement switched, int completion, string label)
     {
@@ -806,7 +806,7 @@ public sealed partial class JsCompiler
         // separately would build the first clause's closure before the second clause's slot
         // existed, and a call across the two would resolve to a global again. The binder read the
         // clauses as the one list they are.
-        var declarations = binder.Switch(switched);
+        var declarations = binder.Switch((Broiler.ECMAScript.Syntax.SwitchStatement)Origin(switched));
         DeclareLexical(declarations.Lexical);
         HoistBlockFunctions(declarations);
 
@@ -855,5 +855,60 @@ public sealed partial class JsCompiler
         Emit(JsOpcode.PopScope);
         blockDepth--;
         scope = outer;
+    }
+
+    /// <summary>
+    /// The names an adapted declarator binds, in source order: the lowering's own reading until it reads the
+    /// shared tree (SJL-13.3, step 2).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=5B9CB3
+    // Broiler-Human:        PENDING
+    private static void AdaptedDeclaratorNames(JsDeclarator declarator, System.Collections.Generic.List<string> names)
+    {
+        if (declarator.Pattern is null)
+        {
+            names.Add(declarator.Name);
+            return;
+        }
+
+        var pending = new System.Collections.Generic.Stack<JsPattern>();
+        pending.Push(declarator.Pattern);
+
+        while (pending.Count != 0)
+        {
+            switch (pending.Pop())
+            {
+                case JsTargetPattern { Target: JsIdentifier identifier }:
+                    names.Add(identifier.Name);
+                    break;
+                case JsArrayPattern array:
+                    if (array.Rest is not null)
+                    {
+                        pending.Push(array.Rest);
+                    }
+
+                    for (var at = array.Elements.Count - 1; at >= 0; at--)
+                    {
+                        if (array.Elements[at] is { } element)
+                        {
+                            pending.Push(element.Target);
+                        }
+                    }
+
+                    break;
+                case JsObjectPattern shape:
+                    if (shape.Rest is not null)
+                    {
+                        pending.Push(shape.Rest);
+                    }
+
+                    for (var at = shape.Properties.Count - 1; at >= 0; at--)
+                    {
+                        pending.Push(shape.Properties[at].Value.Target);
+                    }
+
+                    break;
+            }
+        }
     }
 }
