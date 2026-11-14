@@ -79,9 +79,9 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 327 |
-| Code units | 11135 |
+| Code units | 11140 |
 | Relevant | 6325 |
-| Exempt | 4810 |
+| Exempt | 4815 |
 | Assessed | 6325 of 6325 (100%) |
 | Human reviewed | 0 of 6325 (0%) |
 | Unverified | 6325 |
@@ -100,7 +100,7 @@ annotations and the current fingerprints; nothing stores them.
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4810 |
+| EXEMPT | 4815 |
 
 ## 5. Aliases In The Tree
 
@@ -173,7 +173,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Walk.cs` | 5 | 5 | 0 | 5 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 70 | 23 | 47 | 23 | Low | High | 2/1 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompilerUnicode.cs` | 8 | 7 | 1 | 7 | Low | Low | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs` | 4 | 4 | 0 | 4 | Low | High | 3/3 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs` | 9 | 4 | 5 | 4 | Low | High | 3/3 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs` | 13 | 13 | 0 | 13 | Low | High | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` | 8 | 8 | 0 | 8 | Low | High | 6/6 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` | 6 | 6 | 0 | 6 | Low | High | 5/5 |
@@ -725,7 +725,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a payload that begins with a reserved mark, or with the eval or script mark and no well-formed request, is answered as source to compile
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontend` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs` - Security=High, Spec=none cited, `008648`, PENDING
   - Falsified if: a source the wide path parsed is parsed under another goal, strictness, function context, top-level-await switch or nesting bound than its options and eval flags give, or a unit the parse or the admission walk refused reaches the numeric admission or the binder
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontend.Parse(string, SliceParseOptions, bool, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs` - Security=High, Spec=none cited, `58BA10`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontend.Parse(string, SliceParseOptions, bool, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs` - Security=High, Spec=none cited, `72721C`, PENDING
   - Falsified if: a unit with any library diagnostic or admission refusal answers a tree, a unit with none answers a refusal, or an accepted unit's top-level-await answer is not the admission walk's
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontend.Request(string, SliceParseOptions, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs` - Security=High, Spec=none cited, `8B2805`, PENDING
   - Falsified if: the caller's forced strictness does not force strict code, an eval unit's function flag does not admit new.target, a script's options admit top-level await, a module's nesting bound differs from its options', or a refused unit reports more than one parse diagnostic
@@ -767,13 +767,13 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: the registry code, line or column of the answer differs from the mapping's code for the diagnostic's shared code and the library's span
 - `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, Spec=none cited, `27925C`, PENDING
   - Falsified if: a construct outside the numeric manifest reaches the lowering unrefused, or a construct the manifest admits is refused
-- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Statement(JsStatement, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, Spec=none cited, `6BC92C`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Statement(Statement, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, Spec=none cited, `E77E9B`, PENDING
   - Falsified if: a statement kind this pass does not recognise reaches the lowering
-- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Function(JsFunctionDeclaration, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, Spec=none cited, `DBB3D5`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Function(FunctionDeclaration, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, Spec=none cited, `2378ED`, PENDING
   - Falsified if: a function body that can fall off its end is admitted, or a function that closes over an enclosing binding is
-- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Expression(JsExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, Spec=none cited, `44F93A`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Expression(Expression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, Spec=none cited, `742965`, PENDING
   - Falsified if: an expression kind this pass does not recognise reaches the lowering
-- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Call(JsCallExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, Spec=none cited, `87953E`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Call(CallExpression, SliceSourceSpan)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, Spec=none cited, `E63526`, PENDING
   - Falsified if: a call whose callee is not a function this program declares is admitted
 - `Broiler.VM.Profile.JavaScript.Compiler.JsRegularExpressionValidator` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsRegularExpressionValidator.cs` - Security=High, Spec=none cited, `CBE35E`, PENDING
   - Falsified if: a literal the matcher compiles is refused, or one it refuses, or whose flags the language refuses, is admitted

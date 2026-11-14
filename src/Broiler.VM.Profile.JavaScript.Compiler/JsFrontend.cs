@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   4
 // Annotated:        4/4
-// Exempt:           0
+// Exempt:           5
 // Human-reviewed:   0/4
 // IP risk:          Low
 // Security risk:    High
@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using Broiler.ECMAScript.Syntax;
+using NumericLiteral = Broiler.ECMAScript.Syntax.NumericLiteral;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
 
@@ -50,7 +51,10 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 // Broiler-Human:        PENDING
 internal static class JsFrontend
 {
-    /// <summary>The answer of one parse: the tree, the refusal, and the module's top-level await.</summary>
+    /// <summary>
+    /// The answer of one parse: the trees, the refusal, the module's top-level await, and the side tables
+    /// the lowering reads beside the shared tree, each keyed by a node's identity (SJL-13.3, step 2).
+    /// </summary>
     /// <param name="Program">The adapted tree, or <see langword="null"/> when the unit was refused.</param>
     /// <param name="Diagnostics">
     /// The library's first refusal alone (decision D11), or the admission walk's refusals, in the order
@@ -59,12 +63,40 @@ internal static class JsFrontend
     /// <param name="SawTopLevelAwait">
     /// Whether the unit awaits outside every function, by the wide parser's rule (decision D20).
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B33AE9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6D8F1E
     // Broiler-Human:        PENDING
     internal sealed record Parsed(
         JsProgramNode? Program,
         System.Collections.Generic.IReadOnlyList<SliceSourceDiagnostic> Diagnostics,
-        bool SawTopLevelAwait);
+        bool SawTopLevelAwait)
+    {
+        /// <summary>The library's tree, or <see langword="null"/> when the unit was refused.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=877074
+        // Broiler-Human:        PENDING
+        internal ProgramNode? Tree { get; init; }
+
+        /// <summary>The unit's source text, which a string literal's raw text and the end of the source are read from.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=C91EFB
+        // Broiler-Human:        PENDING
+        internal string Text { get; init; } = string.Empty;
+
+        /// <summary>A module's retained tokens, whose anchors the tree does not carry; empty for a script.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=1A4886
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.IReadOnlyList<Token> Tokens { get; init; } = [];
+
+        /// <summary>Each admitted BigInt literal's value, a key's included, by the literal's identity: the admission walk's.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6A8A0C
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.IReadOnlyDictionary<NumericLiteral, System.Numerics.BigInteger> BigInts { get; init; } =
+            new System.Collections.Generic.Dictionary<NumericLiteral, System.Numerics.BigInteger>();
+
+        /// <summary>The strictness the library decided for each function and for the program, by the node's identity.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4D39DE
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.IReadOnlyDictionary<SyntaxNode, bool> Strictness { get; init; } =
+            new System.Collections.Generic.Dictionary<SyntaxNode, bool>();
+    }
 
     /// <summary>
     /// Parses one unit of the wide path through the shared library, then makes the admission walk over
@@ -78,7 +110,7 @@ internal static class JsFrontend
     /// binder alike (decision D16).
     /// </param>
     /// <param name="admitsBigInt">Whether the request's manifest admits BigInt literals.</param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=58BA10
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=72721C
     // Broiler-Falsified-If: a unit with any library diagnostic or admission refusal answers a tree, a unit with none answers a refusal, or an accepted unit's top-level-await answer is not the admission walk's
     // Broiler-Human:        PENDING
     internal static Parsed Parse(string text, SliceParseOptions options, bool forceStrict, bool admitsBigInt)
@@ -109,9 +141,27 @@ internal static class JsFrontend
             return new Parsed(null, admission.Refusals(), false);
         }
 
-        var adapter = new JsFrontendAdapter(text, result, admission.BigIntValues);
+        var tables = result.Declarations ?? throw new System.InvalidOperationException(
+            "the library answered an accepted parse with no declaration tables");
 
-        return new Parsed(adapter.Program(), [], admission.SawTopLevelAwait);
+        var strictness = new System.Collections.Generic.Dictionary<SyntaxNode, bool>(
+            System.Collections.Generic.ReferenceEqualityComparer.Instance);
+
+        foreach (var facts in tables.Functions)
+        {
+            strictness[facts.Node] = facts.IsStrict;
+        }
+
+        var adapter = new JsFrontendAdapter(text, result, admission.BigIntValues, strictness);
+
+        return new Parsed(adapter.Program(), [], admission.SawTopLevelAwait)
+        {
+            Tree = result.Tree,
+            Text = text,
+            Tokens = result.Tokens,
+            BigInts = admission.BigIntValues,
+            Strictness = strictness,
+        };
     }
 
     /// <summary>The library's request for one unit, from this family's options (decision D16).</summary>

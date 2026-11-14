@@ -62,10 +62,9 @@ internal sealed partial class JsFrontendAdapter
     private readonly ParseResult result;
 
     /// <summary>The strictness the library decided for each function and for the program.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=7D1C9D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=3AEB66
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.Dictionary<SyntaxNode, bool> strictness =
-        new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
+    private readonly System.Collections.Generic.IReadOnlyDictionary<SyntaxNode, bool> strictness;
 
     /// <summary>Each admitted BigInt literal's value, a key's included, which the admission walk recorded.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=728EFC
@@ -78,24 +77,19 @@ internal sealed partial class JsFrontendAdapter
     /// <param name="source">The unit's source text.</param>
     /// <param name="parsed">The library's answer, which reported nothing.</param>
     /// <param name="bigIntValues">The admission walk's values, of a unit it refused nothing in.</param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=7B5A87
+    /// <param name="strictness">The strictness the library decided for each function and for the program.</param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=0234CA
     // Broiler-Human:        PENDING
     internal JsFrontendAdapter(
         string source,
         ParseResult parsed,
-        System.Collections.Generic.IReadOnlyDictionary<NumericLiteral, System.Numerics.BigInteger> bigIntValues)
+        System.Collections.Generic.IReadOnlyDictionary<NumericLiteral, System.Numerics.BigInteger> bigIntValues,
+        System.Collections.Generic.IReadOnlyDictionary<SyntaxNode, bool> strictness)
     {
         text = source;
         result = parsed;
         bigInts = bigIntValues;
-
-        var tables = parsed.Declarations ?? throw new System.InvalidOperationException(
-            "the library answered an accepted parse with no declaration tables");
-
-        foreach (var facts in tables.Functions)
-        {
-            strictness[facts.Node] = facts.IsStrict;
-        }
+        this.strictness = strictness;
     }
 
     /// <summary>The program: its directive prologue, its statements and its strictness.</summary>

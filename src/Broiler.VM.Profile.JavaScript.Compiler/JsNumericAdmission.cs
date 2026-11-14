@@ -15,6 +15,9 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Syntax;
+using NumericLiteral = Broiler.ECMAScript.Syntax.NumericLiteral;
+
 namespace Broiler.VM.Profile.JavaScript.Compiler;
 
 /// <summary>
@@ -68,25 +71,25 @@ internal sealed class JsNumericAdmission
         new(System.StringComparer.Ordinal);
 
     /// <summary>Judges one program against the manifest and answers every refusal it earned.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=609E43
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=90E7A6
     // Broiler-Human:        PENDING
     internal static System.Collections.Generic.IReadOnlyList<SliceSourceDiagnostic> Judge(
-        JsProgramNode program)
+        ProgramNode program)
     {
         var pass = new JsNumericAdmission();
 
         foreach (var statement in program.Body)
         {
-            if (statement is JsFunctionDeclaration declaration &&
-                declaration.Function.Name.Length != 0)
+            if (statement is FunctionDeclaration { Function.Name: { } name } && name.Name.Length != 0)
             {
-                pass.functions.Add(declaration.Function.Name);
+                pass.functions.Add(name.Name);
             }
         }
 
-        foreach (var statement in program.Body)
+        // THE DIRECTIVE PROLOGUE IS NOT A STATEMENT HERE, as the wide parser kept it apart from the body.
+        for (var at = JsTreeFacts.PrologueLength(program.Body); at < program.Body.Count; at++)
         {
-            pass.Statement(statement, insideFunction: false);
+            pass.Statement(program.Body[at], insideFunction: false);
         }
 
         return pass.diagnostics;
@@ -115,47 +118,49 @@ internal sealed class JsNumericAdmission
     /// decided on, and a walk that admitted the unrecognised would grow the manifest every time the
     /// parser grew a production.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=6BC92C
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=E77E9B
     // Broiler-Falsified-If: a statement kind this pass does not recognise reaches the lowering
     // Broiler-Human:        PENDING
-    private void Statement(JsStatement statement, bool insideFunction)
+    private void Statement(Statement statement, bool insideFunction)
     {
+        var span = JsTreeFacts.At(statement);
+
         switch (statement)
         {
             // A RESOURCE DECLARATION IS REFUSED BY NAME: its value is an object with a disposer, and
             // the scope it registers with is nothing this manifest's instructions can express.
-            case JsVariableStatement { Using: not JsUsing.None } resource:
-                Refuse(resource.Span, "a `using` declaration");
+            case VariableDeclaration { DeclarationKind: DeclarationKind.Using or DeclarationKind.AwaitUsing }:
+                Refuse(span, "a `using` declaration");
                 return;
 
-            case JsVariableStatement declaration:
-                foreach (var declarator in declaration.Declarators)
+            case VariableDeclaration declaration:
+                foreach (var declarator in declaration.Declarations)
                 {
-                    if (declarator.Pattern is not null)
+                    if (declarator.Target is not BindingIdentifier)
                     {
-                        Refuse(declarator.Span, "a destructuring binding");
+                        Refuse(JsTreeFacts.At(declarator), "a destructuring binding");
                         continue;
                     }
 
                     // A BINDING WITH NO INITIALISER IS A BINDING OF `undefined`, which is not a
                     // Number. Admitting it would have made "bindings of numbers" untrue for the one
                     // spelling that is easiest to write by accident.
-                    if (declarator.Initialiser is null)
+                    if (declarator.Initializer is null)
                     {
-                        Refuse(declarator.Span, "a binding with no initialiser");
+                        Refuse(JsTreeFacts.At(declarator), "a binding with no initialiser");
                         continue;
                     }
 
-                    Expression(declarator.Initialiser);
+                    Expression(declarator.Initializer);
                 }
 
                 return;
 
-            case JsExpressionStatement expression:
+            case ExpressionStatement expression:
                 Expression(expression.Expression);
                 return;
 
-            case JsBlockStatement block:
+            case BlockStatement block:
                 foreach (var inner in block.Body)
                 {
                     Statement(inner, insideFunction);
@@ -163,7 +168,7 @@ internal sealed class JsNumericAdmission
 
                 return;
 
-            case JsIfStatement branch:
+            case IfStatement branch:
                 Expression(branch.Test);
                 Statement(branch.Consequent, insideFunction);
 
@@ -174,20 +179,27 @@ internal sealed class JsNumericAdmission
 
                 return;
 
-            case JsWhileStatement loop:
+            case WhileStatement loop:
                 Expression(loop.Test);
                 Statement(loop.Body, insideFunction);
                 return;
 
-            case JsDoWhileStatement loop:
+            case DoWhileStatement loop:
                 Statement(loop.Body, insideFunction);
                 Expression(loop.Test);
                 return;
 
-            case JsForStatement loop:
-                if (loop.Initialiser is not null)
+            case ForStatement loop:
+                switch (loop.Init)
                 {
-                    Statement(loop.Initialiser, insideFunction);
+                    case Statement initialiser:
+                        Statement(initialiser, insideFunction);
+                        break;
+
+                    // AN EXPRESSION HEAD IS JUDGED AS THE STATEMENT THE WIDE PARSER MADE OF IT.
+                    case Expression initialiser:
+                        Expression(initialiser);
+                        break;
                 }
 
                 if (loop.Test is not null)
@@ -203,92 +215,92 @@ internal sealed class JsNumericAdmission
                 Statement(loop.Body, insideFunction);
                 return;
 
-            case JsBreakStatement jump when jump.Label.Length == 0:
+            case BreakStatement { Label: null }:
                 return;
 
-            case JsContinueStatement jump when jump.Label.Length == 0:
+            case ContinueStatement { Label: null }:
                 return;
 
-            case JsEmptyStatement:
+            case EmptyStatement:
                 return;
 
-            case JsReturnStatement returned:
+            case ReturnStatement returned:
                 if (!insideFunction)
                 {
-                    Refuse(returned.Span, "a `return` outside a function");
+                    Refuse(span, "a `return` outside a function");
                     return;
                 }
 
                 // A `return` WITH NO VALUE RETURNS `undefined`, and the manifest says a function's
                 // return is a Number. The two spellings differ by one token and by one kind of
                 // value, so the one that is not a Number is named rather than tolerated.
-                if (returned.Value is null)
+                if (returned.Argument is null)
                 {
-                    Refuse(returned.Span, "a `return` with no value");
+                    Refuse(span, "a `return` with no value");
                     return;
                 }
 
-                Expression(returned.Value);
+                Expression(returned.Argument);
                 return;
 
-            case JsFunctionDeclaration declaration:
+            case FunctionDeclaration declaration:
                 Function(declaration, insideFunction);
                 return;
 
-            case JsClassDeclaration classed:
-                Refuse(classed.Span, "a class declaration");
+            case ClassDeclaration:
+                Refuse(span, "a class declaration");
                 return;
 
-            case JsForInStatement forIn:
-                Refuse(forIn.Span, "a `for`-`in` statement");
+            case ForInStatement:
+                Refuse(span, "a `for`-`in` statement");
                 return;
 
-            case JsForOfStatement forOf:
-                Refuse(forOf.Span, "a `for`-`of` statement");
+            case ForOfStatement:
+                Refuse(span, "a `for`-`of` statement");
                 return;
 
-            case JsTryStatement guarded:
-                Refuse(guarded.Span, "a `try` statement");
+            case TryStatement:
+                Refuse(span, "a `try` statement");
                 return;
 
-            case JsThrowStatement thrown:
-                Refuse(thrown.Span, "a `throw` statement");
+            case ThrowStatement:
+                Refuse(span, "a `throw` statement");
                 return;
 
-            case JsSwitchStatement switched:
-                Refuse(switched.Span, "a `switch` statement");
+            case SwitchStatement:
+                Refuse(span, "a `switch` statement");
                 return;
 
-            case JsLabelledStatement labelled:
-                Refuse(labelled.Span, "a labelled statement");
+            case LabelledStatement:
+                Refuse(span, "a labelled statement");
                 return;
 
-            case JsBreakStatement labelledBreak:
-                Refuse(labelledBreak.Span, "a labelled `break`");
+            case BreakStatement:
+                Refuse(span, "a labelled `break`");
                 return;
 
-            case JsContinueStatement labelledContinue:
-                Refuse(labelledContinue.Span, "a labelled `continue`");
+            case ContinueStatement:
+                Refuse(span, "a labelled `continue`");
                 return;
 
-            case JsWithStatement scoped:
-                Refuse(scoped.Span, "a `with` statement");
+            case WithStatement:
+                Refuse(span, "a `with` statement");
                 return;
 
-            case JsDebuggerStatement halted:
-                Refuse(halted.Span, "a `debugger` statement");
+            case DebuggerStatement:
+                Refuse(span, "a `debugger` statement");
                 return;
 
-            case JsImportDeclaration imported:
-                Refuse(imported.Span, "an `import` declaration");
+            case ImportDeclaration:
+                Refuse(span, "an `import` declaration");
                 return;
 
-            case JsExportDeclaration exported:
-                Refuse(exported.Span, "an `export` declaration");
+            case ExportNamedDeclaration or ExportDefaultDeclaration or ExportAllDeclaration:
+                Refuse(span, "an `export` declaration");
                 return;
 
             default:
-                Refuse(statement.Span, "this statement");
+                Refuse(span, "this statement");
                 return;
         }
     }
@@ -313,76 +325,81 @@ internal sealed class JsNumericAdmission
     /// a conservative admission would be an untrue manifest.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=DBB3D5
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=2378ED
     // Broiler-Falsified-If: a function body that can fall off its end is admitted, or a function that closes over an enclosing binding is
     // Broiler-Human:        PENDING
-    private void Function(JsFunctionDeclaration declaration, bool insideFunction)
+    private void Function(FunctionDeclaration declaration, bool insideFunction)
     {
         var function = declaration.Function;
+        var span = JsTreeFacts.At(declaration);
 
         if (insideFunction)
         {
-            Refuse(declaration.Span, "a nested function declaration");
+            Refuse(span, "a nested function declaration");
             return;
         }
 
         if (function.IsGenerator)
         {
-            Refuse(declaration.Span, "a generator function");
+            Refuse(span, "a generator function");
             return;
         }
 
         if (function.IsAsync)
         {
-            Refuse(declaration.Span, "an async function");
+            Refuse(span, "an async function");
             return;
         }
 
         foreach (var parameter in function.Parameters)
         {
-            if (parameter.IsRest)
+            if (parameter is RestElement)
             {
-                Refuse(parameter.Span, "a rest parameter");
+                Refuse(JsTreeFacts.At(parameter), "a rest parameter");
                 continue;
             }
 
-            if (parameter.Default is not null)
+            if (parameter is AssignmentPattern)
             {
-                Refuse(parameter.Span, "a parameter with a default");
+                Refuse(JsTreeFacts.At(parameter), "a parameter with a default");
                 continue;
             }
 
-            if (parameter.Target is not JsTargetPattern { Target: JsIdentifier })
+            if (!JsTreeFacts.IsSimpleName(parameter, out _))
             {
-                Refuse(parameter.Span, "a destructuring parameter");
+                Refuse(JsTreeFacts.At(parameter), "a destructuring parameter");
             }
         }
 
-        foreach (var statement in function.Body)
+        // THE DIRECTIVE PROLOGUE IS NOT A STATEMENT OF THE BODY, as the wide parser kept it apart.
+        var body = function.Body;
+        var first = JsTreeFacts.PrologueLength(body);
+
+        for (var at = first; at < body.Count; at++)
         {
-            Statement(statement, insideFunction: true);
+            Statement(body[at], insideFunction: true);
         }
 
-        if (!TerminatesInAReturn(function.Body))
+        if (!TerminatesInAReturn(body, first))
         {
-            Refuse(declaration.Span, "a function body that can fall off its end");
+            Refuse(span, "a function body that can fall off its end");
         }
     }
 
     /// <summary>Whether every path through <paramref name="body"/> ends at a <c>return</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=A05066
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=6AE351
     // Broiler-Human:        PENDING
     private static bool TerminatesInAReturn(
-        System.Collections.Generic.IReadOnlyList<JsStatement> body) =>
-        body.Count != 0 && Terminates(body[^1]);
+        System.Collections.Generic.IReadOnlyList<Statement> body, int first) =>
+        body.Count > first && Terminates(body[^1]);
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1834BF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=58D920
     // Broiler-Human:        PENDING
-    private static bool Terminates(JsStatement statement) => statement switch
+    private static bool Terminates(Statement statement) => statement switch
     {
-        JsReturnStatement => true,
-        JsBlockStatement block => TerminatesInAReturn(block.Body),
-        JsIfStatement { Alternate: not null } branch =>
+        ReturnStatement => true,
+        BlockStatement block => TerminatesInAReturn(block.Body, 0),
+        IfStatement { Alternate: not null } branch =>
             Terminates(branch.Consequent) && Terminates(branch.Alternate),
         _ => false,
     };
@@ -392,46 +409,57 @@ internal sealed class JsNumericAdmission
     /// <b>The default arm refuses, for the reason the statement walk's does.</b> An expression kind
     /// nobody decided on is not admitted by a manifest that has not decided on it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=44F93A
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=742965
     // Broiler-Falsified-If: an expression kind this pass does not recognise reaches the lowering
     // Broiler-Human:        PENDING
-    private void Expression(JsExpression expression)
+    private void Expression(Expression written)
     {
+        // A PARENTHESIS IS THE EXPRESSION IT HOLDS, as the wide parser read it, and its place is that
+        // expression's.
+        var expression = JsTreeFacts.Unwrap(written);
+        var span = JsTreeFacts.At(expression);
+
         switch (expression)
         {
-            case JsNumberLiteral:
+            case NumericLiteral number when (number.Flags & NumericLiteralFlags.BigInt) == 0:
                 return;
 
-            case JsIdentifier:
+            case Identifier:
                 return;
 
-            case JsUnaryExpression unary:
-                if (!AdmitsUnary(unary.Operator))
+            case UnaryExpression unary:
+            {
+                var op = JsTreeFacts.Unary(unary.Operator);
+
+                if (!AdmitsUnary(op))
                 {
-                    Refuse(unary.Span, "the `" + Spelling(unary.Operator) + "` operator");
+                    Refuse(span, "the `" + Spelling(op) + "` operator");
                     return;
                 }
 
                 Expression(unary.Operand);
                 return;
+            }
 
-            case JsUpdateExpression update:
-                if (update.Operand is not JsIdentifier)
+            case UpdateExpression update:
+                if (JsTreeFacts.Unwrap(update.Operand) is not Identifier)
                 {
-                    Refuse(update.Span, "an update of anything but a binding");
+                    Refuse(span, "an update of anything but a binding");
                     return;
                 }
 
                 return;
 
-            case JsBinaryExpression binary:
+            case BinaryExpression binary:
             {
-                JsExpression current = binary;
-                while (current is JsBinaryExpression b)
+                Expression current = binary;
+                while (JsTreeFacts.Unwrap(current) is BinaryExpression b)
                 {
-                    if (!AdmitsBinary(b.Operator))
+                    var op = JsTreeFacts.Binary(b.Operator);
+
+                    if (!AdmitsBinary(op))
                     {
-                        Refuse(b.Span, "the `" + Spelling(b.Operator) + "` operator");
+                        Refuse(JsTreeFacts.At(b), "the `" + Spelling(op) + "` operator");
                     }
 
                     Expression(b.Right);
@@ -442,147 +470,152 @@ internal sealed class JsNumericAdmission
                 return;
             }
 
-            case JsAssignmentExpression assignment:
-                if (assignment.Target is not JsIdentifier)
+            case AssignmentExpression { Target: ArrayPattern or ObjectPattern }:
+                Refuse(span, "a destructuring assignment");
+                return;
+
+            case AssignmentExpression assignment:
+            {
+                if (!JsTreeFacts.IsSimpleName(assignment.Target, out _))
                 {
-                    Refuse(assignment.Span, "an assignment to anything but a binding");
+                    Refuse(span, "an assignment to anything but a binding");
                     return;
                 }
 
-                if (assignment.Operator != SliceTokenKind.Equals &&
-                    !AdmitsBinary(assignment.Operator))
+                var op = JsTreeFacts.Compound(assignment.Operator);
+
+                if (op != SliceTokenKind.Equals &&
+                    !AdmitsBinary(op))
                 {
                     Refuse(
-                        assignment.Span,
-                        "the `" + Spelling(assignment.Operator) + "=` compound assignment");
+                        span,
+                        "the `" + Spelling(op) + "=` compound assignment");
 
                     return;
                 }
 
                 Expression(assignment.Value);
                 return;
+            }
 
-            case JsCallExpression call:
-                Call(call);
+            case CallExpression { Callee: SuperExpression }:
+                Refuse(span, "a `super` call");
                 return;
 
-            case JsStringLiteral text:
-                Refuse(text.Span, "a String literal");
+            case CallExpression call:
+                Call(call, span);
                 return;
 
-            case JsBooleanLiteral truth:
-                Refuse(truth.Span, "a Boolean literal");
+            case StringLiteral:
+                Refuse(span, "a String literal");
                 return;
 
-            case JsNullLiteral nothing:
-                Refuse(nothing.Span, "the `null` literal");
+            case BooleanLiteral:
+                Refuse(span, "a Boolean literal");
                 return;
 
-            case JsRegExpLiteral pattern:
-                Refuse(pattern.Span, "a regular-expression literal");
+            case NullLiteral:
+                Refuse(span, "the `null` literal");
                 return;
 
-            case JsTemplateLiteral template:
-                Refuse(template.Span, "a template literal");
+            case RegularExpressionLiteral:
+                Refuse(span, "a regular-expression literal");
                 return;
 
-            case JsTaggedTemplate tagged:
-                Refuse(tagged.Span, "a tagged template");
+            case TemplateLiteral:
+                Refuse(span, "a template literal");
                 return;
 
-            case JsArrayLiteral array:
-                Refuse(array.Span, "an Array literal");
+            case TaggedTemplateExpression:
+                Refuse(span, "a tagged template");
                 return;
 
-            case JsObjectLiteral literal:
-                Refuse(literal.Span, "an object literal");
+            case ArrayLiteral:
+                Refuse(span, "an Array literal");
                 return;
 
-            case JsMemberExpression member:
-                Refuse(member.Span, "a property access");
+            case ObjectLiteral:
+                Refuse(span, "an object literal");
                 return;
 
-            case JsPrivateMemberExpression member:
-                Refuse(member.Span, "a private member access");
+            case MemberExpression { Object: SuperExpression }:
+                Refuse(span, "a `super` property access");
                 return;
 
-            case JsPrivateInExpression member:
-                Refuse(member.Span, "a private-name `in` test");
+            case MemberExpression { Property: PrivateIdentifier }:
+                Refuse(span, "a private member access");
                 return;
 
-            case JsSuperMemberExpression member:
-                Refuse(member.Span, "a `super` property access");
+            case MemberExpression:
+                Refuse(span, "a property access");
                 return;
 
-            case JsSuperCallExpression call:
-                Refuse(call.Span, "a `super` call");
+            case PrivateInExpression:
+                Refuse(span, "a private-name `in` test");
                 return;
 
-            case JsChainExpression chain:
-                Refuse(chain.Span, "an optional chain");
+            case ChainExpression:
+                Refuse(span, "an optional chain");
                 return;
 
-            case JsThisExpression self:
-                Refuse(self.Span, "`this`");
+            case ThisExpression:
+                Refuse(span, "`this`");
                 return;
 
-            case JsNewTargetExpression target:
-                Refuse(target.Span, "`new.target`");
+            case MetaProperty { Meta.Name: "new" }:
+                Refuse(span, "`new.target`");
                 return;
 
-            case JsNewExpression construction:
-                Refuse(construction.Span, "a `new` expression");
+            case MetaProperty:
+                Refuse(span, "`import.meta`");
                 return;
 
-            case JsFunctionExpression function:
-                Refuse(
-                    function.Span,
-                    function.Function.IsArrow ? "an arrow function" : "a function expression");
-
+            case NewExpression:
+                Refuse(span, "a `new` expression");
                 return;
 
-            case JsClassExpression classed:
-                Refuse(classed.Span, "a class expression");
+            case ArrowFunctionExpression:
+                Refuse(span, "an arrow function");
                 return;
 
-            case JsLogicalExpression logical:
-                Refuse(logical.Span, "the `" + Spelling(logical.Operator) + "` operator");
+            case FunctionExpression:
+                Refuse(span, "a function expression");
                 return;
 
-            case JsConditionalExpression conditional:
-                Refuse(conditional.Span, "a conditional expression");
+            case ClassExpression:
+                Refuse(span, "a class expression");
                 return;
 
-            case JsSequenceExpression sequence:
-                Refuse(sequence.Span, "a comma expression");
+            case LogicalExpression logical:
+                Refuse(span, "the `" + Spelling(JsTreeFacts.Logical(logical.Operator)) + "` operator");
                 return;
 
-            case JsSpreadElement spread:
-                Refuse(spread.Span, "a spread element");
+            case ConditionalExpression:
+                Refuse(span, "a conditional expression");
                 return;
 
-            case JsDestructuringAssignment destructuring:
-                Refuse(destructuring.Span, "a destructuring assignment");
+            case SequenceExpression:
+                Refuse(span, "a comma expression");
                 return;
 
-            case JsYieldExpression yielded:
-                Refuse(yielded.Span, "a `yield` expression");
+            case SpreadElement:
+                Refuse(span, "a spread element");
                 return;
 
-            case JsAwaitExpression awaited:
-                Refuse(awaited.Span, "an `await` expression");
+            case YieldExpression:
+                Refuse(span, "a `yield` expression");
                 return;
 
-            case JsImportCall imported:
-                Refuse(imported.Span, "a dynamic `import()`");
+            case AwaitExpression:
+                Refuse(span, "an `await` expression");
                 return;
 
-            case JsImportMeta meta:
-                Refuse(meta.Span, "`import.meta`");
+            case ImportCall:
+                Refuse(span, "a dynamic `import()`");
                 return;
 
             default:
-                Refuse(expression.Span, "this expression");
+                Refuse(span, "this expression");
                 return;
         }
     }
@@ -596,20 +629,20 @@ internal sealed class JsNumericAdmission
     /// through a name. Refusing them here is what keeps the call graph of an admitted program
     /// closed over the program itself.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=87953E
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=E63526
     // Broiler-Falsified-If: a call whose callee is not a function this program declares is admitted
     // Broiler-Human:        PENDING
-    private void Call(JsCallExpression call)
+    private void Call(CallExpression call, SliceSourceSpan span)
     {
-        if (call.Optional)
+        if (call.IsOptional)
         {
-            Refuse(call.Span, "an optional call");
+            Refuse(span, "an optional call");
             return;
         }
 
-        if (call.Callee is not JsIdentifier callee || !functions.Contains(callee.Name))
+        if (JsTreeFacts.Unwrap(call.Callee) is not Identifier callee || !functions.Contains(callee.Name))
         {
-            Refuse(call.Span, "a call to anything but a function this program declares");
+            Refuse(span, "a call to anything but a function this program declares");
             return;
         }
 

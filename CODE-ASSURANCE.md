@@ -15,9 +15,9 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 327 |
 | Files carrying an annotation | 327 |
-| Code units | 11135 |
+| Code units | 11140 |
 | Relevant | 6325 |
-| Exempt by predicate | 4810 |
+| Exempt by predicate | 4815 |
 | Annotated | 6325 of 6325 (100%) |
 | Human reviewed | 0 of 6325 (0%) |
 | Unverified | 6325 |
@@ -32,13 +32,13 @@ figures below are the measurement of how far from that claim the component is.
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4810 |
+| EXEMPT | 4815 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 1649 |
+| None | 1654 |
 | Low | 6064 |
 | Medium | 90 |
 | High | 0 |
@@ -50,8 +50,8 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 1502 |
-| Medium | 4366 |
+| Low | 1504 |
+| Medium | 4369 |
 | High | 1673 |
 | Critical | 253 |
 | *not annotated* | 0 |
@@ -221,10 +221,10 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendDiagnostics` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendDiagnostics.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendDiagnostics.Map(SyntaxDiagnostic, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendDiagnostics.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Statement(JsStatement, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Function(JsFunctionDeclaration, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Expression(JsExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Call(JsCallExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Statement(Statement, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Function(FunctionDeclaration, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Expression(Expression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Call(CallExpression, SliceSourceSpan)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsRegularExpressionValidator` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsRegularExpressionValidator.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsRegularExpressionValidator.Validate(string, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsRegularExpressionValidator.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
@@ -2028,7 +2028,7 @@ that the rule is reviewable in one place rather than in several hundred.
 | TrivialPropertyOrAccessor | 1556 |
 | ParameterAssigningConstructor | 149 |
 | TrivialExpressionBodiedMember | 64 |
-| CompilerSuppliedRecordOrEnumMember | 24 |
+| CompilerSuppliedRecordOrEnumMember | 29 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
 | FieldDeclaringStorage | 852 |
@@ -2114,7 +2114,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-11135 of them, exempt and relevant alike - with the fingerprint of its declaration.
+11140 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

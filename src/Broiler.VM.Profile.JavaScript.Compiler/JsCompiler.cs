@@ -816,7 +816,7 @@ public sealed partial class JsCompiler
         });
 
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D38ADA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5AE167
     // Broiler-Human:        PENDING
     private JsCompilation Run(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
@@ -860,7 +860,7 @@ public sealed partial class JsCompiler
             // the lowering happened to trip over first.
             if (request.Manifest == JsFeatureManifest.Numeric)
             {
-                diagnostics.AddRange(JsNumericAdmission.Judge(program));
+                diagnostics.AddRange(JsNumericAdmission.Judge(parsed.Tree!));
 
                 if (diagnostics.Count != 0)
                 {
