@@ -3660,10 +3660,15 @@ record's note at step 2 (JSD-0083 decision D3), with
   member, and its register's paragraph names the kinds its reader does not read, as bundle `sjl-13-002`'s rule, revised
   on 2026-11-13, reads part D. No package, pin, registry revision, dataset or public API moves.
 - **Decisions under the owner's standing direction of 2026-10-18**, each as the recommended choice, recorded in
-  JSD-0087's note with the alternative not taken: the exclusion EX-135; no package move, the plan's
-  `0.1.0-preview.10` overtaken by the move before the base; no view layer over the shared tree; the operators mapped
-  onto the slice token kinds; side tables keyed by node identity; one core function compile; JSD-0087's dated note as
-  the cut-over record; and the enumerations' replacements, none of their names declared again.
+  JSD-0087's note with the alternative not taken: the exclusion EX-135; no view layer over the shared tree; the
+  operators mapped onto the slice token kinds; side tables keyed by node identity; one core function compile;
+  JSD-0087's dated note as the cut-over record; and the enumerations' replacements, none of their names declared
+  again. The library's version is no decision of step 2's, and the direction does not cover publications: the move to
+  `0.1.0-preview.11` merged before the base under the order recorded in the entry of 2026-11-13, so step 2 moves no
+  package and the plan's `0.1.0-preview.10` is overtaken, as JSD-0087's note reads it. *(Revised 2026-11-14, later, at
+  the branch's review: the list read "the exclusion EX-135; no package move, the plan's `0.1.0-preview.10` overtaken by
+  the move before the base; no view layer over the shared tree; [...]", filing the version among the decisions taken
+  under the direction.)*
 - **The records**, each a dated note quoting what it reads: JSD-0083's status, X6 and decisions D15, D19 and D20; the
   SJL-13 milestone's SJL-13.3; bundle `sjl-13-002`'s README, that step 2 is built and its runs are not taken, with
   EX-135 in its section 9 and its row of SJL-13.1 kept; bundle `sjl-13-001`'s README, on EX-133; and JSC-328's notes on

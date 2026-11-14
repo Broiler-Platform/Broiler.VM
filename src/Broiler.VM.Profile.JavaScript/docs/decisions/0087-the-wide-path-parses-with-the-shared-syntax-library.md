@@ -488,27 +488,36 @@ alternative not taken; none is the owner's own dated answer, asked and answered,
    component's assurance coverage, in its section 9, keeps that section's row of SJL-13.1, "(none)", with a dated
    note, and notes EX-133 in bundle `sjl-13-001`, whose list of what stays covered named the adapter. Not taken: "a
    note on EX-133 only".
-2. **The library's version.** Step 2 moves no package: it is built on `Broiler.ECMAScript.Frontend`
-   `0.1.0-preview.11`, which the default branch admits since `389b55c`, whose code is `0.1.0-preview.10`'s, its
-   sources changing in comments only. The plan's recommendation, "stay on `0.1.0-preview.10`", is overtaken by the
-   owner's publication of `0.1.0-preview.11` on 2026-11-13 and its move before step 2's base, which bundle
-   `sjl-13-002`'s README records. Not taken: "a package move inside step 2", which would put a version change in the
-   after commit.
-3. **No view layer.** The lowering, the binder and the walks read the library's nodes as they are; the library's
+2. **No view layer.** The lowering, the binder and the walks read the library's nodes as they are; the library's
    nodes have internal constructors, and nothing wraps them. Not taken: "a thin internal view over the shared tree".
-4. **Operators.** The shared tree's operators map onto this family's `SliceTokenKind` in `JsTreeFacts`, and the
+3. **Operators.** The shared tree's operators map onto this family's `SliceTokenKind` in `JsTreeFacts`, and the
    lowering compiles them as before. Not taken: "the shared operator enumerations now", which is SJL-15's.
-5. **Side tables.** Strictness and the BigInt values are tables keyed by a node's identity, handed on beside the tree.
+4. **Side tables.** Strictness and the BigInt values are tables keyed by a node's identity, handed on beside the tree.
    Not taken: "a fact carried by a wrapper of each node", which is the view layer not taken.
-6. **One core `CompileFunction`.** Not taken: "a compile method per kind of function node".
-7. **The cut-over record.** This dated note on JSD-0087, as decision D3 asks. Not taken: "a new record, JSD-0088".
-8. **The enumerations** `JsPropertyKind`, `JsUsing`, `JsMethodKind` and `JsExportKind`: a shared enumeration where
+5. **One core `CompileFunction`.** Not taken: "a compile method per kind of function node".
+6. **The cut-over record.** This dated note on JSD-0087, as decision D3 asks. Not taken: "a new record, JSD-0088".
+7. **The enumerations** `JsPropertyKind`, `JsUsing`, `JsMethodKind` and `JsExportKind`: a shared enumeration where
    one maps value for value, else a new name, and none of those names declared again. `JsUsing` becomes the
    compiler's own `JsDisposal`, since the library's `DeclarationKind` does not map onto it value for value;
    `JsMethodKind` becomes the library's `MethodKind`, with its `FieldDefinition` and `StaticBlock` nodes;
    `JsPropertyKind` becomes the library's `PropertyKind`, with its `SpreadElement` node; and `JsExportKind` becomes the
    library's export declaration nodes, `ExportNamedDeclaration`, `ExportDefaultDeclaration` and `ExportAllDeclaration`.
    Not taken: "keep this family's enumerations under their names", which rule I5's type rows refuse.
+
+**The library's version, a reading, not a decision.** The plan's question on the library's version has no object at
+step 2, and this note decides nothing on it: the owner's standing direction of 2026-10-18 does not cover publications,
+which are the owner's own (decision D30), and the move to `Broiler.ECMAScript.Frontend` `0.1.0-preview.11`, which the
+owner published on 2026-11-13, merged before step 2's base, as `389b55c`, under the order already taken and recorded
+on 2026-11-13 (the ledger's entry of that date, and bundle `sjl-13-002`'s README notes of that date). Step 2 moves no
+package: it is built on `0.1.0-preview.11`, whose code is `0.1.0-preview.10`'s, its sources changing in comments only.
+The plan's recommendation, "stay on `0.1.0-preview.10`", is overtaken by that order. *(Revised 2026-11-14, later, at
+the branch's review. This was the list's second item, and the items after it are numbered one lower; it read "**The
+library's version.** Step 2 moves no package: it is built on `Broiler.ECMAScript.Frontend` `0.1.0-preview.11`, which
+the default branch admits since `389b55c`, whose code is `0.1.0-preview.10`'s, its sources changing in comments only.
+The plan's recommendation, \"stay on `0.1.0-preview.10`\", is overtaken by the owner's publication of
+`0.1.0-preview.11` on 2026-11-13 and its move before step 2's base, which bundle `sjl-13-002`'s README records. Not
+taken: \"a package move inside step 2\", which would put a version change in the after commit." It filed as a
+decision under the direction what the direction does not cover, with an alternative the plan never offered.)*
 
 **Rule I5** (decision D20, as JSD-0083's note of 2026-11-13 reads it, and bundle `sjl-13-002`'s rule as revised on
 2026-11-13, part D):
