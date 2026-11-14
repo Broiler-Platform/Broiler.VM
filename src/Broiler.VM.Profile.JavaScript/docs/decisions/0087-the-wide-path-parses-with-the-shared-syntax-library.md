@@ -405,6 +405,161 @@ JSD-0083 wins over the plan, and the code follows JSD-0083, but where this list 
 compile's order (`roadmap.backends.md`), the parity record's sentence that named `JsParser.cs`'s primary-expression
 switch (`roadmap.parity.md`), and rule I5's register.
 
+## Step 2: the dated note decision D3 asks for
+
+*(Noted 2026-11-14, at SJL-13.3's step 2's records, on its branch, before any run of bundle `sjl-13-002`'s rule.)*
+JSD-0083's decision D3 asks for this record "with a dated note at step 2", and the context above says "Step 2, which
+moves the lowering, the numeric admission and the binder onto the shared tree and deletes the adapter and `JsSyntax`,
+files a dated note here." This is that note, step 2's cut-over record. Nothing above it is edited.
+
+**The branch** is `sjl-13-3-step2`, cut from the default branch's `389b55c` (Broiler-Platform/Broiler.VM#205), the
+merge that moved the shared stream to `0.1.0-preview.11` and carried bundle `sjl-13-002`'s readings taken before any
+run and its rule's revision of 2026-11-13. It lands in one merge, bundle `sjl-13-002`'s after commit, whose first
+parent is the base. **This holds only while the default branch is still `389b55c` when the branch merges**: if
+anything lands on it first, the merge's first parent is not `389b55c`, every commit this note names is stale, and the
+branch is built again on the new tip, with its records, before it merges; that bundle's reading 1 holds the default
+branch until its evidence merges. Its commits, in order:
+
+| Commit | What it does |
+|---|---|
+| `db7a6f0` | **The admission walk walks the shared tree itself**: the BigInt and module-specifier refusals, the BigInt values and the top-level-`await` fact, by `JsParser`'s rule and in the adapter's visit order; the adapter stops making them |
+| `fb909e4` | **`JsTreeFacts`**, the readings of the shared tree in one place, which the adapter calls |
+| `f0b117d` | The numeric admission reads the shared tree, and the parse carries both trees |
+| `f34494a` | The binder, its early errors and the lowering's walk read the shared tree, through a temporary map from each adapted node to its shared origin |
+| `dcec5ec` | **The lowering reads the shared tree**, `JsFrontend` stops adapting, and the map is dropped |
+| `812cbaf` | **`JsSyntax.cs` and `JsFrontendAdapter.cs` with its parts deleted**; rule N12's and the review record's counts and rule I5's list of files follow, each with a dated comment |
+| `a71f01d` | Rule I5's register: the deleted types by type, the members types that stay lost by member, and the paragraph for SJL-13.3's step 2 |
+| `c452294` | Review fixes to the register's wording |
+
+and then the records of step 2, which change no product source, in several commits: bundle `sjl-13-002`'s README
+with EX-135, and its note on bundle `sjl-13-001`'s EX-133; JSC-328; this note; JSD-0083's notes; the SJL-13
+milestone's note; and the ledger. Every commit of the code builds in Release with no warning, passes the architecture
+and contract tests with the assurance gate in its checking mode, and carries its own regeneration by the writers; every
+new or changed unit carries its annotation lines, every human line PENDING.
+
+**What step 2 does** (JSD-0083's decisions D15, D19 and D20, as its notes of 2026-11-13 and 2026-11-14 read them):
+- **The facts.** The admission walk, `JsAdmissionWalk`, computes the top-level-`await` fact by `JsParser`'s rule: eval
+  code inside a function counts as inside one, a non-arrow function and a static block raise the depth, an arrow and
+  a field's initialiser do not, and an `await` inside an async arrow at a module's top level still counts (hand-off H19
+  is unchanged); it is not the library's `ProgramNode.HasTopLevelAwait`. It computes the BigInt values beside the
+  refusals, a BigInt key held to the width ceiling alone. A side table keyed by the shared tree's nodes holds each
+  function's and the program's strictness, from the library's side fact (decision D10); field initialisers and static
+  blocks are strict. `JsFrontend.Parsed` hands the library's tree on with those tables and the module's retained
+  tokens.
+- **The readings.** `JsTreeFacts` holds the readings of the shared tree the readers share, each by the adapter's rule:
+  where a node begins and ends, the program's place, the end of the source and the token before a node; parentheses,
+  unwrapped by a loop; the directive prologue, by the adapter's predicate; a key's spelling, by `NumberText` for a
+  number; export names, the anonymous default export named `default`; a module specifier, through `SourceOrNone`, so
+  that no specifier and the empty one read alike, as the adapter's tree held them; the import and export tuples; the
+  names a pattern binds; the operator and declaration-kind mappings; and predicates for the shapes the adapter
+  normalised, a simple-name target, a method entry, an if-clause function and the default export.
+- **The binder and the walk.** The binder's tables are keyed by the shared tree's nodes, its facts and their order
+  unchanged: a for-in statement's head, then the Annex B initialiser, then the right-hand side, then the body;
+  a class's heritage, then each member; ties at one place by visit order. The lowering's `Walk` keeps the adapter's
+  child map arm by arm: an arrow yields only its body, a try statement never its catch parameter, a for-of statement no
+  initialiser; a shorthand's value counts as a mention, and `MakesClosure` never enters a function declaration. The
+  if-clause function's one-statement block is keyed by its declaration and compiled at the function's place.
+- **The lowering.** Every site reads the shared tree, at the place the adapter gave: the program's first retained token,
+  a function at its container's span, a concise body's and a field's return through one `CompileReturn`, a static
+  block's own source offsets, a shorthand at its identifier, a pattern leaf at its inner expression, a `for`
+  initialiser at its span before unwrapping, the export spans, a namespace import at its `*` and `export * as` at its
+  `as`, a dotted member's name span, an object literal's method at its entry, and a field's initialiser with no source
+  span. The last directive's completion value is compiled only where the adapter's tree compiled it. One core
+  `CompileFunction` takes a `FunctionNode`, a `FieldDefinition` or a `StaticBlock` as its key. The lowering's
+  refusals of what it has no arm for stay as they were; only sites that replace the adapter's own refusal of an
+  unexpected node throw.
+- **Deleted**: `JsSyntax.cs`, and `JsFrontendAdapter.cs` with `JsFrontendAdapter.Expressions.cs`,
+  `JsFrontendAdapter.Functions.cs` and `JsFrontendAdapter.Modules.cs`; `JsFrontend` keeps the request, the parse and
+  the side tables. `JsModuleNames`' constants are `JsCompiler.DefaultBindingName` and `JsCompiler.StarName`, in the
+  lowering's module code, `JsCompiler.Modules.cs`, as decision D20 says. `JsCompiler.FindConstructor` moved to
+  `JsTreeFacts`, where it reads each member's key through `JsTreeFacts.Key`, and `JsCompiler.Unwrapped` with it; the
+  plan asked only that the keys be read through `JsTreeFacts.Key`, so the move is a departure, recorded here and
+  registered in rule I5.
+- **Rules.** N19: no public static member is added, and the parse runs on the stack `CompilationStack` declares. A10
+  and I6: no `InternalsVisibleTo`, and nothing new in any public API baseline. N12's count of the lowering assembly's
+  files and the review record's count move with dated comments naming the files deleted and `JsTreeFacts.cs`. No path
+  the development checks hold fixed changes: the slice compiler, the CLI and the conformance roots, `eng/`, the
+  workflows, the corpora, `Directory.Packages.props` and every public API baseline.
+
+**Decisions taken under the owner's standing direction of 2026-10-18** ("Please do all recommended decisions and skip
+waiting for review"), each as the recommended choice and recorded as the owner's dated decision under it, with the
+alternative not taken; none is the owner's own dated answer, asked and answered, and the owner may rule otherwise:
+1. **The exclusion.** Bundle `sjl-13-002` defines EX-135, the adapted tree's and the adapter's units, which leave this
+   component's assurance coverage, in its section 9, keeps that section's row of SJL-13.1, "(none)", with a dated
+   note, and notes EX-133 in bundle `sjl-13-001`, whose list of what stays covered named the adapter. Not taken: "a
+   note on EX-133 only".
+2. **The library's version.** Step 2 moves no package: it is built on `Broiler.ECMAScript.Frontend`
+   `0.1.0-preview.11`, which the default branch admits since `389b55c`, whose code is `0.1.0-preview.10`'s, its
+   sources changing in comments only. The plan's recommendation, "stay on `0.1.0-preview.10`", is overtaken by the
+   owner's publication of `0.1.0-preview.11` on 2026-11-13 and its move before step 2's base, which bundle
+   `sjl-13-002`'s README records. Not taken: "a package move inside step 2", which would put a version change in the
+   after commit.
+3. **No view layer.** The lowering, the binder and the walks read the library's nodes as they are; the library's
+   nodes have internal constructors, and nothing wraps them. Not taken: "a thin internal view over the shared tree".
+4. **Operators.** The shared tree's operators map onto this family's `SliceTokenKind` in `JsTreeFacts`, and the
+   lowering compiles them as before. Not taken: "the shared operator enumerations now", which is SJL-15's.
+5. **Side tables.** Strictness and the BigInt values are tables keyed by a node's identity, handed on beside the tree.
+   Not taken: "a fact carried by a wrapper of each node", which is the view layer not taken.
+6. **One core `CompileFunction`.** Not taken: "a compile method per kind of function node".
+7. **The cut-over record.** This dated note on JSD-0087, as decision D3 asks. Not taken: "a new record, JSD-0088".
+8. **The enumerations** `JsPropertyKind`, `JsUsing`, `JsMethodKind` and `JsExportKind`: a shared enumeration where
+   one maps value for value, else a new name, and none of those names declared again. `JsUsing` becomes the
+   compiler's own `JsDisposal`, since the library's `DeclarationKind` does not map onto it value for value;
+   `JsMethodKind` becomes the library's `MethodKind`, with its `FieldDefinition` and `StaticBlock` nodes;
+   `JsPropertyKind` becomes the library's `PropertyKind`, with its `SpreadElement` node; and `JsExportKind` becomes the
+   library's export declaration nodes, `ExportNamedDeclaration`, `ExportDefaultDeclaration` and `ExportAllDeclaration`.
+   Not taken: "keep this family's enumerations under their names", which rule I5's type rows refuse.
+
+**Rule I5** (decision D20, as JSD-0083's note of 2026-11-13 reads it, and bundle `sjl-13-002`'s rule as revised on
+2026-11-13, part D):
+- **Registered by type**, with the milestone `SJL-13.3`: every type `JsSyntax.cs` declared directly in a namespace,
+  `JsModuleNames` among them, and `JsFrontendAdapter`. Each type's row refuses each of its members, since none can be
+  declared again without its type: `JsMemberExpression.NameSpan`, `JsAssignmentExpression.ParenthesisedTarget`, the
+  `SourceStart` and `SourceEnd` of `JsFunctionNode` and `JsClassNode`, `JsModuleNames.DefaultBindingName` and
+  `JsModuleNames.StarName`, and every member of `JsFrontendAdapter`, `SawTopLevelAwait` among them.
+- **Registered by member**, one row per distinct name: `JsCompiler.FindConstructor` and `JsCompiler.Unwrapped`.
+- **Not registered, named by kind for each type deleted whole**, because rule I5's reader does not read their kind of
+  name: the positional parameters of the records `JsNode`, `JsExpression`, `JsStatement`, `JsNumberLiteral`,
+  `JsBigIntLiteral`, `JsStringLiteral`, `JsBooleanLiteral`, `JsNullLiteral`, `JsRegExpLiteral`, `JsIdentifier`,
+  `JsThisExpression`, `JsArrayLiteral`, `JsSpreadElement`, `JsObjectEntry`, `JsObjectLiteral`, `JsParameter`,
+  `JsFunctionNode`, `JsYieldExpression`, `JsAwaitExpression`, `JsFunctionExpression`, `JsUnaryExpression`,
+  `JsUpdateExpression`, `JsBinaryExpression`, `JsLogicalExpression`, `JsAssignmentExpression`,
+  `JsConditionalExpression`, `JsMemberExpression`, `JsCallExpression`, `JsChainExpression`, `JsTemplateLiteral`,
+  `JsTaggedTemplate`, `JsNewTargetExpression`, `JsNewExpression`, `JsSequenceExpression`, `JsPattern`,
+  `JsTargetPattern`, `JsPatternElement`, `JsArrayPattern`, `JsPatternProperty`, `JsObjectPattern`,
+  `JsDestructuringAssignment`, `JsDeclarator`, `JsVariableStatement`, `JsExpressionStatement`, `JsBlockStatement`,
+  `JsIfStatement`, `JsWithStatement`, `JsWhileStatement`, `JsDoWhileStatement`, `JsForStatement`, `JsForInStatement`,
+  `JsForOfStatement`, `JsBreakStatement`, `JsContinueStatement`, `JsReturnStatement`, `JsThrowStatement`,
+  `JsTryStatement`, `JsSwitchClause`, `JsSwitchStatement`, `JsLabelledStatement`, `JsEmptyStatement`,
+  `JsDebuggerStatement`, `JsFunctionDeclaration`, `JsClassMember`, `JsClassNode`, `JsClassDeclaration`,
+  `JsClassExpression`, `JsSuperMemberExpression`, `JsPrivateMemberExpression`, `JsPrivateInExpression`,
+  `JsSuperCallExpression`, `JsImportCall`, `JsImportMeta`, `JsImportAttribute`, `JsImportSpecifier`,
+  `JsImportDeclaration`, `JsExportSpecifier`, `JsExportDeclaration` and `JsProgramNode`; the members of the
+  enumerations `JsPropertyKind`, `JsUsing`, `JsMethodKind` and `JsExportKind`; and `JsFrontendAdapter`'s constructor.
+- **Not registered, named member by member for types that stay**: `JsFrontend.Parsed`'s positional parameter
+  `Program`, the adapted tree, which its positional parameter `Tree`, the library's tree, replaces; and
+  `JsAdmissionWalk`'s internal constructor of one parameter, whose walk the static `Walk` makes through a private
+  constructor that also takes the function depth. The constructors of `JsBinder`, `JsBinder.Declarations` and
+  `JsBinder.HoistingScope` take the library's nodes in place of the adapted tree's and are not deleted.
+- The register's paragraph for SJL-13.3's step 2 names the same, with a dated note on step 1's paragraph, whose list
+  of what stays named the adapter; the register's row in `rules.register.json` carries a dated revision; and rule
+  I5's list of the files it reads replaces `JsFrontendAdapter.Expressions.cs` with `JsTreeFacts.cs` and adds
+  `JsCompiler.Modules.cs`, with a dated comment. Part D's control, the type `JsMemberExpression` declared again with
+  its member `NameSpan`, and `JsNumberLiteral` declared again, is taken after the merge.
+
+**Evidence at this change.** Development checks, from clean archives of the base `389b55c` and of the branch's
+commits, behind an idle gate, with the scripts and logs kept outside the tree. **They are not evidence of bundle
+`sjl-13-002`'s rule**, whose runs are all taken after the merge, at the base and the after commit, and they decide
+nothing (that bundle's reading 6); no figure of them is quoted here. They found no difference in any outcome,
+artifact, specifier list, numeric admission or diagnostic, every checks row as at the base, the fuel twins and the
+fuzz sessions as at the base; the test262 comparison found only Exhausted rows whose allowance moves between the wall
+clock and fuel, as the base build's own re-runs do.
+
+**Records**, each a dated note quoting what it reads: JSD-0083's status, X6 and decisions D15, D19 and D20; the SJL-13
+milestone's SJL-13.3; [JSC-328](../roadmap.corrections.md#jsc-328), for the inventory's parser and tree row, the
+frontend area's wide path and the backends plan; bundle `sjl-13-002`'s README, with EX-135, and bundle `sjl-13-001`'s
+note on EX-133; the ledger. No rule file is edited, and the rule's revision of 2026-11-13 stands as filed.
+
 ## Settling condition
 
 Settled in the change that files it. **This record is reopened only by a new dated record**; step 2 files the dated
