@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   4
 // Annotated:        4/4
-// Exempt:           7
+// Exempt:           4
 // Human-reviewed:   0/4
 // IP risk:          Low
 // Security risk:    High
@@ -55,7 +55,7 @@ internal static class JsFrontend
     /// The answer of one parse: the trees, the refusal, the module's top-level await, and the side tables
     /// the lowering reads beside the shared tree, each keyed by a node's identity (SJL-13.3, step 2).
     /// </summary>
-    /// <param name="Program">The adapted tree, or <see langword="null"/> when the unit was refused.</param>
+    /// <param name="Tree">The library's tree, or <see langword="null"/> when the unit was refused.</param>
     /// <param name="Diagnostics">
     /// The library's first refusal alone (decision D11), or the admission walk's refusals, in the order
     /// this family reports them; empty for an accepted unit.
@@ -63,18 +63,13 @@ internal static class JsFrontend
     /// <param name="SawTopLevelAwait">
     /// Whether the unit awaits outside every function, by the wide parser's rule (decision D20).
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6D8F1E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B3A11F
     // Broiler-Human:        PENDING
     internal sealed record Parsed(
-        JsProgramNode? Program,
+        ProgramNode? Tree,
         System.Collections.Generic.IReadOnlyList<SliceSourceDiagnostic> Diagnostics,
         bool SawTopLevelAwait)
     {
-        /// <summary>The library's tree, or <see langword="null"/> when the unit was refused.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=877074
-        // Broiler-Human:        PENDING
-        internal ProgramNode? Tree { get; init; }
-
         /// <summary>The unit's source text, which a string literal's raw text and the end of the source are read from.</summary>
         // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=C91EFB
         // Broiler-Human:        PENDING
@@ -97,15 +92,6 @@ internal static class JsFrontend
         internal System.Collections.Generic.IReadOnlyDictionary<SyntaxNode, bool> Strictness { get; init; } =
             new System.Collections.Generic.Dictionary<SyntaxNode, bool>();
 
-        /// <summary>Each adapted node's shared origin, until the lowering reads the shared tree (SJL-13.3, step 2).</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=9A7670
-        // Broiler-Human:        PENDING
-        internal System.Collections.Generic.IReadOnlyDictionary<JsNode, SyntaxNode>? Origins { get; init; }
-
-        /// <summary>Each shared function or function declaration's adapted node, until the lowering moves.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=723E8D
-        // Broiler-Human:        PENDING
-        internal System.Collections.Generic.IReadOnlyDictionary<SyntaxNode, JsNode>? Adapted { get; init; }
     }
 
     /// <summary>
@@ -120,7 +106,7 @@ internal static class JsFrontend
     /// binder alike (decision D16).
     /// </param>
     /// <param name="admitsBigInt">Whether the request's manifest admits BigInt literals.</param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=7B29B1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=498599
     // Broiler-Falsified-If: a unit with any library diagnostic or admission refusal answers a tree, a unit with none answers a refusal, or an accepted unit's top-level-await answer is not the admission walk's
     // Broiler-Human:        PENDING
     internal static Parsed Parse(string text, SliceParseOptions options, bool forceStrict, bool admitsBigInt)
@@ -162,17 +148,12 @@ internal static class JsFrontend
             strictness[facts.Node] = facts.IsStrict;
         }
 
-        var adapter = new JsFrontendAdapter(text, result, admission.BigIntValues, strictness);
-
-        return new Parsed(adapter.Program(), [], admission.SawTopLevelAwait)
+        return new Parsed(result.Tree, [], admission.SawTopLevelAwait)
         {
-            Tree = result.Tree,
             Text = text,
             Tokens = result.Tokens,
             BigInts = admission.BigIntValues,
             Strictness = strictness,
-            Origins = adapter.Origins,
-            Adapted = adapter.Adapted,
         };
     }
 

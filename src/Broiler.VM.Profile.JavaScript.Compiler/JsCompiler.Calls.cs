@@ -15,6 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Syntax;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
@@ -24,15 +25,17 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 public sealed partial class JsCompiler
 {
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DF131D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0A4526
     // Broiler-Human:        PENDING
-    private void CompileCall(JsCallExpression call)
+    private void CompileCall(CallExpression call)
     {
+        var callee = JsTreeFacts.Unwrap(call.Callee);
+
         // `super.m()` IS THE ONE CALL WHOSE CALLEE AND RECEIVER COME FROM DIFFERENT PLACES. The
         // function is found through the method's home object and the receiver is `this`, so the
         // ordinary member path - which duplicates the base and uses it for both - would have
         // called the inherited method against the prototype instead of against the instance.
-        if (call.Callee is JsSuperMemberExpression inherited)
+        if (callee is MemberExpression { Object: SuperExpression } inherited)
         {
             CompileSuperKey(inherited);
             Emit(JsOpcode.LoadSuperProperty);
@@ -57,8 +60,8 @@ public sealed partial class JsCompiler
         // lowered as an ordinary `Call`, which made that program a silent global evaluation whose
         // `var` became a property of the global object. A `with` record between the call and the
         // binding needed the same answer for the same reason (JSD-0026 step 1).
-        var direct = call.Callee is JsIdentifier callee &&
-            string.Equals(callee.Name, "eval", System.StringComparison.Ordinal);
+        var direct = callee is Identifier named &&
+            string.Equals(named.Name, "eval", System.StringComparison.Ordinal);
 
         CompileArguments(call, direct);
     }
@@ -72,22 +75,24 @@ public sealed partial class JsCompiler
     /// it. This is the one place that decision is made, so an ordinary call and a tagged template
     /// cannot drift apart on it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0FA060
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=234CC8
     // Broiler-Human:        PENDING
-    private void EmitCallee(JsExpression callee)
+    private void EmitCallee(Expression written)
     {
-        if (callee is JsMemberExpression member)
+        var callee = JsTreeFacts.Unwrap(written);
+
+        if (callee is MemberExpression { Object: not SuperExpression, Property: not PrivateIdentifier } member)
         {
-            CompileExpression(member.Target);
+            CompileExpression(member.Object);
             Emit(JsOpcode.Duplicate);
 
-            if (member.Computed is null)
+            if (JsTreeFacts.Computed(member) is null)
             {
-                Emit(JsOpcode.GetProperty, InternedName(member.Name));
+                Emit(JsOpcode.GetProperty, InternedName(JsTreeFacts.PropertyName(member)));
             }
             else
             {
-                CompileExpression(member.Computed);
+                CompileExpression(JsTreeFacts.Computed(member)!);
                 Emit(JsOpcode.GetIndex);
             }
 
@@ -100,11 +105,11 @@ public sealed partial class JsCompiler
         // `o.#m()` IS CALLED AGAINST `o` EXACTLY AS `o.m()` IS. The private element is found in a
         // different table and the calling convention is the same one, so the shape below is the
         // member arm's with the private instruction where the property read was.
-        if (callee is JsPrivateMemberExpression privateCallee)
+        if (callee is MemberExpression { Property: PrivateIdentifier } privateCallee)
         {
-            CompileExpression(privateCallee.Target);
+            CompileExpression(privateCallee.Object);
             Emit(JsOpcode.Duplicate);
-            EmitPrivateName(privateCallee.Span, privateCallee.Name);
+            EmitPrivateName(JsTreeFacts.At(privateCallee), JsTreeFacts.PropertyName(privateCallee));
             Emit(JsOpcode.LoadPrivate);
             Emit(JsOpcode.Swap);
             return;
@@ -115,7 +120,7 @@ public sealed partial class JsCompiler
         // `undefined`, and the difference is decided by which of the two branches the search took -
         // which is why the receiver is produced by the same lowering that produced the callee
         // rather than pushed after it.
-        if (callee is JsIdentifier bare && Shadowable(bare.Name, out var limit))
+        if (callee is Identifier bare && Shadowable(bare.Name, out var limit))
         {
             EmitDynamicName(bare.Name, limit, wantsBase: true, orUndefined: false);
             return;
@@ -124,14 +129,14 @@ public sealed partial class JsCompiler
         // A CALLEE EVAL CODE DOES NOT BIND MAY BE A CALLER'S `with` OBJECT'S METHOD, and then it is
         // called against that object - so the name is resolved with its base rather than read and
         // called against `undefined` (JSD-0026 section 5).
-        if (callee is JsIdentifier free && !Resolvable(free.Name) && TryEvalHops(out var evalHops))
+        if (callee is Identifier free && !Resolvable(free.Name) && TryEvalHops(out var evalHops))
         {
             EmitEvalName(JsOpcode.LoadEvalNameWithBase, evalHops, free.Name);
             return;
         }
 
         // A PARENTHESISED CHAIN KEEPS ITS BASE AS THE RECEIVER, as `(o.f)()` does (JSC-258).
-        if (callee is JsChainExpression { Chain: JsMemberExpression or JsPrivateMemberExpression })
+        if (callee is ChainExpression chain && JsTreeFacts.Unwrap(chain.Expression) is MemberExpression { Object: not SuperExpression })
         {
             EmitChainReceiver(EmitChainCalleeValue(callee, NewLabel(), shortIsTrue: false));
             return;
@@ -161,13 +166,13 @@ public sealed partial class JsCompiler
     /// failure: it is caught by the verifier rather than by the value being wrong at run time.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=E0C92D
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=838E5B
     // Broiler-Falsified-If: a link after a short-circuited one is evaluated, or the two paths meet at different heights
     // Broiler-Human:        PENDING
-    private void CompileChain(JsChainExpression chain)
+    private void CompileChain(ChainExpression chain)
     {
         var end = NewLabel();
-        EmitChainLink(chain.Chain, end, shortIsTrue: false);
+        EmitChainLink(chain.Expression, end, shortIsTrue: false);
         Mark(end);
     }
 
@@ -179,66 +184,68 @@ public sealed partial class JsCompiler
     /// the ordinary expression it is - which is how a parenthesised chain inside another one keeps
     /// its own merge.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C803C1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B3F5EB
     // Broiler-Human:        PENDING
-    private void EmitChainLink(JsExpression node, Label end, bool shortIsTrue)
+    private void EmitChainLink(Expression written, Label end, bool shortIsTrue)
     {
+        var node = JsTreeFacts.Unwrap(written);
+
         switch (node)
         {
-            case JsPrivateMemberExpression privateAccess:
+            case MemberExpression { Property: PrivateIdentifier } privateAccess:
             {
-                EmitChainLink(privateAccess.Target, end, shortIsTrue);
+                EmitChainLink(privateAccess.Object, end, shortIsTrue);
 
-                if (privateAccess.Optional)
+                if (privateAccess.IsOptional)
                 {
                     EmitNullishGuard(end, held: 1, shortIsTrue);
                 }
 
-                EmitPrivateName(privateAccess.Span, privateAccess.Name);
+                EmitPrivateName(JsTreeFacts.At(privateAccess), JsTreeFacts.PropertyName(privateAccess));
                 Emit(JsOpcode.LoadPrivate);
                 return;
             }
 
-            case JsMemberExpression member:
+            case MemberExpression { Object: not SuperExpression, Property: not PrivateIdentifier } member:
             {
-                EmitChainLink(member.Target, end, shortIsTrue);
+                EmitChainLink(member.Object, end, shortIsTrue);
 
-                if (member.Optional)
+                if (member.IsOptional)
                 {
                     EmitNullishGuard(end, held: 1, shortIsTrue);
                 }
 
-                if (member.Computed is null)
+                if (JsTreeFacts.Computed(member) is null)
                 {
-                    Emit(JsOpcode.GetProperty, InternedName(member.Name));
+                    Emit(JsOpcode.GetProperty, InternedName(JsTreeFacts.PropertyName(member)));
                 }
                 else
                 {
-                    CompileExpression(member.Computed);
+                    CompileExpression(JsTreeFacts.Computed(member)!);
                     Emit(JsOpcode.GetIndex);
                 }
 
                 return;
             }
 
-            case JsCallExpression call when call.Callee is JsMemberExpression callee:
+            case CallExpression { Callee: not SuperExpression } call when JsTreeFacts.Unwrap(call.Callee) is MemberExpression { Object: not SuperExpression, Property: not PrivateIdentifier } callee:
             {
-                EmitChainLink(callee.Target, end, shortIsTrue);
+                EmitChainLink(callee.Object, end, shortIsTrue);
 
-                if (callee.Optional)
+                if (callee.IsOptional)
                 {
                     EmitNullishGuard(end, held: 1, shortIsTrue);
                 }
 
                 Emit(JsOpcode.Duplicate);
 
-                if (callee.Computed is null)
+                if (JsTreeFacts.Computed(callee) is null)
                 {
-                    Emit(JsOpcode.GetProperty, InternedName(callee.Name));
+                    Emit(JsOpcode.GetProperty, InternedName(JsTreeFacts.PropertyName(callee)));
                 }
                 else
                 {
-                    CompileExpression(callee.Computed);
+                    CompileExpression(JsTreeFacts.Computed(callee)!);
                     Emit(JsOpcode.GetIndex);
                 }
 
@@ -246,7 +253,7 @@ public sealed partial class JsCompiler
                 // Testing after the exchange would need to reach under the top of the stack for
                 // the value being tested, and testing before it is simply the same test one
                 // instruction earlier.
-                if (call.Optional)
+                if (call.IsOptional)
                 {
                     EmitNullishGuard(end, held: 2, shortIsTrue);
                 }
@@ -259,12 +266,12 @@ public sealed partial class JsCompiler
             // `super.m?.()` IS CALLED AGAINST `this`, as `super.m()` is: the function is found
             // through the home object and the receiver is the method's own. Until 2026-10-04 the
             // optional spelling reached the arm below and called it against `undefined` (JSC-258).
-            case JsCallExpression call when call.Callee is JsSuperMemberExpression inherited:
+            case CallExpression { Callee: not SuperExpression } call when JsTreeFacts.Unwrap(call.Callee) is MemberExpression { Object: SuperExpression } inherited:
             {
                 CompileSuperKey(inherited);
                 Emit(JsOpcode.LoadSuperProperty);
 
-                if (call.Optional)
+                if (call.IsOptional)
                 {
                     EmitNullishGuard(end, held: 1, shortIsTrue);
                 }
@@ -274,11 +281,11 @@ public sealed partial class JsCompiler
                 return;
             }
 
-            case JsCallExpression call:
+            case CallExpression { Callee: not SuperExpression } call:
             {
                 var receiver = EmitChainCalleeValue(call.Callee, end, shortIsTrue);
 
-                if (call.Optional)
+                if (call.IsOptional)
                 {
                     EmitNullishGuard(end, held: 1, shortIsTrue);
                 }
@@ -307,14 +314,12 @@ public sealed partial class JsCompiler
     /// <c>undefined</c> too. Until 2026-10-04 such a call was always made against
     /// <c>undefined</c> (JSC-258).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B141C1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=786EEB
     // Broiler-Human:        PENDING
-    private int EmitChainCalleeValue(JsExpression callee, Label end, bool shortIsTrue)
+    private int EmitChainCalleeValue(Expression callee, Label end, bool shortIsTrue)
     {
-        if (callee is not JsChainExpression
-            {
-                Chain: JsMemberExpression or JsPrivateMemberExpression,
-            } parenthesised)
+        if (JsTreeFacts.Unwrap(callee) is not ChainExpression parenthesised ||
+            JsTreeFacts.Unwrap(parenthesised.Expression) is not MemberExpression { Object: not SuperExpression } link)
         {
             EmitChainLink(callee, end, shortIsTrue);
             return -1;
@@ -327,26 +332,26 @@ public sealed partial class JsCompiler
 
         var inner = NewLabel();
 
-        switch (parenthesised.Chain)
+        switch (link)
         {
-            case JsPrivateMemberExpression privateAccess:
-                EmitChainLink(privateAccess.Target, inner, shortIsTrue: false);
+            case MemberExpression { Property: PrivateIdentifier } privateAccess:
+                EmitChainLink(privateAccess.Object, inner, shortIsTrue: false);
 
-                if (privateAccess.Optional)
+                if (privateAccess.IsOptional)
                 {
                     EmitNullishGuard(inner, held: 1, shortIsTrue: false);
                 }
 
                 Emit(JsOpcode.Duplicate);
                 EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, kept);
-                EmitPrivateName(privateAccess.Span, privateAccess.Name);
+                EmitPrivateName(JsTreeFacts.At(privateAccess), JsTreeFacts.PropertyName(privateAccess));
                 Emit(JsOpcode.LoadPrivate);
                 break;
 
-            case JsMemberExpression member:
-                EmitChainLink(member.Target, inner, shortIsTrue: false);
+            case MemberExpression { Object: not SuperExpression, Property: not PrivateIdentifier } member:
+                EmitChainLink(member.Object, inner, shortIsTrue: false);
 
-                if (member.Optional)
+                if (member.IsOptional)
                 {
                     EmitNullishGuard(inner, held: 1, shortIsTrue: false);
                 }
@@ -354,13 +359,13 @@ public sealed partial class JsCompiler
                 Emit(JsOpcode.Duplicate);
                 EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, kept);
 
-                if (member.Computed is null)
+                if (JsTreeFacts.Computed(member) is null)
                 {
-                    Emit(JsOpcode.GetProperty, InternedName(member.Name));
+                    Emit(JsOpcode.GetProperty, InternedName(JsTreeFacts.PropertyName(member)));
                 }
                 else
                 {
-                    CompileExpression(member.Computed);
+                    CompileExpression(JsTreeFacts.Computed(member)!);
                     Emit(JsOpcode.GetIndex);
                 }
 
@@ -400,9 +405,9 @@ public sealed partial class JsCompiler
     /// spread test, the 255 ceiling and the choice of instruction live in one place. They did not,
     /// and a spread argument reached a lowering that had never heard of one.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0AB26C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=585CA1
     // Broiler-Human:        PENDING
-    private void CompileArguments(JsCallExpression call, bool direct = false)
+    private void CompileArguments(CallExpression call, bool direct = false)
     {
         // A SPREAD MAKES THE COUNT A RUN-TIME QUANTITY, so the arguments travel as one Array and
         // the instruction that takes them has a fixed stack effect again. A direct `eval` spelled
@@ -528,18 +533,18 @@ public sealed partial class JsCompiler
     /// instructions would have bought nothing: the named form is a constant load either way.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9BF5E2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=342A80
     // Broiler-Human:        PENDING
-    private void CompileSuperKey(JsSuperMemberExpression member)
+    private void CompileSuperKey(MemberExpression member)
     {
         if (!insideMethod)
         {
-            throw BinderAdmitted(member.Span, "a `super` property outside a method");
+            throw BinderAdmitted(JsTreeFacts.At(member), "a `super` property outside a method");
         }
 
-        if (member.Computed is null)
+        if (JsTreeFacts.Computed(member) is null)
         {
-            Emit(JsOpcode.LoadConstant, StringConstant(member.Name));
+            Emit(JsOpcode.LoadConstant, StringConstant(JsTreeFacts.PropertyName(member)));
             return;
         }
 
@@ -550,7 +555,7 @@ public sealed partial class JsCompiler
         // the key would have run `f` first and reported whatever `f` did.
         Emit(JsOpcode.LoadThis);
         Emit(JsOpcode.Pop);
-        CompileExpression(member.Computed);
+        CompileExpression(JsTreeFacts.Computed(member)!);
     }
 
     /// <summary>
@@ -562,11 +567,11 @@ public sealed partial class JsCompiler
     /// a destructuring target <c>super.x</c> in a derived constructor before <c>super()</c> throws
     /// its <c>ReferenceError</c> when the target is evaluated and not when it is written.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0FF5DE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=139122
     // Broiler-Human:        PENDING
-    private void EmitSuperReference(JsSuperMemberExpression member)
+    private void EmitSuperReference(MemberExpression member)
     {
-        if (member.Computed is null)
+        if (JsTreeFacts.Computed(member) is null)
         {
             Emit(JsOpcode.LoadThis);
             Emit(JsOpcode.Pop);
@@ -585,11 +590,11 @@ public sealed partial class JsCompiler
     /// constant whose conversion nothing can observe, and keeps the two instructions it always had,
     /// so a program with no computed <c>super</c> write lowers to the bytes it lowered to before.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A2F360
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8C9D36
     // Broiler-Human:        PENDING
-    private void EmitSuperReadKeepingKey(JsSuperMemberExpression member)
+    private void EmitSuperReadKeepingKey(MemberExpression member)
     {
-        if (member.Computed is null)
+        if (JsTreeFacts.Computed(member) is null)
         {
             Emit(JsOpcode.Duplicate);
             Emit(JsOpcode.LoadSuperProperty);
@@ -599,13 +604,13 @@ public sealed partial class JsCompiler
         Emit(JsOpcode.LoadSuperPropertyKeepKey);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=73FA1B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1601D7
     // Broiler-Human:        PENDING
-    private void CompileSuperCall(JsSuperCallExpression call)
+    private void CompileSuperCall(CallExpression call)
     {
         if (!insideDerivedConstructor)
         {
-            throw BinderAdmitted(call.Span, "a `super` call outside a derived constructor");
+            throw BinderAdmitted(JsTreeFacts.At(call), "a `super` call outside a derived constructor");
         }
 
         // `super(...args)` IS NOT `f.apply`-SHAPED AND MUST NOT BORROW CallSpread. That
@@ -616,7 +621,7 @@ public sealed partial class JsCompiler
         if (CarriesArgumentsInAnArray(call.Arguments))
         {
             CompileArgumentArray(call.Arguments);
-            Position(call.Span);
+            Position(JsTreeFacts.At(call));
             Emit(JsOpcode.SuperCallSpread);
             return;
         }
@@ -626,7 +631,7 @@ public sealed partial class JsCompiler
             CompileExpression(argument);
         }
 
-        Position(call.Span);
+        Position(JsTreeFacts.At(call));
         Emit(JsOpcode.SuperCall, (byte)call.Arguments.Count);
     }
 }

@@ -15,6 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Syntax;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
@@ -43,7 +44,7 @@ public sealed partial class JsCompiler
     /// reaches it through its own <c>#</c> spelling (JSeal V15-finish).
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FD8546
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=184027
     // Broiler-Human:        PENDING
     private int EvalShapeRow(
         Scope target,
@@ -77,7 +78,7 @@ public sealed partial class JsCompiler
             // `export default` slot is not: its name is one no source can spell either, and nothing
             // an evaluation writes could reach it.
             if ((name.StartsWith('#') && !name.StartsWith("##", System.StringComparison.Ordinal)) ||
-                string.Equals(name, JsModuleNames.DefaultBindingName, System.StringComparison.Ordinal) ||
+                string.Equals(name, DefaultBindingName, System.StringComparison.Ordinal) ||
                 !target.TryGet(name, out var slot, out var constant))
             {
                 continue;
@@ -338,9 +339,9 @@ public sealed partial class JsCompiler
     /// request's flags before any of the program is lowered (SJL-12.6 item 2).
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2A8629
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E9DC50
     // Broiler-Human:        PENDING
-    private int CompileEvalProgram(JsProgramNode program, JsFormat.EvalRequestFlags flags)
+    private int CompileEvalProgram(ProgramNode program, JsFormat.EvalRequestFlags flags)
     {
         var outerBuffer = buffer;
         var outerScope = scope;
@@ -381,13 +382,15 @@ public sealed partial class JsCompiler
         // A DIRECTIVE'S STRING IS A COMPLETION VALUE IN EVAL CODE AS IN A SCRIPT: `eval("'1'")` is
         // `"1"`. The script lowering has always said so; this one did not until the global
         // evaluations of JSeal V15 moved onto it and the conformance suite noticed.
-        if (program.Directives.Count != 0)
+        var prologue = JsTreeFacts.PrologueLength(program.Body);
+
+        if (prologue != 0)
         {
-            CompileExpression(program.Directives[^1]);
+            CompileExpression(((ExpressionStatement)program.Body[prologue - 1]).Expression);
             EmitScoped(JsOpcode.InitialiseScoped, 0, completion);
         }
 
-        CompileStatements(program.Body, completion);
+        CompileStatements(program.Body, completion, prologue);
 
         EmitScoped(JsOpcode.LoadScoped, 0, completion);
         Emit(JsOpcode.Return);
@@ -396,7 +399,7 @@ public sealed partial class JsCompiler
 
         if (scope.SlotCount > MaximumSlots)
         {
-            Refuse(program.Span, SliceSourceDiagnosticCode.TooManyLocals, "evaluated source declares too many bindings");
+            Refuse(ProgramSpan(program), SliceSourceDiagnosticCode.TooManyLocals, "evaluated source declares too many bindings");
         }
 
         evalDeclarations.Add((
@@ -438,7 +441,7 @@ public sealed partial class JsCompiler
     /// into the variable environment with <see cref="JsOpcode.StoreEvalVariable"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B78448
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A353FD
     // Broiler-Human:        PENDING
     private (string[] VarNames, string[] LexicalNames, string[] FunctionNames, string[] AnnexBNames) HoistEval(
         JsBinder.HoistingScope unit)
@@ -456,7 +459,7 @@ public sealed partial class JsCompiler
         var lexicalNames = lexical.Names();
 
         var names = unit.VarNames;
-        var functions = Adapted(unit.Functions);
+        var functions = unit.Functions;
 
         if (strict)
         {
@@ -466,12 +469,12 @@ public sealed partial class JsCompiler
 
         // THE FUNCTIONS THE SPECIFICATION INITIALISES: one per name, the LAST declaration of a name
         // winning, in the order those winning declarations are written.
-        var winners = new System.Collections.Generic.List<JsFunctionNode>();
+        var winners = new System.Collections.Generic.List<FunctionNode>();
         var functionSeen = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
 
         for (var at = functions.Count - 1; at >= 0; at--)
         {
-            if (functionSeen.Add(functions[at].Name))
+            if (functionSeen.Add(NameOf(functions[at])))
             {
                 winners.Add(functions[at]);
             }
@@ -506,20 +509,20 @@ public sealed partial class JsCompiler
 
         for (var index = 0; index < winners.Count; index++)
         {
-            functionNames[index] = winners[index].Name;
-            Emit(JsOpcode.Closure, (ushort)CompileFunction(winners[index]));
-            EmitScoped(JsOpcode.StoreEvalVariable, 0, InternedName(winners[index].Name));
+            functionNames[index] = NameOf(winners[index]);
+            Emit(JsOpcode.Closure, (ushort)CompileFunction(winners[index], JsTreeFacts.At(winners[index]), NameOf(winners[index])));
+            EmitScoped(JsOpcode.StoreEvalVariable, 0, InternedName(NameOf(winners[index])));
         }
 
         return ([.. varNames], lexicalNames, functionNames, [.. annexBNames]);
     }
 
     /// <summary>Declares a strict evaluated program's <c>var</c>s and functions as its own slots.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C5C6BB
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DFAA61
     // Broiler-Human:        PENDING
     private void HoistStrictEval(
         System.Collections.Generic.IReadOnlyList<string> names,
-        System.Collections.Generic.IReadOnlyList<JsFunctionNode> functions)
+        System.Collections.Generic.IReadOnlyList<FunctionNode> functions)
     {
         foreach (var name in names)
         {
@@ -535,9 +538,9 @@ public sealed partial class JsCompiler
 
         foreach (var function in functions)
         {
-            if (!scope.Has(function.Name))
+            if (!scope.Has(NameOf(function)))
             {
-                var slot = scope.Declare(function.Name, constant: false);
+                var slot = scope.Declare(NameOf(function), constant: false);
                 Emit(JsOpcode.LoadUndefined);
                 EmitScoped(JsOpcode.InitialiseScoped, 0, slot);
             }
@@ -545,8 +548,8 @@ public sealed partial class JsCompiler
 
         foreach (var function in functions)
         {
-            Emit(JsOpcode.Closure, (ushort)CompileFunction(function));
-            EmitScoped(JsOpcode.InitialiseScoped, 0, scope.SlotOf(function.Name));
+            Emit(JsOpcode.Closure, (ushort)CompileFunction(function, JsTreeFacts.At(function), NameOf(function)));
+            EmitScoped(JsOpcode.InitialiseScoped, 0, scope.SlotOf(NameOf(function)));
         }
     }
 }

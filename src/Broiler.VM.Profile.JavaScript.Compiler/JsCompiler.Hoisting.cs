@@ -15,6 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Syntax;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
@@ -32,13 +33,13 @@ public sealed partial class JsCompiler
     /// and the Annex B aliases one per name. The instructions below still create every binding; the
     /// row lets the executor run the specification's checks before the first of them.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3590E5
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F29283
     // Broiler-Human:        PENDING
     private (string[] LexicalNames, string[] VarNames, string[] FunctionNames, string[] AnnexBNames) HoistProgram(
         JsBinder.HoistingScope unit)
     {
         var names = unit.VarNames;
-        var functions = Adapted(unit.Functions);
+        var functions = unit.Functions;
 
         // A FUNCTION DECLARATION CREATES ITS GLOBAL BINDING BEFORE IT IS WRITTEN, and until
         // 2026-09-04 the write was the only step. It worked because a store to a name the global
@@ -59,7 +60,7 @@ public sealed partial class JsCompiler
         // other engine produces.
         foreach (var function in functions)
         {
-            Emit(JsOpcode.DeclareGlobal, InternedName(function.Name));
+            Emit(JsOpcode.DeclareGlobal, InternedName(NameOf(function)));
         }
 
         foreach (var name in names)
@@ -69,8 +70,8 @@ public sealed partial class JsCompiler
 
         foreach (var function in functions)
         {
-            Emit(JsOpcode.Closure, (ushort)CompileFunction(function));
-            Emit(JsOpcode.StoreGlobal, InternedName(function.Name));
+            Emit(JsOpcode.Closure, (ushort)CompileFunction(function, JsTreeFacts.At(function), NameOf(function)));
+            Emit(JsOpcode.StoreGlobal, InternedName(NameOf(function)));
         }
 
         // A SCRIPT-LEVEL `let`, `const` OR `class` IS NOT A PROPERTY OF THE GLOBAL OBJECT, and
@@ -114,9 +115,9 @@ public sealed partial class JsCompiler
 
         foreach (var function in functions)
         {
-            if (functionSeen.Add(function.Name))
+            if (functionSeen.Add(NameOf(function)))
             {
-                functionNames.Add(function.Name);
+                functionNames.Add(NameOf(function));
             }
         }
 
@@ -153,12 +154,12 @@ public sealed partial class JsCompiler
     /// The parameters' record when the body has a variable environment of its own - the current
     /// scope, one record inside it - or <see langword="null"/> when one record holds both.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1516C7
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1308C4
     // Broiler-Human:        PENDING
     private void HoistFunction(JsBinder.FunctionFacts facts, Scope? parameters = null)
     {
         var names = facts.Body.VarNames;
-        var functions = Adapted(facts.Body.Functions);
+        var functions = facts.Body.Functions;
 
         foreach (var name in names)
         {
@@ -216,14 +217,14 @@ public sealed partial class JsCompiler
         foreach (var function in functions)
         {
             slots.Add(
-                scope.Has(function.Name)
-                    ? scope.SlotOf(function.Name)
-                    : scope.Declare(function.Name, constant: false));
+                scope.Has(NameOf(function))
+                    ? scope.SlotOf(NameOf(function))
+                    : scope.Declare(NameOf(function), constant: false));
         }
 
         for (var index = 0; index < functions.Count; index++)
         {
-            Emit(JsOpcode.Closure, (ushort)CompileFunction(functions[index]));
+            Emit(JsOpcode.Closure, (ushort)CompileFunction(functions[index], JsTreeFacts.At(functions[index]), NameOf(functions[index])));
             EmitScoped(JsOpcode.InitialiseScoped, 0, slots[index]);
         }
 

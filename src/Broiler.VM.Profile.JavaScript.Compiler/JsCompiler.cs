@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   26
-// Annotated:        26/26
+// Relevant units:   27
+// Annotated:        27/27
 // Exempt:           48
-// Human-reviewed:   0/26
+// Human-reviewed:   0/27
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         2/1
 // Resource impact:  3/10 max
-// Unverified:       26
+// Unverified:       27
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -450,47 +450,34 @@ public sealed partial class JsCompiler
     // Broiler-Human:        PENDING
     private JsBinder binder = null!;
 
-    /// <summary>The unit being lowered's parse, whose map the binder's facts are looked up through (SJL-13.3, step 2).</summary>
+    /// <summary>
+    /// The unit being lowered's parse: its text, its tokens and the side tables beside the shared tree
+    /// (SJL-13.3, step 2).
+    /// </summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=EA12D2
     // Broiler-Human:        PENDING
     private JsFrontend.Parsed unitParse = null!;
 
-    /// <summary>An adapted node's shared origin, which the binder's facts are keyed by.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=355455
+    /// <summary>A declared function's name, as the wide parser named it: its own, <c>default</c>, or empty.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=F81520
     // Broiler-Human:        PENDING
-    private Broiler.ECMAScript.Syntax.SyntaxNode Origin(JsNode node) => unitParse.Origins![node];
+    private string NameOf(Broiler.ECMAScript.Syntax.FunctionNode function) => binder.NameOf(function);
 
-    /// <summary>The adapted functions of shared ones the binder lists, in its order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=88597D
+    /// <summary>A class's name, as the wide parser named it: its own, <c>default</c>, or empty.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=5D7B3D
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.List<JsFunctionNode> Adapted(
-        System.Collections.Generic.IReadOnlyList<Broiler.ECMAScript.Syntax.FunctionNode> functions)
-    {
-        var adapted = new System.Collections.Generic.List<JsFunctionNode>(functions.Count);
+    private string NameOf(Broiler.ECMAScript.Syntax.ClassNode definition) => binder.NameOf(definition);
 
-        foreach (var function in functions)
-        {
-            adapted.Add((JsFunctionNode)unitParse.Adapted![function]);
-        }
-
-        return adapted;
-    }
-
-    /// <summary>The adapted function declarations of shared ones the binder lists, in its order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=51B7BD
+    /// <summary>A literal property key's spelling, a BigInt's by the admission walk's value.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=125A2F
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.List<JsFunctionDeclaration> Adapted(
-        System.Collections.Generic.IReadOnlyList<Broiler.ECMAScript.Syntax.FunctionDeclaration> declarations)
-    {
-        var adapted = new System.Collections.Generic.List<JsFunctionDeclaration>(declarations.Count);
+    private string KeyOf(Broiler.ECMAScript.Syntax.SyntaxNode key) => JsTreeFacts.Key(key, unitParse.BigInts, out _);
 
-        foreach (var declaration in declarations)
-        {
-            adapted.Add((JsFunctionDeclaration)unitParse.Adapted![declaration]);
-        }
-
-        return adapted;
-    }
+    /// <summary>The program's place: its first retained token, its first statement, or the end of its source.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=0728FC
+    // Broiler-Human:        PENDING
+    private SliceSourceSpan ProgramSpan(Broiler.ECMAScript.Syntax.ProgramNode program) =>
+        JsTreeFacts.ProgramSpan(program, unitParse.Tokens, unitParse.Text);
 
     /// <summary>
     /// Whether the code being lowered is inside a method, so <c>super.x</c> resolves.
@@ -747,7 +734,7 @@ public sealed partial class JsCompiler
     /// raises reaches the caller as it would have on the caller's own thread.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CA5A3D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=94C0CA
     // Broiler-Falsified-If: the parse of a module's requests runs on the calling thread
     // Broiler-Human:        PENDING
     public static JsModuleRequests Requests(string text, SliceParseOptions options) =>
@@ -766,9 +753,11 @@ public sealed partial class JsCompiler
             {
                 var specifier = statement switch
                 {
-                    JsImportDeclaration import => JsFormat.TypedSpecifier(
-                        import.Specifier, compiler.AttributeType(import.Span, import.Attributes, refuse: false)),
-                    JsExportDeclaration { From.Length: not 0 } exported => compiler.TypedFrom(exported),
+                    Broiler.ECMAScript.Syntax.ImportDeclaration import => JsFormat.TypedSpecifier(
+                        import.Source.Value,
+                        compiler.AttributeType(JsTreeFacts.At(import), JsTreeFacts.Attributes(import.Attributes), refuse: false)),
+                    Broiler.ECMAScript.Syntax.ExportNamedDeclaration or Broiler.ECMAScript.Syntax.ExportAllDeclaration
+                        when ReExport(statement, out _, out _) => compiler.TypedFrom(statement),
                     _ => string.Empty,
                 };
 
@@ -858,7 +847,7 @@ public sealed partial class JsCompiler
         });
 
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=25DB63
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=29B57C
     // Broiler-Human:        PENDING
     private JsCompilation Run(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
@@ -893,7 +882,7 @@ public sealed partial class JsCompiler
                 return Refused(first, script.SourceName);
             }
 
-            var program = parsed.Program!;
+            var program = parsed.Tree!;
 
             // THE MANIFEST IS JUDGED BEFORE THE LOWERING RUNS, AND THAT ORDER IS WHAT MAKES A
             // REFUSAL A REFUSAL BY NAME. The lowering meets a construct as a node to emit code
@@ -1081,10 +1070,10 @@ public sealed partial class JsCompiler
         return new JsCompilation(false, null, diagnostics);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C5BE07
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=862D22
     // Broiler-Human:        PENDING
     private bool TryParse(
-        string text, SliceParseOptions options, bool forceStrict, out JsProgramNode program)
+        string text, SliceParseOptions options, bool forceStrict, out Broiler.ECMAScript.Syntax.ProgramNode program)
     {
         program = null!;
         var parsed = JsFrontend.Parse(text, options, forceStrict, request.AdmitsBigIntLiterals);
@@ -1093,7 +1082,7 @@ public sealed partial class JsCompiler
 
         if (parsed.Diagnostics.Count == 0)
         {
-            program = parsed.Program!;
+            program = parsed.Tree!;
             return true;
         }
 

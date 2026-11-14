@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 327 |
 | Files carrying an annotation | 327 |
-| Code units | 11177 |
-| Relevant | 6351 |
-| Exempt by predicate | 4826 |
-| Annotated | 6351 of 6351 (100%) |
-| Human reviewed | 0 of 6351 (0%) |
-| Unverified | 6351 |
+| Code units | 11190 |
+| Relevant | 6367 |
+| Exempt by predicate | 4823 |
+| Annotated | 6367 of 6367 (100%) |
+| Human reviewed | 0 of 6367 (0%) |
+| Unverified | 6367 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6351 |
+| HUMAN_PENDING | 6367 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4826 |
+| EXEMPT | 4823 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 1681 |
-| Low | 6070 |
+| None | 1690 |
+| Low | 6074 |
 | Medium | 90 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,9 +50,9 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 1506 |
-| Medium | 4394 |
-| High | 1679 |
+| Low | 1508 |
+| Medium | 4401 |
+| High | 1683 |
 | Critical | 253 |
 | *not annotated* | 0 |
 
@@ -61,8 +61,8 @@ figures below are the measurement of how far from that claim the component is.
 | Metric | Value |
 |---|---:|
 | Maximum | 8 / 10 |
-| Average over annotated units | 1.7 / 10 |
-| Units scored | 6351 |
+| Average over annotated units | 1.6 / 10 |
+| Units scored | 6367 |
 
 ## High-security review areas
 
@@ -185,13 +185,15 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.Diagnostics` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.AdmitsAnnexB(FunctionDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.SweepAgainstTheNumericManifest(JsAssembledProgram)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Assembly.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.CompileChain(JsChainExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Calls.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.CompileChain(ChainExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Calls.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.BinderAdmitted(SliceSourceSpan, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Emission.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.ProtectSomething(int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Exceptions.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.UnwindAbove(int, Exit?)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Exceptions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.CompileTemplate(JsTemplateLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Literals.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitToString(JsExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Literals.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitTemplateStrings(JsTemplateLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Literals.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.CompileFunction(SyntaxNode, SliceSourceSpan, string, System.Collections.Generic.IReadOnlyList<Pattern>, System.Collections.Generic.IReadOnlyList<Statement>, Expression?, bool, bool, bool, int, int, JsFormat.FunctionFlags, bool, bool, bool, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Functions.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.CompileTemplate(TemplateLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Literals.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitToString(Expression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Literals.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitTemplateStrings(TemplateLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Literals.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.ReExport(Statement, out string, out System.Collections.Generic.IReadOnlyList<(SliceSourceSpan Span, string Key, string Value)>?)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Modules.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.Shadowable(string, out int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Names.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.Shadowable(string, out int, out bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Names.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.BeginDisposal(SliceSourceSpan, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.ResourceScopes.cs` - Security=High, human line PENDING
@@ -235,6 +237,8 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.SourceOrNone(StringLiteral?)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.ImportBindings(ImportDeclaration, System.Collections.Generic.IReadOnlyList<Token>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.DeclarationExports(Statement)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.NameSpan(MemberExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.ParenthesisedTarget(AssignmentExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.AnonymousDefault(ProgramNode)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.DeclaredName(BindingIdentifier?, SyntaxNode, SyntaxNode?)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.FindConstructor(ClassNode, System.Collections.Generic.IReadOnlyDictionary<NumericLiteral, System.Numerics.BigInteger>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
@@ -2003,8 +2007,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 2093 |
-| Units required to carry one | 1932 |
+| Units carrying a criterion | 2097 |
+| Units required to carry one | 1936 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -2034,7 +2038,7 @@ that the rule is reviewable in one place rather than in several hundred.
 | TrivialPropertyOrAccessor | 1558 |
 | ParameterAssigningConstructor | 149 |
 | TrivialExpressionBodiedMember | 64 |
-| CompilerSuppliedRecordOrEnumMember | 31 |
+| CompilerSuppliedRecordOrEnumMember | 28 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
 | FieldDeclaringStorage | 855 |
@@ -2120,7 +2124,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-11177 of them, exempt and relevant alike - with the fingerprint of its declaration.
+11190 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

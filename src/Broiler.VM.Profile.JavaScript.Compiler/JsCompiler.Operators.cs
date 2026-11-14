@@ -15,6 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Syntax;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
@@ -24,18 +25,21 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 public sealed partial class JsCompiler
 {
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=52F182
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A81EBE
     // Broiler-Human:        PENDING
-    private void CompileUnary(JsUnaryExpression unary)
+    private void CompileUnary(UnaryExpression unary)
     {
-        switch (unary.Operator)
+        var operand = JsTreeFacts.Unwrap(unary.Operand);
+        var op = JsTreeFacts.Unary(unary.Operator);
+
+        switch (op)
         {
             // `typeof` OF AN IMPORT IS NOT `typeof` OF AN UNDECLARED NAME. The form below exists so
             // that asking about a name nothing declares answers `"undefined"` instead of throwing;
             // an imported binding IS declared, so a read of one before its module initialised it is
             // the dead-zone `ReferenceError` the language gives - and answering `"undefined"` here
             // would have hidden exactly the case a cyclic import produces.
-            case SliceTokenKind.Typeof when unary.Operand is JsIdentifier name &&
+            case SliceTokenKind.Typeof when operand is Identifier name &&
                 !Resolvable(name.Name) &&
                 (module is null || !module.Imports.ContainsKey(name.Name)):
                 if (Shadowable(name.Name, out var absent))
@@ -63,7 +67,7 @@ public sealed partial class JsCompiler
             // a slot binding is not configurable and the language answers `false`, which is what the
             // fall-back arm pushes. The operand is NOT evaluated on either path, because `delete` of
             // a reference never evaluates it.
-            case SliceTokenKind.Delete when unary.Operand is JsIdentifier bare &&
+            case SliceTokenKind.Delete when operand is Identifier bare &&
                 Shadowable(bare.Name, out var reachable):
             {
                 var live = buffer.Height;
@@ -96,16 +100,16 @@ public sealed partial class JsCompiler
                 return;
             }
 
-            case SliceTokenKind.Delete when unary.Operand is JsMemberExpression member:
-                CompileExpression(member.Target);
+            case SliceTokenKind.Delete when operand is MemberExpression { Object: not SuperExpression, Property: not PrivateIdentifier } member:
+                CompileExpression(member.Object);
 
-                if (member.Computed is null)
+                if (JsTreeFacts.Computed(member) is null)
                 {
-                    Emit(JsOpcode.DeleteProperty, InternedName(member.Name));
+                    Emit(JsOpcode.DeleteProperty, InternedName(JsTreeFacts.PropertyName(member)));
                 }
                 else
                 {
-                    CompileExpression(member.Computed);
+                    CompileExpression(JsTreeFacts.Computed(member)!);
                     Emit(JsOpcode.DeleteIndex);
                 }
 
@@ -116,24 +120,24 @@ public sealed partial class JsCompiler
             // for a reason the language does not give. It is the same chain lowering with the
             // deletion as its last link and `true` as what its short circuit produces, which is
             // exactly what the specification says a short-circuited `delete` completes with.
-            case SliceTokenKind.Delete when unary.Operand is JsChainExpression chain &&
-                chain.Chain is JsMemberExpression optional:
+            case SliceTokenKind.Delete when operand is ChainExpression chain &&
+                JsTreeFacts.Unwrap(chain.Expression) is MemberExpression { Object: not SuperExpression, Property: not PrivateIdentifier } optional:
             {
                 var end = NewLabel();
-                EmitChainLink(optional.Target, end, shortIsTrue: true);
+                EmitChainLink(optional.Object, end, shortIsTrue: true);
 
-                if (optional.Optional)
+                if (optional.IsOptional)
                 {
                     EmitNullishGuard(end, held: 1, shortIsTrue: true);
                 }
 
-                if (optional.Computed is null)
+                if (JsTreeFacts.Computed(optional) is null)
                 {
-                    Emit(JsOpcode.DeleteProperty, InternedName(optional.Name));
+                    Emit(JsOpcode.DeleteProperty, InternedName(JsTreeFacts.PropertyName(optional)));
                 }
                 else
                 {
-                    CompileExpression(optional.Computed);
+                    CompileExpression(JsTreeFacts.Computed(optional)!);
                     Emit(JsOpcode.DeleteIndex);
                 }
 
@@ -146,8 +150,8 @@ public sealed partial class JsCompiler
             // refuses the spelling rather than giving it a reading. Falling through to the arm
             // below would have evaluated the access - throwing on a foreign object - and then
             // answered `true` for a deletion that never happened.
-            case SliceTokenKind.Delete when unary.Operand is JsPrivateMemberExpression:
-                throw BinderAdmitted(unary.Span, "the deletion of a private element");
+            case SliceTokenKind.Delete when operand is MemberExpression { Property: PrivateIdentifier }:
+                throw BinderAdmitted(JsTreeFacts.At(unary), "the deletion of a private element");
 
             // `delete x` FOR A BARE NAME NEVER EVALUATES `x`. The operator takes a reference and
             // asks whether it can be removed, so a lowering that read the name and threw the value
@@ -155,7 +159,7 @@ public sealed partial class JsCompiler
             // `ReferenceError` for a name nobody declared - where the language answers `true`. A
             // name this unit resolves to a SLOT is answered here, because a slot binding is never
             // deletable and the compiler already knows which names those are.
-            case SliceTokenKind.Delete when unary.Operand is JsIdentifier plain:
+            case SliceTokenKind.Delete when operand is Identifier plain:
                 if (Resolvable(plain.Name))
                 {
                     Emit(JsOpcode.LoadFalse);
@@ -177,18 +181,18 @@ public sealed partial class JsCompiler
             // and the key expression are evaluated and before the key is converted (13.5.1.2 step
             // 5, with the key's conversion deferred since ES2024). Until 2026-10-03 the property
             // was read and `true` answered (JSC-254).
-            case SliceTokenKind.Delete when unary.Operand is JsSuperMemberExpression inherited:
+            case SliceTokenKind.Delete when operand is MemberExpression { Object: SuperExpression } inherited:
                 if (!insideMethod)
                 {
-                    throw BinderAdmitted(inherited.Span, "a `super` property outside a method");
+                    throw BinderAdmitted(JsTreeFacts.At(inherited), "a `super` property outside a method");
                 }
 
                 Emit(JsOpcode.LoadThis);
                 Emit(JsOpcode.Pop);
 
-                if (inherited.Computed is not null)
+                if (JsTreeFacts.Computed(inherited) is not null)
                 {
-                    CompileExpression(inherited.Computed);
+                    CompileExpression(JsTreeFacts.Computed(inherited)!);
                     Emit(JsOpcode.Pop);
                 }
 
@@ -207,7 +211,7 @@ public sealed partial class JsCompiler
 
         CompileExpression(unary.Operand);
 
-        Emit(unary.Operator switch
+        Emit(op switch
         {
             SliceTokenKind.Minus => JsOpcode.Negate,
             SliceTokenKind.Plus => JsOpcode.ToNumber,
@@ -266,23 +270,25 @@ public sealed partial class JsCompiler
         Emit(add);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=ACB5BB
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3202E2
     // Broiler-Human:        PENDING
-    private void CompileUpdate(JsUpdateExpression update)
+    private void CompileUpdate(UpdateExpression update)
     {
+        var operand = JsTreeFacts.Unwrap(update.Operand);
+        var span = JsTreeFacts.At(update);
         // THE NUMERIC LOWERING INTERNS ITS `1` HERE, FIRST, as it always did, so its artifacts keep
         // their constant pools byte for byte; the wide lowering needs no constant at all.
         var one = request.AdmitsBigIntLiterals ? (ushort)0 : NumberConstant(1);
-        var add = update.Operator == SliceTokenKind.PlusPlus ? JsOpcode.Add : JsOpcode.Subtract;
+        var add = update.Operator == UpdateOperator.Increment ? JsOpcode.Add : JsOpcode.Subtract;
 
-        if (update.Operand is JsIdentifier postfixed && !update.Prefix && Shadowable(postfixed.Name, out _))
+        if (operand is Identifier postfixed && !update.IsPrefix && Shadowable(postfixed.Name, out _))
         {
             // THE OLD VALUE IS THE ANSWER AND THE WRITE GOES THROUGH THE REFERENCE, so the numeric
             // old value is kept in a slot of its own while the reference's two branches write.
             var owner = FunctionScope();
             var kept = owner.Declare("#update" + owner.SlotCount, constant: false);
 
-            TryEmitShadowedReference(update.Span, postfixed.Name, read: true, () =>
+            TryEmitShadowedReference(span, postfixed.Name, read: true, () =>
             {
                 EmitUpdateOperand();
                 Emit(JsOpcode.Duplicate);
@@ -295,8 +301,8 @@ public sealed partial class JsCompiler
             return;
         }
 
-        if (update.Operand is JsIdentifier prefixed && update.Prefix &&
-            TryEmitShadowedReference(update.Span, prefixed.Name, read: true, () =>
+        if (operand is Identifier prefixed && update.IsPrefix &&
+            TryEmitShadowedReference(span, prefixed.Name, read: true, () =>
             {
                 EmitUpdateOperand();
                 EmitUpdateStep(add, one);
@@ -305,26 +311,26 @@ public sealed partial class JsCompiler
             return;
         }
 
-        if (update.Operand is JsIdentifier name)
+        if (operand is Identifier name)
         {
-            LoadName(update.Span, name.Name);
+            LoadName(span, name.Name);
             EmitUpdateOperand();
 
-            if (!update.Prefix)
+            if (!update.IsPrefix)
             {
                 Emit(JsOpcode.Duplicate);
                 EmitUpdateStep(add, one);
-                StoreName(update.Span, name.Name);
+                StoreName(span, name.Name);
                 Emit(JsOpcode.Pop);
                 return;
             }
 
             EmitUpdateStep(add, one);
-            StoreName(update.Span, name.Name);
+            StoreName(span, name.Name);
             return;
         }
 
-        if (update.Operand is JsSuperMemberExpression inherited)
+        if (operand is MemberExpression { Object: SuperExpression } inherited)
         {
             var owner = FunctionScope();
             var kept = owner.Declare("#update" + owner.SlotCount, constant: false);
@@ -332,7 +338,7 @@ public sealed partial class JsCompiler
             EmitSuperReadKeepingKey(inherited);
             EmitUpdateOperand();
 
-            if (!update.Prefix)
+            if (!update.IsPrefix)
             {
                 Emit(JsOpcode.Duplicate);
                 EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, kept);
@@ -340,7 +346,7 @@ public sealed partial class JsCompiler
 
             EmitUpdateStep(add, one);
 
-            if (update.Prefix)
+            if (update.IsPrefix)
             {
                 Emit(JsOpcode.Duplicate);
                 EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, kept);
@@ -352,17 +358,17 @@ public sealed partial class JsCompiler
             return;
         }
 
-        if (update.Operand is JsPrivateMemberExpression privateOperand)
+        if (operand is MemberExpression { Property: PrivateIdentifier } privateOperand)
         {
             var owner = FunctionScope();
             var kept = owner.Declare("#update" + owner.SlotCount, constant: false);
-            CompileExpression(privateOperand.Target);
-            EmitPrivateName(privateOperand.Span, privateOperand.Name);
+            CompileExpression(privateOperand.Object);
+            EmitPrivateName(JsTreeFacts.At(privateOperand), JsTreeFacts.PropertyName(privateOperand));
             Emit(JsOpcode.DuplicateTwo);
             Emit(JsOpcode.LoadPrivate);
             EmitUpdateOperand();
 
-            if (!update.Prefix)
+            if (!update.IsPrefix)
             {
                 Emit(JsOpcode.Duplicate);
                 EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, kept);
@@ -370,7 +376,7 @@ public sealed partial class JsCompiler
 
             EmitUpdateStep(add, one);
 
-            if (update.Prefix)
+            if (update.IsPrefix)
             {
                 Emit(JsOpcode.Duplicate);
                 EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, kept);
@@ -382,28 +388,28 @@ public sealed partial class JsCompiler
             return;
         }
 
-        if (update.Operand is JsCallExpression called && !strict)
+        if (operand is CallExpression { Callee: not SuperExpression } called && !strict)
         {
             EmitCallTargetThrow(called);
             return;
         }
 
-        if (update.Operand is not JsMemberExpression member)
+        if (operand is not MemberExpression { Object: not SuperExpression, Property: not PrivateIdentifier } member)
         {
-            throw BinderAdmitted(update.Span, "an update of an operand that is not a reference");
+            throw BinderAdmitted(span, "an update of an operand that is not a reference");
         }
 
         var function = FunctionScope();
         var temporary = function.Declare("#update" + function.SlotCount, constant: false);
-        CompileExpression(member.Target);
+        CompileExpression(member.Object);
 
-        if (member.Computed is null)
+        if (JsTreeFacts.Computed(member) is null)
         {
             Emit(JsOpcode.Duplicate);
-            Emit(JsOpcode.GetProperty, InternedName(member.Name));
+            Emit(JsOpcode.GetProperty, InternedName(JsTreeFacts.PropertyName(member)));
             EmitUpdateOperand();
 
-            if (!update.Prefix)
+            if (!update.IsPrefix)
             {
                 Emit(JsOpcode.Duplicate);
                 EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, temporary);
@@ -411,13 +417,13 @@ public sealed partial class JsCompiler
 
             EmitUpdateStep(add, one);
 
-            if (update.Prefix)
+            if (update.IsPrefix)
             {
                 Emit(JsOpcode.Duplicate);
                 EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, temporary);
             }
 
-            Emit(JsOpcode.SetProperty, InternedName(member.Name));
+            Emit(JsOpcode.SetProperty, InternedName(JsTreeFacts.PropertyName(member)));
             Emit(JsOpcode.Pop);
             EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, temporary);
             return;
@@ -425,13 +431,13 @@ public sealed partial class JsCompiler
 
         // The key is converted ONCE, before the pair is duplicated, so the read and the write
         // below share the property key it produced rather than each running its `toString`.
-        CompileExpression(member.Computed);
+        CompileExpression(JsTreeFacts.Computed(member)!);
         Emit(JsOpcode.ToPropertyKey);
         Emit(JsOpcode.DuplicateTwo);
         Emit(JsOpcode.GetIndex);
         EmitUpdateOperand();
 
-        if (!update.Prefix)
+        if (!update.IsPrefix)
         {
             Emit(JsOpcode.Duplicate);
             EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, temporary);
@@ -439,7 +445,7 @@ public sealed partial class JsCompiler
 
         EmitUpdateStep(add, one);
 
-        if (update.Prefix)
+        if (update.IsPrefix)
         {
             Emit(JsOpcode.Duplicate);
             EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, temporary);
@@ -450,13 +456,13 @@ public sealed partial class JsCompiler
         EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, temporary);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7D028D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=74DF64
     // Broiler-Human:        PENDING
-    private void CompileBinary(JsBinaryExpression binary)
+    private void CompileBinary(BinaryExpression binary)
     {
-        var chain = new System.Collections.Generic.List<JsBinaryExpression>();
-        JsExpression current = binary;
-        while (current is JsBinaryExpression b)
+        var chain = new System.Collections.Generic.List<BinaryExpression>();
+        Expression current = binary;
+        while (JsTreeFacts.Unwrap(current) is BinaryExpression b)
         {
             chain.Add(b);
             current = b.Left;
@@ -467,47 +473,47 @@ public sealed partial class JsCompiler
         {
             var node = chain[i];
             CompileExpression(node.Right);
-            Emit(BinaryOpcode(node.Operator));
+            Emit(BinaryOpcode(JsTreeFacts.Binary(node.Operator)));
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=6D14B9
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1CF528
     // Broiler-Human:        PENDING
-    private void CompileMember(JsMemberExpression member)
+    private void CompileMember(MemberExpression member)
     {
-        var chain = new System.Collections.Generic.List<JsMemberExpression>();
-        JsExpression current = member;
-        while (current is JsMemberExpression m && !m.Optional)
+        var chain = new System.Collections.Generic.List<MemberExpression>();
+        Expression current = member;
+        while (JsTreeFacts.Unwrap(current) is MemberExpression { Object: not SuperExpression, Property: not PrivateIdentifier } m && !m.IsOptional)
         {
             chain.Add(m);
-            current = m.Target;
+            current = m.Object;
         }
 
         CompileExpression(current);
         for (var i = chain.Count - 1; i >= 0; i--)
         {
             var m = chain[i];
-            if (m.Computed is null)
+            if (JsTreeFacts.Computed(m) is null)
             {
                 // THE READ IS PLACED AT ITS NAME, where an error it raises is shown (JSD-0038).
-                PositionAt(m.NameSpan);
-                Emit(JsOpcode.GetProperty, InternedName(m.Name));
+                PositionAt(JsTreeFacts.NameSpan(m));
+                Emit(JsOpcode.GetProperty, InternedName(JsTreeFacts.PropertyName(m)));
             }
             else
             {
-                CompileExpression(m.Computed);
+                CompileExpression(JsTreeFacts.Computed(m)!);
                 Emit(JsOpcode.GetIndex);
             }
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BBE24C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=229EB0
     // Broiler-Human:        PENDING
-    private void CompileLogical(JsLogicalExpression logical)
+    private void CompileLogical(LogicalExpression logical)
     {
-        var chain = new System.Collections.Generic.List<JsLogicalExpression>();
-        JsExpression current = logical;
-        while (current is JsLogicalExpression l)
+        var chain = new System.Collections.Generic.List<LogicalExpression>();
+        Expression current = logical;
+        while (JsTreeFacts.Unwrap(current) is LogicalExpression l)
         {
             chain.Add(l);
             current = l.Left;
@@ -520,7 +526,7 @@ public sealed partial class JsCompiler
             var end = NewLabel();
             Emit(JsOpcode.Duplicate);
 
-            switch (node.Operator)
+            switch (JsTreeFacts.Logical(node.Operator))
             {
                 case SliceTokenKind.AmpersandAmpersand:
                     Branch(JsOpcode.JumpIfFalse, end);
@@ -543,28 +549,32 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=05F408
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6536C5
     // Broiler-Human:        PENDING
-    private void CompileAssignment(JsAssignmentExpression assignment)
+    private void CompileAssignment(AssignmentExpression assignment)
     {
-        if (assignment.Operator == SliceTokenKind.Equals)
+        var target = JsTreeFacts.AssignedTarget(assignment);
+        var op = JsTreeFacts.Compound(assignment.Operator);
+        var span = JsTreeFacts.At(assignment);
+
+        if (op == SliceTokenKind.Equals)
         {
-            if (assignment.Target is JsIdentifier name)
+            if (target is Identifier name)
             {
-                var inferred = assignment.ParenthesisedTarget ? string.Empty : name.Name;
+                var inferred = JsTreeFacts.ParenthesisedTarget(assignment) ? string.Empty : name.Name;
 
                 if (TryEmitShadowedReference(
-                    assignment.Span, name.Name, read: false, () => CompileNamedValue(assignment.Value, inferred)))
+                    span, name.Name, read: false, () => CompileNamedValue(assignment.Value, inferred)))
                 {
                     return;
                 }
 
                 CompileNamedValue(assignment.Value, inferred);
-                StoreName(assignment.Span, name.Name);
+                StoreName(span, name.Name);
                 return;
             }
 
-            if (assignment.Target is JsSuperMemberExpression inherited)
+            if (target is MemberExpression { Object: SuperExpression } inherited)
             {
                 CompileSuperKey(inherited);
                 CompileExpression(assignment.Value);
@@ -572,53 +582,53 @@ public sealed partial class JsCompiler
                 return;
             }
 
-            if (assignment.Target is JsPrivateMemberExpression privateTarget)
+            if (target is MemberExpression { Property: PrivateIdentifier } privateTarget)
             {
-                CompileExpression(privateTarget.Target);
-                EmitPrivateName(privateTarget.Span, privateTarget.Name);
+                CompileExpression(privateTarget.Object);
+                EmitPrivateName(JsTreeFacts.At(privateTarget), JsTreeFacts.PropertyName(privateTarget));
                 CompileExpression(assignment.Value);
                 Emit(JsOpcode.StorePrivate);
                 return;
             }
 
-            if (assignment.Target is JsMemberExpression member)
+            if (target is MemberExpression { Object: not SuperExpression, Property: not PrivateIdentifier } member)
             {
-                CompileExpression(member.Target);
+                CompileExpression(member.Object);
 
-                if (member.Computed is null)
+                if (JsTreeFacts.Computed(member) is null)
                 {
                     CompileExpression(assignment.Value);
-                    Emit(JsOpcode.SetProperty, InternedName(member.Name));
+                    Emit(JsOpcode.SetProperty, InternedName(JsTreeFacts.PropertyName(member)));
                     return;
                 }
 
-                CompileExpression(member.Computed);
+                CompileExpression(JsTreeFacts.Computed(member)!);
                 CompileExpression(assignment.Value);
                 Emit(JsOpcode.SetIndex);
                 return;
             }
 
-            if (assignment.Target is JsCallExpression called && !strict)
+            if (target is CallExpression { Callee: not SuperExpression } called && !strict)
             {
                 EmitCallTargetThrow(called);
                 return;
             }
 
-            throw BinderAdmitted(assignment.Span, "an assignment to a target that is not a reference");
+            throw BinderAdmitted(span, "an assignment to a target that is not a reference");
         }
 
-        if (assignment.Operator is SliceTokenKind.AmpersandAmpersand or SliceTokenKind.BarBar or
+        if (op is SliceTokenKind.AmpersandAmpersand or SliceTokenKind.BarBar or
             SliceTokenKind.QuestionQuestion)
         {
             CompileLogicalAssignment(assignment);
             return;
         }
 
-        var opcode = BinaryOpcode(assignment.Operator);
+        var opcode = BinaryOpcode(op);
 
-        if (assignment.Target is JsIdentifier target)
+        if (target is Identifier identifier)
         {
-            if (TryEmitShadowedReference(assignment.Span, target.Name, read: true, () =>
+            if (TryEmitShadowedReference(span, identifier.Name, read: true, () =>
             {
                 CompileExpression(assignment.Value);
                 Emit(opcode);
@@ -627,14 +637,14 @@ public sealed partial class JsCompiler
                 return;
             }
 
-            LoadName(assignment.Span, target.Name);
+            LoadName(span, identifier.Name);
             CompileExpression(assignment.Value);
             Emit(opcode);
-            StoreName(assignment.Span, target.Name);
+            StoreName(span, identifier.Name);
             return;
         }
 
-        if (assignment.Target is JsSuperMemberExpression host)
+        if (target is MemberExpression { Object: SuperExpression } host)
         {
             // The key is computed once and kept, so the read and the write agree about it even
             // when it is an expression with a side effect, and it is converted once.
@@ -649,10 +659,10 @@ public sealed partial class JsCompiler
         // THE OBJECT AND THE NAME ARE PUSHED ONCE AND DUPLICATED, so `o.#x += f()` evaluates `o`
         // once - which is what the language says and what re-compiling the target for the write
         // would have got wrong for any target with a side effect.
-        if (assignment.Target is JsPrivateMemberExpression privateAccess)
+        if (target is MemberExpression { Property: PrivateIdentifier } privateAccess)
         {
-            CompileExpression(privateAccess.Target);
-            EmitPrivateName(privateAccess.Span, privateAccess.Name);
+            CompileExpression(privateAccess.Object);
+            EmitPrivateName(JsTreeFacts.At(privateAccess), JsTreeFacts.PropertyName(privateAccess));
             Emit(JsOpcode.DuplicateTwo);
             Emit(JsOpcode.LoadPrivate);
             CompileExpression(assignment.Value);
@@ -661,23 +671,23 @@ public sealed partial class JsCompiler
             return;
         }
 
-        if (assignment.Target is JsMemberExpression access)
+        if (target is MemberExpression { Object: not SuperExpression, Property: not PrivateIdentifier } access)
         {
-            CompileExpression(access.Target);
+            CompileExpression(access.Object);
 
-            if (access.Computed is null)
+            if (JsTreeFacts.Computed(access) is null)
             {
                 Emit(JsOpcode.Duplicate);
-                Emit(JsOpcode.GetProperty, InternedName(access.Name));
+                Emit(JsOpcode.GetProperty, InternedName(JsTreeFacts.PropertyName(access)));
                 CompileExpression(assignment.Value);
                 Emit(opcode);
-                Emit(JsOpcode.SetProperty, InternedName(access.Name));
+                Emit(JsOpcode.SetProperty, InternedName(JsTreeFacts.PropertyName(access)));
                 return;
             }
 
             // THE KEY IS CONVERTED ONCE AND BEFORE THE RIGHT-HAND SIDE, which is where `GetValue`
             // converts it; the write then uses the key the read used, as the reference keeps it.
-            CompileExpression(access.Computed);
+            CompileExpression(JsTreeFacts.Computed(access)!);
             Emit(JsOpcode.ToPropertyKey);
             Emit(JsOpcode.DuplicateTwo);
             Emit(JsOpcode.GetIndex);
@@ -687,13 +697,13 @@ public sealed partial class JsCompiler
             return;
         }
 
-        if (assignment.Target is JsCallExpression compounded && !strict)
+        if (target is CallExpression { Callee: not SuperExpression } compounded && !strict)
         {
             EmitCallTargetThrow(compounded);
             return;
         }
 
-        throw BinderAdmitted(assignment.Span, "an assignment to a target that is not a reference");
+        throw BinderAdmitted(span, "an assignment to a target that is not a reference");
     }
 
     /// <summary>
@@ -706,32 +716,35 @@ public sealed partial class JsCompiler
     /// <c>f() = g()</c>. The instruction that throws stands where the assignment's value would be
     /// pushed, so every lowering around this one keeps the stack it expects.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=77A6A7
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C64FE4
     // Broiler-Human:        PENDING
-    private void EmitCallTargetThrow(JsCallExpression call)
+    private void EmitCallTargetThrow(CallExpression call)
     {
         CompileExpression(call);
         Emit(JsOpcode.Pop);
         Emit(JsOpcode.ThrowReferenceError);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6A4879
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=40BDF1
     // Broiler-Human:        PENDING
-    private void CompileLogicalAssignment(JsAssignmentExpression assignment)
+    private void CompileLogicalAssignment(AssignmentExpression assignment)
     {
-        if (assignment.Target is JsMemberExpression member)
+        var target = JsTreeFacts.AssignedTarget(assignment);
+        var span = JsTreeFacts.At(assignment);
+
+        if (target is MemberExpression { Object: not SuperExpression, Property: not PrivateIdentifier } member)
         {
             CompileLogicalMemberAssignment(assignment, member);
             return;
         }
 
-        if (assignment.Target is JsPrivateMemberExpression privateTarget)
+        if (target is MemberExpression { Property: PrivateIdentifier } privateTarget)
         {
             CompileLogicalPrivateAssignment(assignment, privateTarget);
             return;
         }
 
-        if (assignment.Target is JsSuperMemberExpression superTarget)
+        if (target is MemberExpression { Object: SuperExpression } superTarget)
         {
             CompileLogicalSuperAssignment(assignment, superTarget);
             return;
@@ -739,17 +752,17 @@ public sealed partial class JsCompiler
 
         // ANY OTHER TARGET IS REFUSED BY THE BINDER, under 2104, before any of the unit is lowered
         // (SJL-12.6 item 2, JSD-0080 decision D12), and the parser refuses every one first today.
-        if (assignment.Target is not JsIdentifier name)
+        if (target is not Identifier name)
         {
             throw BinderAdmitted(
-                assignment.Span, "a logical assignment to a target that is neither a name nor a property");
+                span, "a logical assignment to a target that is neither a name nor a property");
         }
 
-        LoadName(assignment.Span, name.Name);
+        LoadName(span, name.Name);
         var end = NewLabel();
         Emit(JsOpcode.Duplicate);
 
-        switch (assignment.Operator)
+        switch (JsTreeFacts.Compound(assignment.Operator))
         {
             case SliceTokenKind.AmpersandAmpersand:
                 Branch(JsOpcode.JumpIfFalse, end);
@@ -767,8 +780,8 @@ public sealed partial class JsCompiler
         }
 
         Emit(JsOpcode.Pop);
-        CompileNamedValue(assignment.Value, assignment.ParenthesisedTarget ? string.Empty : name.Name);
-        StoreName(assignment.Span, name.Name);
+        CompileNamedValue(assignment.Value, JsTreeFacts.ParenthesisedTarget(assignment) ? string.Empty : name.Name);
+        StoreName(span, name.Name);
         Mark(end);
     }
 
@@ -787,18 +800,18 @@ public sealed partial class JsCompiler
     /// path unwinds the base - and the key, when there is one - from underneath the value it read.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=861E7F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D37AD2
     // Broiler-Human:        PENDING
     private void CompileLogicalMemberAssignment(
-        JsAssignmentExpression assignment, JsMemberExpression member)
+        AssignmentExpression assignment, MemberExpression member)
     {
         var end = NewLabel();
         var kept = NewLabel();
-        CompileExpression(member.Target);
+        CompileExpression(member.Object);
 
-        if (member.Computed is not null)
+        if (JsTreeFacts.Computed(member) is not null)
         {
-            CompileExpression(member.Computed);
+            CompileExpression(JsTreeFacts.Computed(member)!);
             Emit(JsOpcode.ToPropertyKey);
             Emit(JsOpcode.DuplicateTwo);
             Emit(JsOpcode.GetIndex);
@@ -806,12 +819,12 @@ public sealed partial class JsCompiler
         else
         {
             Emit(JsOpcode.Duplicate);
-            Emit(JsOpcode.GetProperty, InternedName(member.Name));
+            Emit(JsOpcode.GetProperty, InternedName(JsTreeFacts.PropertyName(member)));
         }
 
         Emit(JsOpcode.Duplicate);
 
-        switch (assignment.Operator)
+        switch (JsTreeFacts.Compound(assignment.Operator))
         {
             case SliceTokenKind.AmpersandAmpersand:
                 Branch(JsOpcode.JumpIfFalse, kept);
@@ -831,13 +844,13 @@ public sealed partial class JsCompiler
         Emit(JsOpcode.Pop);
         CompileExpression(assignment.Value);
 
-        if (member.Computed is not null)
+        if (JsTreeFacts.Computed(member) is not null)
         {
             Emit(JsOpcode.SetIndex);
         }
         else
         {
-            Emit(JsOpcode.SetProperty, InternedName(member.Name));
+            Emit(JsOpcode.SetProperty, InternedName(JsTreeFacts.PropertyName(member)));
         }
 
         Branch(JsOpcode.Jump, end);
@@ -849,7 +862,7 @@ public sealed partial class JsCompiler
         Emit(JsOpcode.Swap);
         Emit(JsOpcode.Pop);
 
-        if (member.Computed is not null)
+        if (JsTreeFacts.Computed(member) is not null)
         {
             Emit(JsOpcode.Swap);
             Emit(JsOpcode.Pop);
@@ -866,10 +879,10 @@ public sealed partial class JsCompiler
     /// no base on the stack — the home object and the receiver are the frame's — so this is the
     /// narrowest of the four shapes and the only one whose short circuit drops a single value.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EDB3C6
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F7F3D8
     // Broiler-Human:        PENDING
     private void CompileLogicalSuperAssignment(
-        JsAssignmentExpression assignment, JsSuperMemberExpression member)
+        AssignmentExpression assignment, MemberExpression member)
     {
         var end = NewLabel();
         var kept = NewLabel();
@@ -878,7 +891,7 @@ public sealed partial class JsCompiler
         EmitSuperReadKeepingKey(member);
         Emit(JsOpcode.Duplicate);
 
-        switch (assignment.Operator)
+        switch (JsTreeFacts.Compound(assignment.Operator))
         {
             case SliceTokenKind.AmpersandAmpersand:
                 Branch(JsOpcode.JumpIfFalse, kept);
@@ -915,21 +928,21 @@ public sealed partial class JsCompiler
     /// <c>#m</c> is a private METHOD is a program when <c>#m</c> is not nullish, because the store
     /// that would refuse never runs — so the assigning path must be the only one that stores.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=558A9B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=314944
     // Broiler-Human:        PENDING
     private void CompileLogicalPrivateAssignment(
-        JsAssignmentExpression assignment, JsPrivateMemberExpression member)
+        AssignmentExpression assignment, MemberExpression member)
     {
         var end = NewLabel();
         var kept = NewLabel();
 
-        CompileExpression(member.Target);
-        EmitPrivateName(member.Span, member.Name);
+        CompileExpression(member.Object);
+        EmitPrivateName(JsTreeFacts.At(member), JsTreeFacts.PropertyName(member));
         Emit(JsOpcode.DuplicateTwo);
         Emit(JsOpcode.LoadPrivate);
         Emit(JsOpcode.Duplicate);
 
-        switch (assignment.Operator)
+        switch (JsTreeFacts.Compound(assignment.Operator))
         {
             case SliceTokenKind.AmpersandAmpersand:
                 Branch(JsOpcode.JumpIfFalse, kept);

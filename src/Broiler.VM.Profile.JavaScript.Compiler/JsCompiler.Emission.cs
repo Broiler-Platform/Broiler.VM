@@ -15,6 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Syntax;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
@@ -104,10 +105,13 @@ public sealed partial class JsCompiler
     }
 
     /// <summary>Places a call: at the method's name for a call of a named member, else at its start.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=239DD2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=FB1C5B
     // Broiler-Human:        PENDING
-    private void PositionCall(JsCallExpression call) =>
-        Position(call.Callee is JsMemberExpression { NameSpan.Line: > 0 } member ? member.NameSpan : call.Span);
+    private void PositionCall(CallExpression call) =>
+        Position(
+            JsTreeFacts.Unwrap(call.Callee) is MemberExpression { Object: not SuperExpression, Property: not PrivateIdentifier } member && JsTreeFacts.NameSpan(member) is { Line: > 0 } name
+                ? name
+                : JsTreeFacts.At(call));
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FFE885
     // Broiler-Human:        PENDING

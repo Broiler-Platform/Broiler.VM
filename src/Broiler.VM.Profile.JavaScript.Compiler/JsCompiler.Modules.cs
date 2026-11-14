@@ -3,18 +3,19 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
+// Relevant units:   15
+// Annotated:        15/15
 // Exempt:           0
-// Human-reviewed:   0/13
-// IP risk:          None
-// Security risk:    Medium
-// Criteria:         0/0
+// Human-reviewed:   0/15
+// IP risk:          Low
+// Security risk:    High
+// Criteria:         1/1
 // Resource impact:  3/10 max
-// Unverified:       13
+// Unverified:       15
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Syntax;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
@@ -47,9 +48,9 @@ public sealed partial class JsCompiler
     /// for the lifetime of the instance, and <c>globalThis.x</c> must not see it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=83B37D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4B4708
     // Broiler-Human:        PENDING
-    private void CompileModule(JsProgramNode program, JsModuleUnit unit)
+    private void CompileModule(ProgramNode program, JsModuleUnit unit)
     {
         var key = unit.Key;
 
@@ -58,7 +59,7 @@ public sealed partial class JsCompiler
             if (string.Equals(existing.Key, key, System.StringComparison.Ordinal))
             {
                 Refuse(
-                    program.Span,
+                    ProgramSpan(program),
                     SliceSourceDiagnosticCode.DuplicateModuleKey,
                     "two modules were presented under the key `" + key + "`");
 
@@ -94,7 +95,7 @@ public sealed partial class JsCompiler
         if (build.Scope.SlotCount > MaximumSlots)
         {
             Refuse(
-                program.Span,
+                ProgramSpan(program),
                 SliceSourceDiagnosticCode.TooManyLocals,
                 "the module `" + key + "` declares too many bindings");
         }
@@ -114,23 +115,24 @@ public sealed partial class JsCompiler
     /// exporting module's slot, so giving it one here would create the copy that makes a live
     /// binding stale - see <see cref="JsOpcode.LoadImport"/>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BE769C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4D3A5D
     // Broiler-Human:        PENDING
     private void DeclareImports(
-        System.Collections.Generic.IReadOnlyList<JsStatement> body, ModuleBuild build)
+        System.Collections.Generic.IReadOnlyList<Statement> body, ModuleBuild build)
     {
         foreach (var statement in body)
         {
             switch (statement)
             {
-                case JsImportDeclaration import:
+                case ImportDeclaration import:
                 {
                     var request = RequestIndex(
                         build,
                         JsFormat.TypedSpecifier(
-                            import.Specifier, AttributeType(import.Span, import.Attributes, refuse: true)));
+                            import.Source.Value,
+                            AttributeType(JsTreeFacts.At(import), JsTreeFacts.Attributes(import.Attributes), refuse: true)));
 
-                    foreach (var specifier in import.Specifiers)
+                    foreach (var specifier in JsTreeFacts.ImportBindings(import, unitParse.Tokens))
                     {
                         // An import binds a name in strict code, where `arguments` and `eval` are
                         // not binding names (13.1.1), and binds it once; the binder refused a module
@@ -156,11 +158,11 @@ public sealed partial class JsCompiler
                     break;
                 }
 
-                case JsExportDeclaration exported when exported.From.Length != 0:
+                case ExportNamedDeclaration or ExportAllDeclaration when ReExport(statement, out var from, out var attributes):
                     RequestIndex(
                         build,
                         JsFormat.TypedSpecifier(
-                            exported.From, AttributeType(exported.Span, exported.Attributes, refuse: true)));
+                            from, AttributeType(JsTreeFacts.At(statement), attributes, refuse: true)));
                     break;
 
                 default:
@@ -191,11 +193,11 @@ public sealed partial class JsCompiler
     /// clause asks nothing of the host and is not an attribute.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4D385E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=977D18
     // Broiler-Human:        PENDING
     private string AttributeType(
         SliceSourceSpan span,
-        System.Collections.Generic.IReadOnlyList<JsImportAttribute>? attributes,
+        System.Collections.Generic.IReadOnlyList<(SliceSourceSpan Span, string Key, string Value)>? attributes,
         bool refuse)
     {
         if (attributes is null || attributes.Count == 0)
@@ -230,10 +232,44 @@ public sealed partial class JsCompiler
     }
 
     /// <summary>The request specifier of a re-export: its specifier under the type it asks for.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=7A3A69
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=B92617
     // Broiler-Human:        PENDING
-    private string TypedFrom(JsExportDeclaration exported) =>
-        JsFormat.TypedSpecifier(exported.From, AttributeType(exported.Span, exported.Attributes, refuse: false));
+    private string TypedFrom(Statement exported)
+    {
+        ReExport(exported, out var from, out var attributes);
+        return JsFormat.TypedSpecifier(from, AttributeType(JsTreeFacts.At(exported), attributes, refuse: false));
+    }
+
+    /// <summary>
+    /// Whether an <c>export</c> re-exports from a module, its specifier through
+    /// <see cref="JsTreeFacts.SourceOrNone"/>, and its attributes, which a re-export always has, if none.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=F84107
+    // Broiler-Falsified-If: an export with a non-empty specifier is not a re-export, one written from the empty string or with no specifier is, or its attributes differ from the wide parser's
+    // Broiler-Human:        PENDING
+    private static bool ReExport(
+        Statement statement,
+        out string from,
+        out System.Collections.Generic.IReadOnlyList<(SliceSourceSpan Span, string Key, string Value)>? attributes)
+    {
+        switch (statement)
+        {
+            case ExportNamedDeclaration { Declaration: null } export:
+                from = JsTreeFacts.SourceOrNone(export.Source);
+                attributes = export.Source is null ? null : JsTreeFacts.Attributes(export.Attributes);
+                break;
+            case ExportAllDeclaration export:
+                from = JsTreeFacts.SourceOrNone(export.Source);
+                attributes = JsTreeFacts.Attributes(export.Attributes);
+                break;
+            default:
+                from = string.Empty;
+                attributes = null;
+                break;
+        }
+
+        return from.Length != 0;
+    }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C59449
     // Broiler-Human:        PENDING
@@ -292,17 +328,17 @@ public sealed partial class JsCompiler
     /// lexical ones are declared and left uninitialised, which is the temporal dead zone and is what
     /// an importer that reads too early has to meet.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A81D7B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4ED922
     // Broiler-Human:        PENDING
     private System.Collections.Generic.IReadOnlyList<string> DeclareModuleBindings(
         JsBinder.HoistingScope unit,
-        System.Collections.Generic.IReadOnlyList<JsStatement> body,
+        System.Collections.Generic.IReadOnlyList<Statement> body,
         ModuleBuild build)
     {
         // THE MODULE'S `var` NAMES AND FUNCTION DECLARATIONS ARE THE BINDER'S (SJL-12.6 item 1), read
         // from its top level with each exported declaration in the export's place.
         var names = unit.VarNames;
-        var functions = Adapted(unit.Functions);
+        var functions = unit.Functions;
 
         foreach (var name in names)
         {
@@ -319,7 +355,7 @@ public sealed partial class JsCompiler
         foreach (var function in functions)
         {
             build.Functions.Add(function);
-            Declared(build, function.Name, constant: false);
+            Declared(build, NameOf(function), constant: false);
         }
 
         // A CLASS DECLARATION IS A LEXICAL DECLARATION OF THIS MODULE, and it needs its slot before
@@ -336,9 +372,9 @@ public sealed partial class JsCompiler
         // it collides with can be declared and no collision check is owed for it.
         foreach (var statement in body)
         {
-            if (statement is JsExportDeclaration { Kind: JsExportKind.Default, Default: not null })
+            if (statement is ExportDefaultDeclaration { Declaration: Expression })
             {
-                build.Scope.Declare(JsModuleNames.DefaultBindingName, constant: false);
+                build.Scope.Declare(DefaultBindingName, constant: false);
             }
         }
 
@@ -368,25 +404,25 @@ public sealed partial class JsCompiler
     /// the binder refuses before any of the module is lowered (SJL-12.6 item 2); the lowering only
     /// asserts them (<see cref="BinderAdmitted"/>).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B35F4F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=44CF0E
     // Broiler-Human:        PENDING
     private void DeclareExports(
-        System.Collections.Generic.IReadOnlyList<JsStatement> body, ModuleBuild build)
+        System.Collections.Generic.IReadOnlyList<Statement> body, ModuleBuild build)
     {
-        foreach (var statement in body)
+        foreach (var exported in body)
         {
-            if (statement is not JsExportDeclaration exported)
+            if (JsTreeFacts.Exports(exported, unitParse.Tokens, out var from) is not { } specifiers)
             {
                 continue;
             }
 
-            if (exported.Kind == JsExportKind.All && exported.Specifiers.Count == 0)
+            if (exported is ExportAllDeclaration && specifiers.Count == 0)
             {
                 build.StarExports.Add(RequestIndex(build, TypedFrom(exported)));
                 continue;
             }
 
-            foreach (var specifier in exported.Specifiers)
+            foreach (var specifier in specifiers)
             {
                 if (!build.ExportNames.Add(specifier.Exported))
                 {
@@ -394,7 +430,7 @@ public sealed partial class JsCompiler
                         specifier.Span, "the export name `" + specifier.Exported + "`, published twice");
                 }
 
-                if (exported.From.Length != 0)
+                if (from.Length != 0)
                 {
                     var request = RequestIndex(build, TypedFrom(exported));
 
@@ -402,10 +438,10 @@ public sealed partial class JsCompiler
                         new JsIndirectExportRow(
                             InternedName(specifier.Exported),
                             request,
-                            specifier.Local == JsModuleNames.StarName
+                            specifier.Local == StarName
                                 ? 0u
                                 : InternedName(specifier.Local),
-                            specifier.Local == JsModuleNames.StarName
+                            specifier.Local == StarName
                                 ? JsFormat.ImportKind.Namespace
                                 : JsFormat.ImportKind.Named));
 
@@ -445,17 +481,17 @@ public sealed partial class JsCompiler
     /// <summary>
     /// Emits the unit that initialises the module's environment before anything is evaluated.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=78CBAF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=106319
     // Broiler-Human:        PENDING
     private int EmitModuleInitialiser(
-        JsProgramNode program,
+        ProgramNode program,
         ModuleBuild build,
         System.Collections.Generic.IReadOnlyList<string> variables)
     {
         var index = units.Count;
         buffer = new UnitBuffer(0, JsFormat.FunctionFlags.ProgramBody | JsFormat.FunctionFlags.Strict);
         units.Add(buffer);
-        Position(program.Span);
+        Position(ProgramSpan(program));
 
         foreach (var name in variables)
         {
@@ -470,12 +506,12 @@ public sealed partial class JsCompiler
 
         foreach (var function in build.Functions)
         {
-            if (!build.Scope.TryGet(function.Name, out var slot, out _))
+            if (!build.Scope.TryGet(NameOf(function), out var slot, out _))
             {
                 continue;
             }
 
-            Emit(JsOpcode.Closure, (ushort)CompileFunction(function));
+            Emit(JsOpcode.Closure, (ushort)CompileFunction(function, JsTreeFacts.At(function), NameOf(function)));
             EmitScoped(JsOpcode.InitialiseScoped, 0, slot);
         }
 
@@ -484,9 +520,9 @@ public sealed partial class JsCompiler
     }
 
     /// <summary>Emits the module's body, which is its statements minus the declarations.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B63BCF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DAEA19
     // Broiler-Human:        PENDING
-    private int EmitModuleBody(JsProgramNode program, ModuleBuild build)
+    private int EmitModuleBody(ProgramNode program, ModuleBuild build)
     {
         var index = units.Count;
 
@@ -513,31 +549,39 @@ public sealed partial class JsCompiler
         // settles - which, for an `await using`, is after the awaits the disposal owes. The body is
         // then an async unit because the parser saw the declaration as a top-level await.
         var resources = UsingIn(program.Body, out var first);
-        var disposal = resources == JsUsing.None
+        var disposal = resources == JsDisposal.None
             ? null
-            : BeginDisposal(first, resources == JsUsing.Async);
+            : BeginDisposal(first, resources == JsDisposal.Async);
 
-        foreach (var statement in program.Body)
+        // THE DIRECTIVE PROLOGUE IS NOT COMPILED, as the wide parser kept it apart from the body.
+        for (var at = JsTreeFacts.PrologueLength(program.Body); at < program.Body.Count; at++)
         {
+            var statement = program.Body[at];
+
             switch (statement)
             {
                 // An `import` declaration has no run-time behaviour of its own: the request is in
                 // the record and the binding is an indirection. A `function` declaration was
                 // already given its closure by the initialiser.
-                case JsImportDeclaration:
-                case JsFunctionDeclaration:
+                case ImportDeclaration:
+                case FunctionDeclaration:
                     break;
 
-                case JsExportDeclaration { Declaration: JsFunctionDeclaration }:
-                case JsExportDeclaration { Kind: JsExportKind.Named }:
-                case JsExportDeclaration { Kind: JsExportKind.All }:
+                case ExportNamedDeclaration { Declaration: FunctionDeclaration }:
+                case ExportDefaultDeclaration { Declaration: FunctionDeclaration }:
+                case ExportNamedDeclaration { Declaration: null }:
+                case ExportAllDeclaration:
                     break;
 
-                case JsExportDeclaration { Declaration: { } declared }:
+                case ExportNamedDeclaration { Declaration: { } declared }:
                     CompileStatement(declared, completion);
                     break;
 
-                case JsExportDeclaration { Kind: JsExportKind.Default, Default: { } value }:
+                case ExportDefaultDeclaration { Declaration: ClassDeclaration declared }:
+                    CompileStatement(declared, completion);
+                    break;
+
+                case ExportDefaultDeclaration { Declaration: Expression value }:
                 {
                     // AN ANONYMOUS FUNCTION EXPORTED AS THE DEFAULT IS NAMED `default`, which the
                     // language states as a step of the export's own evaluation rather than as a
@@ -550,7 +594,7 @@ public sealed partial class JsCompiler
                     EmitScoped(
                         JsOpcode.InitialiseScoped,
                         0,
-                        build.Scope.SlotOf(JsModuleNames.DefaultBindingName));
+                        build.Scope.SlotOf(DefaultBindingName));
 
                     break;
                 }
@@ -571,30 +615,17 @@ public sealed partial class JsCompiler
         return index;
     }
 
-    /// <summary>
-    /// A statement list with each exported declaration replaced by the declaration itself.
-    /// </summary>
+    /// <summary>The binding an <c>export default</c> of an expression creates, which no source can write.</summary>
     /// <remarks>
-    /// <b>The one reading of what a module's top-level declaration is</b>: an exported declaration is
-    /// a declaration of the module, in the export's place. The binder reads a unit's top level through
-    /// it for the <c>var</c> names, functions and lexical declarations it records, and the module's own
-    /// checks of its lexical declarations read the module's statements through it, so the two cannot
-    /// disagree about which statements those are. A script holds no <c>export</c>, so its list comes
-    /// back as it was.
+    /// It was the wide parser's <c>JsParser.DefaultBindingName</c>, then step 1's <c>JsModuleNames</c>'s, and
+    /// moves to the lowering's module code at SJL-13.3's step 2 (JSD-0083, decision D20).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2FC402
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=8B78FE
     // Broiler-Human:        PENDING
-    internal static System.Collections.Generic.List<JsStatement> Unwrapped(
-        System.Collections.Generic.IReadOnlyList<JsStatement> body)
-    {
-        var flattened = new System.Collections.Generic.List<JsStatement>(body.Count);
+    internal const string DefaultBindingName = "*default*";
 
-        foreach (var statement in body)
-        {
-            flattened.Add(
-                statement is JsExportDeclaration { Declaration: { } declared } ? declared : statement);
-        }
-
-        return flattened;
-    }
+    /// <summary>The local name of <c>export * as name from</c>'s namespace, which no source can write.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=828A3E
+    // Broiler-Human:        PENDING
+    internal const string StarName = "*";
 }

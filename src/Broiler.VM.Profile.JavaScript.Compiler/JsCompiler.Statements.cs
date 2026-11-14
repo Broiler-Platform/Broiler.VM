@@ -17,6 +17,8 @@
 
 using Broiler.VM.Profile.JavaScript.Format;
 
+using Broiler.ECMAScript.Syntax;
+
 namespace Broiler.VM.Profile.JavaScript.Compiler;
 
 // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F3B442
@@ -26,30 +28,30 @@ public sealed partial class JsCompiler
 
     // ---- statements ----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F73A6A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E79616
     // Broiler-Human:        PENDING
     private void CompileStatements(
-        System.Collections.Generic.IReadOnlyList<JsStatement> body, int completion)
+        System.Collections.Generic.IReadOnlyList<Statement> body, int completion, int first = 0)
     {
-        foreach (var statement in body)
+        for (var at = first; at < body.Count; at++)
         {
-            CompileStatement(statement, completion);
+            CompileStatement(body[at], completion);
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1C7FB9
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AE49FD
     // Broiler-Human:        PENDING
-    private void CompileStatement(JsStatement statement, int completion)
+    private void CompileStatement(Statement statement, int completion)
     {
-        Position(statement.Span);
+        Position(JsTreeFacts.At(statement));
 
         switch (statement)
         {
-            case JsEmptyStatement:
-            case JsDebuggerStatement:
+            case EmptyStatement:
+            case DebuggerStatement:
                 break;
 
-            case JsExpressionStatement expression:
+            case ExpressionStatement expression:
                 CompileExpression(expression.Expression);
 
                 if (completion >= 0)
@@ -63,7 +65,7 @@ public sealed partial class JsCompiler
 
                 break;
 
-            case JsVariableStatement variable:
+            case VariableDeclaration variable:
                 CompileVariable(variable);
                 break;
 
@@ -72,82 +74,82 @@ public sealed partial class JsCompiler
             // that write is here BECAUSE it belongs where the declaration stands. That is what
             // makes `if (x) { function f() { } }` leave `f` undefined when `x` is false, and what
             // makes the aliased value the block binding's CURRENT one rather than its first.
-            case JsFunctionDeclaration declared:
-                if (binder.AdmitsAnnexB((Broiler.ECMAScript.Syntax.FunctionDeclaration)Origin(declared)))
+            case FunctionDeclaration declared:
+                if (binder.AdmitsAnnexB(declared))
                 {
-                    EmitAnnexBAlias(declared.Function.Name);
+                    EmitAnnexBAlias(NameOf(declared.Function));
                 }
 
                 break;
 
-            case JsClassDeclaration declaration:
+            case ClassDeclaration declaration:
                 CompileClassDeclaration(declaration);
                 break;
 
-            case JsBlockStatement block:
-                CompileBlock(block, completion);
+            case BlockStatement block:
+                CompileBlock(block, block.Body, completion);
                 break;
 
-            case JsWithStatement scoped:
+            case WithStatement scoped:
                 CompileWith(scoped, completion);
                 break;
 
-            case JsIfStatement conditional:
+            case IfStatement conditional:
                 CompileIf(conditional, completion);
                 break;
 
-            case JsWhileStatement loop:
+            case WhileStatement loop:
                 CompileWhile(loop, completion, string.Empty);
                 break;
 
-            case JsDoWhileStatement loop:
+            case DoWhileStatement loop:
                 CompileDoWhile(loop, completion, string.Empty);
                 break;
 
-            case JsForStatement loop:
+            case ForStatement loop:
                 CompileFor(loop, completion, string.Empty);
                 break;
 
-            case JsForInStatement loop:
+            case ForInStatement loop:
                 CompileForIn(loop, completion, string.Empty);
                 break;
 
-            case JsForOfStatement loop:
+            case ForOfStatement loop:
                 CompileForOf(loop, completion, string.Empty);
                 break;
 
-            case JsBreakStatement jump:
-                CompileJumpOut(jump.Span, jump.Label, wantsContinue: false);
+            case BreakStatement jump:
+                CompileJumpOut(JsTreeFacts.At(jump), jump.Label?.Name ?? string.Empty, wantsContinue: false);
                 break;
 
-            case JsContinueStatement jump:
-                CompileJumpOut(jump.Span, jump.Label, wantsContinue: true);
+            case ContinueStatement jump:
+                CompileJumpOut(JsTreeFacts.At(jump), jump.Label?.Name ?? string.Empty, wantsContinue: true);
                 break;
 
-            case JsReturnStatement returned:
-                CompileReturn(returned);
+            case ReturnStatement returned:
+                CompileReturn(JsTreeFacts.At(returned), returned.Argument);
                 break;
 
-            case JsThrowStatement thrown:
-                CompileExpression(thrown.Value);
+            case ThrowStatement thrown:
+                CompileExpression(thrown.Argument);
                 Emit(JsOpcode.Throw);
                 break;
 
-            case JsTryStatement guarded:
+            case TryStatement guarded:
                 CompileTry(guarded, completion);
                 break;
 
-            case JsSwitchStatement switched:
+            case SwitchStatement switched:
                 CompileSwitch(switched, completion, string.Empty);
                 break;
 
-            case JsLabelledStatement labelled:
+            case LabelledStatement labelled:
                 CompileLabelled(labelled, completion);
                 break;
 
             default:
                 Refuse(
-                    statement.Span,
+                    JsTreeFacts.At(statement),
                     SliceSourceDiagnosticCode.ConstructTheLoweringHasNoArmFor,
                     "this statement is not admitted by the declared feature manifest");
 
@@ -155,39 +157,41 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6B9B33
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9C1DD3
     // Broiler-Human:        PENDING
-    private void CompileLabelled(JsLabelledStatement labelled, int completion)
+    private void CompileLabelled(LabelledStatement labelled, int completion)
     {
+        var label = labelled.Label.Name;
+
         switch (labelled.Body)
         {
-            case JsWhileStatement loop:
-                CompileWhile(loop, completion, labelled.Label);
+            case WhileStatement loop:
+                CompileWhile(loop, completion, label);
                 return;
 
-            case JsDoWhileStatement loop:
-                CompileDoWhile(loop, completion, labelled.Label);
+            case DoWhileStatement loop:
+                CompileDoWhile(loop, completion, label);
                 return;
 
-            case JsForStatement loop:
-                CompileFor(loop, completion, labelled.Label);
+            case ForStatement loop:
+                CompileFor(loop, completion, label);
                 return;
 
-            case JsForInStatement loop:
-                CompileForIn(loop, completion, labelled.Label);
+            case ForInStatement loop:
+                CompileForIn(loop, completion, label);
                 return;
 
-            case JsForOfStatement loop:
-                CompileForOf(loop, completion, labelled.Label);
+            case ForOfStatement loop:
+                CompileForOf(loop, completion, label);
                 return;
 
-            case JsSwitchStatement switched:
-                CompileSwitch(switched, completion, labelled.Label);
+            case SwitchStatement switched:
+                CompileSwitch(switched, completion, label);
                 return;
 
             default:
             {
-                var exit = new Exit(ExitKind.Label, labelled.Label, blockDepth)
+                var exit = new Exit(ExitKind.Label, label, blockDepth)
                 {
                     Break = NewLabel(),
                 };
@@ -201,54 +205,60 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1D95A6
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4D6F56
     // Broiler-Human:        PENDING
-    private void CompileVariable(JsVariableStatement variable)
+    private void CompileVariable(VariableDeclaration variable)
     {
-        foreach (var declarator in variable.Declarators)
+        var (kind, disposal) = (JsTreeFacts.Kind(variable.DeclarationKind).Kind, JsTreeFacts.Disposal(variable.DeclarationKind));
+
+        foreach (var declarator in variable.Declarations)
         {
-            if (declarator.Pattern is not null)
+            var span = JsTreeFacts.At(declarator);
+            var name = declarator.Target is BindingIdentifier binding ? binding.Name : string.Empty;
+            var initialiser = declarator.Initializer;
+
+            if (declarator.Target is not BindingIdentifier)
             {
                 // A DESTRUCTURING DECLARATION ALWAYS HAS AN INITIALISER, whatever its keyword.
                 // `var a;` is fine and `var [a];` is not, because there is nothing for the pattern
                 // to take apart - and the grammar says so for `var` as loudly as for `const`.
-                if (declarator.Initialiser is null)
+                if (initialiser is null)
                 {
-                    throw BinderAdmitted(declarator.Span, "a destructuring declaration with no initialiser");
+                    throw BinderAdmitted(span, "a destructuring declaration with no initialiser");
                 }
 
-                if (variable.Kind != SliceDeclarationKind.Var)
+                if (kind != SliceDeclarationKind.Var)
                 {
                     DeclarePatternNames(
-                        declarator.Pattern, variable.Kind == SliceDeclarationKind.Const);
+                        declarator.Target, kind == SliceDeclarationKind.Const);
                 }
 
-                CompileExpression(declarator.Initialiser);
+                CompileExpression(initialiser);
 
                 BindPattern(
-                    declarator.Pattern,
-                    variable.Kind == SliceDeclarationKind.Var ? BindMode.Var : BindMode.Initialise);
+                    declarator.Target,
+                    kind == SliceDeclarationKind.Var ? BindMode.Var : BindMode.Initialise);
 
                 continue;
             }
 
-            if (variable.Kind == SliceDeclarationKind.Const && declarator.Initialiser is null)
+            if (kind == SliceDeclarationKind.Const && initialiser is null)
             {
-                throw BinderAdmitted(declarator.Span, "a `const` with no initialiser");
+                throw BinderAdmitted(span, "a `const` with no initialiser");
             }
 
             // A RESOURCE IS REGISTERED BEFORE ITS BINDING LEAVES THE DEAD ZONE, which is the order
             // `InitializeBinding` gives the two: a value with no disposer is a `TypeError` raised
             // while the name is still unreadable, and the value stays on the stack across the
             // registration so the binding is written from the same one.
-            if (variable.Using != JsUsing.None)
+            if (disposal != JsDisposal.None)
             {
-                var resource = scope.Has(declarator.Name)
-                    ? scope.SlotOf(declarator.Name)
-                    : scope.Declare(declarator.Name, constant: true);
+                var resource = scope.Has(name)
+                    ? scope.SlotOf(name)
+                    : scope.Declare(name, constant: true);
 
-                CompileNamedValue(declarator.Initialiser!, declarator.Name);
-                EmitRegistration(declarator.Span, variable.Using);
+                CompileNamedValue(initialiser!, name);
+                EmitRegistration(span, disposal);
                 EmitScoped(JsOpcode.InitialiseScoped, 0, resource);
                 continue;
             }
@@ -260,28 +270,28 @@ public sealed partial class JsCompiler
                 // binding with no initialiser is in its dead zone until the declaration is REACHED,
                 // and what reaches it is this instruction. Skipping it would leave `let x;` in a
                 // dead zone for the rest of the program.
-                if (programLexicals.ContainsKey(declarator.Name))
+                if (programLexicals.ContainsKey(name))
                 {
-                    if (declarator.Initialiser is null)
+                    if (initialiser is null)
                     {
                         Emit(JsOpcode.LoadUndefined);
                     }
                     else
                     {
-                        CompileNamedValue(declarator.Initialiser, declarator.Name);
+                        CompileNamedValue(initialiser, name);
                     }
 
-                    Emit(JsOpcode.InitialiseGlobalLexical, InternedName(declarator.Name));
+                    Emit(JsOpcode.InitialiseGlobalLexical, InternedName(name));
                     continue;
                 }
 
-                if (declarator.Initialiser is null)
+                if (initialiser is null)
                 {
                     continue;
                 }
 
-                CompileNamedValue(declarator.Initialiser, declarator.Name);
-                Emit(JsOpcode.StoreGlobal, InternedName(declarator.Name));
+                CompileNamedValue(initialiser, name);
+                Emit(JsOpcode.StoreGlobal, InternedName(name));
                 continue;
             }
 
@@ -289,9 +299,9 @@ public sealed partial class JsCompiler
             // enclosing function or program scope, so a declaration inside a block writes THAT
             // one; declaring it again here would create a second binding the rest of the function
             // cannot see.
-            if (variable.Kind == SliceDeclarationKind.Var)
+            if (kind == SliceDeclarationKind.Var)
             {
-                if (declarator.Initialiser is null)
+                if (initialiser is null)
                 {
                     continue;
                 }
@@ -300,33 +310,32 @@ public sealed partial class JsCompiler
                 // assignment's is (14.3.2.1: ResolveBinding, then the initialiser, then PutValue),
                 // so an initialiser that deletes the object's property still writes the object.
                 // Until 2026-10-03 the name was resolved at the write (JSC-254).
-                var initialiser = declarator.Initialiser;
-                var initialised = declarator.Name;
+                var initialised = name;
 
                 if (TryEmitShadowedReference(
-                    declarator.Span, initialised, read: false, () => CompileNamedValue(initialiser, initialised)))
+                    span, initialised, read: false, () => CompileNamedValue(initialiser, initialised)))
                 {
                     Emit(JsOpcode.Pop);
                     continue;
                 }
 
-                CompileNamedValue(declarator.Initialiser, declarator.Name);
-                StoreName(declarator.Span, declarator.Name);
+                CompileNamedValue(initialiser, name);
+                StoreName(span, name);
                 Emit(JsOpcode.Pop);
                 continue;
             }
 
-            var slot = scope.Has(declarator.Name)
-                ? scope.SlotOf(declarator.Name)
-                : scope.Declare(declarator.Name, variable.Kind == SliceDeclarationKind.Const);
+            var slot = scope.Has(name)
+                ? scope.SlotOf(name)
+                : scope.Declare(name, kind == SliceDeclarationKind.Const);
 
-            if (declarator.Initialiser is null)
+            if (initialiser is null)
             {
                 Emit(JsOpcode.LoadUndefined);
             }
             else
             {
-                CompileNamedValue(declarator.Initialiser, declarator.Name);
+                CompileNamedValue(initialiser, name);
             }
 
             EmitScoped(JsOpcode.InitialiseScoped, 0, slot);
@@ -422,11 +431,11 @@ public sealed partial class JsCompiler
     /// alias — where there is one — is written later, by the declaration itself.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=03D1B9
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=03C424
     // Broiler-Human:        PENDING
     private void HoistBlockFunctions(JsBinder.Declarations declarations)
     {
-        var declared = Adapted(declarations.Functions);
+        var declared = declarations.Functions;
 
         if (declared.Count == 0)
         {
@@ -437,22 +446,22 @@ public sealed partial class JsCompiler
 
         for (var index = 0; index < declared.Count; index++)
         {
-            var name = declared[index].Function.Name;
+            var name = NameOf(declared[index].Function);
             slots[index] = scope.Has(name) ? scope.SlotOf(name) : scope.Declare(name, constant: false);
         }
 
         for (var index = 0; index < declared.Count; index++)
         {
-            Emit(JsOpcode.Closure, (ushort)CompileFunction(declared[index].Function));
+            Emit(JsOpcode.Closure, (ushort)CompileFunction(declared[index].Function, JsTreeFacts.At(declared[index]), NameOf(declared[index].Function)));
             EmitScoped(JsOpcode.InitialiseScoped, 0, slots[index]);
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=ECC661
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=25CF5F
     // Broiler-Human:        PENDING
-    private void CompileBlock(JsBlockStatement block, int completion)
+    private void CompileBlock(SyntaxNode block, System.Collections.Generic.IReadOnlyList<Statement> body, int completion)
     {
-        var declarations = binder.Block(Origin(block));
+        var declarations = binder.Block(block);
         var pushed = declarations.Lexical.Count != 0;
         var outer = scope;
 
@@ -467,7 +476,7 @@ public sealed partial class JsCompiler
             HoistBlockFunctions(declarations);
         }
 
-        CompileDisposing(block.Body, completion);
+        CompileDisposing(body, completion);
 
         if (pushed)
         {

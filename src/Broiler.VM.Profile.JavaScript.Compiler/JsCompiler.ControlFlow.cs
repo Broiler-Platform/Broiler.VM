@@ -15,6 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Syntax;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
@@ -81,9 +82,9 @@ public sealed partial class JsCompiler
     /// block inside it, which pushes a record of its own.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D51887
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6A55A2
     // Broiler-Human:        PENDING
-    private void CompileWith(JsWithStatement statement, int completion)
+    private void CompileWith(WithStatement statement, int completion)
     {
         ResetCompletion(completion);
         CompileExpression(statement.Object);
@@ -100,15 +101,15 @@ public sealed partial class JsCompiler
         scope = outer;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=96D04B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E2EB99
     // Broiler-Human:        PENDING
-    private void CompileIf(JsIfStatement conditional, int completion)
+    private void CompileIf(IfStatement conditional, int completion)
     {
         ResetCompletion(completion);
         CompileExpression(conditional.Test);
         var otherwise = NewLabel();
         Branch(JsOpcode.JumpIfFalse, otherwise);
-        CompileStatement(conditional.Consequent, completion);
+        CompileClause(conditional.Consequent, completion);
 
         if (conditional.Alternate is null)
         {
@@ -119,13 +120,31 @@ public sealed partial class JsCompiler
         var end = NewLabel();
         Branch(JsOpcode.Jump, end);
         Mark(otherwise);
-        CompileStatement(conditional.Alternate, completion);
+        CompileClause(conditional.Alternate, completion);
         Mark(end);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=30D799
+    /// <summary>
+    /// An <c>if</c> clause: a function declaration there is the one-statement block the wide parser made of
+    /// it, placed at the function and keyed in the binder by the declaration (Annex B.3.3; SJL-13.3, step 2).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=D7DACA
     // Broiler-Human:        PENDING
-    private void CompileWhile(JsWhileStatement loop, int completion, string label)
+    private void CompileClause(Statement clause, int completion)
+    {
+        if (!JsTreeFacts.IsIfClauseFunction(clause))
+        {
+            CompileStatement(clause, completion);
+            return;
+        }
+
+        Position(JsTreeFacts.At(clause));
+        CompileBlock(clause, [clause], completion);
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BD0D9A
+    // Broiler-Human:        PENDING
+    private void CompileWhile(WhileStatement loop, int completion, string label)
     {
         ResetCompletion(completion);
         var top = NewLabel();
@@ -145,9 +164,9 @@ public sealed partial class JsCompiler
         Mark(exit.Break!);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B76E55
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=32DF94
     // Broiler-Human:        PENDING
-    private void CompileDoWhile(JsDoWhileStatement loop, int completion, string label)
+    private void CompileDoWhile(DoWhileStatement loop, int completion, string label)
     {
         ResetCompletion(completion);
         var top = NewLabel();
@@ -167,18 +186,18 @@ public sealed partial class JsCompiler
         Mark(exit.Break!);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7D127C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B9E835
     // Broiler-Human:        PENDING
-    private void CompileFor(JsForStatement loop, int completion, string label)
+    private void CompileFor(ForStatement loop, int completion, string label)
     {
         ResetCompletion(completion);
         var lexical = new System.Collections.Generic.List<string>();
 
-        if (loop.Initialiser is JsVariableStatement head && head.Kind != SliceDeclarationKind.Var)
+        if (loop.Init is VariableDeclaration head && head.DeclarationKind != DeclarationKind.Var)
         {
-            foreach (var declarator in head.Declarators)
+            foreach (var declarator in head.Declarations)
             {
-                AdaptedDeclaratorNames(declarator, lexical);
+                JsBinder.DeclaratorNames(declarator, lexical);
             }
         }
 
@@ -199,17 +218,18 @@ public sealed partial class JsCompiler
         // the scope is disposed once, after the loop - by a `break` falling out of it, by the test
         // failing, by a `return`, or by the handler when anything in the head or the loop throws.
         // A `continue` stays inside it and disposes nothing.
-        var headDisposal = loop.Initialiser is JsVariableStatement { Using: not JsUsing.None } resources
-            ? BeginDisposal(resources.Span, resources.Using == JsUsing.Async)
+        var headDisposal = loop.Init is VariableDeclaration resources &&
+            JsTreeFacts.Disposal(resources.DeclarationKind) is not JsDisposal.None
+            ? BeginDisposal(JsTreeFacts.At(resources), JsTreeFacts.Disposal(resources.DeclarationKind) == JsDisposal.Async)
             : null;
 
-        if (loop.Initialiser is JsVariableStatement declaration)
+        if (loop.Init is VariableDeclaration declaration)
         {
             CompileVariable(declaration);
         }
-        else if (loop.Initialiser is JsExpressionStatement expression)
+        else if (loop.Init is Expression expression)
         {
-            CompileExpression(expression.Expression);
+            CompileExpression(expression);
             Emit(JsOpcode.Pop);
         }
 
@@ -275,11 +295,12 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4DBD70
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=59CB3D
     // Broiler-Human:        PENDING
-    private void CompileForIn(JsForInStatement loop, int completion, string label)
+    private void CompileForIn(ForInStatement loop, int completion, string label)
     {
         ResetCompletion(completion);
+        var each = JsTreeFacts.Head(loop.Left);
 
         // THE ENUMERATOR LIVES IN A SLOT, NOT ON THE OPERAND STACK. Every abrupt exit from the body
         // - `break`, `continue` to an outer loop, `return` - would otherwise have to know how many
@@ -291,16 +312,16 @@ public sealed partial class JsCompiler
         // ANNEX B'S INITIALISER IS EVALUATED AND STORED ONCE, BEFORE THE OBJECT IS (JSP-7, JSC-239):
         // `for (var a = 0 in stored = a, o)` reads `a` as 0, and an anonymous function takes the
         // name. The parser admitted the form and this lowering dropped the value.
-        if (loop.Initialiser is { } initialiser)
+        if (each.Initialiser is { } initialiser)
         {
-            CompileNamedValue(initialiser, loop.Name);
-            StoreName(loop.Span, loop.Name);
+            CompileNamedValue(initialiser, each.Name);
+            StoreName(JsTreeFacts.At(loop), each.Name);
             Emit(JsOpcode.Pop);
         }
 
         var outer = scope;
-        var pushed = loop.Declaration is SliceDeclarationKind.Let or SliceDeclarationKind.Const;
-        var constant = loop.Declaration == SliceDeclarationKind.Const;
+        var pushed = each.Declaration is SliceDeclarationKind.Let or SliceDeclarationKind.Const;
+        var constant = each.Declaration == SliceDeclarationKind.Const;
 
         // THE HEAD'S NAMES ARE IN THEIR DEAD ZONE WHILE THE OBJECT IS EVALUATED, as `for … of`'s
         // are: `for (let x in { x })` is a ReferenceError, not a read of the outer `x`. Until
@@ -312,7 +333,7 @@ public sealed partial class JsCompiler
             var headSite = buffer.Code.Count + 1;
             Emit(JsOpcode.PushScope, (ushort)0);
             buffer.ScopeSites.Add((headSite, scope));
-            DeclareHead(loop.Name, loop.Pattern, constant);
+            DeclareHead(each.Name, each.Pattern, constant);
         }
 
         CompileExpression(loop.Right);
@@ -336,7 +357,7 @@ public sealed partial class JsCompiler
             var bodySite = buffer.Code.Count + 1;
             Emit(JsOpcode.PushScope, (ushort)0);
             buffer.ScopeSites.Add((bodySite, scope));
-            DeclareHead(loop.Name, loop.Pattern, constant);
+            DeclareHead(each.Name, each.Pattern, constant);
             loopScope = scope;
         }
 
@@ -364,25 +385,25 @@ public sealed partial class JsCompiler
         // A `for … in` HEAD MAY DESTRUCTURE THE KEY, which reads oddly and is ordinary grammar:
         // the value bound each turn is a String, so `for (const [a, b] in o)` takes its first two
         // characters apart. The lowering is the same one every other position uses.
-        if (loop.Pattern is not null)
+        if (each.Pattern is not null)
         {
             BindPattern(
-                loop.Pattern,
+                each.Pattern,
                 pushed ? BindMode.Initialise
-                    : loop.Declaration == SliceDeclarationKind.Var ? BindMode.Var : BindMode.Assign);
+                    : each.Declaration == SliceDeclarationKind.Var ? BindMode.Var : BindMode.Assign);
         }
         else if (pushed)
         {
-            EmitScoped(JsOpcode.InitialiseScoped, 0, scope.SlotOf(loop.Name));
+            EmitScoped(JsOpcode.InitialiseScoped, 0, scope.SlotOf(each.Name));
         }
-        else if (loop.Declaration == SliceDeclarationKind.Var)
+        else if (each.Declaration == SliceDeclarationKind.Var)
         {
-            StoreName(loop.Span, loop.Name);
+            StoreName(JsTreeFacts.At(loop), each.Name);
             Emit(JsOpcode.Pop);
         }
-        else if (loop.Target is not null)
+        else if (each.Target is not null)
         {
-            CompileStoreTo(loop.Target);
+            CompileStoreTo(each.Target);
             Emit(JsOpcode.Pop);
         }
         else
@@ -433,13 +454,14 @@ public sealed partial class JsCompiler
     /// reproduced defect in the language.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D778A7
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8A9826
     // Broiler-Human:        PENDING
-    private void CompileForOf(JsForOfStatement loop, int completion, string label)
+    private void CompileForOf(ForOfStatement loop, int completion, string label)
     {
         ResetCompletion(completion);
-        var lexical = loop.Declaration is SliceDeclarationKind.Let or SliceDeclarationKind.Const;
-        var constant = loop.Declaration == SliceDeclarationKind.Const;
+        var each = JsTreeFacts.Head(loop.Left);
+        var lexical = each.Declaration is SliceDeclarationKind.Let or SliceDeclarationKind.Const;
+        var constant = each.Declaration == SliceDeclarationKind.Const;
         var outerDepth = blockDepth;
         var outer = scope;
 
@@ -450,7 +472,7 @@ public sealed partial class JsCompiler
             var headSite = buffer.Code.Count + 1;
             Emit(JsOpcode.PushScope, (ushort)0);
             buffer.ScopeSites.Add((headSite, scope));
-            DeclareHead(loop.Name, loop.Pattern, constant);
+            DeclareHead(each.Name, each.Pattern, constant);
         }
 
         CompileExpression(loop.Right);
@@ -485,7 +507,7 @@ public sealed partial class JsCompiler
             var bodySite = buffer.Code.Count + 1;
             Emit(JsOpcode.PushScope, (ushort)0);
             buffer.ScopeSites.Add((bodySite, scope));
-            DeclareHead(loop.Name, loop.Pattern, constant);
+            DeclareHead(each.Name, each.Pattern, constant);
             loopScope = scope;
         }
 
@@ -548,32 +570,32 @@ public sealed partial class JsCompiler
         // turn's fresh copy of the body record, so no turn can reach another's.
         Exit? turnDisposal = null;
 
-        if (loop.Using != JsUsing.None)
+        if (each.Disposal != JsDisposal.None)
         {
             exits.Add(exit);
-            turnDisposal = BeginDisposal(loop.Span, loop.Using == JsUsing.Async);
-            EmitRegistration(loop.Span, loop.Using);
-            EmitScoped(JsOpcode.InitialiseScoped, 0, scope.SlotOf(loop.Name));
+            turnDisposal = BeginDisposal(JsTreeFacts.At(loop), each.Disposal == JsDisposal.Async);
+            EmitRegistration(JsTreeFacts.At(loop), each.Disposal);
+            EmitScoped(JsOpcode.InitialiseScoped, 0, scope.SlotOf(each.Name));
         }
-        else if (loop.Pattern is not null)
+        else if (each.Pattern is not null)
         {
             BindPattern(
-                loop.Pattern,
+                each.Pattern,
                 lexical ? BindMode.Initialise
-                    : loop.Declaration == SliceDeclarationKind.Var ? BindMode.Var : BindMode.Assign);
+                    : each.Declaration == SliceDeclarationKind.Var ? BindMode.Var : BindMode.Assign);
         }
         else if (lexical)
         {
-            EmitScoped(JsOpcode.InitialiseScoped, 0, scope.SlotOf(loop.Name));
+            EmitScoped(JsOpcode.InitialiseScoped, 0, scope.SlotOf(each.Name));
         }
-        else if (loop.Declaration == SliceDeclarationKind.Var)
+        else if (each.Declaration == SliceDeclarationKind.Var)
         {
-            StoreName(loop.Span, loop.Name);
+            StoreName(JsTreeFacts.At(loop), each.Name);
             Emit(JsOpcode.Pop);
         }
-        else if (loop.Target is not null)
+        else if (each.Target is not null)
         {
-            CompileStoreTo(loop.Target);
+            CompileStoreTo(each.Target);
             Emit(JsOpcode.Pop);
         }
         else
@@ -769,9 +791,9 @@ public sealed partial class JsCompiler
         Mark(closed);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E0BD37
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=299AC3
     // Broiler-Human:        PENDING
-    private void DeclareHead(string name, JsPattern? pattern, bool constant)
+    private void DeclareHead(string name, Pattern? pattern, bool constant)
     {
         if (pattern is null)
         {
@@ -782,9 +804,9 @@ public sealed partial class JsCompiler
         DeclarePatternNames(pattern, constant);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F6E2F2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AFDE51
     // Broiler-Human:        PENDING
-    private void CompileSwitch(JsSwitchStatement switched, int completion, string label)
+    private void CompileSwitch(SwitchStatement switched, int completion, string label)
     {
         ResetCompletion(completion);
         var outer = scope;
@@ -806,7 +828,7 @@ public sealed partial class JsCompiler
         // separately would build the first clause's closure before the second clause's slot
         // existed, and a call across the two would resolve to a global again. The binder read the
         // clauses as the one list they are.
-        var declarations = binder.Switch((Broiler.ECMAScript.Syntax.SwitchStatement)Origin(switched));
+        var declarations = binder.Switch(switched);
         DeclareLexical(declarations.Lexical);
         HoistBlockFunctions(declarations);
 
@@ -815,7 +837,7 @@ public sealed partial class JsCompiler
             Break = NewLabel(),
         };
 
-        var bodies = new Label[switched.Clauses.Count];
+        var bodies = new Label[switched.Cases.Count];
 
         for (var index = 0; index < bodies.Length; index++)
         {
@@ -824,9 +846,9 @@ public sealed partial class JsCompiler
 
         var defaultAt = -1;
 
-        for (var index = 0; index < switched.Clauses.Count; index++)
+        for (var index = 0; index < switched.Cases.Count; index++)
         {
-            var clause = switched.Clauses[index];
+            var clause = switched.Cases[index];
 
             if (clause.Test is null)
             {
@@ -843,10 +865,10 @@ public sealed partial class JsCompiler
         Branch(JsOpcode.Jump, defaultAt >= 0 ? bodies[defaultAt] : exit.Break!);
         exits.Add(exit);
 
-        for (var index = 0; index < switched.Clauses.Count; index++)
+        for (var index = 0; index < switched.Cases.Count; index++)
         {
             Mark(bodies[index]);
-            CompileStatements(switched.Clauses[index].Body, completion);
+            CompileStatements(switched.Cases[index].Consequent, completion);
         }
 
         exits.RemoveAt(exits.Count - 1);
@@ -855,60 +877,5 @@ public sealed partial class JsCompiler
         Emit(JsOpcode.PopScope);
         blockDepth--;
         scope = outer;
-    }
-
-    /// <summary>
-    /// The names an adapted declarator binds, in source order: the lowering's own reading until it reads the
-    /// shared tree (SJL-13.3, step 2).
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=5B9CB3
-    // Broiler-Human:        PENDING
-    private static void AdaptedDeclaratorNames(JsDeclarator declarator, System.Collections.Generic.List<string> names)
-    {
-        if (declarator.Pattern is null)
-        {
-            names.Add(declarator.Name);
-            return;
-        }
-
-        var pending = new System.Collections.Generic.Stack<JsPattern>();
-        pending.Push(declarator.Pattern);
-
-        while (pending.Count != 0)
-        {
-            switch (pending.Pop())
-            {
-                case JsTargetPattern { Target: JsIdentifier identifier }:
-                    names.Add(identifier.Name);
-                    break;
-                case JsArrayPattern array:
-                    if (array.Rest is not null)
-                    {
-                        pending.Push(array.Rest);
-                    }
-
-                    for (var at = array.Elements.Count - 1; at >= 0; at--)
-                    {
-                        if (array.Elements[at] is { } element)
-                        {
-                            pending.Push(element.Target);
-                        }
-                    }
-
-                    break;
-                case JsObjectPattern shape:
-                    if (shape.Rest is not null)
-                    {
-                        pending.Push(shape.Rest);
-                    }
-
-                    for (var at = shape.Properties.Count - 1; at >= 0; at--)
-                    {
-                        pending.Push(shape.Properties[at].Value.Target);
-                    }
-
-                    break;
-            }
-        }
     }
 }

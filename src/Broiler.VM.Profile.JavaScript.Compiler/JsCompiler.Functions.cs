@@ -3,18 +3,19 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   9
-// Annotated:        9/9
+// Relevant units:   11
+// Annotated:        11/11
 // Exempt:           0
-// Human-reviewed:   0/9
-// IP risk:          None
-// Security risk:    Medium
-// Criteria:         0/0
+// Human-reviewed:   0/11
+// IP risk:          Low
+// Security risk:    High
+// Criteria:         1/1
 // Resource impact:  3/10 max
-// Unverified:       9
+// Unverified:       11
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Syntax;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
@@ -26,9 +27,9 @@ public sealed partial class JsCompiler
 
     // ---- units ---------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=630B84
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9115EC
     // Broiler-Human:        PENDING
-    private int CompileProgram(JsProgramNode program)
+    private int CompileProgram(ProgramNode program)
     {
         var outerBuffer = buffer;
         var outerScope = scope;
@@ -77,13 +78,15 @@ public sealed partial class JsCompiler
         // keeps the prologue apart from the body, so without this `eval("'a'")` answered undefined
         // where the language answers `a`. Only the last directive can be the value: the ones before
         // it are overwritten by it, and a later statement that yields a value overwrites it in turn.
-        if (program.Directives.Count != 0)
+        var prologue = JsTreeFacts.PrologueLength(program.Body);
+
+        if (prologue != 0)
         {
-            CompileExpression(program.Directives[^1]);
+            CompileExpression(((ExpressionStatement)program.Body[prologue - 1]).Expression);
             EmitScoped(JsOpcode.InitialiseScoped, 0, completion);
         }
 
-        CompileStatements(program.Body, completion);
+        CompileStatements(program.Body, completion, prologue);
 
         EmitScoped(JsOpcode.LoadScoped, 0, completion);
         Emit(JsOpcode.Return);
@@ -101,7 +104,6 @@ public sealed partial class JsCompiler
     }
 
     /// <summary>Lowers one function body into a code unit of its own.</summary>
-    /// <param name="function">The body.</param>
     /// <param name="extra">
     /// Flags the CALLER knows and the body does not - that this unit is a class constructor, and
     /// whether it is a derived one. Nothing in a constructor's own text says either.
@@ -112,26 +114,48 @@ public sealed partial class JsCompiler
     /// TypeError in the language, and the flag is what makes it one here.
     /// </param>
     /// <param name="isDerived">Whether this is the constructor of a class with a heritage.</param>
-    /// <param name="written">
-    /// The node the source wrote, when <paramref name="function"/> is a copy of it renamed by the
-    /// lowering - a class constructor named after its class, an anonymous function named after what it
-    /// is assigned to. The binder knows a function by the node it bound.
+    /// <param name="function">
+    /// The node the binder knows the function by: a function, a field whose initialiser it is, or a static
+    /// block (SJL-13.3, step 2).
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B6FC33
+    /// <param name="span">Where the function is placed: its declaration, its expression, its entry or its member.</param>
+    /// <param name="name">Its name: its own, its key, the one it is assigned to, or empty.</param>
+    /// <param name="formals">Its formal parameters.</param>
+    /// <param name="body">Its statements, the directive prologue among them, which is not compiled.</param>
+    /// <param name="value">
+    /// The one value a concise arrow or a field's initialiser returns, compiled as the wide parser's tree
+    /// held it: a <c>return</c> of it at <paramref name="span"/>.
+    /// </param>
+    /// <param name="isArrow">Whether it is an arrow.</param>
+    /// <param name="isGenerator">Whether it is a generator.</param>
+    /// <param name="isAsync">Whether it is async.</param>
+    /// <param name="sourceStart">The offset its source text begins at, or -1.</param>
+    /// <param name="sourceEnd">The offset just past its source text, or -1.</param>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=C8F3C8
+    // Broiler-Falsified-If: a function's unit differs in any byte, position or source span from the one the lowering made of the wide parser's tree for it
     // Broiler-Human:        PENDING
     private int CompileFunction(
-        JsFunctionNode function,
+        SyntaxNode function,
+        SliceSourceSpan span,
+        string name,
+        System.Collections.Generic.IReadOnlyList<Pattern> formals,
+        System.Collections.Generic.IReadOnlyList<Statement> body,
+        Expression? value,
+        bool isArrow,
+        bool isGenerator,
+        bool isAsync,
+        int sourceStart,
+        int sourceEnd,
         JsFormat.FunctionFlags extra = JsFormat.FunctionFlags.None,
         bool isMethod = false,
         bool isDerived = false,
         bool isStaticBlock = false,
-        bool isFieldInitialiser = false,
-        JsFunctionNode? written = null)
+        bool isFieldInitialiser = false)
     {
         // WHAT THE FUNCTION IS WAS DECIDED ONCE, BY THE BINDER (SJL-12.6 item 1): its strictness, its
         // parameter list's shape, its `arguments` object and its records. Each emission reads the
         // same answers - a function written in a `finally` block is compiled once per path out of it.
-        var facts = binder.Function(Origin(written ?? function));
+        var facts = binder.Function(function);
         var outerBuffer = buffer;
         var outerScope = scope;
         var outerDepth = blockDepth;
@@ -141,14 +165,14 @@ public sealed partial class JsCompiler
         var outerFunction = insideFunction;
         var outerField = insideFieldInitialiser;
         var outerFieldValueName = fieldValueName;
-        fieldValueName = isFieldInitialiser ? function.Name : null;
+        fieldValueName = isFieldInitialiser ? name : null;
         var outerExits = exits;
         exits = [];
 
         // A FIELD INITIALISER IS A METHOD WHOSE `arguments` NAMES NOTHING, and an arrow inside one
         // inherits that as it inherits `super`. Any other function has its own `arguments`, and its
         // own `super` too, so neither reaches past it (JSeal V14).
-        if (!function.IsArrow)
+        if (!isArrow)
         {
             insideFieldInitialiser = isFieldInitialiser;
         }
@@ -162,7 +186,7 @@ public sealed partial class JsCompiler
 
         // AN ARROW INHERITS EVERY ONE OF THESE AND ANY OTHER FUNCTION RESETS THEM. That single
         // difference is what `super`, `this` and `new.target` mean inside an arrow.
-        if (!function.IsArrow)
+        if (!isArrow)
         {
             insideMethod = isMethod;
             insideDerivedConstructor = isDerived;
@@ -175,7 +199,7 @@ public sealed partial class JsCompiler
 
         var flags = Strictness() | JsFormat.FunctionFlags.Constructible;
 
-        if (function.IsArrow)
+        if (isArrow)
         {
             flags = (flags & ~JsFormat.FunctionFlags.Constructible) | JsFormat.FunctionFlags.Arrow;
         }
@@ -214,10 +238,10 @@ public sealed partial class JsCompiler
         // rest was lowered anyway, and the verifier refused the artifact this host produced, which
         // is the exit the host reserves for its own defects. It is refused here instead, naming the
         // ceiling, at the function *(corrected: JSC-240)*.
-        if (ExpectedArgumentCount(function.Parameters) is > (int)JsFormat.CeilingCallArguments and var arity)
+        if (ExpectedArgumentCount(formals) is > (int)JsFormat.CeilingCallArguments and var arity)
         {
             Refuse(
-                function.Span,
+                span,
                 SliceSourceDiagnosticCode.TooManyLocals,
                 "a function of this format declares at most 255 parameters before its first default " +
                 "or rest parameter - the count the frame copies a call's arguments into - and this " +
@@ -226,7 +250,7 @@ public sealed partial class JsCompiler
 
         // A GENERATOR IS NOT A CONSTRUCTOR, and dropping the bit is what makes `new g()` a type
         // error from the ordinary construction path rather than a special case somewhere in it.
-        if (function.IsGenerator)
+        if (isGenerator)
         {
             flags = (flags & ~JsFormat.FunctionFlags.Constructible) | JsFormat.FunctionFlags.Generator;
         }
@@ -236,17 +260,17 @@ public sealed partial class JsCompiler
         // production of the grammar, and an async arrow is - so the flags are set independently and
         // the verifier's own consistency check admits `Async | Arrow` while refusing
         // `Generator | Arrow`.
-        if (function.IsAsync)
+        if (isAsync)
         {
             flags = (flags & ~JsFormat.FunctionFlags.Constructible) | JsFormat.FunctionFlags.Async;
         }
 
         var index = units.Count;
-        var name = function.Name.Length == 0 ? (ushort)0 : (ushort)(InternedName(function.Name) + 1);
+        var unitName = name.Length == 0 ? (ushort)0 : (ushort)(InternedName(name) + 1);
 
-        buffer = new UnitBuffer(name, flags)
+        buffer = new UnitBuffer(unitName, flags)
         {
-            ParameterCount = ExpectedArgumentCount(function.Parameters),
+            ParameterCount = ExpectedArgumentCount(formals),
         };
 
         units.Add(buffer);
@@ -265,17 +289,17 @@ public sealed partial class JsCompiler
         // name to the last one - so its hidden slot is written by the copy and by nothing else,
         // and aliasing `arguments[i]` to it is indistinguishable from not mapping that index,
         // which is what `CreateMappedArgumentsObject` does for it.
-        for (var position = 0; position < function.Parameters.Count; position++)
+        for (var position = 0; position < formals.Count; position++)
         {
-            var parameter = function.Parameters[position];
+            var parameter = formals[position];
 
-            if (simple && IsRedeclaredLater(function.Parameters, position))
+            if (simple && IsRedeclaredLater(formals, position))
             {
                 _ = scope.Declare("#shadowed" + scope.SlotCount, constant: false);
                 continue;
             }
 
-            DeclarePatternNames(parameter.Target, constant: false);
+            DeclarePatternNames(ParameterTarget(parameter, out _), constant: false);
         }
 
         // A PARAMETER THAT BINDS `arguments` IS THE BINDING, AND THE OBJECT IS NOT CREATED AT ALL.
@@ -327,7 +351,7 @@ public sealed partial class JsCompiler
 
             scope.ParameterLimit = scope.SlotCount;
             parameterScopes.Add(scope);
-            CompileParameters(function.Parameters);
+            CompileParameters(formals);
             parameterScopes.Remove(scope);
 
             // THE SEAM IS EMITTED FOR A GENERATOR AND FOR NOTHING ELSE, because a generator is the
@@ -342,7 +366,7 @@ public sealed partial class JsCompiler
             // at the call - which is what this engine's async arm already does by running the body
             // synchronously to its first `await`. Marking the seam there would have bought nothing
             // and cost one dispatch on every async call *(corrected: JSC-159)*.
-            if (function.IsGenerator)
+            if (isGenerator)
             {
                 Emit(JsOpcode.EnterBody);
             }
@@ -380,7 +404,15 @@ public sealed partial class JsCompiler
         // this lowering keeps them in the same record and says which half a name is in.
         scope.LexicalFrom = scope.SlotCount;
 
-        CompileDisposing(function.Body, -1);
+        if (value is null)
+        {
+            CompileDisposing(body, -1, JsTreeFacts.PrologueLength(body));
+        }
+        else
+        {
+            Position(span);
+            CompileReturn(span, value);
+        }
         Emit(JsOpcode.ReturnUndefined);
 
         // The unit's own record is the parameters' one; the body's, when it has one, is sized by
@@ -389,7 +421,7 @@ public sealed partial class JsCompiler
 
         if (buffer.SlotCount > MaximumSlots || scope.SlotCount > MaximumSlots)
         {
-            Refuse(function.Span, SliceSourceDiagnosticCode.TooManyLocals, "a function declares too many bindings");
+            Refuse(span, SliceSourceDiagnosticCode.TooManyLocals, "a function declares too many bindings");
         }
 
         buffer = outerBuffer;
@@ -403,9 +435,35 @@ public sealed partial class JsCompiler
         insideFieldInitialiser = outerField;
         fieldValueName = outerFieldValueName;
         exits = outerExits;
-        RecordSource(index, function.SourceStart, function.SourceEnd);
+        RecordSource(index, sourceStart, sourceEnd);
         return index;
     }
+
+    /// <summary>A function the source wrote, at the place and under the name its site gives it.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=5774CF
+    // Broiler-Human:        PENDING
+    private int CompileFunction(
+        FunctionNode function,
+        SliceSourceSpan span,
+        string name,
+        JsFormat.FunctionFlags extra = JsFormat.FunctionFlags.None,
+        bool isMethod = false,
+        bool isDerived = false) =>
+        CompileFunction(
+            function,
+            span,
+            name,
+            function.Parameters,
+            function.Body,
+            function.ExpressionBody,
+            function.IsArrow,
+            function.IsGenerator,
+            function.IsAsync,
+            function.Span.Offset,
+            JsTreeFacts.EndOf(function),
+            extra,
+            isMethod,
+            isDerived);
 
     /// <summary>Records the source text a compilation is about to lower, and answers its index.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=CC3D91
@@ -449,20 +507,20 @@ public sealed partial class JsCompiler
     // ---- parameters ----------------------------------------------------------------------------
 
     /// <summary>Whether a later parameter of a simple list binds the same name as this one.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CAAB07
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DFF439
     // Broiler-Human:        PENDING
     private static bool IsRedeclaredLater(
-        System.Collections.Generic.IReadOnlyList<JsParameter> parameters, int position)
+        System.Collections.Generic.IReadOnlyList<Pattern> parameters, int position)
     {
-        if (parameters[position].Target is not JsTargetPattern { Target: JsIdentifier earlier })
+        if (!JsTreeFacts.IsSimpleName(ParameterTarget(parameters[position], out _), out var earlier))
         {
             return false;
         }
 
         for (var later = position + 1; later < parameters.Count; later++)
         {
-            if (parameters[later].Target is JsTargetPattern { Target: JsIdentifier name } &&
-                string.Equals(earlier.Name, name.Name, System.StringComparison.Ordinal))
+            if (JsTreeFacts.IsSimpleName(ParameterTarget(parameters[later], out _), out var name) &&
+                string.Equals(earlier, name, System.StringComparison.Ordinal))
             {
                 return true;
             }
@@ -480,16 +538,16 @@ public sealed partial class JsCompiler
     /// <c>function f({a}, b = 1, c) {}</c> reports 1, not 3 and not 2 - the count stops at the first
     /// default and everything after it, default or not, is invisible to <c>length</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AC49D2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=922E0A
     // Broiler-Human:        PENDING
     private static int ExpectedArgumentCount(
-        System.Collections.Generic.IReadOnlyList<JsParameter> parameters)
+        System.Collections.Generic.IReadOnlyList<Pattern> parameters)
     {
         var count = 0;
 
         foreach (var parameter in parameters)
         {
-            if (parameter.IsRest || parameter.Default is not null)
+            if (parameter is RestElement or AssignmentPattern)
             {
                 break;
             }
@@ -515,17 +573,18 @@ public sealed partial class JsCompiler
     /// than bolted onto the lowering.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=ED8285
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E2E6FD
     // Broiler-Human:        PENDING
     private void CompileParameters(
-        System.Collections.Generic.IReadOnlyList<JsParameter> parameters)
+        System.Collections.Generic.IReadOnlyList<Pattern> parameters)
     {
         for (var at = 0; at < parameters.Count; at++)
         {
-            var parameter = parameters[at];
-            Position(parameter.Span);
+            var written = parameters[at];
+            var parameter = ParameterTarget(written, out var initialiser);
+            Position(JsTreeFacts.At(written));
 
-            if (parameter.IsRest)
+            if (written is RestElement)
             {
                 // A REST PARAMETER IS AN ARRAY AND NEVER `arguments`. It is dense, it has
                 // Array.prototype, and a caller that passed nothing gives it length zero rather
@@ -539,10 +598,29 @@ public sealed partial class JsCompiler
                 // A DEFAULT RUNS WHEN THE ARGUMENT IS `undefined`, WHICH IS NOT THE SAME AS ABSENT.
                 // `f(undefined)` takes the default and `f(null)` does not, so the test is against
                 // the value rather than against the argument count.
-                ApplyDefault(parameter.Default, InferredFrom(parameter.Target));
+                ApplyDefault(initialiser, InferredFrom(parameter));
             }
 
-            BindPattern(parameter.Target, BindMode.Initialise);
+            BindPattern(parameter, BindMode.Initialise);
+        }
+    }
+
+    /// <summary>A parameter's target, and its default where it has one; a rest parameter's is what it binds.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B36C3F
+    // Broiler-Human:        PENDING
+    private static Pattern ParameterTarget(Pattern parameter, out Expression? initialiser)
+    {
+        switch (parameter)
+        {
+            case AssignmentPattern defaulted:
+                initialiser = defaulted.Initializer;
+                return defaulted.Target;
+            case RestElement rest:
+                initialiser = null;
+                return rest.Argument;
+            default:
+                initialiser = null;
+                return parameter;
         }
     }
 }

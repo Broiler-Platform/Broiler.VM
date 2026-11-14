@@ -15,6 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Syntax;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
@@ -24,13 +25,13 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 public sealed partial class JsCompiler
 {
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=381B94
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6EECEF
     // Broiler-Human:        PENDING
-    private void CompileTry(JsTryStatement guarded, int completion)
+    private void CompileTry(TryStatement guarded, int completion)
     {
         ResetCompletion(completion);
         var end = NewLabel();
-        var hasFinally = guarded.Finaliser is not null;
+        var hasFinally = guarded.Finalizer is not null;
         var tryStart = buffer.Code.Count;
         var level = ++regionLevel;
 
@@ -38,7 +39,7 @@ public sealed partial class JsCompiler
         {
             exits.Add(new Exit(ExitKind.Finally, string.Empty, blockDepth)
             {
-                Finaliser = guarded.Finaliser,
+                Finaliser = guarded.Finalizer,
                 Guarded = tryStart,
                 Level = level,
             });
@@ -52,7 +53,7 @@ public sealed partial class JsCompiler
                 new PendingRegion(
                     tryStart, catchHandler, blockDepth, JsFormat.HandlerKind.Catch, Level: level));
 
-            CompileBlock(guarded.Block, completion);
+            CompileBlock(guarded.Block, guarded.Block.Body, completion);
             ProtectSomething(tryStart);
             buffer.CloseRegion(tryStart, buffer.Code.Count);
             Branch(JsOpcode.Jump, afterCatch);
@@ -65,16 +66,18 @@ public sealed partial class JsCompiler
             Emit(JsOpcode.PushScope, (ushort)0);
             buffer.ScopeSites.Add((scopeSite, scope));
 
-            if (guarded.CatchPattern is not null)
+            var caught = guarded.Handler.Parameter;
+
+            if (caught is not null and not BindingIdentifier)
             {
-                DeclarePatternNames(guarded.CatchPattern, constant: false);
-                BindPattern(guarded.CatchPattern, BindMode.Initialise);
+                DeclarePatternNames(caught, constant: false);
+                BindPattern(caught, BindMode.Initialise);
             }
             else
             {
-                var parameter = guarded.CatchParameter.Length == 0
+                var parameter = caught is not BindingIdentifier name
                     ? scope.Declare("#caught", constant: false)
-                    : scope.Declare(guarded.CatchParameter, constant: false);
+                    : scope.Declare(name.Name, constant: false);
 
                 EmitScoped(JsOpcode.InitialiseScoped, 0, parameter);
             }
@@ -89,7 +92,7 @@ public sealed partial class JsCompiler
             // that closes over `x` sees the outer `x`, not a `let x` the block declares. Until
             // 2026-10-03 both lived in one record (JSC-254). A plain parameter has no default to
             // close over anything, so it keeps the one record.
-            var blockScoped = guarded.CatchPattern is not null;
+            var blockScoped = caught is not null and not BindingIdentifier;
             var parameterScope = scope;
 
             if (blockScoped)
@@ -105,13 +108,13 @@ public sealed partial class JsCompiler
             // are: a closure created above a `let` resolves to that `let`, in its dead zone, and
             // not to a name outside. Until 2026-10-03 a catch body declared each name only when
             // its declaration was reached (JSC-254).
-            var catchDeclarations = binder.Block(Origin(guarded.Handler));
+            var catchDeclarations = binder.Block(guarded.Handler.Body);
             DeclareLexical(catchDeclarations.Lexical);
             HoistBlockFunctions(catchDeclarations);
 
             // A catch body is a Block and disposes its own resources, inside the parameter's scope
             // and before control leaves the handler - not in whatever list encloses the `try`.
-            CompileDisposing(guarded.Handler.Body, completion);
+            CompileDisposing(guarded.Handler.Body.Body, completion);
 
             if (blockScoped)
             {
@@ -127,7 +130,7 @@ public sealed partial class JsCompiler
         }
         else
         {
-            CompileBlock(guarded.Block, completion);
+            CompileBlock(guarded.Block, guarded.Block.Body, completion);
         }
 
         if (!hasFinally)
@@ -174,7 +177,7 @@ public sealed partial class JsCompiler
             ResetCompletion(completion);
         }
 
-        CompileBlock(guarded.Finaliser!, completion);
+        CompileBlock(guarded.Finalizer!, guarded.Finalizer!.Body, completion);
 
         if (settled >= 0)
         {
@@ -195,7 +198,7 @@ public sealed partial class JsCompiler
         var pending = scope.Declare("#pending", constant: false);
         EmitScoped(JsOpcode.InitialiseScoped, 0, pending);
         ResetCompletion(completion);
-        CompileBlock(guarded.Finaliser!, completion);
+        CompileBlock(guarded.Finalizer!, guarded.Finalizer!.Body, completion);
         EmitScoped(JsOpcode.LoadScoped, 0, pending);
         Emit(JsOpcode.PopScope);
         blockDepth--;
@@ -236,9 +239,9 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0EBBF4
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FBCDBD
     // Broiler-Human:        PENDING
-    private void CompileReturn(JsReturnStatement returned)
+    private void CompileReturn(SliceSourceSpan span, Expression? value)
     {
         // THE QUESTION IS WHICH HOISTING SCOPE ENCLOSES THIS, NOT WHICH SCOPE IS CURRENT. A block
         // that declares a lexical name pushes a scope of its own, and so does a `with`, so asking
@@ -256,7 +259,7 @@ public sealed partial class JsCompiler
         // contain a ReturnStatement); until 2026-10-03 a module's `return` ran (JSC-253).
         if (FunctionScope().Kind is ScopeKind.Program or ScopeKind.Eval or ScopeKind.Module)
         {
-            throw BinderAdmitted(returned.Span, "a `return` outside a function");
+            throw BinderAdmitted(span, "a `return` outside a function");
         }
 
         // A STATIC BLOCK COMPILES TO A FUNCTION AND IS NOT ONE, which is why the scope test above
@@ -269,7 +272,7 @@ public sealed partial class JsCompiler
         // refuses it under 2207".)*
         if (insideStaticBlock)
         {
-            throw BinderAdmitted(returned.Span, "a `return` in a class static block");
+            throw BinderAdmitted(span, "a `return` in a class static block");
         }
 
         var unwinds = false;
@@ -283,7 +286,7 @@ public sealed partial class JsCompiler
 
         if (!unwinds)
         {
-            if (returned.Value is null)
+            if (value is null)
             {
                 Emit(JsOpcode.ReturnUndefined);
                 return;
@@ -291,11 +294,11 @@ public sealed partial class JsCompiler
 
             if (fieldValueName is { } named)
             {
-                CompileNamedValue(returned.Value, named);
+                CompileNamedValue(value, named);
             }
             else
             {
-                CompileExpression(returned.Value);
+                CompileExpression(value);
             }
 
             AwaitTheReturnedValue();
@@ -311,13 +314,13 @@ public sealed partial class JsCompiler
         var function = FunctionScope();
         var slot = function.Declare("#return" + function.SlotCount, constant: false);
 
-        if (returned.Value is null)
+        if (value is null)
         {
             Emit(JsOpcode.LoadUndefined);
         }
         else
         {
-            CompileExpression(returned.Value);
+            CompileExpression(value);
             AwaitTheReturnedValue();
         }
 
@@ -376,7 +379,7 @@ public sealed partial class JsCompiler
     /// The scopes between here and the exit are discarded first, because a finaliser's body and an
     /// iterator's slot are both addressed relative to the depth the exit was created at.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=10C2A5
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CFE7EA
     // Broiler-Human:        PENDING
     private void Unwind(Exit exit)
     {
@@ -399,7 +402,7 @@ public sealed partial class JsCompiler
 
             Unwrap(exit.Depth);
             exit.Running = true;
-            CompileBlock(exit.Finaliser!, -1);
+            CompileBlock(exit.Finaliser!, exit.Finaliser!.Body, -1);
             exit.Running = false;
             return;
         }

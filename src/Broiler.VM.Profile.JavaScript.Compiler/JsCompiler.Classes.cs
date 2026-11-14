@@ -3,18 +3,19 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   9
-// Annotated:        9/9
+// Relevant units:   8
+// Annotated:        8/8
 // Exempt:           0
-// Human-reviewed:   0/9
+// Human-reviewed:   0/8
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       9
+// Unverified:       8
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Syntax;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
@@ -32,11 +33,11 @@ public sealed partial class JsCompiler
     /// constant <c>C</c> that only the class body can see - which is why <c>C = 1</c> after the
     /// declaration is fine and <c>C = 1</c> inside a method is not.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=38B06E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=89AE54
     // Broiler-Human:        PENDING
-    private void CompileClassDeclaration(JsClassDeclaration declaration)
+    private void CompileClassDeclaration(ClassDeclaration declaration)
     {
-        var name = declaration.Class.Name;
+        var name = NameOf(declaration.Class);
         CompileClass(declaration.Class, name);
 
         if (scope.Kind == ScopeKind.Program && blockDepth == 0)
@@ -91,13 +92,15 @@ public sealed partial class JsCompiler
     /// was written would have collapsed the middle two and been wrong about both.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=26F3ED
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5EA1E1
     // Broiler-Human:        PENDING
-    private void CompileClass(JsClassNode node, string inferredName)
+    private void CompileClass(ClassNode node, string inferredName)
     {
         var outer = scope;
-        var named = node.Name.Length != 0;
-        var privates = binder.PrivateNames((Broiler.ECMAScript.Syntax.ClassNode)Origin(node));
+        var own = NameOf(node);
+        var named = own.Length != 0;
+        var privates = binder.PrivateNames(node);
+        var heritage = node.Heritage is not null;
 
         // THE SCOPE EXISTS FOR THE PRIVATE NAMES TOO AND NOT ONLY FOR THE CLASS'S OWN BINDING. An
         // anonymous class with a `#x` in it has nowhere else to keep the name, and the name has to
@@ -115,11 +118,11 @@ public sealed partial class JsCompiler
 
             if (named)
             {
-                scope.Declare(node.Name, constant: true);
+                scope.Declare(own, constant: true);
             }
         }
 
-        if (node.HasHeritage)
+        if (heritage)
         {
             CompileExpression(node.Heritage!);
         }
@@ -139,29 +142,31 @@ public sealed partial class JsCompiler
             }
         }
 
-        var name = named ? node.Name : inferredName;
-        var constructor = FindConstructor(node);
+        var name = named ? own : inferredName;
+        var written = JsTreeFacts.FindConstructor(node, unitParse.BigInts);
+        var constructor = written?.Function;
 
         var flags = JsFormat.FunctionFlags.ClassConstructor | JsFormat.FunctionFlags.Constructible |
-            (node.HasHeritage ? JsFormat.FunctionFlags.DerivedConstructor : JsFormat.FunctionFlags.None);
+            (heritage ? JsFormat.FunctionFlags.DerivedConstructor : JsFormat.FunctionFlags.None);
 
         var unit = constructor is null
-            ? CompileImplicitConstructor(node.Span, name, node.HasHeritage, flags)
+            ? CompileImplicitConstructor(JsTreeFacts.At(node), name, heritage, flags)
             : CompileFunction(
-                constructor with { Name = name },
+                constructor,
+                JsTreeFacts.At(written!),
+                name,
                 flags,
                 isMethod: true,
-                isDerived: node.HasHeritage,
-                written: constructor);
+                isDerived: heritage);
 
         // A CLASS'S CONSTRUCTOR RENDERS AS THE WHOLE CLASS, whether it was written or implied.
-        RecordSource(unit, node.SourceStart, node.SourceEnd);
+        RecordSource(unit, node.Span.Offset, JsTreeFacts.EndOf(node));
 
         Emit(JsOpcode.Closure, (ushort)unit);
-        Emit(JsOpcode.NewClass, (byte)(node.HasHeritage ? JsOpcodes.ClassIsDerived : 0));
+        Emit(JsOpcode.NewClass, (byte)(heritage ? JsOpcodes.ClassIsDerived : 0));
 
-        var defines = node.Members.Count != 0 &&
-            (constructor is null || node.Members.Count != 1);
+        var defines = node.Elements.Count != 0 &&
+            (constructor is null || node.Elements.Count != 1);
 
         if (defines)
         {
@@ -171,40 +176,43 @@ public sealed partial class JsCompiler
 
         var statics = false;
 
-        foreach (var member in node.Members)
+        foreach (var member in node.Elements)
         {
-            if (member.Function is not null && ReferenceEquals(member.Function, constructor))
+            if (ReferenceEquals(member, written))
             {
                 continue;
             }
 
-            Position(member.Span);
+            Position(JsTreeFacts.At(member));
 
-            if (member.Kind is JsMethodKind.Field or JsMethodKind.StaticBlock || member.IsPrivate)
+            if (member is not MethodDefinition { Key: not PrivateIdentifier } method)
             {
-                statics |= member.IsStatic;
+                statics |= member is StaticBlock or FieldDefinition { IsStatic: true } or MethodDefinition { IsStatic: true };
                 CompileClassElement(member);
                 continue;
             }
 
-            if (member.IsStatic)
+            if (method.IsStatic)
             {
                 Emit(JsOpcode.Pick, (byte)1);
             }
 
-            if (member.Computed is null)
+            var computed = JsTreeFacts.KeyExpression(method.Key);
+            var key = computed is null ? KeyOf(method.Key) : string.Empty;
+
+            if (computed is null)
             {
-                Emit(JsOpcode.LoadConstant, StringConstant(member.Key));
+                Emit(JsOpcode.LoadConstant, StringConstant(key));
             }
             else
             {
-                CompileExpression(member.Computed);
+                CompileExpression(computed);
             }
 
-            Emit(JsOpcode.Closure, (ushort)CompileFunction(member.Function!, isMethod: true));
-            Emit(JsOpcode.DefineMethod, MemberOperand(member.Kind, enumerable: false));
+            Emit(JsOpcode.Closure, (ushort)CompileFunction(method.Function, JsTreeFacts.At(method), key, isMethod: true));
+            Emit(JsOpcode.DefineMethod, MemberOperand(method.MethodKind, enumerable: false));
 
-            if (member.IsStatic)
+            if (method.IsStatic)
             {
                 Emit(JsOpcode.Pop);
             }
@@ -218,7 +226,7 @@ public sealed partial class JsCompiler
         if (named)
         {
             Emit(JsOpcode.Duplicate);
-            EmitScoped(JsOpcode.InitialiseScoped, 0, scope.SlotOf(node.Name));
+            EmitScoped(JsOpcode.InitialiseScoped, 0, scope.SlotOf(own));
         }
 
         // THE STATIC ELEMENTS RUN AFTER THE BINDING AND BEFORE THE SCOPE GOES, and both halves of
@@ -249,72 +257,91 @@ public sealed partial class JsCompiler
     /// the initialiser are pushed and consumed by the one instruction, and the pair beneath them is
     /// read rather than popped.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=903C29
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=217BAA
     // Broiler-Human:        PENDING
-    private void CompileClassElement(JsClassMember member)
+    private void CompileClassElement(SyntaxNode member)
     {
-        var flags = (byte)(
-            (member.IsStatic ? JsOpcodes.ElementIsStatic : 0) |
-            (member.IsPrivate ? JsOpcodes.ElementIsPrivate : 0));
+        var (isStatic, written) = member switch
+        {
+            MethodDefinition method => (method.IsStatic, method.Key),
+            FieldDefinition field => (field.IsStatic, field.Key),
+            _ => (true, null),
+        };
 
-        if (member.Kind == JsMethodKind.StaticBlock)
+        var isPrivate = written is PrivateIdentifier;
+        var flags = (byte)(
+            (isStatic ? JsOpcodes.ElementIsStatic : 0) |
+            (isPrivate ? JsOpcodes.ElementIsPrivate : 0));
+
+        if (member is StaticBlock block)
         {
             Emit(JsOpcode.LoadUndefined);
 
             Emit(
                 JsOpcode.Closure,
-                (ushort)CompileFunction(member.Function!, isMethod: true, isStaticBlock: true));
+                (ushort)CompileFunction(
+                    block, JsTreeFacts.At(block), string.Empty, [], block.Body, null,
+                    isArrow: false, isGenerator: false, isAsync: false, block.Span.Offset, JsTreeFacts.EndOf(block),
+                    isMethod: true, isStaticBlock: true));
 
             Emit(JsOpcode.DefineClassElement, (byte)(flags | JsOpcodes.ElementIsBlock));
             return;
         }
 
-        if (member.IsPrivate)
+        var computed = JsTreeFacts.KeyExpression(written!);
+        var key = computed is null ? KeyOf(written!) : string.Empty;
+
+        if (isPrivate)
         {
-            EmitPrivateName(member.Span, member.Key);
+            EmitPrivateName(JsTreeFacts.At(member), key);
         }
-        else if (member.Computed is null)
+        else if (computed is null)
         {
-            Emit(JsOpcode.LoadConstant, StringConstant(member.Key));
+            Emit(JsOpcode.LoadConstant, StringConstant(key));
         }
         else
         {
-            CompileExpression(member.Computed);
+            CompileExpression(computed);
         }
 
-        if (member.Kind != JsMethodKind.Field)
+        if (member is MethodDefinition element)
         {
-            flags |= member.Kind switch
+            flags |= element.MethodKind switch
             {
-                JsMethodKind.Get => (byte)(JsOpcodes.ElementIsMethod | JsOpcodes.ElementIsGetter),
-                JsMethodKind.Set => (byte)(JsOpcodes.ElementIsMethod | JsOpcodes.ElementIsSetter),
+                MethodKind.Get => (byte)(JsOpcodes.ElementIsMethod | JsOpcodes.ElementIsGetter),
+                MethodKind.Set => (byte)(JsOpcodes.ElementIsMethod | JsOpcodes.ElementIsSetter),
                 _ => JsOpcodes.ElementIsMethod,
             };
 
-            Emit(JsOpcode.Closure, (ushort)CompileFunction(member.Function!, isMethod: true));
+            Emit(JsOpcode.Closure, (ushort)CompileFunction(element.Function, JsTreeFacts.At(element), key, isMethod: true));
             Emit(JsOpcode.DefineClassElement, flags);
             return;
         }
 
+        var value = ((FieldDefinition)member).Value;
+
         // A FIELD WITH NO INITIALISER IS `undefined` AND NOT AN ABSENT FIELD. `class C { x }`
         // defines `x` on every instance, so the field is recorded with no initialiser rather than
         // not recorded - and the executor tells the two apart by what is pushed here.
-        if (member.Function is null)
+        if (value is null)
         {
             Emit(JsOpcode.LoadUndefined);
         }
         else
         {
-            if (member.Computed is not null && !member.IsPrivate &&
-                member.Function.Body is [JsReturnStatement { Value: { } value }] &&
-                NamedAtRunTime(value))
+            if (computed is not null && !isPrivate && NamedAtRunTime(value))
             {
                 flags |= JsOpcodes.ElementIsNamedValue;
             }
 
+            // A FIELD'S INITIALISER IS A FUNCTION RETURNING ITS VALUE AT THE FIELD, with no source of its
+            // own, as the wide parser's tree held it.
             Emit(
                 JsOpcode.Closure,
-                (ushort)CompileFunction(member.Function, isMethod: true, isFieldInitialiser: true));
+                (ushort)CompileFunction(
+                    member, JsTreeFacts.At(member), key, [], [], value,
+                    isArrow: false, isGenerator: false, isAsync: false, -1, -1,
+                    isMethod: true, isFieldInitialiser: true));
         }
 
         Emit(JsOpcode.DefineClassElement, flags);
@@ -394,32 +421,6 @@ public sealed partial class JsCompiler
     // Broiler-Human:        PENDING
     private static string PrivateSlot(string name) => "#" + name;
 
-    /// <summary>The class body's own <c>constructor</c>, when it wrote one.</summary>
-    /// <remarks>
-    /// A STATIC member called <c>constructor</c> is not it, and neither is a getter of that name
-    /// nor a computed key that happens to evaluate to the string: the specification decides this
-    /// syntactically, on a non-static, non-computed method whose property name is
-    /// <c>constructor</c>, and so does this.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=898148
-    // Broiler-Human:        PENDING
-    internal static JsFunctionNode? FindConstructor(JsClassNode node)
-    {
-        foreach (var member in node.Members)
-        {
-            if (!member.IsStatic &&
-                !member.IsPrivate &&
-                member.Kind == JsMethodKind.Method &&
-                member.Computed is null &&
-                string.Equals(member.Key, "constructor", System.StringComparison.Ordinal))
-            {
-                return member.Function;
-            }
-        }
-
-        return null;
-    }
-
     /// <summary>Builds the constructor a class body did not write.</summary>
     /// <remarks>
     /// <b>There is no syntax tree behind this unit, and there could not be.</b> A base class's
@@ -463,13 +464,13 @@ public sealed partial class JsCompiler
     }
 
     /// <summary>The <see cref="JsOpcode.DefineMethod"/> operand for one member.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CBC5E3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A12D3C
     // Broiler-Human:        PENDING
-    private static byte MemberOperand(JsMethodKind kind, bool enumerable) => (byte)(
+    private static byte MemberOperand(MethodKind kind, bool enumerable) => (byte)(
         (kind switch
         {
-            JsMethodKind.Get => JsOpcodes.MemberIsGetter,
-            JsMethodKind.Set => JsOpcodes.MemberIsSetter,
+            MethodKind.Get => JsOpcodes.MemberIsGetter,
+            MethodKind.Set => JsOpcodes.MemberIsSetter,
             _ => 0,
         }) | (enumerable ? JsOpcodes.MemberIsEnumerable : 0));
 }

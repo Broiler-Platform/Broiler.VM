@@ -497,7 +497,7 @@ internal sealed partial class JsBinder
     /// which is why <see cref="ModuleDeclarations"/> lists every name a pattern binds.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=800470
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=55AC38
     // Broiler-Falsified-If: a module the lowering's export checks admitted is refused here, or one they refused is admitted, or a refusal's code, message or place differs from theirs
     // Broiler-Human:        PENDING
     private void CheckModule(System.Collections.Generic.IReadOnlyList<Statement> body)
@@ -541,7 +541,7 @@ internal sealed partial class JsBinder
         {
             if (statement is ExportDefaultDeclaration { Declaration: Expression })
             {
-                declared.Add(JsModuleNames.DefaultBindingName);
+                declared.Add(JsCompiler.DefaultBindingName);
             }
         }
 

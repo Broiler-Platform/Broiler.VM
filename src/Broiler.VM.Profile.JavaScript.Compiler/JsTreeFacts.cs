@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   38
-// Annotated:        38/38
+// Relevant units:   50
+// Annotated:        50/50
 // Exempt:           3
-// Human-reviewed:   0/38
+// Human-reviewed:   0/50
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         12/12
+// Criteria:         14/14
 // Resource impact:  1/10 max
-// Unverified:       38
+// Unverified:       50
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -569,6 +569,114 @@ internal static class JsTreeFacts
         _ => SliceTokenKind.QuestionQuestion,
     };
 
+    // ---- members, assignments and patterns ---------------------------------------------------------
+
+    /// <summary>A member access's computed key expression, or <see langword="null"/> for a dotted or private name.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=D4270B
+    // Broiler-Human:        PENDING
+    internal static Expression? Computed(MemberExpression member) =>
+        member.IsComputed ? (Expression)member.Property : null;
+
+    /// <summary>A member access's name: the dotted name, the private name with its <c>#</c>, or empty when computed.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=1E14AC
+    // Broiler-Human:        PENDING
+    internal static string PropertyName(MemberExpression member) => member.Property switch
+    {
+        IdentifierName name => name.Name,
+        PrivateIdentifier name => name.Name,
+        _ => string.Empty,
+    };
+
+    /// <summary>
+    /// Where the name after a dotted member's dot is written, or the default span for any other: what an
+    /// error's stack places the read, and a call of it, at (JSD-0038).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=64DA41
+    // Broiler-Falsified-If: a dotted member's name is placed anywhere but at the name, or a computed, private or super member's at all
+    // Broiler-Human:        PENDING
+    internal static SliceSourceSpan NameSpan(MemberExpression member) =>
+        member is { Object: not SuperExpression, Property: IdentifierName name } ? At(name) : default;
+
+    /// <summary>An assignment's reference target, seen through its parentheses.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=905143
+    // Broiler-Human:        PENDING
+    internal static Expression AssignedTarget(AssignmentExpression assignment) =>
+        Unwrap(assignment.Target is TargetPattern leaf ? leaf.Target : (Expression)assignment.Target);
+
+    /// <summary>
+    /// Whether an assignment's target is a name written in parentheses, which assigns the name and infers
+    /// no function name from it.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=97FB53
+    // Broiler-Falsified-If: a parenthesised name target infers a function's name, or an unparenthesised one does not
+    // Broiler-Human:        PENDING
+    internal static bool ParenthesisedTarget(AssignmentExpression assignment) =>
+        (assignment.Target is TargetPattern leaf ? leaf.Target : assignment.Target) is ParenthesizedExpression &&
+        AssignedTarget(assignment) is Identifier;
+
+    /// <summary>A property key's computed expression, or <see langword="null"/> for a literal key.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=F7A7BC
+    // Broiler-Human:        PENDING
+    internal static Expression? KeyExpression(SyntaxNode key) => key is ComputedPropertyName name ? name.Expression : null;
+
+    /// <summary>An array pattern's elements before its rest, a hole as <see langword="null"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=446E9E
+    // Broiler-Human:        PENDING
+    internal static System.Collections.Generic.List<Pattern?> Elements(ArrayPattern pattern)
+    {
+        var elements = new System.Collections.Generic.List<Pattern?>(pattern.Elements.Count);
+
+        foreach (var element in pattern.Elements)
+        {
+            if (element is not RestElement)
+            {
+                elements.Add(element);
+            }
+        }
+
+        return elements;
+    }
+
+    /// <summary>An object pattern's properties before its rest.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=26371A
+    // Broiler-Human:        PENDING
+    internal static System.Collections.Generic.List<PatternProperty> Properties(ObjectPattern pattern)
+    {
+        var properties = new System.Collections.Generic.List<PatternProperty>(pattern.Properties.Count);
+
+        foreach (var property in pattern.Properties)
+        {
+            if (property is PatternProperty entry)
+            {
+                properties.Add(entry);
+            }
+        }
+
+        return properties;
+    }
+
+    /// <summary>What an array pattern's rest binds, or <see langword="null"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=64B88F
+    // Broiler-Human:        PENDING
+    internal static Pattern? Rest(ArrayPattern pattern) =>
+        pattern.Elements.Count != 0 && pattern.Elements[^1] is RestElement rest ? rest.Argument : null;
+
+    /// <summary>What an object pattern's rest binds, or <see langword="null"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=0868DE
+    // Broiler-Human:        PENDING
+    internal static Pattern? Rest(ObjectPattern pattern) =>
+        pattern.Properties.Count != 0 && pattern.Properties[^1] is RestElement rest ? rest.Argument : null;
+
+    /// <summary>A pattern element's target: what a default is the default of, or the element itself.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=CB82AF
+    // Broiler-Human:        PENDING
+    internal static Pattern ElementTarget(Pattern element) => element is AssignmentPattern defaulted ? defaulted.Target : element;
+
+    /// <summary>A pattern element's default, or <see langword="null"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=E1677A
+    // Broiler-Human:        PENDING
+    internal static Expression? ElementDefault(Pattern element) => element is AssignmentPattern defaulted ? defaulted.Initializer : null;
+
     // ---- declarations, heads and exports -----------------------------------------------------------
 
     /// <summary>
@@ -700,7 +808,7 @@ internal static class JsTreeFacts
     /// statement that exports nothing. A default export of a class or a function publishes its binding,
     /// <c>default</c> where it has no name, and of an expression the binding no source can write.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=F4E341
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=EC1F7E
     // Broiler-Falsified-If: an export's names, their order, spans or local names, or its specifier, differ from the wide parser's
     // Broiler-Human:        PENDING
     internal static System.Collections.Generic.List<(SliceSourceSpan Span, string Local, string Exported)>? Exports(
@@ -721,7 +829,7 @@ internal static class JsTreeFacts
                 {
                     ClassDeclaration declared => DefaultExportBinding(declared.Class.Name),
                     FunctionDeclaration declared => DefaultExportBinding(declared.Function.Name),
-                    _ => JsModuleNames.DefaultBindingName,
+                    _ => JsCompiler.DefaultBindingName,
                 };
 
                 return [(At(export), local, DefaultExportName)];
@@ -730,7 +838,7 @@ internal static class JsTreeFacts
             case ExportAllDeclaration export:
                 from = SourceOrNone(export.Source);
                 return export.Exported is { } exported
-                    ? [(TokenBefore(tokens, exported, Word.As), JsModuleNames.StarName, ExportName(exported))]
+                    ? [(TokenBefore(tokens, exported, Word.As), JsCompiler.StarName, ExportName(exported))]
                     : [];
             default:
                 return null;
