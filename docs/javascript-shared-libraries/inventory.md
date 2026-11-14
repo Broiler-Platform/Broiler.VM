@@ -160,6 +160,12 @@ and an adapter builds `JsSyntax` from its tree until step 2 deletes both; `JsPar
 `SliceTokenizer` serves only the slice path from step 1, and the static-semantics row's wide binder keeps only the
 checks of rows the shared stage table assigns `semantics`. The rows are kept as written.
 
+*(Noted 2026-11-14, at SJL-13.3's step 2, on its branch `sjl-13-3-step2`, not yet merged, by [JSD-0087](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md)'s dated note of that day and [JSC-328](../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-328).)* The note
+above reads "and an adapter builds `JsSyntax` from its tree until step 2 deletes both". Step 2 deletes them: this
+family's wide path keeps no tree of its own, and the admission walk, the numeric admission, the binder and the lowering
+read `Broiler.ECMAScript.Frontend`'s tree themselves, through `JsTreeFacts`. The rows and the note above are kept as
+written.
+
 ---
 
 ## 2. Duplicated inside one engine
