@@ -124,7 +124,46 @@
     "(bundle sjl-13-001's area rule as revised on 2026-11-10, part D). What stays as adapters is not here: JsFrontend,",
     "which builds the request and calls the library; JsCompilerUnicode.Tables, the Unicode provider; JsRegularExpressionValidator; JsFrontendAdapter and its",
     "parts; JsFrontendDiagnostics and its texts, which map each shared code onto the registry and render it; and",
-    "JsAdmissionWalk, which makes this family's BigInt and module-specifier refusals after the parse."
+    "JsAdmissionWalk, which makes this family's BigInt and module-specifier refusals after the parse.",
+    "(Note of 2026-11-14, at SJL-13.3's step 2: JsFrontendAdapter and its parts, named above as staying, are deleted by",
+    "step 2 and registered by type with JsSyntax's types; see the paragraph that follows.)",
+    "",
+    "SJL-13.3, step 2 (JSD-0087, applying JSD-0083's decisions D15 and D20, the latter as its note of 2026-11-13 reads",
+    "it): the wide path's adapted tree and its adapter. The lowering, the binder, the numeric admission and the",
+    "admission walk read Broiler.ECMAScript.Frontend's tree themselves, through JsTreeFacts, so JsSyntax.cs and",
+    "JsFrontendAdapter.cs with its three parts are deleted. The types deleted whole are registered by type, which",
+    "refuses each of their members, since none can be declared again without its type (bundle sjl-13-002's area rule as",
+    "revised on 2026-11-13, part D): the 84 types JsSyntax.cs declares and JsFrontendAdapter. Not registered, because",
+    "this rule's reader does not read their kind of name, and named here by kind for each type deleted whole: the",
+    "positional parameters of the records JsNode, JsExpression, JsStatement, JsNumberLiteral, JsBigIntLiteral,",
+    "JsStringLiteral, JsBooleanLiteral, JsNullLiteral, JsRegExpLiteral, JsIdentifier, JsThisExpression, JsArrayLiteral,",
+    "JsSpreadElement, JsObjectEntry, JsObjectLiteral, JsParameter, JsFunctionNode, JsYieldExpression,",
+    "JsAwaitExpression, JsFunctionExpression, JsUnaryExpression, JsUpdateExpression, JsBinaryExpression,",
+    "JsLogicalExpression, JsAssignmentExpression, JsConditionalExpression, JsMemberExpression, JsCallExpression,",
+    "JsChainExpression, JsTemplateLiteral, JsTaggedTemplate, JsNewTargetExpression, JsNewExpression,",
+    "JsSequenceExpression, JsPattern, JsTargetPattern, JsPatternElement, JsArrayPattern, JsPatternProperty,",
+    "JsObjectPattern, JsDestructuringAssignment, JsDeclarator, JsVariableStatement, JsExpressionStatement,",
+    "JsBlockStatement, JsIfStatement, JsWithStatement, JsWhileStatement, JsDoWhileStatement, JsForStatement,",
+    "JsForInStatement, JsForOfStatement, JsBreakStatement, JsContinueStatement, JsReturnStatement, JsThrowStatement,",
+    "JsTryStatement, JsSwitchClause, JsSwitchStatement, JsLabelledStatement, JsEmptyStatement, JsDebuggerStatement,",
+    "JsFunctionDeclaration, JsClassMember, JsClassNode, JsClassDeclaration, JsClassExpression, JsSuperMemberExpression,",
+    "JsPrivateMemberExpression, JsPrivateInExpression, JsSuperCallExpression, JsImportCall, JsImportMeta,",
+    "JsImportAttribute, JsImportSpecifier, JsImportDeclaration, JsExportSpecifier, JsExportDeclaration and",
+    "JsProgramNode; the members of the enumerations JsPropertyKind, JsUsing, JsMethodKind and JsExportKind; and",
+    "JsFrontendAdapter's constructor. The members those types declare in a body and the reader reads",
+    "(JsMemberExpression.NameSpan, JsAssignmentExpression.ParenthesisedTarget, the SourceStart and SourceEnd of",
+    "JsFunctionNode and JsClassNode, JsModuleNames.DefaultBindingName and JsModuleNames.StarName, which the lowering's",
+    "module code declares on JsCompiler now, and every member of JsFrontendAdapter, SawTopLevelAwait among them) are",
+    "covered by their types' rows. The members the reader reads that types which stay lost are registered by member,",
+    "one row per distinct name: JsCompiler.FindConstructor and JsCompiler.Unwrapped. Not registered, and named here",
+    "member by member, the kinds the reader does not read that types which stay lost: JsFrontend.Parsed's positional",
+    "parameter Program, the adapted tree, which its positional parameter Tree, the library's tree, replaces; and",
+    "JsAdmissionWalk's internal constructor of one parameter, whose walk the static Walk makes through a private",
+    "constructor that takes the function depth too. The constructors of JsBinder, JsBinder.Declarations and",
+    "JsBinder.HoistingScope take the parse or the library's nodes in place of JsSyntax's and are not deleted. What",
+    "stays as adapters is not here: JsFrontend, which builds the request, calls the library and hands its tree on with",
+    "the side tables the lowering reads; JsTreeFacts, the readings of that tree; JsAdmissionWalk, which walks it; and",
+    "JsFrontendDiagnostics and its texts."
   ],
   "retired": [
     {
@@ -285,7 +324,7 @@
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.JsParser.NumberText",
       "milestone": "SJL-3.4",
-      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToString, behind JsFrontendAdapter.Key (revised 2026-11-09 at SJL-13's step 1, which deletes JsParser: it read \"behind JsParser.NumberKey\")"
+      "replacedBy": "Broiler.ECMAScript.Numbers.NumberText.ToString, behind JsTreeFacts.Key (revised 2026-11-09 at SJL-13's step 1, which deletes JsParser: it read \"behind JsParser.NumberKey\") (revised 2026-11-14 at SJL-13's step 2, which deletes JsFrontendAdapter: it read \"behind JsFrontendAdapter.Key\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.JsParser.TryBigIntValue",
@@ -2775,17 +2814,17 @@
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.JsParser",
       "milestone": "SJL-13.3",
-      "replacedBy": "Broiler.ECMAScript.Syntax.SyntaxParser, behind JsFrontend.Parse, with JsFrontendAdapter building JsSyntax from its tree and JsAdmissionWalk making the BigInt and module-specifier refusals JsParser made during the parse"
+      "replacedBy": "Broiler.ECMAScript.Syntax.SyntaxParser, behind JsFrontend.Parse, whose tree the lowering reads through JsTreeFacts, and JsAdmissionWalk making the BigInt and module-specifier refusals JsParser made during the parse (revised 2026-11-14 at SJL-13's step 2, which deletes JsSyntax and JsFrontendAdapter: it read \"with JsFrontendAdapter building JsSyntax from its tree and JsAdmissionWalk making\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTemplate",
       "milestone": "SJL-13.3",
-      "replacedBy": "Broiler.ECMAScript.Frontend's template tokens and pieces, which JsFrontendAdapter reads into JsSyntax's template parts"
+      "replacedBy": "Broiler.ECMAScript.Frontend's template tokens and pieces, which the lowering reads from the library's TemplateLiteral (revised 2026-11-14 at SJL-13's step 2, which deletes JsSyntax and JsFrontendAdapter: it read \"which JsFrontendAdapter reads into JsSyntax's template parts\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceSubstitution",
       "milestone": "SJL-13.3",
-      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and the tree of each substitution, which JsFrontendAdapter reads"
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and the tree of each substitution, which the lowering reads (revised 2026-11-14 at SJL-13's step 2, which deletes JsFrontendAdapter: it read \"which JsFrontendAdapter reads\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.StructuredTemplates",
@@ -2795,12 +2834,12 @@
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.Templates",
       "milestone": "SJL-13.3",
-      "replacedBy": "Broiler.ECMAScript.Frontend's template tokens, read by JsFrontendAdapter"
+      "replacedBy": "Broiler.ECMAScript.Frontend's template tokens, read by the lowering from the library's TemplateLiteral (revised 2026-11-14 at SJL-13's step 2, which deletes JsFrontendAdapter: it read \"read by JsFrontendAdapter\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.templates",
       "milestone": "SJL-13.3",
-      "replacedBy": "Broiler.ECMAScript.Frontend's template tokens, read by JsFrontendAdapter"
+      "replacedBy": "Broiler.ECMAScript.Frontend's template tokens, read by the lowering from the library's TemplateLiteral (revised 2026-11-14 at SJL-13's step 2, which deletes JsFrontendAdapter: it read \"read by JsFrontendAdapter\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.streamTemplates",
@@ -2830,52 +2869,52 @@
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.Start",
       "milestone": "SJL-13.3",
-      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which the lowering reads; TemplateScan keeps only what the slice path's scan reads (revised 2026-11-14 at SJL-13's step 2, which deletes JsFrontendAdapter: it read \"which JsFrontendAdapter reads\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.End",
       "milestone": "SJL-13.3",
-      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which the lowering reads; TemplateScan keeps only what the slice path's scan reads (revised 2026-11-14 at SJL-13's step 2, which deletes JsFrontendAdapter: it read \"which JsFrontendAdapter reads\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.EndLine",
       "milestone": "SJL-13.3",
-      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which the lowering reads; TemplateScan keeps only what the slice path's scan reads (revised 2026-11-14 at SJL-13's step 2, which deletes JsFrontendAdapter: it read \"which JsFrontendAdapter reads\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.EndLineStart",
       "milestone": "SJL-13.3",
-      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which the lowering reads; TemplateScan keeps only what the slice path's scan reads (revised 2026-11-14 at SJL-13's step 2, which deletes JsFrontendAdapter: it read \"which JsFrontendAdapter reads\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.ChunkStart",
       "milestone": "SJL-13.3",
-      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which the lowering reads; TemplateScan keeps only what the slice path's scan reads (revised 2026-11-14 at SJL-13's step 2, which deletes JsFrontendAdapter: it read \"which JsFrontendAdapter reads\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.Chunks",
       "milestone": "SJL-13.3",
-      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which the lowering reads; TemplateScan keeps only what the slice path's scan reads (revised 2026-11-14 at SJL-13's step 2, which deletes JsFrontendAdapter: it read \"which JsFrontendAdapter reads\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.Substitutions",
       "milestone": "SJL-13.3",
-      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which the lowering reads; TemplateScan keeps only what the slice path's scan reads (revised 2026-11-14 at SJL-13's step 2, which deletes JsFrontendAdapter: it read \"which JsFrontendAdapter reads\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.SubstitutionStart",
       "milestone": "SJL-13.3",
-      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which the lowering reads; TemplateScan keeps only what the slice path's scan reads (revised 2026-11-14 at SJL-13's step 2, which deletes JsFrontendAdapter: it read \"which JsFrontendAdapter reads\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.SubstitutionLine",
       "milestone": "SJL-13.3",
-      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which the lowering reads; TemplateScan keeps only what the slice path's scan reads (revised 2026-11-14 at SJL-13's step 2, which deletes JsFrontendAdapter: it read \"which JsFrontendAdapter reads\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.SubstitutionLineStart",
       "milestone": "SJL-13.3",
-      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which JsFrontendAdapter reads; TemplateScan keeps only what the slice path's scan reads"
+      "replacedBy": "Broiler.ECMAScript.Frontend's template pieces and their spans, which the lowering reads; TemplateScan keeps only what the slice path's scan reads (revised 2026-11-14 at SJL-13's step 2, which deletes JsFrontendAdapter: it read \"which JsFrontendAdapter reads\")"
     },
     {
       "member": "Broiler.VM.Profile.JavaScript.Compiler.JsBinder.CheckRegExp",
@@ -2886,6 +2925,441 @@
       "member": "Broiler.VM.Profile.JavaScript.Compiler.JsBinder.ResourceScoped",
       "milestone": "SJL-13.3",
       "replacedBy": "Broiler.ECMAScript.Frontend's refusal of a using declaration outside a disposing list, a row the stage table assigns syntax (JSD-0083 decision D20)"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsNode",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.SyntaxNode, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.Expression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.Statement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsNumberLiteral",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.NumericLiteral, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsBigIntLiteral",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.NumericLiteral (a BigInt, its value the admission walk's), which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsStringLiteral",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.StringLiteral, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsBooleanLiteral",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.BooleanLiteral, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsNullLiteral",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.NullLiteral, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsRegExpLiteral",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.RegularExpressionLiteral, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsIdentifier",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.Identifier and BindingIdentifier, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsThisExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ThisExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsArrayLiteral",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ArrayLiteral, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsSpreadElement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.SpreadElement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsPropertyKind",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.PropertyKind and SpreadElement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsObjectEntry",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.PropertyDefinition and SpreadElement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsObjectLiteral",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ObjectLiteral, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsParameter",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.Pattern, AssignmentPattern and RestElement as FunctionNode.Parameters, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsFunctionNode",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.FunctionNode, with FieldDefinition and StaticBlock for a field's initialiser and a static block, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsYieldExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.YieldExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsAwaitExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.AwaitExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsFunctionExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.FunctionExpression and ArrowFunctionExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsUnaryExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.UnaryExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsUpdateExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.UpdateExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsBinaryExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.BinaryExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsLogicalExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.LogicalExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsAssignmentExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.AssignmentExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsConditionalExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ConditionalExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsMemberExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.MemberExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsCallExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.CallExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsChainExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ChainExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsTemplateLiteral",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.TemplateLiteral, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsTaggedTemplate",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.TaggedTemplateExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsNewTargetExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.MetaProperty, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsNewExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.NewExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsSequenceExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.SequenceExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsPattern",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.Pattern, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsTargetPattern",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.BindingIdentifier and TargetPattern, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsPatternElement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.AssignmentPattern and the pattern elements, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsArrayPattern",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ArrayPattern, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsPatternProperty",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.PatternProperty, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsObjectPattern",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ObjectPattern, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsDestructuringAssignment",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.AssignmentExpression with an ArrayPattern or ObjectPattern target, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsDeclarator",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.VariableDeclarator, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsUsing",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.DeclarationKind, read as the compiler's JsDisposal, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsVariableStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.VariableDeclaration, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsExpressionStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ExpressionStatement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsBlockStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.BlockStatement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsIfStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.IfStatement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsWithStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.WithStatement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsWhileStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.WhileStatement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsDoWhileStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.DoWhileStatement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsForStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ForStatement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsForInStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ForInStatement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsForOfStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ForOfStatement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsBreakStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.BreakStatement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsContinueStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ContinueStatement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsReturnStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ReturnStatement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsThrowStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ThrowStatement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsTryStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.TryStatement and CatchClause, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsSwitchClause",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.SwitchCase, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsSwitchStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.SwitchStatement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsLabelledStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.LabelledStatement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsEmptyStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.EmptyStatement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsDebuggerStatement",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.DebuggerStatement, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsFunctionDeclaration",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.FunctionDeclaration, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsMethodKind",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.MethodKind, with FieldDefinition and StaticBlock, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsClassMember",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.MethodDefinition, FieldDefinition and StaticBlock, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsClassNode",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ClassNode, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsClassDeclaration",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ClassDeclaration, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsClassExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ClassExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsSuperMemberExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.MemberExpression over SuperExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsPrivateMemberExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.MemberExpression with a PrivateIdentifier, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsPrivateInExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.PrivateInExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsSuperCallExpression",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.CallExpression of SuperExpression, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsImportCall",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ImportCall, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsImportMeta",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.MetaProperty, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsImportAttribute",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ImportAttribute, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsImportSpecifier",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ImportSpecifier and ImportDeclaration's bindings, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsImportDeclaration",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ImportDeclaration, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsExportKind",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ExportNamedDeclaration, ExportDefaultDeclaration and ExportAllDeclaration, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsExportSpecifier",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ExportSpecifier, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsExportDeclaration",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ExportNamedDeclaration, ExportDefaultDeclaration and ExportAllDeclaration, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsProgramNode",
+      "milestone": "SJL-13.3",
+      "replacedBy": "Broiler.ECMAScript.Syntax.ProgramNode, which the lowering reads through JsTreeFacts"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsModuleNames",
+      "milestone": "SJL-13.3",
+      "replacedBy": "JsCompiler.DefaultBindingName and JsCompiler.StarName, in the lowering's module code"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter",
+      "milestone": "SJL-13.3",
+      "replacedBy": "JsTreeFacts, whose readings of Broiler.ECMAScript.Syntax's tree the lowering, the binder and the numeric admission make at each site, and JsAdmissionWalk, which records the BigInt values and the top-level await the adapter recorded; JsFrontend hands the library's tree on with its side tables"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.FindConstructor",
+      "milestone": "SJL-13.3",
+      "replacedBy": "JsTreeFacts.FindConstructor, which reads a member's key through JsTreeFacts.Key"
+    },
+    {
+      "member": "Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.Unwrapped",
+      "milestone": "SJL-13.3",
+      "replacedBy": "JsTreeFacts.Unwrapped, over Broiler.ECMAScript.Syntax's export declarations"
     }
   ]
 }
