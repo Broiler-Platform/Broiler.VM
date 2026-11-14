@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 326 |
 | Files carrying an annotation | 326 |
-| Code units | 11103 |
-| Relevant | 6294 |
-| Exempt by predicate | 4809 |
-| Annotated | 6294 of 6294 (100%) |
-| Human reviewed | 0 of 6294 (0%) |
-| Unverified | 6294 |
+| Code units | 11120 |
+| Relevant | 6310 |
+| Exempt by predicate | 4810 |
+| Annotated | 6310 of 6310 (100%) |
+| Human reviewed | 0 of 6310 (0%) |
+| Unverified | 6310 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6294 |
+| HUMAN_PENDING | 6310 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4809 |
+| EXEMPT | 4810 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 1635 |
-| Low | 6046 |
+| None | 1642 |
+| Low | 6056 |
 | Medium | 90 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,9 +50,9 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 1503 |
-| Medium | 4347 |
-| High | 1659 |
+| Low | 1506 |
+| Medium | 4354 |
+| High | 1666 |
 | Critical | 253 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 6294 |
+| Units scored | 6310 |
 
 ## High-security review areas
 
@@ -128,8 +128,15 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Compiler.CompilationStack` in `src/Broiler.VM.Profile.JavaScript.Compiler/CompilationStack.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.CompilationStack.Run<T>(System.Func<T>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/CompilationStack.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.BigIntLiteral(NumericLiteral, out System.Numerics.BigInteger)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.BigIntKey(NumericLiteral, out System.Numerics.BigInteger)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Walk(ProgramNode, SliceParseOptions, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Statement(Statement)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Function(FunctionNode)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Pattern(Pattern)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Class(ClassNode)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Key(SyntaxNode)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Expression(Expression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.BigIntLiteral(NumericLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.BigIntKey(NumericLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.ModuleSpecifier(StringLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsArm64Assembler` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Assembler.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsArm64Assembler.ToArray()` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Assembler.cs` - Security=High, human line PENDING
@@ -1983,8 +1990,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 2073 |
-| Units required to carry one | 1912 |
+| Units carrying a criterion | 2080 |
+| Units required to carry one | 1919 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -2011,13 +2018,13 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1557 |
+| TrivialPropertyOrAccessor | 1556 |
 | ParameterAssigningConstructor | 149 |
 | TrivialExpressionBodiedMember | 64 |
 | CompilerSuppliedRecordOrEnumMember | 24 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 850 |
+| FieldDeclaringStorage | 852 |
 | EnumMemberOfADeclaredVocabulary | 1981 |
 | DeclaredInSource | 63 |
 
@@ -2100,7 +2107,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-11103 of them, exempt and relevant alike - with the fingerprint of its declaration.
+11120 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

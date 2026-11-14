@@ -34,8 +34,9 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// <para>
 /// <b>The order is the wide parser's, with one stage added</b> (decision D18): the library's parse, and
 /// when it reported nothing, the admission walk over the shared tree, which makes the BigInt refusals
-/// and the module specifier's well-formedness that the wide parser made during the parse. A refusal of
-/// either stops the unit before the numeric admission and the binder, as the parser's did.
+/// and the module specifier's well-formedness that the wide parser made during the parse, and records
+/// each admitted BigInt's value and whether the unit awaits at its top level. A refusal of either stops
+/// the unit before the numeric admission and the binder, as the parser's did.
 /// </para>
 /// <para>
 /// <b>A refused unit's list holds the library's first refusal alone, and it is this family's</b>
@@ -77,8 +78,8 @@ internal static class JsFrontend
     /// binder alike (decision D16).
     /// </param>
     /// <param name="admitsBigInt">Whether the request's manifest admits BigInt literals.</param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=62B950
-    // Broiler-Falsified-If: a unit with any library diagnostic or admission refusal answers a tree, or a unit with none answers a refusal
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=58BA10
+    // Broiler-Falsified-If: a unit with any library diagnostic or admission refusal answers a tree, a unit with none answers a refusal, or an accepted unit's top-level-await answer is not the admission walk's
     // Broiler-Human:        PENDING
     internal static Parsed Parse(string text, SliceParseOptions options, bool forceStrict, bool admitsBigInt)
     {
@@ -101,12 +102,16 @@ internal static class JsFrontend
             return new Parsed(null, refusals, false);
         }
 
-        var adapter = new JsFrontendAdapter(text, result, options, admitsBigInt);
-        var program = adapter.Program();
+        var admission = JsAdmissionWalk.Walk(result.Tree, options, admitsBigInt);
 
-        return adapter.Admission.Count != 0
-            ? new Parsed(null, adapter.Admission.Refusals(), false)
-            : new Parsed(program, [], adapter.SawTopLevelAwait);
+        if (admission.Count != 0)
+        {
+            return new Parsed(null, admission.Refusals(), false);
+        }
+
+        var adapter = new JsFrontendAdapter(text, result, admission.BigIntValues);
+
+        return new Parsed(adapter.Program(), [], admission.SawTopLevelAwait);
     }
 
     /// <summary>The library's request for one unit, from this family's options (decision D16).</summary>

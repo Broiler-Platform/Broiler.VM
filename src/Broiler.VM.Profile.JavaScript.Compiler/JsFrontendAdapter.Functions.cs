@@ -33,38 +33,29 @@ internal sealed partial class JsFrontendAdapter
     /// <param name="function">The library's function.</param>
     /// <param name="span">Where the wide parser began it: its declaration, its expression or its entry.</param>
     /// <param name="name">The name a method takes from its key, or the empty name.</param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=0713CB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=A30BE0
     // Broiler-Falsified-If: a function's name, parameters, body, directives, strictness, kind or source offsets differ from the wide parser's
     // Broiler-Human:        PENDING
     private JsFunctionNode Function(FunctionNode function, SliceSourceSpan span, string name)
     {
-        functionDepth++;
+        var parameters = Parameters(function.Parameters);
+        var body = new System.Collections.Generic.List<JsStatement>(function.Body.Count);
+        var directives = Prologue(function.Body, body);
 
-        try
+        return new JsFunctionNode(
+            span,
+            function.Name?.Name ?? name,
+            parameters,
+            body,
+            IsArrow: false,
+            Strict(function),
+            directives,
+            function.IsGenerator,
+            function.IsAsync)
         {
-            var parameters = Parameters(function.Parameters);
-            var body = new System.Collections.Generic.List<JsStatement>(function.Body.Count);
-            var directives = Prologue(function.Body, body);
-
-            return new JsFunctionNode(
-                span,
-                function.Name?.Name ?? name,
-                parameters,
-                body,
-                IsArrow: false,
-                Strict(function),
-                directives,
-                function.IsGenerator,
-                function.IsAsync)
-            {
-                SourceStart = function.Span.Offset,
-                SourceEnd = EndOf(function),
-            };
-        }
-        finally
-        {
-            functionDepth--;
-        }
+            SourceStart = function.Span.Offset,
+            SourceEnd = EndOf(function),
+        };
     }
 
     /// <summary>
@@ -263,7 +254,7 @@ internal sealed partial class JsFrontendAdapter
     /// does and whose text begins after <c>static</c>; a field, whose initialiser is a strict function
     /// returning it at the member's span; or a static block, a strict function of its own.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=F9BC1C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=CBDD33
     // Broiler-Falsified-If: a member's kind, key, privacy, staticness, function or source offsets differ from the wide parser's
     // Broiler-Human:        PENDING
     private JsClassMember ClassMember(SyntaxNode element)
@@ -310,33 +301,24 @@ internal sealed partial class JsFrontendAdapter
 
             case StaticBlock block:
             {
-                functionDepth++;
+                var body = new System.Collections.Generic.List<JsStatement>(block.Body.Count);
+                var directives = Prologue(block.Body, body);
 
-                try
+                var function = new JsFunctionNode(
+                    span,
+                    string.Empty,
+                    new System.Collections.Generic.List<JsParameter>(),
+                    body,
+                    IsArrow: false,
+                    IsStrict: true,
+                    directives)
                 {
-                    var body = new System.Collections.Generic.List<JsStatement>(block.Body.Count);
-                    var directives = Prologue(block.Body, body);
+                    SourceStart = block.Span.Offset,
+                    SourceEnd = EndOf(block),
+                };
 
-                    var function = new JsFunctionNode(
-                        span,
-                        string.Empty,
-                        new System.Collections.Generic.List<JsParameter>(),
-                        body,
-                        IsArrow: false,
-                        IsStrict: true,
-                        directives)
-                    {
-                        SourceStart = block.Span.Offset,
-                        SourceEnd = EndOf(block),
-                    };
-
-                    return new JsClassMember(
-                        span, JsMethodKind.StaticBlock, IsStatic: true, string.Empty, null, IsPrivate: false, function);
-                }
-                finally
-                {
-                    functionDepth--;
-                }
+                return new JsClassMember(
+                    span, JsMethodKind.StaticBlock, IsStatic: true, string.Empty, null, IsPrivate: false, function);
             }
 
             default:

@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   22
 // Annotated:        22/22
-// Exempt:           6
+// Exempt:           4
 // Human-reviewed:   0/22
 // IP risk:          Low
 // Security risk:    High
@@ -16,6 +16,7 @@
 // GENERATED - DO NOT EDIT MANUALLY
 
 using Broiler.ECMAScript.Syntax;
+using NumericLiteral = Broiler.ECMAScript.Syntax.NumericLiteral;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
 
@@ -37,14 +38,9 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// retained tokens, or from the first statement of a script, which is where that token stands.
 /// </para>
 /// <para>
-/// <b>The admission walk is made as the tree is adapted</b> (decision D18): every node is visited once,
-/// after a parse that reported nothing, and the walk's refusals are collected in
-/// <see cref="Admission"/> in source order; a unit with any is refused and its tree not used.
-/// </para>
-/// <para>
-/// <b>Whether a module awaits at its top level is the wide parser's rule</b> (decision D20): an
-/// <c>await</c> expression, a <c>for await</c> or an <c>await using</c> that no function other than an
-/// arrow encloses, which is what <c>SawTopLevelAwait</c> answered.
+/// <b>The admission walk is made before the tree is adapted</b> (decision D18; SJL-13.3, step 2): it walks
+/// the shared tree itself, and a unit it refuses is not adapted. Each admitted BigInt's value is the walk's,
+/// and so is whether the unit awaits at its top level.
 /// </para>
 /// <para>
 /// <b>It lives for one parse and holds no shared state</b> (rule N12).
@@ -71,28 +67,27 @@ internal sealed partial class JsFrontendAdapter
     private readonly System.Collections.Generic.Dictionary<SyntaxNode, bool> strictness =
         new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
 
-    /// <summary>How many functions other than arrows enclose the node being adapted.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=837D17
+    /// <summary>Each admitted BigInt literal's value, a key's included, which the admission walk recorded.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=728EFC
     // Broiler-Human:        PENDING
-    private int functionDepth;
+    private readonly System.Collections.Generic.IReadOnlyDictionary<NumericLiteral, System.Numerics.BigInteger> bigInts;
 
     /// <summary>
     /// Adapts the library's accepted parse of <paramref name="source"/>.
     /// </summary>
     /// <param name="source">The unit's source text.</param>
     /// <param name="parsed">The library's answer, which reported nothing.</param>
-    /// <param name="options">The unit's options: eval code inside a function starts one function deep.</param>
-    /// <param name="admitsBigInt">Whether the request's manifest admits BigInt literals.</param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=2FBBBD
+    /// <param name="bigIntValues">The admission walk's values, of a unit it refused nothing in.</param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=7B5A87
     // Broiler-Human:        PENDING
-    internal JsFrontendAdapter(string source, ParseResult parsed, SliceParseOptions options, bool admitsBigInt)
+    internal JsFrontendAdapter(
+        string source,
+        ParseResult parsed,
+        System.Collections.Generic.IReadOnlyDictionary<NumericLiteral, System.Numerics.BigInteger> bigIntValues)
     {
         text = source;
         result = parsed;
-        Admission = new JsAdmissionWalk(admitsBigInt);
-        functionDepth = options.IsEval && (options.EvalFlags & Format.JsFormat.EvalRequestFlags.InFunction) != 0
-            ? 1
-            : 0;
+        bigInts = bigIntValues;
 
         var tables = parsed.Declarations ?? throw new System.InvalidOperationException(
             "the library answered an accepted parse with no declaration tables");
@@ -102,16 +97,6 @@ internal sealed partial class JsFrontendAdapter
             strictness[facts.Node] = facts.IsStrict;
         }
     }
-
-    /// <summary>The admission walk's refusals, in source order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=31409F
-    // Broiler-Human:        PENDING
-    internal JsAdmissionWalk Admission { get; }
-
-    /// <summary>Whether the unit awaits outside every function, by the wide parser's rule.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=ACE465
-    // Broiler-Human:        PENDING
-    internal bool SawTopLevelAwait { get; private set; }
 
     /// <summary>The program: its directive prologue, its statements and its strictness.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E5AA76
@@ -332,18 +317,13 @@ internal sealed partial class JsFrontendAdapter
 
     /// <summary>
     /// A variable statement: a <c>using</c> or an <c>await using</c> declaration is a <c>const</c> one
-    /// with its disposal recorded, and an <c>await using</c> outside every function is a top-level await.
+    /// with its disposal recorded.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=90FCC4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A1C9C1
     // Broiler-Human:        PENDING
     private JsVariableStatement Variables(VariableDeclaration declaration)
     {
         var (kind, resource) = Kind(declaration.DeclarationKind);
-
-        if (resource == JsUsing.Async)
-        {
-            SawTopLevelAwait |= functionDepth == 0;
-        }
 
         return new JsVariableStatement(At(declaration), kind, Declarators(declaration), resource);
     }
@@ -405,7 +385,7 @@ internal sealed partial class JsFrontendAdapter
     /// The left side of a <c>for … in</c> or <c>for … of</c> head: a declaration's kind, name, pattern and
     /// Annex B initialiser, or an assignment target, a pattern when it destructures.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1E72B4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=34D769
     // Broiler-Human:        PENDING
     private (SliceDeclarationKind? Kind, string Name, JsPattern? Pattern, JsExpression? Target, JsExpression? Initialiser, JsUsing Using)
         Head(SyntaxNode left)
@@ -415,12 +395,6 @@ internal sealed partial class JsFrontendAdapter
             case VariableDeclaration declaration:
             {
                 var (kind, resource) = Kind(declaration.DeclarationKind);
-
-                if (resource == JsUsing.Async)
-                {
-                    SawTopLevelAwait |= functionDepth == 0;
-                }
-
                 var declarator = Declarators(declaration)[0];
                 return (kind, declarator.Name, declarator.Pattern, null, declarator.Initialiser, resource);
             }
@@ -448,16 +422,11 @@ internal sealed partial class JsFrontendAdapter
             At(loop), head.Kind, head.Name, head.Pattern, head.Target, right, Statement(loop.Body), head.Initialiser);
     }
 
-    /// <summary><c>for (left of right) body</c>, and <c>for await</c>, a top-level await outside every function.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0F26CE
+    /// <summary><c>for (left of right) body</c>, and <c>for await</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=218D50
     // Broiler-Human:        PENDING
     private JsStatement ForOf(ForOfStatement loop)
     {
-        if (loop.IsAwait)
-        {
-            SawTopLevelAwait |= functionDepth == 0;
-        }
-
         var head = Head(loop.Left);
         var right = Expression(loop.Right);
 

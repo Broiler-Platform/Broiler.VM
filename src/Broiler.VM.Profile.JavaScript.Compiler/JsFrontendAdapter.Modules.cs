@@ -29,7 +29,7 @@ internal sealed partial class JsFrontendAdapter
     /// An <c>import</c> declaration: the default binding, then the namespace binding at its <c>*</c> or
     /// the named bindings, the specifier and the attributes, which an import always has, if none.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=99CFC9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=521862
     // Broiler-Falsified-If: an import's specifiers, their order, names or spans, its specifier or its attributes differ from the wide parser's
     // Broiler-Human:        PENDING
     private JsStatement Import(ImportDeclaration import)
@@ -56,8 +56,6 @@ internal sealed partial class JsFrontendAdapter
             }
         }
 
-        Admission.ModuleSpecifier(import.Source);
-
         return new JsImportDeclaration(At(import), import.Source.Value, specifiers, Attributes(import.Attributes));
     }
 
@@ -65,7 +63,7 @@ internal sealed partial class JsFrontendAdapter
     /// An <c>export</c> of a declaration, whose names it publishes as themselves at the declaration's
     /// span, or of a clause, with or without a <c>from</c>; a clause without one has no attributes.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=805320
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=4D2920
     // Broiler-Falsified-If: an export's kind, specifiers, their order, names or spans, its declaration, its specifier or its attributes differ from the wide parser's
     // Broiler-Human:        PENDING
     private JsStatement ExportNamed(ExportNamedDeclaration export)
@@ -121,7 +119,6 @@ internal sealed partial class JsFrontendAdapter
 
         if (export.Source is { } source)
         {
-            Admission.ModuleSpecifier(source);
             return new JsExportDeclaration(
                 span, JsExportKind.Named, source.Value, specifiers, null, null, Attributes(export.Attributes));
         }
@@ -183,7 +180,7 @@ internal sealed partial class JsFrontendAdapter
     }
 
     /// <summary><c>export * from</c>, and <c>export * as name from</c>, whose specifier stands at its <c>as</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=AC7DFB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=D694E5
     // Broiler-Falsified-If: a re-export's specifier, its span, the requested specifier or the attributes differ from the wide parser's
     // Broiler-Human:        PENDING
     private JsStatement ExportAll(ExportAllDeclaration export)
@@ -194,8 +191,6 @@ internal sealed partial class JsFrontendAdapter
         {
             specifiers.Add(new JsExportSpecifier(TokenBefore(exported, Word.As), JsModuleNames.StarName, ExportName(exported)));
         }
-
-        Admission.ModuleSpecifier(export.Source);
 
         return new JsExportDeclaration(
             At(export), JsExportKind.All, export.Source.Value, specifiers, null, null, Attributes(export.Attributes));

@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 6294 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 6310 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 326 |
-| Code units | 11103 |
-| Relevant | 6294 |
-| Exempt | 4809 |
-| Assessed | 6294 of 6294 (100%) |
-| Human reviewed | 0 of 6294 (0%) |
-| Unverified | 6294 |
+| Code units | 11120 |
+| Relevant | 6310 |
+| Exempt | 4810 |
+| Assessed | 6310 of 6310 (100%) |
+| Human reviewed | 0 of 6310 (0%) |
+| Unverified | 6310 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6294 |
+| HUMAN_PENDING | 6310 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4809 |
+| EXEMPT | 4810 |
 
 ## 5. Aliases In The Tree
 
@@ -145,7 +145,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` | 50 | 27 | 23 | 27 | Low | Critical | 16/13 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/CompilationStack.cs` | 3 | 3 | 0 | 3 | Low | High | 2/2 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` | 11 | 8 | 3 | 8 | Low | High | 4/4 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` | 30 | 24 | 6 | 24 | Low | High | 11/11 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Assembler.cs` | 54 | 45 | 9 | 45 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Backend.cs` | 42 | 37 | 5 | 37 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Walk.cs` | 31 | 18 | 13 | 18 | Low | High | 4/4 |
@@ -177,7 +177,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs` | 17 | 17 | 0 | 17 | Low | High | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` | 8 | 8 | 0 | 8 | Low | High | 6/6 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` | 11 | 11 | 0 | 11 | Low | High | 5/5 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.cs` | 28 | 22 | 6 | 22 | Low | High | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.cs` | 26 | 22 | 4 | 22 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendDiagnostics.Texts.cs` | 6 | 6 | 0 | 6 | Low | Medium | 4/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendDiagnostics.cs` | 5 | 5 | 0 | 5 | Low | High | 2/2 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsJsonModule.cs` | 5 | 5 | 0 | 5 | None | Medium | 0/0 |
@@ -579,12 +579,26 @@ written out, so a unit that becomes `High` joins it at the next generation.
 - `Broiler.VM.Profile.JavaScript.Compiler.CompilationStack.Run<T>(System.Func<T>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/CompilationStack.cs` - Security=High, Spec=none cited, `97F713`, PENDING
   - Falsified if: the compilation runs on the calling thread, or an exception it raised does not reach the caller
 - `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, Spec=none cited, `420490`, PENDING
-  - Falsified if: a BigInt literal outside an admitting manifest, a BigInt wider than the format's ceiling, or a module specifier that is not well-formed reaches the numeric admission, the binder or the lowering unrefused, or a source the wide parser admitted is refused here
-- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.BigIntLiteral(NumericLiteral, out System.Numerics.BigInteger)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, Spec=none cited, `39B2DD`, PENDING
+  - Falsified if: a BigInt literal outside an admitting manifest, a BigInt wider than the format's ceiling, or a module specifier that is not well-formed reaches the numeric admission, the binder or the lowering unrefused, a source the wide parser admitted is refused here, or an admitted BigInt's value or the top-level-await answer differs from the one step 1's adapter gave
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Walk(ProgramNode, SliceParseOptions, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, Spec=none cited, `2B626E`, PENDING
+  - Falsified if: eval code inside a function is walked from depth zero, or any statement of the program is not walked
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Statement(Statement)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, Spec=none cited, `8E313E`, PENDING
+  - Falsified if: a statement's child that step 1's adapter visited is not visited, is visited in another order, or a child it did not visit is visited
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Function(FunctionNode)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, Spec=none cited, `69A9D1`, PENDING
+  - Falsified if: a function other than an arrow leaves the depth an await inside it is read at unraised, or leaves it raised after it
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Pattern(Pattern)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, Spec=none cited, `A09662`, PENDING
+  - Falsified if: a pattern's key, default or reference that step 1's adapter visited is not visited, or is visited in another order
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Class(ClassNode)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, Spec=none cited, `0A336A`, PENDING
+  - Falsified if: a class's heritage, key or member function that step 1's adapter visited is not visited or is visited in another order, a decorator is visited, or a field's initialiser is read one function deeper
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Key(SyntaxNode)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, Spec=none cited, `DE00FA`, PENDING
+  - Falsified if: a BigInt key is refused as outside the manifest, or is admitted past the format's ceiling
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Expression(Expression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, Spec=none cited, `D296C2`, PENDING
+  - Falsified if: an expression's child that step 1's adapter visited is not visited, is visited in another order, or a child it did not visit is visited
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.BigIntLiteral(NumericLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, Spec=none cited, `DC1BCC`, PENDING
   - Falsified if: a BigInt literal is admitted under a manifest that does not admit BigInt, or past the format's ceiling
-- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.BigIntKey(NumericLiteral, out System.Numerics.BigInteger)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, Spec=none cited, `408D34`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.BigIntKey(NumericLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, Spec=none cited, `1E4939`, PENDING
   - Falsified if: a BigInt wider than the format's constant ceiling is admitted, or one within it is refused
-- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.ModuleSpecifier(StringLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, Spec=none cited, `7D0C54`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.ModuleSpecifier(StringLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, Spec=none cited, `304210`, PENDING
   - Falsified if: a module specifier holding a lone surrogate is admitted, or a well-formed one refused
 - `Broiler.VM.Profile.JavaScript.Compiler.JsArm64Assembler` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Assembler.cs` - Security=High, Spec=none cited, `ACB9B6`, PENDING
   - Falsified if: a word this type writes decodes as an instruction other than the one its method name states, or a branch it patched reaches an offset other than its bound label
@@ -710,21 +724,21 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a payload that begins with a reserved mark, or with the eval or script mark and no well-formed request, is answered as source to compile
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontend` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs` - Security=High, Spec=none cited, `008648`, PENDING
   - Falsified if: a source the wide path parsed is parsed under another goal, strictness, function context, top-level-await switch or nesting bound than its options and eval flags give, or a unit the parse or the admission walk refused reaches the numeric admission or the binder
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontend.Parse(string, SliceParseOptions, bool, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs` - Security=High, Spec=none cited, `62B950`, PENDING
-  - Falsified if: a unit with any library diagnostic or admission refusal answers a tree, or a unit with none answers a refusal
+- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontend.Parse(string, SliceParseOptions, bool, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs` - Security=High, Spec=none cited, `58BA10`, PENDING
+  - Falsified if: a unit with any library diagnostic or admission refusal answers a tree, a unit with none answers a refusal, or an accepted unit's top-level-await answer is not the admission walk's
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontend.Request(string, SliceParseOptions, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs` - Security=High, Spec=none cited, `8B2805`, PENDING
   - Falsified if: the caller's forced strictness does not force strict code, an eval unit's function flag does not admit new.target, a script's options admit top-level await, a module's nesting bound differs from its options', or a refused unit reports more than one parse diagnostic
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs` - Security=High, Spec=none cited, `818D37`, PENDING
   - Falsified if: for an expression the wide parser accepted, a node, a field or a span built here differs from the wide parser's
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Expression(Expression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs` - Security=High, Spec=none cited, `0813DF`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Expression(Expression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs` - Security=High, Spec=none cited, `BB2DD0`, PENDING
   - Falsified if: an expression the wide parser accepted adapts to a different node, or a parenthesis survives as a node
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Number(NumericLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs` - Security=High, Spec=none cited, `57E3A7`, PENDING
-  - Falsified if: a numeric literal's value or legacy flag differs from the wide parser's, or a BigInt literal the walk refuses reaches the tree
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Key(SyntaxNode, out JsExpression?)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs` - Security=High, Spec=none cited, `01D3EF`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Number(NumericLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs` - Security=High, Spec=none cited, `CF30CC`, PENDING
+  - Falsified if: a numeric literal's value or legacy flag differs from the wide parser's, or a BigInt literal's value differs from the one the walk recorded for it
+- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Key(SyntaxNode, out JsExpression?)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs` - Security=High, Spec=none cited, `71A963`, PENDING
   - Falsified if: a key's spelling differs from the wide parser's for any literal key
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, Spec=none cited, `818D37`, PENDING
   - Falsified if: for a function, a class or a pattern the wide parser accepted, a node, a field, a span or a source offset built here differs from the wide parser's
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Function(FunctionNode, SliceSourceSpan, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, Spec=none cited, `0713CB`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Function(FunctionNode, SliceSourceSpan, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, Spec=none cited, `A30BE0`, PENDING
   - Falsified if: a function's name, parameters, body, directives, strictness, kind or source offsets differ from the wide parser's
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Arrow(FunctionNode, SliceSourceSpan)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, Spec=none cited, `1FB988`, PENDING
   - Falsified if: an arrow's parameters, body, directives, strictness, kind or source offsets differ from the wide parser's
@@ -732,17 +746,17 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a pattern's shape, keys, defaults, rest or spans differ from the wide parser's
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Class(ClassNode, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, Spec=none cited, `820729`, PENDING
   - Falsified if: a class's name, heritage, members, keys, kinds, functions or source offsets differ from the wide parser's
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.ClassMember(SyntaxNode)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, Spec=none cited, `F9BC1C`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.ClassMember(SyntaxNode)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, Spec=none cited, `CBDD33`, PENDING
   - Falsified if: a member's kind, key, privacy, staticness, function or source offsets differ from the wide parser's
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` - Security=High, Spec=none cited, `818D37`, PENDING
   - Falsified if: for a module declaration the wide parser accepted, a specifier, a name, an attribute, a declaration or a span built here differs from the wide parser's
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Import(ImportDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` - Security=High, Spec=none cited, `99CFC9`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Import(ImportDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` - Security=High, Spec=none cited, `521862`, PENDING
   - Falsified if: an import's specifiers, their order, names or spans, its specifier or its attributes differ from the wide parser's
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.ExportNamed(ExportNamedDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` - Security=High, Spec=none cited, `805320`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.ExportNamed(ExportNamedDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` - Security=High, Spec=none cited, `4D2920`, PENDING
   - Falsified if: an export's kind, specifiers, their order, names or spans, its declaration, its specifier or its attributes differ from the wide parser's
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.ExportDefault(ExportDefaultDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` - Security=High, Spec=none cited, `30724D`, PENDING
   - Falsified if: a default export's specifier, its declaration's name or its value differs from the wide parser's
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.ExportAll(ExportAllDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` - Security=High, Spec=none cited, `AC7DFB`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.ExportAll(ExportAllDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` - Security=High, Spec=none cited, `D694E5`, PENDING
   - Falsified if: a re-export's specifier, its span, the requested specifier or the attributes differ from the wide parser's
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.cs` - Security=High, Spec=none cited, `818D37`, PENDING
   - Falsified if: for a source the wide parser accepted, a node, a field, a span or an offset of the tree built here differs from the one the wide parser built at step 1's base
@@ -4302,7 +4316,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 6155 of the 6294 assessed units declare
+That is not a figure of speech. 6171 of the 6310 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

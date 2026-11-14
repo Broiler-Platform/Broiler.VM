@@ -28,7 +28,7 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 internal sealed partial class JsFrontendAdapter
 {
     /// <summary>One expression: a parenthesised one is the expression it holds, as the wide parser read it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=0813DF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=BB2DD0
     // Broiler-Falsified-If: an expression the wide parser accepted adapts to a different node, or a parenthesis survives as a node
     // Broiler-Human:        PENDING
     private JsExpression Expression(Expression expression)
@@ -102,7 +102,6 @@ internal sealed partial class JsFrontendAdapter
             case UnaryExpression unary:
                 return new JsUnaryExpression(span, Unary(unary.Operator), Expression(unary.Operand));
             case AwaitExpression awaited:
-                SawTopLevelAwait |= functionDepth == 0;
                 return new JsAwaitExpression(span, Expression(awaited.Argument));
             case BinaryExpression binary:
             {
@@ -148,11 +147,11 @@ internal sealed partial class JsFrontendAdapter
     }
 
     /// <summary>
-    /// A numeric literal, or a BigInt literal when the manifest admits one and it fits the format; the
-    /// admission walk refuses the others.
+    /// A numeric literal, or a BigInt literal with the value the admission walk recorded for it; a unit
+    /// the walk refused any BigInt in is not adapted.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=57E3A7
-    // Broiler-Falsified-If: a numeric literal's value or legacy flag differs from the wide parser's, or a BigInt literal the walk refuses reaches the tree
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=CF30CC
+    // Broiler-Falsified-If: a numeric literal's value or legacy flag differs from the wide parser's, or a BigInt literal's value differs from the one the walk recorded for it
     // Broiler-Human:        PENDING
     private JsExpression Number(NumericLiteral number)
     {
@@ -160,9 +159,7 @@ internal sealed partial class JsFrontendAdapter
 
         if ((number.Flags & NumericLiteralFlags.BigInt) != 0)
         {
-            return Admission.BigIntLiteral(number, out var value)
-                ? new JsBigIntLiteral(span, value)
-                : new JsNullLiteral(span);
+            return new JsBigIntLiteral(span, bigInts[number]);
         }
 
         return new JsNumberLiteral(
@@ -305,7 +302,7 @@ internal sealed partial class JsFrontendAdapter
     /// A property key: a name, a string's value, a number by <c>NumberText</c>, a BigInt by its decimal
     /// digits, a private name with its <c>#</c>, or the empty key and the expression of a computed one.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=01D3EF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=71A963
     // Broiler-Falsified-If: a key's spelling differs from the wide parser's for any literal key
     // Broiler-Human:        PENDING
     private string Key(SyntaxNode key, out JsExpression? computed)
@@ -321,9 +318,7 @@ internal sealed partial class JsFrontendAdapter
             case StringLiteral literal:
                 return literal.Value;
             case NumericLiteral number when (number.Flags & NumericLiteralFlags.BigInt) != 0:
-                return Admission.BigIntKey(number, out var value)
-                    ? value.ToString(System.Globalization.CultureInfo.InvariantCulture)
-                    : string.Empty;
+                return bigInts[number].ToString(System.Globalization.CultureInfo.InvariantCulture);
             case NumericLiteral number:
                 return NumberText.ToString(number.Value);
             case ComputedPropertyName name:
