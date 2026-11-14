@@ -78,6 +78,14 @@
   decision D21, that its reading of "Falsified if"'s fourth clause is accepted under the owner's standing direction of
   2026-10-18. The readings on D20 and D21 are accepted under that direction, not answered by the owner. No sub-area's
   verdict, no row's class and no decision's deletions change, and no clause of "Falsified if" is met.
+- *(Added 2026-11-14.)* **Step 2 is built**, on its branch `sjl-13-3-step2`, cut from the default branch's `389b55c`
+  (Broiler-Platform/Broiler.VM#205), not yet merged. The third item above reads "at step 2 the lowering, the numeric
+  admission and the binder read the shared tree, and the adapter and `JsSyntax` go". On the branch they do, with the
+  admission walk, and `JsSyntax.cs` and `JsFrontendAdapter.cs` with its parts are deleted and registered in rule I5.
+  Step 2's cut-over record is [JSD-0087](0087-the-wide-path-parses-with-the-shared-syntax-library.md)'s dated note of this date, decision D3's note at step 2,
+  with JSC-328 and bundle `sjl-13-002`'s exclusion EX-135. Dated notes of this date on X6 and on decisions D15, D19
+  and D20 say what step 2 did against each. Bundle `sjl-13-002`'s runs are taken after the merge. No sub-area's
+  verdict, no row's class and no decision's deletions change, and no clause of "Falsified if" is met.
 
 **Date:** 2026-10-26.
 
@@ -525,6 +533,20 @@ it, not as the owner's own dated answer. Bundle `sjl-13-002`'s
 (reading 7), with that rule's "The lowering computes from the shared tree, by `JsParser`'s rules, every fact the
 adapter computed at step 1" read the same way, and decisions D15 and D20 carry notes of this date that read their "the
 lowering's at step 2" so. Not taken: "compute them in `JsCompiler`'s own files", as the line's text reads.
+
+*(Noted 2026-11-14, at SJL-13.3's step 2's records, on its branch `sjl-13-3-step2`, not yet merged.)* **This family's
+step 2, deleted.** X6's line for this family at step 2 reads "`JsSyntax` and the adapter; the two constants move to the
+lowering's module code, and `SawTopLevelAwait` becomes the lowering's", and the paragraph after the list reads "Each
+deleted member of this family is registered in rule I5 in the change that deletes it". On the branch, `JsSyntax.cs`
+and `JsFrontendAdapter.cs` with `JsFrontendAdapter.Expressions.cs`, `JsFrontendAdapter.Functions.cs` and
+`JsFrontendAdapter.Modules.cs` are deleted; the constants are `JsCompiler.DefaultBindingName` and
+`JsCompiler.StarName`, in the lowering's module code, `JsCompiler.Modules.cs`; and the top-level-`await` fact is the
+admission walk's, as this section's note of 2026-11-13 reads "becomes the lowering's". Members of types that stay go
+with them: `JsCompiler.FindConstructor` and `JsCompiler.Unwrapped`, whose code moved to `JsTreeFacts`, a file step 2
+adds. Rule I5 registers the deleted types by type and those members by member, and names the kinds its reader does
+not read in its register's paragraph for SJL-13.3's step 2, as decision D20's note of 2026-11-13 reads it. The rows
+land on the same branch as the deletion, in a later commit before its one merge, so in the change that deletes them.
+[JSD-0087](0087-the-wide-path-parses-with-the-shared-syntax-library.md)'s dated note of this date lists them. The deletion list does not change.
 
 ### X7 - owners accept
 
@@ -1083,6 +1105,22 @@ decisions and skip waiting for review") and recorded as the owner's dated decisi
 dated answer; X6's note of this date gives it in full, and bundle `sjl-13-002`'s README records it (reading 7). Not
 taken: "compute them in `JsCompiler`'s own files", as the decision's text reads.
 
+*(Noted 2026-11-14, at SJL-13.3's step 2's records, on its branch `sjl-13-3-step2`, not yet merged.)* This decision
+reads that this family's adapter reproduces "**every anchor and offset `JsParser` gave** (a call at its member name,
+`NameSpan`, function and class source offsets, cooked and raw template text, numeric-key spellings by `NumberText`)
+**and every fact `JsParser` computes into `JsSyntax`**", "each by `JsParser`'s rule, the adapter's at step 1 and the
+lowering's at step 2". At step 2 the adapter is deleted, and the lowering, the binder and the numeric admission read
+each anchor, offset and fact from the shared tree by the adapter's rule: through `JsTreeFacts`, which holds the
+readings they share, among them a member's name span, the program's place, the end of the source, numeric-key
+spellings by `NumberText` and the unwrapping of parentheses; through the side table of strictness, from the library's
+side fact; and through the admission walk, which computes the top-level-`await` fact and the BigInt values, as this
+decision's note of 2026-11-13 reads "the lowering's at step 2". The rule stays `JsParser`'s, an `await` inside an
+async arrow at a module's top level counted as before, and hand-off H19 is unchanged. Diagnostic places do not move:
+the admission walk's refusals stand where the adapter's did, ordered by place and then by the adapter's visit order.
+[JSD-0087](0087-the-wide-path-parses-with-the-shared-syntax-library.md)'s dated note of this date lists each place. Bundle `sjl-13-002`'s rule judges it after the merge
+("Step 2 changes no outcome, no byte and no diagnostic"); the development checks the branch was built against are not
+evidence. The decision does not change.
+
 **Decision D17 - proposal flags, the lexer extension, the switches** *(revised 2026-10-26, finding F16)*. Proposal
 flags off by default. This family admits none (the decorator is JSE7201, mapped to 2104 within meaning), and reports
 it where the parse reaches it. **One flag per form for the import phases**, one per catalogue row (the declaration
@@ -1363,6 +1401,17 @@ the binder's facts and their order unchanged; the adapter and `JsSyntax` are del
 reason: leaving the binder on `JsSyntax` keeps the adapter, which step 2 deletes; moving the binder's walks is
 mechanical, and leaves SJL-15.3 only the change of the facts' source, which keeps its comparison attributable.
 
+*(Noted 2026-11-14, at SJL-13.3's step 2's records, on its branch `sjl-13-3-step2`, not yet merged.)* The decision
+reads "**Step 2**: "`JsSyntax`'s parse-only parts" is read as `JsSyntax` whole: the lowering, `JsNumericAdmission` and
+the binder read the shared tree, the binder's facts and their order unchanged; the adapter and `JsSyntax` are deleted.
+A dated note on SJL-13.3." Step 2 is built so on its branch: the lowering, `JsNumericAdmission`, the binder and the
+admission walk read the shared tree; the binder's tables are keyed by the shared tree's nodes, its facts and their
+order unchanged (a for-in statement's head before its Annex B initialiser, its right-hand side and its body; a class's
+heritage before its members; ties at one place by visit order); the lowering's walk keeps the adapter's child map arm
+by arm; and the adapter and `JsSyntax` are deleted. The step lands in one merge, bundle `sjl-13-002`'s after commit,
+whose first parent is its base, while the default branch is still `389b55c`, which that bundle's reading 1 holds. The
+dated note on SJL-13.3 is the SJL-13 milestone's note of this date. The decision does not change.
+
 **Decision D20 - the deletions at step 1** *(revised 2026-10-26, findings F14 and F15)*. `JsParser`;
 `SliceTokenizer`'s wide-only members (the structured-template mode, its nesting limit, `SliceTemplate`,
 `SliceSubstitution` and their tables); the binder's `CheckRegExp`; **every binder check of a row the stage table
@@ -1440,6 +1489,23 @@ as the decision says. The reading is taken under the owner's standing direction 
 recommended decisions and skip waiting for review") and recorded as the owner's dated decision under it, not as the
 owner's own dated answer; X6's note of this date gives it in full. Not taken: "compute them in `JsCompiler`'s own
 files", as the decision's text reads.
+
+*(Noted 2026-11-14, at SJL-13.3's step 2's records, on its branch `sjl-13-3-step2`, not yet merged.)* **What rule I5
+registered at step 2.** This decision's note of 2026-11-13 reads "I5 registers it", at step 2, as "each type those
+five files declare directly in a namespace is registered by type, which refuses each of its members, since none can be
+declared again without its type; each member that step 2 deletes from a type the after commit still declares, whose
+kind the reader reads, is registered by member, one row per distinct name; and the positional record parameters,
+enumeration members and constructors the reader does not read are named in rule I5's register paragraph for SJL-13.3's
+step 2". On the branch, rule I5's register holds, with the milestone `SJL-13.3`, a row for each type `JsSyntax.cs`
+declared and one for `JsFrontendAdapter`, and member rows for `JsCompiler.FindConstructor` and `JsCompiler.Unwrapped`,
+whose code moved to `JsTreeFacts`. Its paragraph for SJL-13.3's step 2 names by kind, per type, the positional
+parameters of the deleted records, the members of the deleted enumerations and `JsFrontendAdapter`'s constructor, and,
+member by member, `JsFrontend.Parsed`'s positional parameter `Program` and `JsAdmissionWalk`'s internal constructor
+that the adapter called, which took whether BigInt literals are admitted. `JsParser.DefaultBindingName` and
+`StarName`, `JsModuleNames`' at step 1, are `JsCompiler`'s in the lowering's module code, `JsCompiler.Modules.cs`, as
+the decision says, and `JsModuleNames`' row covers their old names. `SawTopLevelAwait` is the admission walk's, as the
+note of 2026-11-13 on "the lowering's at step 2" reads it, and the adapter's row covers the adapter's member of that
+name. [JSD-0087](0087-the-wide-path-parses-with-the-shared-syntax-library.md)'s dated note of this date lists the rows. The deletions do not change.
 
 **Decision D21 - "the shared tokenizer's behaviour must match the slice path's"** *(revised 2026-10-26, finding
 F17)*. **A checks row added at step 1** compares the two tokenizers' streams over every input the slice path accepts
