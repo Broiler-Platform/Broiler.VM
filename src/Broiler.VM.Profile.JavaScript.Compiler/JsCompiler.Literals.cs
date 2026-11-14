@@ -15,6 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Syntax;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
@@ -50,29 +51,32 @@ public sealed partial class JsCompiler
     /// about.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F076DB
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2312AA
     // Broiler-Human:        PENDING
-    private void CompileNamedValue(JsExpression value, string inferred)
+    private void CompileNamedValue(Expression written, string inferred)
     {
         if (inferred.Length == 0)
         {
-            CompileExpression(value);
+            CompileExpression(written);
             return;
         }
 
-        if (value is JsClassExpression anonymous && anonymous.Class.Name.Length == 0)
+        var value = JsTreeFacts.Unwrap(written);
+
+        if (value is ClassExpression anonymous && anonymous.Class.Name is null)
         {
-            Position(value.Span);
+            Position(JsTreeFacts.At(value));
             CompileClass(anonymous.Class, inferred);
             return;
         }
 
-        if (value is JsFunctionExpression function && function.Function.Name.Length == 0)
+        if (value is FunctionExpression { Function.Name: null } or ArrowFunctionExpression)
         {
-            Position(value.Span);
+            var function = value is FunctionExpression expression ? expression.Function : ((ArrowFunctionExpression)value).Function;
+            Position(JsTreeFacts.At(value));
             Emit(
                 JsOpcode.Closure,
-                (ushort)CompileFunction(function.Function with { Name = inferred }, written: function.Function));
+                (ushort)CompileFunction(function, JsTreeFacts.At(value), inferred));
             return;
         }
 
@@ -90,23 +94,30 @@ public sealed partial class JsCompiler
     /// is the class's name and must not be overwritten. Such a class keeps the empty name, which the
     /// record of this change states (JSP-6, JSC-238).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=53D99F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=47E0AE
     // Broiler-Human:        PENDING
-    private static bool NamedAtRunTime(JsExpression value)
+    private static bool NamedAtRunTime(Expression written)
     {
-        if (value is JsFunctionExpression function)
+        var value = JsTreeFacts.Unwrap(written);
+
+        if (value is FunctionExpression function)
         {
-            return function.Function.Name.Length == 0;
+            return function.Function.Name is null;
         }
 
-        if (value is not JsClassExpression { Class.Name.Length: 0 } anonymous)
+        if (value is ArrowFunctionExpression)
+        {
+            return true;
+        }
+
+        if (value is not ClassExpression { Class.Name: null } anonymous)
         {
             return false;
         }
 
-        foreach (var member in anonymous.Class.Members)
+        foreach (var member in anonymous.Class.Elements)
         {
-            if (member.IsStatic)
+            if (member is MethodDefinition { IsStatic: true } or FieldDefinition { IsStatic: true } or StaticBlock)
             {
                 return false;
             }
@@ -121,20 +132,20 @@ public sealed partial class JsCompiler
     /// function <c>a</c>; <c>[o.p = function () {}]</c> names nothing, and neither does a leaf that is
     /// itself a pattern - there is no one name for the default to take.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=27021F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E4B4B0
     // Broiler-Human:        PENDING
-    private static string InferredFrom(JsPattern target) =>
-        target is JsTargetPattern { Target: JsIdentifier name } ? name.Name : string.Empty;
+    private static string InferredFrom(Pattern target) =>
+        JsTreeFacts.IsSimpleName(target, out var name) ? name : string.Empty;
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=873B5E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6686C6
     // Broiler-Human:        PENDING
-    private void CompileArray(JsArrayLiteral array)
+    private void CompileArray(ArrayLiteral array)
     {
         var dense = true;
 
         foreach (var element in array.Elements)
         {
-            if (element is null or JsSpreadElement)
+            if (element is null or SpreadElement)
             {
                 dense = false;
                 break;
@@ -171,10 +182,10 @@ public sealed partial class JsCompiler
     /// index for the elements before the first spread and appending after it would have been
     /// half a lowering with a seam in the middle for no gain.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=772EAF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E0D1D7
     // Broiler-Human:        PENDING
     private void CompileSpreadArray(
-        System.Collections.Generic.IReadOnlyList<JsExpression?> elements)
+        System.Collections.Generic.IReadOnlyList<Expression?> elements)
     {
         Emit(JsOpcode.NewArray, (ushort)0);
         var holes = 0;
@@ -193,7 +204,7 @@ public sealed partial class JsCompiler
                 holes = 0;
             }
 
-            if (element is JsSpreadElement spread)
+            if (element is SpreadElement spread)
             {
                 CompileExpression(spread.Argument);
                 Emit(JsOpcode.SpreadArray);
@@ -216,14 +227,14 @@ public sealed partial class JsCompiler
     }
 
     /// <summary>Whether an argument list carries a spread, so the count is not a constant.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F3FEE9
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=01C1C0
     // Broiler-Human:        PENDING
     private static bool HasSpread(
-        System.Collections.Generic.IReadOnlyList<JsExpression> arguments)
+        System.Collections.Generic.IReadOnlyList<Expression> arguments)
     {
         foreach (var argument in arguments)
         {
-            if (argument is JsSpreadElement)
+            if (argument is SpreadElement)
             {
                 return true;
             }
@@ -244,23 +255,23 @@ public sealed partial class JsCompiler
     /// iterating, so a long list written out reaches the callee through the same path a spread
     /// does, with every argument evaluated once and in order.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=601796
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B378F5
     // Broiler-Human:        PENDING
     private static bool CarriesArgumentsInAnArray(
-        System.Collections.Generic.IReadOnlyList<JsExpression> arguments) =>
+        System.Collections.Generic.IReadOnlyList<Expression> arguments) =>
         arguments.Count > 255 || HasSpread(arguments);
 
     /// <summary>Builds the one Array a spread call or a spread construction passes its arguments in.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5BBE2C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B6D44F
     // Broiler-Human:        PENDING
     private void CompileArgumentArray(
-        System.Collections.Generic.IReadOnlyList<JsExpression> arguments)
+        System.Collections.Generic.IReadOnlyList<Expression> arguments)
     {
         Emit(JsOpcode.NewArray, (ushort)0);
 
         foreach (var argument in arguments)
         {
-            if (argument is JsSpreadElement spread)
+            if (argument is SpreadElement spread)
             {
                 CompileExpression(spread.Argument);
                 Emit(JsOpcode.SpreadArray);
@@ -272,77 +283,78 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9D1499
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C07AAE
     // Broiler-Human:        PENDING
-    private void CompileObject(JsObjectLiteral literal)
+    private void CompileObject(ObjectLiteral literal)
     {
         Emit(JsOpcode.NewObject);
 
         var prototyped = false;
 
-        foreach (var entry in literal.Entries)
+        foreach (var property in literal.Properties)
         {
             // A `{ a = 1 }` THAT REACHED THE LOWERING WAS NEVER A PATTERN. The parser could not
             // tell an object literal from the cover grammar of an assignment pattern until the
             // token after the brace, so it marked the shape and let it through; whatever arrives
             // here is the half that no `=` followed, and it is a syntax error.
-            if (entry.Cover)
+            if (property is SpreadElement spread)
             {
-                throw BinderAdmitted(entry.Span, "a `{ a = 1 }` entry in an object literal");
-            }
-
-            if (entry.Kind == JsPropertyKind.Spread)
-            {
-                CompileExpression(entry.Value);
+                CompileExpression(spread.Argument);
                 Emit(JsOpcode.SpreadObject);
                 continue;
             }
+
+            var entry = (PropertyDefinition)property;
+            var computed = JsTreeFacts.KeyExpression(entry.Key);
+            var key = computed is null ? KeyOf(entry.Key) : string.Empty;
+            var span = JsTreeFacts.At(entry);
+            var value = entry.PropertyKind == PropertyKind.Shorthand ? null : entry.Value;
 
             // A METHOD AND A PROPERTY WHOSE VALUE IS A FUNCTION ARE DIFFERENT OBJECTS. `{ m() {} }`
             // makes a method - it has a home object, so `super` inside it resolves, and it is not
             // a constructor - and `{ m: function () {} }` makes an ordinary function. They were
             // one lowering until classes were admitted, which was invisible only because nothing
             // could ask a function for its home object.
-            if (entry.IsMethod)
+            if (JsTreeFacts.IsMethodEntry(entry))
             {
-                if (entry.Computed is null)
+                if (computed is null)
                 {
-                    Emit(JsOpcode.LoadConstant, StringConstant(entry.Key));
+                    Emit(JsOpcode.LoadConstant, StringConstant(key));
                 }
                 else
                 {
-                    CompileExpression(entry.Computed);
+                    CompileExpression(computed);
                 }
 
-                CompileMethodValue(entry.Value);
+                CompileMethodValue(entry.Value, span, key);
 
                 Emit(
                     JsOpcode.DefineMethod,
                     MemberOperand(
-                        entry.Kind switch
+                        entry.PropertyKind switch
                         {
-                            JsPropertyKind.Get => JsMethodKind.Get,
-                            JsPropertyKind.Set => JsMethodKind.Set,
-                            _ => JsMethodKind.Method,
+                            PropertyKind.Get => MethodKind.Get,
+                            PropertyKind.Set => MethodKind.Set,
+                            _ => MethodKind.Method,
                         },
                         enumerable: true));
 
                 continue;
             }
 
-            if (entry.Computed is not null)
+            if (computed is not null)
             {
                 // THE KEY IS CONVERTED BEFORE THE VALUE IS EVALUATED, which is where
                 // `ComputedPropertyName` converts it: a key whose `toString` runs is observed before
                 // anything the value does, where the definition converted it after (JSP-6, JSC-238).
-                CompileExpression(entry.Computed);
+                CompileExpression(computed);
                 Emit(JsOpcode.ToPropertyKey);
                 CompileExpression(entry.Value);
 
                 // AN ANONYMOUS FUNCTION TAKES THE KEY AS ITS NAME, which is known only now, so the
                 // definition names it as it names a method - without making it one (JSP-6,
                 // JSC-238). Every other value is defined as it was.
-                if (NamedAtRunTime(entry.Value))
+                if (value is not null && NamedAtRunTime(value))
                 {
                     Emit(
                         JsOpcode.DefineMethod,
@@ -360,11 +372,11 @@ public sealed partial class JsCompiler
             // spellings that do NOT mean that are all excluded above or here: a computed key, a
             // method, and the shorthand. Writing it twice is a syntax error, because a literal that
             // set its prototype twice would have an order nobody could read off the source.
-            if (!entry.Shorthand && string.Equals(entry.Key, "__proto__", System.StringComparison.Ordinal))
+            if (entry.PropertyKind != PropertyKind.Shorthand && string.Equals(key, "__proto__", System.StringComparison.Ordinal))
             {
                 if (prototyped)
                 {
-                    throw BinderAdmitted(entry.Span, "a second `__proto__` entry in an object literal");
+                    throw BinderAdmitted(span, "a second `__proto__` entry in an object literal");
                 }
 
                 prototyped = true;
@@ -373,19 +385,29 @@ public sealed partial class JsCompiler
                 continue;
             }
 
-            CompileNamedValue(entry.Value, entry.Key);
-            Emit(JsOpcode.DefineField, InternedName(entry.Key));
+            if (value is null)
+            {
+                // A SHORTHAND'S VALUE IS ITS NAME, READ AT THE ENTRY, as the wide parser's tree held it.
+                Position(span);
+                LoadName(span, key);
+            }
+            else
+            {
+                CompileNamedValue(value, key);
+            }
+
+            Emit(JsOpcode.DefineField, InternedName(key));
         }
     }
 
     /// <summary>Emits a closure for a member written in method form.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E977A0
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1BFF8C
     // Broiler-Human:        PENDING
-    private void CompileMethodValue(JsExpression value)
+    private void CompileMethodValue(Expression value, SliceSourceSpan span, string name)
     {
-        if (value is JsFunctionExpression method)
+        if (value is FunctionExpression method)
         {
-            Emit(JsOpcode.Closure, (ushort)CompileFunction(method.Function, isMethod: true));
+            Emit(JsOpcode.Closure, (ushort)CompileFunction(method.Function, span, name, isMethod: true));
             return;
         }
 
@@ -410,9 +432,9 @@ public sealed partial class JsCompiler
     /// two cannot disagree about what a pattern is.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4C1B57
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C4BE09
     // Broiler-Human:        PENDING
-    private void CompileRegExpLiteral(JsRegExpLiteral pattern)
+    private void CompileRegExpLiteral(RegularExpressionLiteral pattern)
     {
         Emit(JsOpcode.LoadGlobal, InternedName("RegExp"));
         Emit(JsOpcode.LoadConstant, StringConstant(pattern.Pattern));
@@ -452,19 +474,19 @@ public sealed partial class JsCompiler
     /// move.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=22497C
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=C9AE08
     // Broiler-Falsified-If: a substitution coerces through `valueOf` before `toString`, or a Symbol substitution does not throw
     // Broiler-Human:        PENDING
-    private void CompileTemplate(JsTemplateLiteral template)
+    private void CompileTemplate(TemplateLiteral template)
     {
-        Emit(JsOpcode.LoadConstant, StringConstant(template.Cooked[0]!));
+        Emit(JsOpcode.LoadConstant, StringConstant(template.Quasis[0].Cooked!));
 
-        for (var index = 0; index < template.Substitutions.Count; index++)
+        for (var index = 0; index < template.Expressions.Count; index++)
         {
-            EmitToString(template.Substitutions[index]);
+            EmitToString(template.Expressions[index]);
             Emit(JsOpcode.Add);
 
-            var tail = template.Cooked[index + 1]!;
+            var tail = template.Quasis[index + 1].Cooked!;
 
             if (tail.Length != 0)
             {
@@ -475,10 +497,10 @@ public sealed partial class JsCompiler
     }
 
     /// <summary>Pushes <c>ToString</c> of one expression, throwing for a Symbol as the language does.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=A802C8
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=A371A7
     // Broiler-Falsified-If: the two paths reach the call at different operand-stack heights
     // Broiler-Human:        PENDING
-    private void EmitToString(JsExpression value)
+    private void EmitToString(Expression value)
     {
         Emit(JsOpcode.LoadGlobal, InternedName("String"));
         Emit(JsOpcode.LoadUndefined);
@@ -516,13 +538,13 @@ public sealed partial class JsCompiler
     /// *(corrected: JSC-240)*.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5BC1D6
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EF11B1
     // Broiler-Human:        PENDING
-    private void CompileTaggedTemplate(JsTaggedTemplate tagged)
+    private void CompileTaggedTemplate(TaggedTemplateExpression tagged)
     {
         EmitCallee(tagged.Tag);
 
-        var count = tagged.Quasi.Substitutions.Count + 1;
+        var count = tagged.Quasi.Expressions.Count + 1;
 
         if (count > 255)
         {
@@ -530,7 +552,7 @@ public sealed partial class JsCompiler
             EmitTemplateStrings(tagged.Quasi);
             Emit(JsOpcode.ArrayAppend);
 
-            foreach (var substitution in tagged.Quasi.Substitutions)
+            foreach (var substitution in tagged.Quasi.Expressions)
             {
                 CompileExpression(substitution);
                 Emit(JsOpcode.ArrayAppend);
@@ -542,7 +564,7 @@ public sealed partial class JsCompiler
 
         EmitTemplateStrings(tagged.Quasi);
 
-        foreach (var substitution in tagged.Quasi.Substitutions)
+        foreach (var substitution in tagged.Quasi.Expressions)
         {
             CompileExpression(substitution);
         }
@@ -576,12 +598,12 @@ public sealed partial class JsCompiler
     /// which builds the same object from them.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=5927B1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=C00925
     // Broiler-Falsified-If: two evaluations of one call site produce two strings objects, or the cache is reachable from guest code
     // Broiler-Human:        PENDING
-    private void EmitTemplateStrings(JsTemplateLiteral quasi)
+    private void EmitTemplateStrings(TemplateLiteral quasi)
     {
-        var count = quasi.Cooked.Count;
+        var count = quasi.Quasis.Count;
 
         if (count > 255)
         {
@@ -589,7 +611,7 @@ public sealed partial class JsCompiler
 
             for (var index = 0; index < count; index++)
             {
-                if (quasi.Cooked[index] is { } chunk)
+                if (quasi.Quasis[index].Cooked is { } chunk)
                 {
                     Emit(JsOpcode.LoadConstant, StringConstant(chunk));
                 }
@@ -605,7 +627,7 @@ public sealed partial class JsCompiler
 
             for (var index = 0; index < count; index++)
             {
-                Emit(JsOpcode.LoadConstant, StringConstant(quasi.Raw[index]));
+                Emit(JsOpcode.LoadConstant, StringConstant(quasi.Quasis[index].Raw));
                 Emit(JsOpcode.ArrayAppend);
             }
 
@@ -617,7 +639,7 @@ public sealed partial class JsCompiler
         {
             // A CHUNK AN UNDEFINED ESCAPE SPOILED IS `undefined` in the strings array, and only a
             // tagged template can carry one: the parser refuses it in an untagged template.
-            if (quasi.Cooked[index] is { } chunk)
+            if (quasi.Quasis[index].Cooked is { } chunk)
             {
                 Emit(JsOpcode.LoadConstant, StringConstant(chunk));
             }
@@ -629,7 +651,7 @@ public sealed partial class JsCompiler
 
         for (var index = 0; index < count; index++)
         {
-            Emit(JsOpcode.LoadConstant, StringConstant(quasi.Raw[index]));
+            Emit(JsOpcode.LoadConstant, StringConstant(quasi.Quasis[index].Raw));
         }
 
         Emit(JsOpcode.GetTemplateObject, (byte)count);

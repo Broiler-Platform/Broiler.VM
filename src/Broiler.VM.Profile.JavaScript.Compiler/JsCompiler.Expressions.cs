@@ -15,6 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Syntax;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
@@ -26,76 +27,82 @@ public sealed partial class JsCompiler
 
     // ---- expressions ---------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0358BF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=21BC13
     // Broiler-Human:        PENDING
-    private void CompileExpression(JsExpression expression)
+    private void CompileExpression(Expression written)
     {
-        Position(expression.Span);
+        // A PARENTHESIS IS THE EXPRESSION IT HOLDS, seen through by a loop and placed where the
+        // expression it holds begins, as the wide parser's tree held it (SJL-13.3, step 2).
+        var expression = JsTreeFacts.Unwrap(written);
+        Position(JsTreeFacts.At(expression));
 
         switch (expression)
         {
-            case JsNumberLiteral number:
+            // ONLY A PARSE ADMITTING BIGINT ADMITS ONE, and the constant it writes is what declares the
+            // surface: its value is the admission walk's (SJL-13.3, step 2).
+            case NumericLiteral bigInt when (bigInt.Flags & NumericLiteralFlags.BigInt) != 0:
+                surfaces.Add(JsSurfaces.BigInt);
+                Emit(JsOpcode.LoadConstant, BigIntConstant(unitParse.BigInts[bigInt]));
+                break;
+
+            case NumericLiteral number:
                 Emit(JsOpcode.LoadConstant, NumberConstant(number.Value));
                 break;
 
-            case JsStringLiteral text:
+            case StringLiteral text:
                 Emit(JsOpcode.LoadConstant, StringConstant(text.Value));
                 break;
 
-            // ONLY A PARSE ADMITTING BIGINT PRODUCES THIS NODE, and the constant it writes is what
-            // declares the surface: an artifact holding a BigInt constant says so beside its
-            // manifest, and a composition that declined the surface refuses it at verification.
-            case JsBigIntLiteral bigInt:
-                surfaces.Add(JsSurfaces.BigInt);
-                Emit(JsOpcode.LoadConstant, BigIntConstant(bigInt.Value));
-                break;
-
-            case JsBooleanLiteral boolean:
+            case BooleanLiteral boolean:
                 Emit(boolean.Value ? JsOpcode.LoadTrue : JsOpcode.LoadFalse);
                 break;
 
-            case JsNullLiteral:
+            case NullLiteral:
                 Emit(JsOpcode.LoadNull);
                 break;
 
-            case JsThisExpression:
+            case ThisExpression:
                 Emit(JsOpcode.LoadThis);
                 break;
 
-            case JsIdentifier identifier:
-                LoadName(identifier.Span, identifier.Name);
+            case Identifier identifier:
+                LoadName(JsTreeFacts.At(identifier), identifier.Name);
                 break;
 
-            case JsRegExpLiteral pattern:
+            case RegularExpressionLiteral pattern:
                 CompileRegExpLiteral(pattern);
                 break;
 
-            case JsArrayLiteral array:
+            case ArrayLiteral array:
                 CompileArray(array);
                 break;
 
-            case JsObjectLiteral literal:
+            case ObjectLiteral literal:
                 CompileObject(literal);
                 break;
 
-            case JsFunctionExpression function:
-                CompileFunctionExpression(function.Function);
+            case FunctionExpression function:
+                CompileFunctionExpression(function.Function, JsTreeFacts.At(function));
                 break;
 
-            case JsClassExpression definition:
+            case ArrowFunctionExpression arrow:
+                CompileFunctionExpression(arrow.Function, JsTreeFacts.At(arrow));
+                break;
+
+            case ClassExpression definition:
                 CompileClass(definition.Class, string.Empty);
                 break;
 
-            case JsSuperMemberExpression member:
+            case MemberExpression { Object: SuperExpression } member:
                 CompileSuperKey(member);
                 Emit(JsOpcode.LoadSuperProperty);
                 break;
 
-            case JsSuperCallExpression call:
+            case CallExpression { Callee: SuperExpression } call:
                 CompileSuperCall(call);
                 break;
 
-            case JsNewTargetExpression target:
+            case MetaProperty { Meta.Name: "new" } target:
                 // `new.target` OUTSIDE A FUNCTION IS A SYNTAX ERROR AND NOT A MANIFEST REFUSAL.
                 // The manifest admits it perfectly well; the program wrote it where the language
                 // has nothing for it to mean, and the diagnostic code is what tells a conformance
@@ -103,47 +110,56 @@ public sealed partial class JsCompiler
                 // any of the unit is lowered (SJL-12.6 item 2); here the lowering only asserts it.
                 if (!insideFunction)
                 {
-                    throw BinderAdmitted(target.Span, "`new.target` outside a function");
+                    throw BinderAdmitted(JsTreeFacts.At(target), "`new.target` outside a function");
                 }
 
                 Emit(JsOpcode.LoadNewTarget);
                 break;
 
-            case JsUnaryExpression unary:
+            case UnaryExpression unary:
                 CompileUnary(unary);
                 break;
 
-            case JsUpdateExpression update:
+            case UpdateExpression update:
                 CompileUpdate(update);
                 break;
 
-            case JsBinaryExpression binary:
+            case BinaryExpression binary:
                 CompileBinary(binary);
                 break;
 
-            case JsLogicalExpression logical:
+            case LogicalExpression logical:
                 CompileLogical(logical);
                 break;
 
-            case JsConditionalExpression conditional:
+            case ConditionalExpression conditional:
             {
                 CompileExpression(conditional.Test);
                 var otherwise = NewLabel();
                 var end = NewLabel();
                 Branch(JsOpcode.JumpIfFalse, otherwise);
-                CompileExpression(conditional.WhenTrue);
+                CompileExpression(conditional.Consequent);
                 Branch(JsOpcode.Jump, end);
                 Mark(otherwise);
-                CompileExpression(conditional.WhenFalse);
+                CompileExpression(conditional.Alternate);
                 Mark(end);
                 break;
             }
 
-            case JsAssignmentExpression assignment:
+            // A DESTRUCTURING ASSIGNMENT'S VALUE IS THE RIGHT-HAND SIDE AND NOT THE PATTERN'S
+            // RESULT. `print([a, b] = [1, 2])` prints the array, so the value is duplicated before
+            // the pattern consumes its copy.
+            case AssignmentExpression { Target: ArrayPattern or ObjectPattern } destructuring:
+                CompileExpression(destructuring.Value);
+                Emit(JsOpcode.Duplicate);
+                BindPattern((Pattern)destructuring.Target, BindMode.Assign);
+                break;
+
+            case AssignmentExpression assignment:
                 CompileAssignment(assignment);
                 break;
 
-            case JsMemberExpression member:
+            case MemberExpression { Object: not SuperExpression, Property: not PrivateIdentifier } member:
                 CompileMember(member);
                 break;
 
@@ -151,19 +167,19 @@ public sealed partial class JsCompiler
             // `undefined` for a name nothing defined; `o.#x` on an object the declaring class never
             // constructed is a TypeError, because a private name is not a key that object could
             // have had.
-            case JsPrivateMemberExpression privateAccess:
-                CompileExpression(privateAccess.Target);
-                EmitPrivateName(privateAccess.Span, privateAccess.Name);
+            case MemberExpression { Property: PrivateIdentifier } privateAccess:
+                CompileExpression(privateAccess.Object);
+                EmitPrivateName(JsTreeFacts.At(privateAccess), JsTreeFacts.PropertyName(privateAccess));
                 Emit(JsOpcode.LoadPrivate);
                 break;
 
-            case JsPrivateInExpression brand:
-                CompileExpression(brand.Target);
-                EmitPrivateName(brand.Span, brand.Name);
+            case PrivateInExpression brand:
+                CompileExpression(brand.Right);
+                EmitPrivateName(JsTreeFacts.At(brand), brand.Name.Name);
                 Emit(JsOpcode.HasPrivate);
                 break;
 
-            case JsCallExpression call:
+            case CallExpression call:
                 CompileCall(call);
                 break;
 
@@ -175,8 +191,8 @@ public sealed partial class JsCompiler
             // CARRYING RECORDS and by nothing else - a script may write `import()` and carries none
             // - so this call site cannot declare it without making an artifact say it holds a graph
             // it does not hold.
-            case JsImportCall imported:
-                CompileExpression(imported.Specifier);
+            case ImportCall imported:
+                CompileExpression(imported.Source);
 
                 if (imported.Options is null)
                 {
@@ -191,23 +207,23 @@ public sealed partial class JsCompiler
                 Emit(JsOpcode.ImportCall, InternedName(module?.Key ?? scriptReferrer));
                 break;
 
-            case JsImportMeta meta:
+            case MetaProperty meta:
                 if (module is null)
                 {
-                    throw BinderAdmitted(meta.Span, "`import.meta` outside a module");
+                    throw BinderAdmitted(JsTreeFacts.At(meta), "`import.meta` outside a module");
                 }
 
                 Emit(JsOpcode.ImportMeta, (ushort)built.IndexOf(module));
                 break;
 
-            case JsNewExpression construction:
+            case NewExpression construction:
             {
                 CompileExpression(construction.Callee);
 
                 if (CarriesArgumentsInAnArray(construction.Arguments))
                 {
                     CompileArgumentArray(construction.Arguments);
-                    Position(construction.Span);
+                    Position(JsTreeFacts.At(construction));
                     Emit(JsOpcode.ConstructSpread);
                     break;
                 }
@@ -220,7 +236,7 @@ public sealed partial class JsCompiler
                 // THE CONSTRUCTION IS PLACED AT ITS OWN `new` AGAIN, after its arguments placed
                 // themselves, so an error it makes - or one made by the constructor it runs - is
                 // placed where the construction is written (JSD-0038).
-                Position(construction.Span);
+                Position(JsTreeFacts.At(construction));
 
                 Emit(
                     JsOpcode.Construct,
@@ -229,24 +245,15 @@ public sealed partial class JsCompiler
                 break;
             }
 
-            // A DESTRUCTURING ASSIGNMENT'S VALUE IS THE RIGHT-HAND SIDE AND NOT THE PATTERN'S
-            // RESULT. `print([a, b] = [1, 2])` prints the array, so the value is duplicated before
-            // the pattern consumes its copy.
-            case JsDestructuringAssignment destructuring:
-                CompileExpression(destructuring.Value);
-                Emit(JsOpcode.Duplicate);
-                BindPattern(destructuring.Target, BindMode.Assign);
-                break;
-
-            case JsTemplateLiteral template:
+            case TemplateLiteral template:
                 CompileTemplate(template);
                 break;
 
-            case JsTaggedTemplate tagged:
+            case TaggedTemplateExpression tagged:
                 CompileTaggedTemplate(tagged);
                 break;
 
-            case JsChainExpression chain:
+            case ChainExpression chain:
                 CompileChain(chain);
                 break;
 
@@ -254,14 +261,14 @@ public sealed partial class JsCompiler
             // replaces it with whatever the resumption sent, so a `yield` in the middle of an
             // expression needs nothing around it - which is what lets it appear in an argument
             // list, a loop condition or an object literal without the lowering knowing where it is.
-            case JsYieldExpression yielded:
-                if (yielded.Operand is null)
+            case YieldExpression yielded:
+                if (yielded.Argument is null)
                 {
                     Emit(JsOpcode.LoadUndefined);
                 }
                 else
                 {
-                    CompileExpression(yielded.Operand);
+                    CompileExpression(yielded.Argument);
                 }
 
                 // A `yield` IN AN ASYNC GENERATOR AWAITS ITS OPERAND FIRST, and it is two
@@ -288,8 +295,8 @@ public sealed partial class JsCompiler
 
             // `await` LEAVES ONE VALUE WHERE IT TOOK ONE, exactly as `yield` does, so it needs
             // nothing around it either and may stand anywhere an expression may.
-            case JsAwaitExpression awaited:
-                CompileExpression(awaited.Operand);
+            case AwaitExpression awaited:
+                CompileExpression(awaited.Argument);
 
                 // AND THE UNIT IS CHECKED HERE, where the alternative is the worst failure shape
                 // this component has: an `Await` in a unit carrying no async flag is refused by
@@ -301,13 +308,13 @@ public sealed partial class JsCompiler
                 // lowered (SJL-12.6 item 2, decision D12); here the lowering only asserts it.
                 if ((buffer.Flags & JsFormat.FunctionFlags.Async) == 0)
                 {
-                    throw BinderAdmitted(awaited.Span, "an `await` outside an async function");
+                    throw BinderAdmitted(JsTreeFacts.At(awaited), "an `await` outside an async function");
                 }
 
                 Emit(JsOpcode.Await);
                 break;
 
-            case JsSequenceExpression sequence:
+            case SequenceExpression sequence:
                 for (var index = 0; index < sequence.Expressions.Count; index++)
                 {
                     CompileExpression(sequence.Expressions[index]);
@@ -322,7 +329,7 @@ public sealed partial class JsCompiler
 
             default:
                 Refuse(
-                    expression.Span,
+                    JsTreeFacts.At(expression),
                     SliceSourceDiagnosticCode.ConstructTheLoweringHasNoArmFor,
                     "this expression is not admitted by the declared feature manifest");
 
@@ -341,13 +348,15 @@ public sealed partial class JsCompiler
     /// destroy it - the closure captured the record itself, and what is popped is only this frame's
     /// view of the chain.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FB8349
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=172EFF
     // Broiler-Human:        PENDING
-    private void CompileFunctionExpression(JsFunctionNode function)
+    private void CompileFunctionExpression(FunctionNode function, SliceSourceSpan span)
     {
-        if (function.Name.Length == 0 || function.IsArrow)
+        var name = function.Name?.Name ?? string.Empty;
+
+        if (name.Length == 0 || function.IsArrow)
         {
-            Emit(JsOpcode.Closure, (ushort)CompileFunction(function));
+            Emit(JsOpcode.Closure, (ushort)CompileFunction(function, span, name));
             return;
         }
 
@@ -357,8 +366,8 @@ public sealed partial class JsCompiler
         var site = buffer.Code.Count + 1;
         Emit(JsOpcode.PushScope, (ushort)0);
         buffer.ScopeSites.Add((site, scope));
-        var slot = scope.Declare(function.Name, constant: false);
-        Emit(JsOpcode.Closure, (ushort)CompileFunction(function));
+        var slot = scope.Declare(name, constant: false);
+        Emit(JsOpcode.Closure, (ushort)CompileFunction(function, span, name));
         Emit(JsOpcode.Duplicate);
         EmitScoped(JsOpcode.InitialiseScoped, 0, slot);
         Emit(JsOpcode.PopScope);

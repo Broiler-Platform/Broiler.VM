@@ -15,6 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Syntax;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
@@ -24,43 +25,45 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 public sealed partial class JsCompiler
 {
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=40B4E2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=91D781
     // Broiler-Human:        PENDING
-    private void CompileStoreTo(JsExpression target)
+    private void CompileStoreTo(SyntaxNode written)
     {
+        var target = written is Expression expression ? JsTreeFacts.Unwrap(expression) : written;
+
         switch (target)
         {
-            case JsIdentifier name:
-                StoreName(name.Span, name.Name);
+            case Identifier or BindingIdentifier when JsTreeFacts.IsSimpleName(target, out var name):
+                StoreName(JsTreeFacts.At(target), name);
                 break;
 
-            case JsPrivateMemberExpression privateAccess:
+            case MemberExpression { Property: PrivateIdentifier } privateAccess:
             {
                 var owner = FunctionScope();
                 var kept = owner.Declare("#target" + owner.SlotCount, constant: false);
                 EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, kept);
-                CompileExpression(privateAccess.Target);
-                EmitPrivateName(privateAccess.Span, privateAccess.Name);
+                CompileExpression(privateAccess.Object);
+                EmitPrivateName(JsTreeFacts.At(privateAccess), JsTreeFacts.PropertyName(privateAccess));
                 EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, kept);
                 Emit(JsOpcode.StorePrivate);
                 break;
             }
 
-            case JsMemberExpression member when member.Computed is null:
+            case MemberExpression { Object: not SuperExpression, Property: not PrivateIdentifier } member when JsTreeFacts.Computed(member) is null:
             {
                 var function = FunctionScope();
                 var slot = function.Declare("#target" + function.SlotCount, constant: false);
                 EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, slot);
-                CompileExpression(member.Target);
+                CompileExpression(member.Object);
                 EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, slot);
-                Emit(JsOpcode.SetProperty, InternedName(member.Name));
+                Emit(JsOpcode.SetProperty, InternedName(JsTreeFacts.PropertyName(member)));
                 break;
             }
 
             // A `super` PROPERTY IS A REFERENCE TOO, as the target of `for (super.x of xs)` and
             // of a pattern's leaf (JSC-256): the this binding is read and the key evaluated, then
             // the value is written as `super.x = v` writes it.
-            case JsSuperMemberExpression inherited:
+            case MemberExpression { Object: SuperExpression } inherited:
             {
                 var function = FunctionScope();
                 var slot = function.Declare("#target" + function.SlotCount, constant: false);
@@ -71,13 +74,13 @@ public sealed partial class JsCompiler
                 break;
             }
 
-            case JsMemberExpression member:
+            case MemberExpression { Object: not SuperExpression, Property: not PrivateIdentifier } member:
             {
                 var function = FunctionScope();
                 var slot = function.Declare("#target" + function.SlotCount, constant: false);
                 EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, slot);
-                CompileExpression(member.Target);
-                CompileExpression(member.Computed!);
+                CompileExpression(member.Object);
+                CompileExpression(JsTreeFacts.Computed(member)!);
                 EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, slot);
                 Emit(JsOpcode.SetIndex);
                 break;
@@ -86,13 +89,13 @@ public sealed partial class JsCompiler
             // A CALL AS A `for … in` OR `for … of` HEAD IN NON-STRICT CODE RUNS THE CALL FOR EACH
             // VALUE AND THROWS BEFORE THE BODY (JSP-7, JSC-239); the value it would have written is
             // dropped first, and the instruction that throws stands in for it.
-            case JsCallExpression called when !strict:
+            case CallExpression { Callee: not SuperExpression } called when !strict:
                 Emit(JsOpcode.Pop);
                 EmitCallTargetThrow(called);
                 break;
 
             default:
-                throw BinderAdmitted(target.Span, "an assignment target that is not a reference");
+                throw BinderAdmitted(JsTreeFacts.At(target), "an assignment target that is not a reference");
         }
     }
 

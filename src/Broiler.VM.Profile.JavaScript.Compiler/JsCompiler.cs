@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   23
-// Annotated:        23/23
-// Exempt:           47
-// Human-reviewed:   0/23
+// Relevant units:   27
+// Annotated:        27/27
+// Exempt:           48
+// Human-reviewed:   0/27
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         2/1
 // Resource impact:  3/10 max
-// Unverified:       23
+// Unverified:       27
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -451,6 +451,35 @@ public sealed partial class JsCompiler
     private JsBinder binder = null!;
 
     /// <summary>
+    /// The unit being lowered's parse: its text, its tokens and the side tables beside the shared tree
+    /// (SJL-13.3, step 2).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=EA12D2
+    // Broiler-Human:        PENDING
+    private JsFrontend.Parsed unitParse = null!;
+
+    /// <summary>A declared function's name, as the wide parser named it: its own, <c>default</c>, or empty.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=F81520
+    // Broiler-Human:        PENDING
+    private string NameOf(Broiler.ECMAScript.Syntax.FunctionNode function) => binder.NameOf(function);
+
+    /// <summary>A class's name, as the wide parser named it: its own, <c>default</c>, or empty.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=5D7B3D
+    // Broiler-Human:        PENDING
+    private string NameOf(Broiler.ECMAScript.Syntax.ClassNode definition) => binder.NameOf(definition);
+
+    /// <summary>A literal property key's spelling, a BigInt's by the admission walk's value.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=125A2F
+    // Broiler-Human:        PENDING
+    private string KeyOf(Broiler.ECMAScript.Syntax.SyntaxNode key) => JsTreeFacts.Key(key, unitParse.BigInts, out _);
+
+    /// <summary>The program's place: its first retained token, its first statement, or the end of its source.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=0728FC
+    // Broiler-Human:        PENDING
+    private SliceSourceSpan ProgramSpan(Broiler.ECMAScript.Syntax.ProgramNode program) =>
+        JsTreeFacts.ProgramSpan(program, unitParse.Tokens, unitParse.Text);
+
+    /// <summary>
     /// Whether the code being lowered is inside a method, so <c>super.x</c> resolves.
     /// </summary>
     /// <remarks>
@@ -705,7 +734,7 @@ public sealed partial class JsCompiler
     /// raises reaches the caller as it would have on the caller's own thread.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CA5A3D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=94C0CA
     // Broiler-Falsified-If: the parse of a module's requests runs on the calling thread
     // Broiler-Human:        PENDING
     public static JsModuleRequests Requests(string text, SliceParseOptions options) =>
@@ -724,9 +753,11 @@ public sealed partial class JsCompiler
             {
                 var specifier = statement switch
                 {
-                    JsImportDeclaration import => JsFormat.TypedSpecifier(
-                        import.Specifier, compiler.AttributeType(import.Span, import.Attributes, refuse: false)),
-                    JsExportDeclaration { From.Length: not 0 } exported => compiler.TypedFrom(exported),
+                    Broiler.ECMAScript.Syntax.ImportDeclaration import => JsFormat.TypedSpecifier(
+                        import.Source.Value,
+                        compiler.AttributeType(JsTreeFacts.At(import), JsTreeFacts.Attributes(import.Attributes), refuse: false)),
+                    Broiler.ECMAScript.Syntax.ExportNamedDeclaration or Broiler.ECMAScript.Syntax.ExportAllDeclaration
+                        when ReExport(statement, out _, out _) => compiler.TypedFrom(statement),
                     _ => string.Empty,
                 };
 
@@ -816,7 +847,7 @@ public sealed partial class JsCompiler
         });
 
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D38ADA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=29B57C
     // Broiler-Human:        PENDING
     private JsCompilation Run(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
@@ -827,7 +858,7 @@ public sealed partial class JsCompiler
             var first = diagnostics.Count;
 
             // THE WIDE PATH PARSES WITH THE SHARED SYNTAX LIBRARY (JSD-0083, decision D19; milestone
-            // SJL-13.3, step 1), and the adapter builds the tree the lowering reads. Eval code is parsed
+            // SJL-13.3, step 1), and the lowering reads its tree (step 2). Eval code is parsed
             // under its caller's strictness and function context, which the request's forced strictness
             // and inherited context carry (decision D16), and the admission walk makes the BigInt and
             // module-specifier refusals after a parse that reported nothing (decision D18). (2026-11-09:
@@ -851,7 +882,7 @@ public sealed partial class JsCompiler
                 return Refused(first, script.SourceName);
             }
 
-            var program = parsed.Program!;
+            var program = parsed.Tree!;
 
             // THE MANIFEST IS JUDGED BEFORE THE LOWERING RUNS, AND THAT ORDER IS WHAT MAKES A
             // REFUSAL A REFUSAL BY NAME. The lowering meets a construct as a node to emit code
@@ -860,7 +891,7 @@ public sealed partial class JsCompiler
             // the lowering happened to trip over first.
             if (request.Manifest == JsFeatureManifest.Numeric)
             {
-                diagnostics.AddRange(JsNumericAdmission.Judge(program));
+                diagnostics.AddRange(JsNumericAdmission.Judge(parsed.Tree!));
 
                 if (diagnostics.Count != 0)
                 {
@@ -874,7 +905,8 @@ public sealed partial class JsCompiler
             // request's strict flag for eval code - which is the imposition the parser was given. The
             // unit's lowering reads it from the binder, so the facts and the emission cannot be told
             // two different strictnesses.
-            binder = JsBinder.Bind(program, forceStrict, script.Options);
+            unitParse = parsed;
+            binder = JsBinder.Bind(parsed, forceStrict, script.Options);
 
             // A UNIT ITS BINDER REFUSES IS NOT LOWERED (SJL-12.6 item 2, JSD-0080 decisions D10 and
             // D12). An early error the binder reports is found once, in source order, before any of
@@ -979,7 +1011,7 @@ public sealed partial class JsCompiler
 
             // A MODULE IS BOUND AS A SCRIPT IS, and it is strict whatever it says. Whether its body is
             // an async unit is the parser's answer, which the binder reads as the lowering does.
-            binder = JsBinder.Bind(program, imposed: true, module.Options);
+            binder = JsBinder.Bind(unitParse, imposed: true, module.Options);
 
             // AND A MODULE ITS BINDER REFUSES IS NOT LOWERED EITHER: its declaration, collision and
             // export checks are the binder's with the rest.
@@ -1038,18 +1070,19 @@ public sealed partial class JsCompiler
         return new JsCompilation(false, null, diagnostics);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=34E655
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=862D22
     // Broiler-Human:        PENDING
     private bool TryParse(
-        string text, SliceParseOptions options, bool forceStrict, out JsProgramNode program)
+        string text, SliceParseOptions options, bool forceStrict, out Broiler.ECMAScript.Syntax.ProgramNode program)
     {
         program = null!;
         var parsed = JsFrontend.Parse(text, options, forceStrict, request.AdmitsBigIntLiterals);
         awaited = parsed.SawTopLevelAwait;
+        unitParse = parsed;
 
         if (parsed.Diagnostics.Count == 0)
         {
-            program = parsed.Program!;
+            program = parsed.Tree!;
             return true;
         }
 

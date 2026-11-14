@@ -254,6 +254,8 @@ entry height, and one shared table — `JsOpcodes.Shape`, `InstructionWidth`, `I
 `HasCodeTarget`, `TryDescribe` — that the verifier, an encoder and the interpreter would all read
 rather than each re-deriving.
 
+*(Noted 2026-11-14, at the shared JavaScript libraries programme's SJL-13.3 step 2, on its branch `sjl-13-3-step2`, not yet merged, by [JSD-0087](decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md)'s dated note of that day and [JSC-328](roadmap.corrections.md#jsc-328).)* The note of 2026-11-10 above reads "and the adapter builds `JsSyntax` from the shared tree", and this paragraph reads "a second walk of the `JsSyntax` tree". From step 2 the adapter and `JsSyntax` are deleted, and the per-program compilation reads the shared syntax library's tree itself, through `JsTreeFacts`; the alternative this paragraph rejects is now a second walk of that tree, which would duplicate the same rules across the same methods, so the argument stands. `JsCompiler.Assemble` does not change at step 2, so the point the note above keeps, that a backend attaches inside the assembly step and only there, still stands. The paragraph and the note above are kept as written.
+
 ***And this profile's plan has said something else, in one sentence, since before there was a
 backend to say it about.*** [Section 9](roadmap.md#9-the-semantic-front-end-and-lowering) says the
 front-end contract returns a validated tree **or a back-end-neutral intermediate form**, and the

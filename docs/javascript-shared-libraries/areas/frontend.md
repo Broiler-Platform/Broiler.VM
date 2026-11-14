@@ -104,6 +104,14 @@ shared tree, and an adapter that builds `JsSyntax`, so the lowering does not cha
 structured template mode are deleted, and the binder no longer makes the checks of `syntax` rows. Step 2 moves the
 lowering onto the shared tree. The section is kept as it described the base.
 
+*(Noted 2026-11-14, at SJL-13.3's step 2, on its branch `sjl-13-3-step2`, not yet merged, by [JSD-0087](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md)'s dated note of that day and [JSC-328](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-328).)* The note
+above reads "and an adapter that builds `JsSyntax`, so the lowering does not change" and "Step 2 moves the lowering
+onto the shared tree." Step 2 does so: the admission walk, the numeric admission, the binder and the lowering in
+`JsCompiler` read the shared tree themselves, through `JsTreeFacts`, with the side tables `JsFrontend` hands on beside
+it, keyed by the tree's nodes, for strictness and the BigInt values, and the admission walk's top-level-`await` fact;
+`JsSyntax` and the adapter are deleted. "**The wide path** runs `JsParser` into `JsSyntax`, then the lowering in
+`JsCompiler`" and the list after it still describe the base. The section and the note above are kept as written.
+
 **Options and context.**
 
 - `SliceParseOptions`: goal (Script or Module), top-level `await`, nesting depth (bounded),

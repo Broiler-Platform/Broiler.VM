@@ -15,6 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
+using Broiler.ECMAScript.Syntax;
 using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
@@ -47,9 +48,9 @@ public sealed partial class JsCompiler
     /// realm's global lexical environment, or a property of the global object when it is a
     /// <c>var</c>, and a slot with the same name would shadow both for the rest of the unit.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BD3639
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8319CB
     // Broiler-Human:        PENDING
-    private void DeclarePatternNames(JsPattern pattern, bool constant)
+    private void DeclarePatternNames(Pattern pattern, bool constant)
     {
         if (scope.Kind == ScopeKind.Program && blockDepth == 0)
         {
@@ -58,35 +59,35 @@ public sealed partial class JsCompiler
 
         switch (pattern)
         {
-            case JsTargetPattern { Target: JsIdentifier name }:
-                scope.Declare(name.Name, constant);
+            case BindingIdentifier or TargetPattern when JsTreeFacts.IsSimpleName(pattern, out var name):
+                scope.Declare(name, constant);
                 return;
 
-            case JsArrayPattern array:
-                foreach (var element in array.Elements)
+            case ArrayPattern array:
+                foreach (var element in JsTreeFacts.Elements(array))
                 {
                     if (element is not null)
                     {
-                        DeclarePatternNames(element.Target, constant);
+                        DeclarePatternNames(JsTreeFacts.ElementTarget(element), constant);
                     }
                 }
 
-                if (array.Rest is not null)
+                if (JsTreeFacts.Rest(array) is { } arrayRest)
                 {
-                    DeclarePatternNames(array.Rest, constant);
+                    DeclarePatternNames(arrayRest, constant);
                 }
 
                 return;
 
-            case JsObjectPattern literal:
-                foreach (var property in literal.Properties)
+            case ObjectPattern literal:
+                foreach (var property in JsTreeFacts.Properties(literal))
                 {
-                    DeclarePatternNames(property.Value.Target, constant);
+                    DeclarePatternNames(JsTreeFacts.ElementTarget(property.Value), constant);
                 }
 
-                if (literal.Rest is not null)
+                if (JsTreeFacts.Rest(literal) is { } objectRest)
                 {
-                    DeclarePatternNames(literal.Rest, constant);
+                    DeclarePatternNames(objectRest, constant);
                 }
 
                 return;
@@ -97,9 +98,9 @@ public sealed partial class JsCompiler
     }
 
     /// <summary>Replaces <c>undefined</c> on the top of the stack with an initialiser's value.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2AB9C0
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AB80F5
     // Broiler-Human:        PENDING
-    private void ApplyDefault(JsExpression? initialiser, string inferred)
+    private void ApplyDefault(Expression? initialiser, string inferred)
     {
         if (initialiser is null)
         {
@@ -131,21 +132,25 @@ public sealed partial class JsCompiler
     /// iterator protocol, and the second copy is where the missing <c>IteratorClose</c> would have
     /// been.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C0E1B1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CDECA6
     // Broiler-Human:        PENDING
-    private void BindPattern(JsPattern pattern, BindMode mode)
+    private void BindPattern(Pattern pattern, BindMode mode)
     {
         switch (pattern)
         {
-            case JsTargetPattern leaf:
-                BindLeaf(leaf.Target, mode);
+            case BindingIdentifier leaf:
+                BindLeaf(leaf, mode);
                 return;
 
-            case JsArrayPattern array:
+            case TargetPattern leaf:
+                BindLeaf(JsTreeFacts.Unwrap(leaf.Target), mode);
+                return;
+
+            case ArrayPattern array:
                 BindArrayPattern(array, mode);
                 return;
 
-            case JsObjectPattern literal:
+            case ObjectPattern literal:
                 BindObjectPattern(literal, mode);
                 return;
 
@@ -155,9 +160,9 @@ public sealed partial class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E6956E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=14497D
     // Broiler-Human:        PENDING
-    private void BindLeaf(JsExpression target, BindMode mode)
+    private void BindLeaf(SyntaxNode target, BindMode mode)
     {
         if (mode == BindMode.Assign)
         {
@@ -166,14 +171,14 @@ public sealed partial class JsCompiler
             return;
         }
 
-        if (target is not JsIdentifier name)
+        if (!JsTreeFacts.IsSimpleName(target, out var name))
         {
-            throw BinderAdmitted(target.Span, "a declaration's pattern leaf that is not a name");
+            throw BinderAdmitted(JsTreeFacts.At(target), "a declaration's pattern leaf that is not a name");
         }
 
         if (mode == BindMode.Var)
         {
-            StoreName(target.Span, name.Name);
+            StoreName(JsTreeFacts.At(target), name);
             Emit(JsOpcode.Pop);
             return;
         }
@@ -181,17 +186,17 @@ public sealed partial class JsCompiler
         if (scope.Kind == ScopeKind.Program && blockDepth == 0)
         {
             Emit(
-                programLexicals.ContainsKey(name.Name)
+                programLexicals.ContainsKey(name)
                     ? JsOpcode.InitialiseGlobalLexical
                     : JsOpcode.StoreGlobal,
-                InternedName(name.Name));
+                InternedName(name));
 
             return;
         }
 
-        var slot = scope.Has(name.Name)
-            ? scope.SlotOf(name.Name)
-            : scope.Declare(name.Name, constant: false);
+        var slot = scope.Has(name)
+            ? scope.SlotOf(name)
+            : scope.Declare(name, constant: false);
 
         EmitScoped(JsOpcode.InitialiseScoped, 0, slot);
     }
@@ -256,10 +261,10 @@ public sealed partial class JsCompiler
     /// which is the one budget a lowering-only change leaves alone.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3BECA4
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C515A7
     // Broiler-Falsified-If: a pattern leaves an iterator that is not done unclosed on any completion
     // Broiler-Human:        PENDING
-    private void BindArrayPattern(JsArrayPattern pattern, BindMode mode)
+    private void BindArrayPattern(ArrayPattern pattern, BindMode mode)
     {
         var owner = FunctionScope();
         var record = owner.Declare("#iterator" + owner.SlotCount, constant: false);
@@ -281,9 +286,9 @@ public sealed partial class JsCompiler
         buffer.PendingRegions.Add(
             new PendingRegion(guarded, raised, blockDepth, JsFormat.HandlerKind.Catch, height));
 
-        foreach (var element in pattern.Elements)
+        foreach (var element in JsTreeFacts.Elements(pattern))
         {
-            var prepared = PrepareTarget(element?.Target, mode);
+            var prepared = PrepareTarget(element is null ? null : JsTreeFacts.ElementTarget(element), mode);
             var exhausted = NewLabel();
             var ready = NewLabel();
 
@@ -302,16 +307,16 @@ public sealed partial class JsCompiler
                 continue;
             }
 
-            ApplyDefault(element.Default, InferredFrom(element.Target));
-            BindPrepared(element.Target, mode, prepared);
+            ApplyDefault(JsTreeFacts.ElementDefault(element), InferredFrom(JsTreeFacts.ElementTarget(element)));
+            BindPrepared(JsTreeFacts.ElementTarget(element), mode, prepared);
         }
 
-        if (pattern.Rest is not null)
+        if (JsTreeFacts.Rest(pattern) is { } rest)
         {
-            var prepared = PrepareTarget(pattern.Rest, mode);
+            var prepared = PrepareTarget(rest, mode);
             EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, record);
             Emit(JsOpcode.IterateRest);
-            BindPrepared(pattern.Rest, mode, prepared);
+            BindPrepared(rest, mode, prepared);
         }
 
         // `var [] = x` protects nothing, and a region whose start equals its end is one the
@@ -372,24 +377,24 @@ public sealed partial class JsCompiler
     /// where it is STORED - which is why an assignment to an undeclared name in strict code still
     /// fails at the store and not here.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E88645
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=27127B
     // Broiler-Human:        PENDING
-    private PreparedTarget PrepareTarget(JsPattern? target, BindMode mode)
+    private PreparedTarget PrepareTarget(Pattern? target, BindMode mode)
     {
         if (!PreparesTarget(target, mode))
         {
             return default;
         }
 
-        switch (((JsTargetPattern)target!).Target)
+        switch (JsTreeFacts.Unwrap(((TargetPattern)target!).Target))
         {
-            case JsPrivateMemberExpression privateAccess:
-                return new PreparedTarget(true, Spill(privateAccess.Target), -1);
+            case MemberExpression { Property: PrivateIdentifier } privateAccess:
+                return new PreparedTarget(true, Spill(privateAccess.Object), -1);
 
             // A `super` PROPERTY'S REFERENCE IS THE THIS BINDING AND THE KEY, evaluated here as for
             // any other member target and in that order; the base is the frame's own and needs no
             // slot (JSC-256).
-            case JsSuperMemberExpression inherited:
+            case MemberExpression { Object: SuperExpression } inherited:
             {
                 var owner = FunctionScope();
                 var key = owner.Declare("#held" + owner.SlotCount, constant: false);
@@ -398,15 +403,15 @@ public sealed partial class JsCompiler
                 return new PreparedTarget(true, -1, key);
             }
 
-            case JsMemberExpression member when member.Computed is null:
-                return new PreparedTarget(true, Spill(member.Target), -1);
+            case MemberExpression { Object: not SuperExpression, Property: not PrivateIdentifier } member when JsTreeFacts.Computed(member) is null:
+                return new PreparedTarget(true, Spill(member.Object), -1);
 
-            case JsMemberExpression member:
+            case MemberExpression { Object: not SuperExpression, Property: not PrivateIdentifier } member:
             {
                 // THE ORDER OF THESE TWO IS THE LANGUAGE'S. A computed member reference evaluates
                 // its base before its key, and both before anything the value needs.
-                var basis = Spill(member.Target);
-                return new PreparedTarget(true, basis, Spill(member.Computed!));
+                var basis = Spill(member.Object);
+                return new PreparedTarget(true, basis, Spill(JsTreeFacts.Computed(member)!));
             }
 
             default:
@@ -423,19 +428,17 @@ public sealed partial class JsCompiler
     /// <see cref="PrepareTarget"/> - and the two must give the same answer, which is why it is a
     /// predicate rather than the same three cases written out again.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CCD2EB
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=551EC8
     // Broiler-Human:        PENDING
-    private static bool PreparesTarget(JsPattern? target, BindMode mode) =>
+    private static bool PreparesTarget(Pattern? target, BindMode mode) =>
         mode == BindMode.Assign &&
-        target is JsTargetPattern
-        {
-            Target: JsMemberExpression or JsPrivateMemberExpression or JsSuperMemberExpression,
-        };
+        target is TargetPattern leaf &&
+        JsTreeFacts.Unwrap(leaf.Target) is MemberExpression;
 
     /// <summary>Compiles one expression and parks its value in a temporary of the function.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=64DEAE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BFA14A
     // Broiler-Human:        PENDING
-    private int Spill(JsExpression expression)
+    private int Spill(Expression expression)
     {
         var owner = FunctionScope();
         var slot = owner.Declare("#held" + owner.SlotCount, constant: false);
@@ -447,9 +450,9 @@ public sealed partial class JsCompiler
     /// <summary>
     /// Stores the value on top of the stack through a reference already evaluated, and consumes it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=0A0FFF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=225558
     // Broiler-Human:        PENDING
-    private void BindPrepared(JsPattern target, BindMode mode, in PreparedTarget prepared)
+    private void BindPrepared(Pattern target, BindMode mode, in PreparedTarget prepared)
     {
         if (!prepared.Holds)
         {
@@ -457,12 +460,12 @@ public sealed partial class JsCompiler
             return;
         }
 
-        var leaf = (JsTargetPattern)target;
+        var leaf = JsTreeFacts.Unwrap(((TargetPattern)target).Target);
         var owner = FunctionScope();
         var held = owner.Declare("#held" + owner.SlotCount, constant: false);
         EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, held);
 
-        if (leaf.Target is JsSuperMemberExpression)
+        if (leaf is MemberExpression { Object: SuperExpression })
         {
             EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, prepared.Key);
             EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, held);
@@ -473,17 +476,17 @@ public sealed partial class JsCompiler
 
         EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, prepared.Base);
 
-        switch (leaf.Target)
+        switch (leaf)
         {
-            case JsPrivateMemberExpression privateAccess:
-                EmitPrivateName(privateAccess.Span, privateAccess.Name);
+            case MemberExpression { Property: PrivateIdentifier } privateAccess:
+                EmitPrivateName(JsTreeFacts.At(privateAccess), JsTreeFacts.PropertyName(privateAccess));
                 EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, held);
                 Emit(JsOpcode.StorePrivate);
                 break;
 
-            case JsMemberExpression member when member.Computed is null:
+            case MemberExpression { Object: not SuperExpression, Property: not PrivateIdentifier } member when JsTreeFacts.Computed(member) is null:
                 EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, held);
-                Emit(JsOpcode.SetProperty, InternedName(member.Name));
+                Emit(JsOpcode.SetProperty, InternedName(JsTreeFacts.PropertyName(member)));
                 break;
 
             default:
@@ -519,18 +522,20 @@ public sealed partial class JsCompiler
     /// binding is found where it is written *(corrected: JSC-160)*.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C252A4
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=40FCC3
     // Broiler-Human:        PENDING
-    private void BindObjectPattern(JsObjectPattern pattern, BindMode mode)
+    private void BindObjectPattern(ObjectPattern pattern, BindMode mode)
     {
-        var named = pattern.Properties.Count != 0 && pattern.Properties[0].Computed is null
-            ? pattern.Properties[0].Key
+        var properties = JsTreeFacts.Properties(pattern);
+        var rest = JsTreeFacts.Rest(pattern);
+        var named = properties.Count != 0 && properties[0].Key is not ComputedPropertyName
+            ? KeyOf(properties[0].Key)
             : string.Empty;
 
         Emit(JsOpcode.RequireCoercible, InternedName(named));
         var excluded = new System.Collections.Generic.List<int>();
 
-        foreach (var property in pattern.Properties)
+        foreach (var property in properties)
         {
             // A COMPUTED KEY IS PARKED BEFORE THE TARGET IS PREPARED, and both happen before the
             // source is read. `PropertyName` is step 1 of the property's own evaluation and the
@@ -544,29 +549,29 @@ public sealed partial class JsCompiler
             // costs no slot - which is every shorthand property and every plain `{ a: x }`.
             var held = -1;
 
-            if (PreparesTarget(property.Value.Target, mode) && property.Computed is not null)
+            if (PreparesTarget(JsTreeFacts.ElementTarget(property.Value), mode) && JsTreeFacts.KeyExpression(property.Key) is not null)
             {
                 // THE KEY IS CONVERTED WHERE IT IS EVALUATED: `ComputedPropertyName` performs
                 // `ToPropertyKey` as its own last step, before the target is evaluated. Until
                 // 2026-10-04 the conversion waited for the read (JSC-258).
                 var owner = FunctionScope();
                 held = owner.Declare("#held" + owner.SlotCount, constant: false);
-                CompileExpression(property.Computed);
+                CompileExpression(JsTreeFacts.KeyExpression(property.Key)!);
                 Emit(JsOpcode.ToPropertyKey);
                 EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, held);
 
-                if (pattern.Rest is not null)
+                if (rest is not null)
                 {
                     excluded.Add(held);
                 }
             }
 
-            var prepared = PrepareTarget(property.Value.Target, mode);
+            var prepared = PrepareTarget(JsTreeFacts.ElementTarget(property.Value), mode);
             Emit(JsOpcode.Duplicate);
 
-            if (property.Computed is null)
+            if (JsTreeFacts.KeyExpression(property.Key) is null)
             {
-                Emit(JsOpcode.GetProperty, InternedName(property.Key));
+                Emit(JsOpcode.GetProperty, InternedName(KeyOf(property.Key)));
             }
             else if (held >= 0)
             {
@@ -575,10 +580,10 @@ public sealed partial class JsCompiler
             }
             else
             {
-                CompileExpression(property.Computed);
+                CompileExpression(JsTreeFacts.KeyExpression(property.Key)!);
                 Emit(JsOpcode.ToPropertyKey);
 
-                if (pattern.Rest is not null)
+                if (rest is not null)
                 {
                     // A REST PROPERTY EXCLUDES THE KEYS THE PATTERN NAMED, and a computed key is
                     // only a key once. Re-evaluating the expression to build the exclusion list
@@ -594,11 +599,11 @@ public sealed partial class JsCompiler
                 Emit(JsOpcode.GetIndex);
             }
 
-            ApplyDefault(property.Value.Default, InferredFrom(property.Value.Target));
-            BindPrepared(property.Value.Target, mode, prepared);
+            ApplyDefault(JsTreeFacts.ElementDefault(property.Value), InferredFrom(JsTreeFacts.ElementTarget(property.Value)));
+            BindPrepared(JsTreeFacts.ElementTarget(property.Value), mode, prepared);
         }
 
-        if (pattern.Rest is null)
+        if (rest is null)
         {
             Emit(JsOpcode.Pop);
             return;
@@ -608,21 +613,21 @@ public sealed partial class JsCompiler
         // `RestDestructuringAssignmentEvaluation` evaluates it first and only then performs
         // `CopyDataProperties`. A source with a getter on it makes the difference visible without
         // any error at all: the getter must run after `k` in `({ ...o[k()] } = src)`.
-        var restTarget = PrepareTarget(pattern.Rest, mode);
+        var restTarget = PrepareTarget(rest, mode);
 
         Emit(JsOpcode.NewObject);
         Emit(JsOpcode.Pick, (byte)1);
         Emit(JsOpcode.SpreadObject);
 
-        foreach (var property in pattern.Properties)
+        foreach (var property in properties)
         {
-            if (property.Computed is not null)
+            if (JsTreeFacts.KeyExpression(property.Key) is not null)
             {
                 continue;
             }
 
             Emit(JsOpcode.Duplicate);
-            Emit(JsOpcode.DeleteProperty, InternedName(property.Key));
+            Emit(JsOpcode.DeleteProperty, InternedName(KeyOf(property.Key)));
             Emit(JsOpcode.Pop);
         }
 
@@ -634,7 +639,7 @@ public sealed partial class JsCompiler
             Emit(JsOpcode.Pop);
         }
 
-        BindPrepared(pattern.Rest, mode, restTarget);
+        BindPrepared(rest, mode, restTarget);
         Emit(JsOpcode.Pop);
     }
 }

@@ -132,9 +132,9 @@ public sealed partial class JsCompiler
         // Broiler-Human:        PENDING
         internal Label? Continue { get; init; }
 
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=90737C
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=41DC9B
         // Broiler-Human:        PENDING
-        internal JsBlockStatement? Finaliser { get; init; }
+        internal Broiler.ECMAScript.Syntax.BlockStatement? Finaliser { get; init; }
 
         /// <summary>
         /// The slot holding this loop's iterator record, or -1 when it is not a <c>for … of</c>.
@@ -420,9 +420,9 @@ public sealed partial class JsCompiler
             new(System.StringComparer.Ordinal);
 
         /// <summary>The function declarations the initialiser gives their closures.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D9E337
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5F9E29
         // Broiler-Human:        PENDING
-        internal System.Collections.Generic.List<JsFunctionNode> Functions { get; } = [];
+        internal System.Collections.Generic.List<Broiler.ECMAScript.Syntax.FunctionNode> Functions { get; } = [];
 
         // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6BDB99
         // Broiler-Human:        PENDING

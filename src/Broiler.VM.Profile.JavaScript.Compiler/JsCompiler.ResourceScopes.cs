@@ -17,6 +17,8 @@
 
 using Broiler.VM.Profile.JavaScript.Format;
 
+using Broiler.ECMAScript.Syntax;
+
 namespace Broiler.VM.Profile.JavaScript.Compiler;
 
 // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F3B442
@@ -35,29 +37,36 @@ public sealed partial class JsCompiler
     /// single-statement position would have hidden one from this walk. The binder asks it too, to know
     /// which lists a resource has a scope in (SJL-12.6 item 2).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=948DE2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2EBB54
     // Broiler-Human:        PENDING
-    internal static JsUsing UsingIn(
-        System.Collections.Generic.IReadOnlyList<JsStatement> body, out SliceSourceSpan first)
+    internal static JsDisposal UsingIn(
+        System.Collections.Generic.IReadOnlyList<Statement> body, out SliceSourceSpan first)
     {
-        var found = JsUsing.None;
+        var found = JsDisposal.None;
         first = default;
 
         foreach (var statement in body)
         {
-            if (statement is not JsVariableStatement { Using: not JsUsing.None } declaration)
+            if (statement is not VariableDeclaration declaration)
             {
                 continue;
             }
 
-            if (found == JsUsing.None)
+            var disposal = JsTreeFacts.Disposal(declaration.DeclarationKind);
+
+            if (disposal == JsDisposal.None)
             {
-                first = declaration.Span;
+                continue;
             }
 
-            if (declaration.Using > found)
+            if (found == JsDisposal.None)
             {
-                found = declaration.Using;
+                first = JsTreeFacts.At(declaration);
+            }
+
+            if (disposal > found)
+            {
+                found = disposal;
             }
         }
 
@@ -73,21 +82,21 @@ public sealed partial class JsCompiler
     /// <c>DisposeCapability</c> belongs to the environment the list runs in, and every resource the
     /// list registers joins the same stack in the order it was declared.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E0C0C5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=443043
     // Broiler-Human:        PENDING
     private void CompileDisposing(
-        System.Collections.Generic.IReadOnlyList<JsStatement> body, int completion)
+        System.Collections.Generic.IReadOnlyList<Statement> body, int completion, int start = 0)
     {
         var declared = UsingIn(body, out var first);
 
-        if (declared == JsUsing.None)
+        if (declared == JsDisposal.None)
         {
-            CompileStatements(body, completion);
+            CompileStatements(body, completion, start);
             return;
         }
 
-        var disposal = BeginDisposal(first, declared == JsUsing.Async);
-        CompileStatements(body, completion);
+        var disposal = BeginDisposal(first, declared == JsDisposal.Async);
+        CompileStatements(body, completion, start);
         EndDisposal(disposal);
     }
 
@@ -251,9 +260,9 @@ public sealed partial class JsCompiler
     /// <summary>
     /// Registers the value on the stack with the innermost resource scope, leaving the value.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8B22BC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=914894
     // Broiler-Human:        PENDING
-    private void EmitRegistration(SliceSourceSpan span, JsUsing hint)
+    private void EmitRegistration(SliceSourceSpan span, JsDisposal hint)
     {
         for (var index = exits.Count - 1; index >= 0; index--)
         {
@@ -268,7 +277,7 @@ public sealed partial class JsCompiler
                 (byte)Hops(exits[index].DisposalScope!),
                 exits[index].DisposalSlot);
 
-            Emit(JsOpcode.DisposeAdd, (byte)(hint == JsUsing.Async ? 1 : 0));
+            Emit(JsOpcode.DisposeAdd, (byte)(hint == JsDisposal.Async ? 1 : 0));
             return;
         }
 

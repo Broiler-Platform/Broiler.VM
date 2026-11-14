@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 326 |
-| Files carrying an annotation | 326 |
-| Code units | 11103 |
-| Relevant | 6294 |
-| Exempt by predicate | 4809 |
-| Annotated | 6294 of 6294 (100%) |
-| Human reviewed | 0 of 6294 (0%) |
-| Unverified | 6294 |
+| Files scanned | 322 |
+| Files carrying an annotation | 322 |
+| Code units | 11032 |
+| Relevant | 6237 |
+| Exempt by predicate | 4795 |
+| Annotated | 6237 of 6237 (100%) |
+| Human reviewed | 0 of 6237 (0%) |
+| Unverified | 6237 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6294 |
+| HUMAN_PENDING | 6237 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4809 |
+| EXEMPT | 4795 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 1635 |
-| Low | 6046 |
+| None | 1585 |
+| Low | 6038 |
 | Medium | 90 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,9 +50,9 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 1503 |
-| Medium | 4347 |
-| High | 1659 |
+| Low | 1420 |
+| Medium | 4364 |
+| High | 1667 |
 | Critical | 253 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 6294 |
+| Units scored | 6237 |
 
 ## High-security review areas
 
@@ -128,8 +128,15 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Compiler.CompilationStack` in `src/Broiler.VM.Profile.JavaScript.Compiler/CompilationStack.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.CompilationStack.Run<T>(System.Func<T>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/CompilationStack.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.BigIntLiteral(NumericLiteral, out System.Numerics.BigInteger)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.BigIntKey(NumericLiteral, out System.Numerics.BigInteger)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Walk(ProgramNode, SliceParseOptions, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Statement(Statement)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Function(FunctionNode)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Pattern(Pattern)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Class(ClassNode)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Key(SyntaxNode)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.Expression(Expression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.BigIntLiteral(NumericLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.BigIntKey(NumericLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsAdmissionWalk.ModuleSpecifier(StringLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsArm64Assembler` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Assembler.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsArm64Assembler.ToArray()` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Assembler.cs` - Security=High, human line PENDING
@@ -165,25 +172,28 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Compiler.JsArm64Walk.Step(int, int[], bool[], int, System.Collections.Generic.Queue<(int At, int[] Scopes, bool[] Slots, int Height)>, out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Walk.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsBinder` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.ResolvePrivate(Context, SliceSourceSpan, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.CheckModule(System.Collections.Generic.IReadOnlyList<JsStatement>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.CheckModule(System.Collections.Generic.IReadOnlyList<Statement>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsBinder` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.BindProgram(JsProgramNode, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.BindFunction(JsFunctionNode, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.BindTree(JsProgramNode, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.BindProgram(ProgramNode, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.BindFunction(SyntaxNode, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.BindTree(ProgramNode, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.Visit(System.Collections.Generic.List<Pending>, Pending)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.VisitFunction(System.Collections.Generic.List<Pending>, JsFunctionNode, Context, Use)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.ScanAnnexB(System.Collections.Generic.IReadOnlyList<JsStatement>, System.Collections.Generic.HashSet<string>, System.Collections.Generic.List<string>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.VisitFunction(System.Collections.Generic.List<Pending>, SyntaxNode, Context, Use)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.ScanAnnexB(System.Collections.Generic.IReadOnlyList<Statement>, System.Collections.Generic.HashSet<string>, System.Collections.Generic.List<string>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.OwnStrictness(SyntaxNode)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsBinder` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.Diagnostics` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.AdmitsAnnexB(JsFunctionDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsBinder.AdmitsAnnexB(FunctionDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.SweepAgainstTheNumericManifest(JsAssembledProgram)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Assembly.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.CompileChain(JsChainExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Calls.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.CompileChain(ChainExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Calls.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.BinderAdmitted(SliceSourceSpan, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Emission.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.ProtectSomething(int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Exceptions.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.UnwindAbove(int, Exit?)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Exceptions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.CompileTemplate(JsTemplateLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Literals.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitToString(JsExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Literals.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitTemplateStrings(JsTemplateLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Literals.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.CompileFunction(SyntaxNode, SliceSourceSpan, string, System.Collections.Generic.IReadOnlyList<Pattern>, System.Collections.Generic.IReadOnlyList<Statement>, Expression?, bool, bool, bool, int, int, JsFormat.FunctionFlags, bool, bool, bool, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Functions.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.CompileTemplate(TemplateLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Literals.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitToString(Expression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Literals.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitTemplateStrings(TemplateLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Literals.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.ReExport(Statement, out string, out System.Collections.Generic.IReadOnlyList<(SliceSourceSpan Span, string Key, string Value)>?)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Modules.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.Shadowable(string, out int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Names.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.Shadowable(string, out int, out bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Names.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.BeginDisposal(SliceSourceSpan, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.ResourceScopes.cs` - Security=High, human line PENDING
@@ -195,31 +205,29 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontend` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontend.Parse(string, SliceParseOptions, bool, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontend.Request(string, SliceParseOptions, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Expression(Expression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Number(NumericLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Key(SyntaxNode, out JsExpression?)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Function(FunctionNode, SliceSourceSpan, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Arrow(FunctionNode, SliceSourceSpan)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Pattern(Pattern)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Class(ClassNode, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.ClassMember(SyntaxNode)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Import(ImportDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.ExportNamed(ExportNamedDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.ExportDefault(ExportDefaultDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.ExportAll(ExportAllDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendDiagnostics` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendDiagnostics.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendDiagnostics.Map(SyntaxDiagnostic, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendDiagnostics.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Statement(JsStatement, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Function(JsFunctionDeclaration, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Expression(JsExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Call(JsCallExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Statement(Statement, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Function(FunctionDeclaration, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Expression(Expression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Call(CallExpression, SliceSourceSpan)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsRegularExpressionValidator` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsRegularExpressionValidator.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsRegularExpressionValidator.Validate(string, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsRegularExpressionValidator.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.Unwrap(Expression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.PrologueLength(System.Collections.Generic.IReadOnlyList<Statement>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.Key(SyntaxNode, System.Collections.Generic.IReadOnlyDictionary<NumericLiteral, System.Numerics.BigInteger>, out Expression?)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.SourceOrNone(StringLiteral?)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.ImportBindings(ImportDeclaration, System.Collections.Generic.IReadOnlyList<Token>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.DeclarationExports(Statement)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.NameSpan(MemberExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.ParenthesisedTarget(AssignmentExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.AnonymousDefault(ProgramNode)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.DeclaredName(BindingIdentifier?, SyntaxNode, SyntaxNode?)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.FindConstructor(ClassNode, System.Collections.Generic.IReadOnlyDictionary<NumericLiteral, System.Numerics.BigInteger>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.Head(SyntaxNode)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsTreeFacts.Exports(Statement, System.Collections.Generic.IReadOnlyList<Token>, out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64Abi` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Abi.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64Abi.Windows` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Abi.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64Abi.SystemV` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Abi.cs` - Security=High, human line PENDING
@@ -1983,8 +1991,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 2073 |
-| Units required to carry one | 1912 |
+| Units carrying a criterion | 2081 |
+| Units required to carry one | 1920 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -2011,14 +2019,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1557 |
+| TrivialPropertyOrAccessor | 1556 |
 | ParameterAssigningConstructor | 149 |
 | TrivialExpressionBodiedMember | 64 |
-| CompilerSuppliedRecordOrEnumMember | 24 |
+| CompilerSuppliedRecordOrEnumMember | 22 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 850 |
-| EnumMemberOfADeclaredVocabulary | 1981 |
+| FieldDeclaringStorage | 851 |
+| EnumMemberOfADeclaredVocabulary | 1969 |
 | DeclaredInSource | 63 |
 
 ## Per-unit exemptions
@@ -2100,7 +2108,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-11103 of them, exempt and relevant alike - with the fingerprint of its declaration.
+11032 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -2108,7 +2116,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 326 of them - with a
+Beside the units it lists **every covered file** - 322 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.

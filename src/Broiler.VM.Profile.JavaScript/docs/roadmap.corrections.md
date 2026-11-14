@@ -14113,3 +14113,38 @@ JS-10-016's declares `0.1.0-preview.10`, so the baseline moves in the next chang
 repository's main has used since `9d0f80e`, as `eng/packages/README.md` states it since 2026-11-01;
 [JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)'s note of 2026-11-11 on
 row L19, with the owner's ruling of 2026-11-09 "Fix both consumers". 2026-11-13.
+
+### JSC-328
+
+**Where:** [`inventory.md`](../../../docs/javascript-shared-libraries/inventory.md)'s front-end table, its parser and
+tree row, and [`areas/frontend.md`](../../../docs/javascript-shared-libraries/areas/frontend.md)'s paragraph on the wide
+path, each by a dated note after the note of 2026-11-10 that step 1 filed there; and
+[`roadmap.backends.md`](roadmap.backends.md), the paragraph "It consumes bytecode, and that is the whole argument for
+where it sits", with the note of 2026-11-10 before it, by a dated note after the paragraph.
+[`THIRD_PARTY_NOTICES.md`](../../../THIRD_PARTY_NOTICES.md)'s row for the shared stream says of the syntax library that
+its "tree's shape [was] seeded from this repository's `JsSyntax` under the same licence and by the same contributors";
+that names where the shape came from, which step 2 does not change, so it is left as written.
+[JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md) is not edited but by its dated notes, and
+[JSD-0087](decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md) records the change by its dated note
+of 2026-11-14.
+
+**What the plan said.** The parser and tree row: "`JsParser`/`JsSyntax` (wide)", and its note of 2026-11-10: "and an
+adapter builds `JsSyntax` from its tree until step 2 deletes both". The frontend area: "**The wide path** runs
+`JsParser` into `JsSyntax`, then the lowering in `JsCompiler`", and its note of 2026-11-10: "and an adapter that builds
+`JsSyntax`, so the lowering does not change". The backends paragraph's note of 2026-11-10: "and the adapter builds
+`JsSyntax` from the shared tree"; and the paragraph after it: "a second walk of the `JsSyntax` tree".
+
+**What replaced it.** From step 2 this family's wide path keeps no tree of its own. The admission walk, the numeric
+admission, the binder and the lowering read `Broiler.ECMAScript.Frontend`'s tree themselves, through `JsTreeFacts`,
+with the side tables `JsFrontend` hands on beside it, each keyed by a node's identity; `JsSyntax.cs` and
+`JsFrontendAdapter.cs` with its parts are deleted. Rule I5's register names their types by type, and
+`JsCompiler.FindConstructor` and `JsCompiler.Unwrapped`, which moved to `JsTreeFacts`, by member, with a paragraph for
+SJL-13.3's step 2 that also names what is deleted but not registered, and why; its register row and its test's list of
+the files it reads carry dated revisions. The per-program compilation and `JsCompiler.Assemble` keep their places, so
+the backends paragraph's argument stands: the alternative it rejects is now a second walk of the shared tree.
+
+**Authority and date.** [JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md)'s decisions D19 and
+D20, taken by the owner on 2026-10-26 under the direction of 2026-10-18, as its notes of 2026-11-13 on X6, D15 and D20
+read them; rule I5; the programme's work package SJL-13.3, step 2, as
+[JSD-0087](decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md)'s dated note of 2026-11-14 records it.
+2026-11-14.
