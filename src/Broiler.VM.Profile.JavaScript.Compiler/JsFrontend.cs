@@ -22,8 +22,8 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 
 /// <summary>
 /// The wide path's parse: the shared syntax library's request built from this family's options, its
-/// answer mapped onto this family's registry, and its tree handed to the adapter (JSD-0083, decisions
-/// D10, D11, D15, D16 and D18; milestone SJL-13.3, step 1).
+/// answer mapped onto this family's registry, and its tree handed to the lowering with the side tables it
+/// reads beside it (JSD-0083, decisions D10, D11, D15, D16, D18 and D20; milestone SJL-13.3, steps 1 and 2).
 /// </summary>
 /// <remarks>
 /// <para>
@@ -96,7 +96,7 @@ internal static class JsFrontend
 
     /// <summary>
     /// Parses one unit of the wide path through the shared library, then makes the admission walk over
-    /// its tree and adapts it to <see cref="JsSyntax"/>.
+    /// its tree, and hands the tree on with the side tables the lowering reads beside it.
     /// </summary>
     /// <param name="text">The unit's source text.</param>
     /// <param name="options">The unit's parse options, eval flags included.</param>

@@ -54,7 +54,7 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=420490
-// Broiler-Falsified-If: a BigInt literal outside an admitting manifest, a BigInt wider than the format's ceiling, or a module specifier that is not well-formed reaches the numeric admission, the binder or the lowering unrefused, a source the wide parser admitted is refused here, or an admitted BigInt's value or the top-level-await answer differs from the one step 1's adapter gave
+// Broiler-Falsified-If: a BigInt literal outside an admitting manifest, a BigInt wider than the format's ceiling, or a module specifier that is not well-formed reaches the numeric admission, the binder or the lowering unrefused, a source the wide parser admitted is refused here, or an admitted BigInt's value or the top-level-await answer differs from the one the wide path gave at SJL-13.3 step 2's base
 // Broiler-Human:        PENDING
 internal sealed class JsAdmissionWalk
 {
@@ -170,7 +170,7 @@ internal sealed class JsAdmissionWalk
     /// top-level await outside every function.
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=8E313E
-    // Broiler-Falsified-If: a statement's child that step 1's adapter visited is not visited, is visited in another order, or a child it did not visit is visited
+    // Broiler-Falsified-If: a statement's child that the walk visited at SJL-13.3 step 2's base is not visited, is visited in another order, or a child it did not visit there is visited
     // Broiler-Human:        PENDING
     private void Statement(Statement statement)
     {
@@ -434,7 +434,7 @@ internal sealed class JsAdmissionWalk
     /// before its value, and a default's target before its initialiser.
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=A09662
-    // Broiler-Falsified-If: a pattern's key, default or reference that step 1's adapter visited is not visited, or is visited in another order
+    // Broiler-Falsified-If: a pattern's key, default or reference that the walk visited at SJL-13.3 step 2's base is not visited, or is visited in another order
     // Broiler-Human:        PENDING
     private void Pattern(Pattern pattern)
     {
@@ -484,7 +484,7 @@ internal sealed class JsAdmissionWalk
     /// method and a static block one function deeper, and a field's initialiser at the class's depth.
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=0A336A
-    // Broiler-Falsified-If: a class's heritage, key or member function that step 1's adapter visited is not visited or is visited in another order, a decorator is visited, or a field's initialiser is read one function deeper
+    // Broiler-Falsified-If: a class's heritage, key or member function that the walk visited at SJL-13.3 step 2's base is not visited or is visited in another order, a decorator is visited, or a field's initialiser is read one function deeper
     // Broiler-Human:        PENDING
     private void Class(ClassNode declared)
     {
@@ -555,7 +555,7 @@ internal sealed class JsAdmissionWalk
     /// shorthand's value is not visited, and an <c>await</c> outside every function is a top-level await.
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=D296C2
-    // Broiler-Falsified-If: an expression's child that step 1's adapter visited is not visited, is visited in another order, or a child it did not visit is visited
+    // Broiler-Falsified-If: an expression's child that the walk visited at SJL-13.3 step 2's base is not visited, is visited in another order, or a child it did not visit there is visited
     // Broiler-Human:        PENDING
     private void Expression(Expression expression)
     {

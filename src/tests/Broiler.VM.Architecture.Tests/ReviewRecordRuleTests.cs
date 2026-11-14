@@ -1398,7 +1398,13 @@ public sealed class ReviewRecordRuleTests
         // JsTreeFacts.cs, the readings of the shared tree that step 1's adapter made, which the adapter calls and
         // the lowering will. It is covered on the same terms as every other product file, and nothing in it has
         // been read by a human. The count read 326 before.
-        Assert.Equal(327, AssuranceSources.Files.Count);
+        //
+        // AND THE LOWERING ON THE SHARED TREE (SJL-13's step 2, 2026-11-14, JSD-0083 decisions D15 and D20) TOOK
+        // FIVE AWAY: JsSyntax.cs, the tree the lowering read, and JsFrontendAdapter.cs and its three parts,
+        // JsFrontendAdapter.Expressions.cs, JsFrontendAdapter.Functions.cs and JsFrontendAdapter.Modules.cs, the
+        // adapter that built it from the shared library's; the lowering reads the library's tree itself, through
+        // JsTreeFacts.cs, which stays. The count read 327 before.
+        Assert.Equal(322, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

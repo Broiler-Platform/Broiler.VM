@@ -76,10 +76,14 @@ public sealed class I5RetiredDuplicatesRuleTests
         // calls the shared syntax library in JsParser's place, JsRegularExpressionValidator.cs, which makes the
         // checks the binder's CheckRegExp made, and JsBinder.Walks.cs and JsBinder.EarlyErrors.cs, where
         // ResourceScoped and CheckRegExp lived, are added; SliceTokenizer.cs, where its wide-only members lived, is
-        // named already.)
+        // named already.) (Revised 2026-11-14, at SJL-13's step 2: JsFrontendAdapter.Expressions.cs, which the
+        // list named since step 1, is deleted whole with the adapter (JSD-0083, decisions D15 and D20); the numeric
+        // key its Key read through NumberText.ToString is JsTreeFacts.Key's (JsTreeFacts.cs), so that file is named
+        // instead. JsCompiler.Modules.cs, where JsModuleNames's DefaultBindingName and StarName live now, is added.)
         Assert.Equal(FamilyAssemblies.Order(StringComparer.Ordinal), covered.Select(static f => f.Assembly).Distinct().Order(StringComparer.Ordinal));
         foreach (var file in (string[])["src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs", "src/Broiler.VM.Profile.JavaScript/JsRealm.Number.cs",
-                                         "src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs", "src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs",
+                                         "src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs", "src/Broiler.VM.Profile.JavaScript.Compiler/JsAdmissionWalk.cs",
+                                         "src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.Modules.cs",
                                          "src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs",
                                          "src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs", "src/Broiler.VM.Profile.JavaScript.Compiler/JsRegularExpressionValidator.cs",
                                          "src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs", "src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs",

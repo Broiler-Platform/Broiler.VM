@@ -858,7 +858,7 @@ public sealed partial class JsCompiler
             var first = diagnostics.Count;
 
             // THE WIDE PATH PARSES WITH THE SHARED SYNTAX LIBRARY (JSD-0083, decision D19; milestone
-            // SJL-13.3, step 1), and the adapter builds the tree the lowering reads. Eval code is parsed
+            // SJL-13.3, step 1), and the lowering reads its tree (step 2). Eval code is parsed
             // under its caller's strictness and function context, which the request's forced strictness
             // and inherited context carry (decision D16), and the admission walk makes the BigInt and
             // module-specifier refusals after a parse that reported nothing (decision D18). (2026-11-09:

@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 327 |
-| Files carrying an annotation | 327 |
-| Code units | 11190 |
-| Relevant | 6367 |
-| Exempt by predicate | 4823 |
-| Annotated | 6367 of 6367 (100%) |
-| Human reviewed | 0 of 6367 (0%) |
-| Unverified | 6367 |
+| Files scanned | 322 |
+| Files carrying an annotation | 322 |
+| Code units | 11032 |
+| Relevant | 6237 |
+| Exempt by predicate | 4795 |
+| Annotated | 6237 of 6237 (100%) |
+| Human reviewed | 0 of 6237 (0%) |
+| Unverified | 6237 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 6367 |
+| HUMAN_PENDING | 6237 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4823 |
+| EXEMPT | 4795 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 1690 |
-| Low | 6074 |
+| None | 1585 |
+| Low | 6038 |
 | Medium | 90 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,9 +50,9 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 1508 |
-| Medium | 4401 |
-| High | 1683 |
+| Low | 1420 |
+| Medium | 4364 |
+| High | 1667 |
 | Critical | 253 |
 | *not annotated* | 0 |
 
@@ -61,8 +61,8 @@ figures below are the measurement of how far from that claim the component is.
 | Metric | Value |
 |---|---:|
 | Maximum | 8 / 10 |
-| Average over annotated units | 1.6 / 10 |
-| Units scored | 6367 |
+| Average over annotated units | 1.7 / 10 |
+| Units scored | 6237 |
 
 ## High-security review areas
 
@@ -205,22 +205,6 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontend` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontend.Parse(string, SliceParseOptions, bool, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontend.Request(string, SliceParseOptions, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Expression(Expression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Number(NumericLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Key(SyntaxNode, out JsExpression?)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Function(FunctionNode, SliceSourceSpan, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Arrow(FunctionNode, SliceSourceSpan)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Pattern(Pattern)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Class(ClassNode, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.ClassMember(SyntaxNode)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.Import(ImportDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.ExportNamed(ExportNamedDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.ExportDefault(ExportDefaultDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter.ExportAll(ExportAllDeclaration)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendAdapter` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendDiagnostics` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendDiagnostics.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsFrontendDiagnostics.Map(SyntaxDiagnostic, string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendDiagnostics.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, human line PENDING
@@ -2007,8 +1991,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 2097 |
-| Units required to carry one | 1936 |
+| Units carrying a criterion | 2081 |
+| Units required to carry one | 1920 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -2035,14 +2019,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1558 |
+| TrivialPropertyOrAccessor | 1556 |
 | ParameterAssigningConstructor | 149 |
 | TrivialExpressionBodiedMember | 64 |
-| CompilerSuppliedRecordOrEnumMember | 28 |
+| CompilerSuppliedRecordOrEnumMember | 22 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 855 |
-| EnumMemberOfADeclaredVocabulary | 1985 |
+| FieldDeclaringStorage | 851 |
+| EnumMemberOfADeclaredVocabulary | 1969 |
 | DeclaredInSource | 63 |
 
 ## Per-unit exemptions
@@ -2124,7 +2108,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-11190 of them, exempt and relevant alike - with the fingerprint of its declaration.
+11032 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -2132,7 +2116,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 327 of them - with a
+Beside the units it lists **every covered file** - 322 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.

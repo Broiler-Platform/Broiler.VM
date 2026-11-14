@@ -21,7 +21,8 @@ using NumericLiteral = Broiler.ECMAScript.Syntax.NumericLiteral;
 namespace Broiler.VM.Profile.JavaScript.Compiler;
 
 /// <summary>
-/// The facts this family reads off the shared syntax library's tree the way step 1's adapter read them:
+/// The facts this family reads off the shared syntax library's tree the way step 1's adapter read them, and
+/// the lowering, the binder and the passes before them read now that the adapter is gone:
 /// where a node begins, the anchors the tree does not carry, a parenthesis seen through, the directive
 /// prologue, a property key's spelling, a module's names, and the operators as this family's tokens
 /// (JSD-0083, decisions D15 and D20; milestone SJL-13.3, step 2).
@@ -39,7 +40,7 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=B90ED1
-// Broiler-Falsified-If: for a source step 1's adapter accepted, a span, an anchor, a key, a name, a prologue length or an operator read here differs from the one the adapter gave
+// Broiler-Falsified-If: for a source the wide path accepted at SJL-13.3 step 2's base, a span, an anchor, a key, a name, a prologue length or an operator read here differs from the one the lowering read there
 // Broiler-Human:        PENDING
 internal static class JsTreeFacts
 {
@@ -473,15 +474,15 @@ internal static class JsTreeFacts
     // ---- operators and kinds, as this family's tokens -----------------------------------------------
 
     /// <summary>A declaration's kind, and whether it registers its bindings for disposal.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=9D5BCB
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=3EE2B5
     // Broiler-Human:        PENDING
-    internal static (SliceDeclarationKind Kind, JsUsing Using) Kind(DeclarationKind kind) => kind switch
+    internal static (SliceDeclarationKind Kind, JsDisposal Disposal) Kind(DeclarationKind kind) => kind switch
     {
-        DeclarationKind.Var => (SliceDeclarationKind.Var, JsUsing.None),
-        DeclarationKind.Let => (SliceDeclarationKind.Let, JsUsing.None),
-        DeclarationKind.Const => (SliceDeclarationKind.Const, JsUsing.None),
-        DeclarationKind.Using => (SliceDeclarationKind.Const, JsUsing.Sync),
-        _ => (SliceDeclarationKind.Const, JsUsing.Async),
+        DeclarationKind.Var => (SliceDeclarationKind.Var, JsDisposal.None),
+        DeclarationKind.Let => (SliceDeclarationKind.Let, JsDisposal.None),
+        DeclarationKind.Const => (SliceDeclarationKind.Const, JsDisposal.None),
+        DeclarationKind.Using => (SliceDeclarationKind.Const, JsDisposal.Sync),
+        _ => (SliceDeclarationKind.Const, JsDisposal.Async),
     };
 
     /// <summary>An update operator, as its token.</summary>
