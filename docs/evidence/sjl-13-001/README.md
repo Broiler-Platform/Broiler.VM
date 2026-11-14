@@ -1148,3 +1148,13 @@ written.)*
 |---|---|---|
 | (none) | | No exclusion is defined at SJL-13.1, and none is planned. A later exclusion takes the next free identifier and is defined in this table |
 | EX-133 | Open | **The wide parser and the front end's checks that left this component's assurance coverage** *(added 2026-11-10, at step 1's records, JSD-0083 decision D31)*. The types and members rule I5 registers for SJL-13.3's step 1 (`src/tests/Broiler.VM.Architecture.Tests/retired-members.json`), with the checks JSD-0087 section 6 names, left the JavaScript family's sources at step 1: `JsParser.cs` whole, the slice tokenizer's wide-only members with `SliceTemplate` and `SliceSubstitution`, the binder's `CheckRegExp`, and the binder's checks of the rows the shared stage table assigns `syntax`. What parses, and makes those checks, now is `Broiler.ECMAScript.Frontend`, namespaces `Broiler.ECMAScript.Syntax` and `Broiler.ECMAScript.Semantics`. The home's own assurance covers it in the Broiler.JS repository: its generated manifest, `Broiler.ECMAScript/hairs.manifest.json`, lists every unit of the library's assembly with an annotation on each relevant declaration, checked in CI (rule SL8). No rule of this component reads those units, their human review is the home's and not `HUMAN_REVIEW.md`'s, and this component's assurance figures no longer count them. The request, the providers, the adapter, the diagnostics and the admission walk of JSD-0087 section 3 (`JsFrontend.cs`, `JsRegularExpressionValidator.cs`, `JsFrontendAdapter.cs` and its parts, `JsFrontendDiagnostics.cs` and its texts, `JsAdmissionWalk.cs`) stay in this component and stay covered. EX-125 and EX-127 to EX-132 say the same of the earlier areas |
+
+*(Noted 2026-11-14, at SJL-13.3's step 2's records, on its branch `sjl-13-3-step2`, not yet merged.)* EX-133 reads
+"The request, the providers, the adapter, the diagnostics and the admission walk of JSD-0087 section 3 (`JsFrontend.cs`,
+`JsRegularExpressionValidator.cs`, `JsFrontendAdapter.cs` and its parts, `JsFrontendDiagnostics.cs` and its texts,
+`JsAdmissionWalk.cs`) stay in this component and stay covered." Step 2 deletes the adapter, `JsFrontendAdapter.cs` and
+its parts, with `JsSyntax.cs`, whose tree the adapter built: the admission walk, the numeric admission, the binder and
+the lowering read the library's tree themselves, through `JsTreeFacts.cs`, a file step 2 adds. Bundle
+[`sjl-13-002`](../sjl-13-002/README.md) defines EX-135 for the units that left this component's assurance coverage at
+step 2. The request, the providers, the diagnostics and the admission walk stay in this component and stay covered,
+with `JsTreeFacts.cs` beside them. EX-133 is left as written, and stays open.

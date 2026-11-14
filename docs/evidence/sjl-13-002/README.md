@@ -23,6 +23,27 @@ has been taken.** A collector joins this bundle when there is a run to take. *(R
 readings taken before any run were filed. It read "rules only, 2026-10-26, at SJL-13.1. **Rules only. Nothing here is
 a verdict, and nothing has been taken.**")*
 
+*(Added 2026-11-14, at step 2's records, before any run of the rule.)* **Step 2 is built, and its runs are not
+taken.** Its branch, `sjl-13-3-step2`, is cut from the default branch's `389b55c9ec9bb77409bb2487067fbebc0868849b`
+(Broiler-Platform/Broiler.VM#205, the merge that moved this family to the shared stream's `0.1.0-preview.11` and
+carried section 1's readings and the rule's revision of 2026-11-13), and lands as one merge, which is the after commit;
+the merge's first parent is the base. `389b55c9ec9bb77409bb2487067fbebc0868849b` descends from the rule commit and from
+bundle `sjl-13-001`'s after commit `a8d8398bd59e7f5600cb0aa9e733ff8948859cf4`, and the branch's first commit,
+`db7a6f0eaf516d6113c2d11c986fe3232be9f6df`, is directly on it. The base and the after commit are named here, by all
+forty digits, when the merge lands. This holds only while the default branch is still `389b55c9` when the branch
+merges: if anything lands on it first, the merge's first parent is not `389b55c9`, and the branch is built again on
+the new tip, with these records, before it merges; reading 1 holds the default branch meanwhile. The branch's commits
+from `db7a6f0eaf516d6113c2d11c986fe3232be9f6df` to `c452294b3ca1fefa9aa5e3db41ab5e3264903d25` move the admission walk,
+the numeric admission, the binder and the lowering onto the shared tree, delete `JsSyntax.cs` and `JsFrontendAdapter.cs`
+with its parts, and register what they deleted in rule I5; step 2's records follow them and change no product source.
+[JSD-0087](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md)'s
+dated note of 2026-11-14, the cut-over record's note at step 2, lists them. The development checks the branch was built
+against, at the base and at its commits, are not evidence: they are kept outside this repository, are no run of the
+rule and decide nothing (reading 6), and no figure of them is quoted here. Of them this README says only that the
+development checks' test262 comparison found only Exhausted rows whose allowance moves between the wall clock and fuel,
+as the base build's own re-runs do. Every part is taken after the merge, at the base and the after commit: part A by
+the hosted workflow, dispatched for both, and parts B to G locally. Nothing here is a verdict yet.
+
 ## 1. SJL-13's area rule for step 2 (SJL-13.1)
 
 **Step 2 changes no outcome, no byte and no diagnostic** (JSD-0083 decision D19). The rule therefore admits no class
@@ -209,8 +230,10 @@ section that reads that log (rule H5). A test262 suite total is never quoted.
 ## 9. Exclusions
 
 Sections 3 to 8 are added as the bundle's runs are taken. The exclusions keep this section's number, where rule H2
-reads an exclusion's definition.
+reads an exclusion's definition. *(Added 2026-11-14: EX-135, for the code step 2 moved out of this component's
+assurance coverage, joins the table, and the row of SJL-13.1 is kept as written.)*
 
 | ID | Status | Exclusion |
 |---|---|---|
 | (none) | | No exclusion is defined at SJL-13.1, and none is planned. A later exclusion takes the next free identifier and is defined in this table |
+| EX-135 | Open | **The adapted tree and its adapter, which left this component's assurance coverage** *(added 2026-11-14, at step 2's records, as JSD-0087's dated note of that day records)*. The types rule I5 registers for SJL-13.3's step 2 (`src/tests/Broiler.VM.Architecture.Tests/retired-members.json`) left the JavaScript family's sources at step 2: `JsSyntax.cs`, `JsFrontendAdapter.cs`, `JsFrontendAdapter.Expressions.cs`, `JsFrontendAdapter.Functions.cs` and `JsFrontendAdapter.Modules.cs` whole, with every type in them. What the admission walk, the numeric admission, the binder and the lowering read in the adapted tree's place is `Broiler.ECMAScript.Frontend`'s own tree, namespace `Broiler.ECMAScript.Syntax`, which the wide path has parsed with since step 1. The home's own assurance covers it in the Broiler.JS repository: its generated manifest, `Broiler.ECMAScript/hairs.manifest.json`, lists every unit of the library's assembly with an annotation on each relevant declaration, checked in CI (rule SL8). No rule of this component reads those units, their human review is the home's and not `HUMAN_REVIEW.md`'s, and this component's assurance figures no longer count the adapted tree's or the adapter's units. The request and the side tables it hands on (`JsFrontend.cs`), the readings of the shared tree (`JsTreeFacts.cs`, which holds `FindConstructor` and `Unwrapped`, members rule I5 registers as `JsCompiler`'s), the admission walk (`JsAdmissionWalk.cs`), the diagnostics and their texts, the providers, the numeric admission, the binder and the lowering stay in this component and stay covered. EX-125 and EX-127 to EX-134 say the same of the earlier areas |
