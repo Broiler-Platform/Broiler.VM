@@ -98,6 +98,15 @@
   merged as `467ad7c3`, and are left as written. This record's settling condition, clauses 4 to 9 judged on bundles
   `sjl-13-001` and `sjl-13-002`, waits on SJL-13's exit reading, which reads both bundles. No sub-area's verdict, no
   row's class and no decision's deletions change, and nothing is accepted.
+- *(Added 2026-11-15, later, at SJL-13's exit reading and SJL-13.5.)* **SJL-13's exit reading is taken, and SJL-13.5
+  is filed.** The item above reads "This record's settling condition, clauses 4 to 9 judged on bundles `sjl-13-001` and
+  `sjl-13-002`, waits on SJL-13's exit reading, which reads both bundles." Bundle `sjl-13-002`'s section 10 reads
+  SJL-13's clauses 4 to 10 met on both bundles, and the settling condition reads met on the bundles, as the note under
+  "Settling condition" says. Decision D33 is applied by the profile's
+  [JSC-329](../roadmap.corrections.md#jsc-329): JS-2's ledger row reads closed on the bundles, `[FULL]` and
+  `In progress`, not accepted. Decision D34 is applied by [JSC-330](../roadmap.corrections.md#jsc-330): the profile's
+  ledger holds a JSB-1 row, judged on bundle `sjl-13-001`'s two wide-lowering rows, read met and not accepted. No
+  sub-area's verdict, no row's class and no decision changes, and nothing is accepted.
 
 **Date:** 2026-10-26.
 
@@ -2235,6 +2244,21 @@ configuration; part H's population and controls; "Revisions"; "What this file do
 This record is settled when SJL-13's clauses 4 to 9 have been judged on bundles `sjl-13-001` and `sjl-13-002`, and
 clauses 1 to 3 on the home's bundle `sjl-13-001`, whatever each decides; clause 10 is the record of JS-2's closure that
 clauses 4 to 6 settle (decision D33).
+
+*(Noted 2026-11-15, at SJL-13's exit reading, over both repositories' bundles.)* Clauses 4 to 9 are read on bundles
+[`sjl-13-001`](../../../../docs/evidence/sjl-13-001/README.md) and [`sjl-13-002`](../../../../docs/evidence/sjl-13-002/README.md)
+by the latter's section 10, each at the commit its evidence was taken, every one read met. Clauses 1 to 3 are judged on
+the home's bundle `sjl-13-001` (observed, Broiler-Platform/Broiler.JS#1097 and #1099), clause 3 under that rule's third
+revision, which is weaker evidence, and "whatever each decides" takes them as they read. Clause 10's record is the
+profile's [JSC-329](../roadmap.corrections.md#jsc-329) with its ledger's JS-2 row, closed on the bundles and not
+accepted (decision D33). One word the condition does not settle: clause 8's publication is "read, not judged" by both
+bundles, whose rules leave it to the collector's runs. The exit reading takes "judged on bundles" as its own reading of
+clause 8 on what both bundles retain, rule I3 in both bundles' part D and the publications at both after commits; the
+alternative, judged by a part of a rule, under which no part of either rule judges the publication and the condition
+is not met until one does, is not taken. That reading is taken under the owner's standing direction of 2026-10-18 and
+is not the owner's own answer. So the condition reads met on the bundles, on that reading; the programme ledger's
+entry of 2026-11-15, later still, records it. It moves no gate, revises no decision, and accepts nothing. The condition
+and the notes above are left as written.
 
 ## Correction entries
 
