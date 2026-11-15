@@ -1,0 +1,1 @@
+K4 as configured: the fifth row did not report FAIL (exit 134); the adjunct is used (reading 2, carried)

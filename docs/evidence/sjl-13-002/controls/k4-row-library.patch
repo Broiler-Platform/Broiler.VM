@@ -1,0 +1,13 @@
+--- a/Broiler.ECMAScript/Broiler.ECMAScript.Frontend/Parser.cs
++++ b/Broiler.ECMAScript/Broiler.ECMAScript.Frontend/Parser.cs
+@@ -556,8 +556,8 @@
+     {
+         var height = ChildrenHeight(node) + 1;
+         node.Height = height;
+-        if (height > ParseLimits.MaximumTreeDepth)
+-            throw Refuse(TreeTooDeep, at, ParseLimits.MaximumTreeDepth.ToString(NumberFormatInfo.InvariantInfo));
++        // CONTROL K4 OF BUNDLE sjl-13-002 PART C (a scratch copy of the library, never merged): the height
++        // charge of a chain node removed - no node is refused past ParseLimits.MaximumTreeDepth.
+     }
+ 
+     // The scratch lists of the height computation, which keeps its own stack (no recursion per level of the tree).

@@ -1,0 +1,8 @@
+made 84f3783013564695c6edce83fcecd0b5500305183d921db6bc6fb4116fc62d2b
+k1 reverted 84f3783013564695c6edce83fcecd0b5500305183d921db6bc6fb4116fc62d2b equal-to-made
+k2 reverted 84f3783013564695c6edce83fcecd0b5500305183d921db6bc6fb4116fc62d2b equal-to-made
+k3 reverted 84f3783013564695c6edce83fcecd0b5500305183d921db6bc6fb4116fc62d2b equal-to-made
+partg-wide reverted 84f3783013564695c6edce83fcecd0b5500305183d921db6bc6fb4116fc62d2b equal-to-made
+partg-slice reverted a3efff68016a4a240e7e2bf29005911a956cd8676791f9b627a7316d2679d6c9 DIFFERS-FROM-MADE
+partg-slice reverted, src/tests/corpus/js-1/js-1-source-fuzz-findings removed, 84f3783013564695c6edce83fcecd0b5500305183d921db6bc6fb4116fc62d2b equal-to-made
+k-reverted (a fresh copy of the made tree) 84f3783013564695c6edce83fcecd0b5500305183d921db6bc6fb4116fc62d2b

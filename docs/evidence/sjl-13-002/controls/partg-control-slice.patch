@@ -1,0 +1,16 @@
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs
+@@ -2436,6 +2436,13 @@
+                     continue;
+                 }
+ 
++                // CONTROL OF BUNDLE sjl-13-002 PART G (a scratch copy of the after commit, never merged):
++                // SliceTokenizer throws on one token kind the slice seeds produce.
++                if (kind == SliceTokenKind.Semicolon)
++                {
++                    throw new System.InvalidOperationException("control of part G: SliceTokenizer throws on a semicolon");
++                }
++
+                 index += text.Length;
+ 
+                 return new SliceToken(

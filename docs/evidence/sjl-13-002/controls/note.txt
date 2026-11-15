@@ -1,0 +1,37 @@
+Added 2026-11-15, at task 7.2b of step 2's evidence (stage S10), before any part is judged.
+
+This folder holds the controls of bundle sjl-13-002's rule, each taken from a fresh copy of one clean git archive of
+the after commit 467ad7c395234b335c816b8f49ae5b505740e32c on a tmpfs (k-archive.txt), patched, built in Release with
+--disable-build-servers, and run behind a gate that waits, with no fallback, for a one-minute load of at most 1.0 and
+no dotnet, testhost, VBCSCompiler, MSBuild, ilc, crossgen or Broiler.* process, one run at a time (logs/, each run's
+command, exit, wall time and machine records). Each patch was reverted with patch -R and the copy's digest, bin/ and
+obj/ left out, compared with the made one (k-digests.txt, k4-digests.txt, i5/i5-digests.txt).
+
+- Part B's control (partb/): eng/compare-parse-corpus.py control, as the base commit holds it, over the base's run 1
+  with --specifier with-hash --column, and identity of the base's run 1 against that copy with --no-census.
+- Part C's K1 (k1-*): the global lexical declarations reversed (k1.patch); --checks --verbose, the parse corpus
+  B1 to B5 over the patched build, and identity of the after commit's run 1 against it (k1-identity-after.txt.gz).
+- K2 (k2-*): the global lexical declarations shuffled per compilation from an unseeded source (k2.patch);
+  --checks --verbose, three --parse-corpus runs (one worker, one worker, --twice-concurrent) and their determinism
+  comparison over the after commit's run 1's population (k2-determinism.tsv.gz).
+- K3 (k3-*): one parse request shared between concurrent compilations (k3.patch); --checks --verbose.
+- K4 (k4-*): the library's height charge of a chain node removed (k4.patch) in a git archive of Broiler.JS
+  29061d65f0ca41c5bd93074083f2018ccedd5c57, packed as Broiler.ECMAScript.Frontend 0.1.0-preview.11, the version the
+  after commit references, into a scratch feed (k4-library.txt, k4-feed.txt); the after commit's copy maps that one
+  package to the feed (k4-nuget-config.patch) and restores it into a scratch packages folder (k4-restored.txt). Its
+  --checks --verbose ran as configured first (k4-checks.*); k4-adjunct-note.txt records why the adjunct, the same
+  library under a harness narrowed to the fifth row (k4-row-harness.patch, K4_ROW_ONLY), was then run (k4-row-*),
+  as reading 2 of the bundle's section 1 carries it. The revert restores the published package (k4-reverted-*).
+- The reverted copy (k-reverted-*): a fresh copy of the made tree, whose digest every revert above equals, built
+  afresh, and its --checks --verbose.
+- Part D's rule I5 controls (i5/): in the after commit's tree of part D's run, after that run, a file declaring the
+  type JsMemberExpression again with its member NameSpan (control 1), then one declaring JsNumberLiteral again
+  (control 2), each followed by the I5 tests alone, the file removed and the tree's digest checked; then the I5 tests
+  in the reverted tree. register-rows.txt reads the after commit's register for the names the two files declare.
+- Part G's planted throws: the binder's walk over the shared tree throws on an ExpressionStatement
+  (partg-control-wide.patch; the wide session, partg-control-wide.log, its findings in partg-control-wide-findings/),
+  and SliceTokenizer throws on a semicolon (partg-control-slice.patch; the four slice sessions,
+  partg-control-slice-*.log). The slice sessions retain their findings inside the tree they are given, at
+  src/tests/corpus/js-1/js-1-source-fuzz-findings/ (partg-control-slice-findings-in-tree.txt lists them, and
+  partg-control-slice-findings/ keeps them); k-digests.txt gives the reverted slice copy's digest with that directory
+  in place and with it removed.

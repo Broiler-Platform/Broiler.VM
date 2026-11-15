@@ -1,0 +1,2 @@
+[xUnit.net 00:00:03.54]     Broiler.VM.Architecture.Tests.I5RetiredDuplicatesRuleTests.I5_No_Retired_Member_Is_Declared_Again [FAIL]
+Test Run Failed.
