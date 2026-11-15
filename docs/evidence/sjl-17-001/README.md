@@ -55,10 +55,23 @@ review, rules still come before runs, and SJL-17 may not meet its gate before SJ
 
 **The commits the rule names.**
 - **The rule commit** carries [`decision-rule-area.md`](decision-rule-area.md). It is named in this section, by all
-  forty digits, when the change that carries it has merged.
+  forty digits, when the change that carries it has merged. *(Note of 2026-11-15: that change, the SJL-17.1 records,
+  added the file in `c71b4a889c208366844671a3d7f144caed0ae780` and merged in Broiler-Platform/Broiler.VM#179 as
+  `4e6a41e9d3860b8ca79d5d3ea6de215c1592b0c0`, the rule commit, the default-branch merge, as bundles `sjl-12-001` and
+  `sjl-13-001` name theirs. The file's blob, `7217a3f2ba7e96aa6a78db1346bc5091bf304073`, is the same at both, at the base
+  and the after commit named below, and at the default branch's `1e8f648b`, and the evidence workflow and its driver
+  are the same at both. This section did not name it then, as it should have.)*
 - **The base commit** and **the after commit** do not exist yet. The rule states the conditions each must meet, and
   this README names each, by all forty digits, when it lands. The base commit descends from the rule commit and from
-  the commit bundle `sjl-9-001` names as its after commit here, which does not exist yet either.
+  the commit bundle `sjl-9-001` names as its after commit here, which does not exist yet either. *(Note of 2026-11-15:
+  both exist since 2026-11-04, and this section did not name them when they landed, as it should have. The after
+  commit is `983d690adac63f6d117ff2cd2d9cca61fc16e3d2`, the default-branch merge of Broiler-Platform/Broiler.VM#191
+  (observed), which lands SJL-17.4's cut-over in one merge (section 4). The base commit is its first parent,
+  `68cad8baf7403125d44d5007441d30ff07bc4edf`, the merge of Broiler-Platform/Broiler.VM#190, which is itself the commit
+  bundle `sjl-9-001` names as its after commit. The rule's three conditions on the base are read here and not judged,
+  since no run of the rule is taken: `git merge-base --is-ancestor 4e6a41e9 68cad8b` exits 0; the base is the commit
+  bundle `sjl-9-001` names, not a later one, and whether "descends from" takes the commit itself is a reading SJL-17.6's
+  evidence states; and `git rev-list --first-parent 68cad8b..983d690a` names the after commit alone.)*
 
 **The rule has three parts**, each deciding alone.
 - **Part A** takes test262 in both forms with the hosted workflow, at the base commit and at the after commit
@@ -186,7 +199,9 @@ bytes, but a table of those alone orders no other ideograph.
 *(Added 2026-11-04, at SJL-17.4.)* This family's cut-over is made on the branch `sjl-17-4-cutover`, cut from `68cad8b`
 (this repository's default branch after SJL-9.4's merge, the commit bundle `sjl-9-001` names as its after commit when it
 records it), and lands in one merge: that merge is this bundle's after commit, and its first parent the base, each named
-here by all forty digits when it lands.
+here by all forty digits when it lands. *(Note of 2026-11-15: the branch merged on 2026-11-04 as `983d690a`
+(Broiler-Platform/Broiler.VM#191, observed), its first parent `68cad8b`, and section 1 names both by all forty digits,
+which this section did not do when it landed, as it should have.)*
 [JSD-0086](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0086-the-profile-collates-with-the-shared-intl-library.md)
 records it. The branch's local pre-checks, against answers on binaries built at `68cad8b` and kept, are no run of this
 bundle's rule and are kept outside the tree; no figure of them is quoted. The base's test262 runs, checks, twins and
