@@ -573,6 +573,17 @@ milestone's SJL-13.3; [JSC-328](../roadmap.corrections.md#jsc-328), for the inve
 frontend area's wide path and the backends plan; bundle `sjl-13-002`'s README, with EX-135, and bundle `sjl-13-001`'s
 note on EX-133; the ledger. No rule file is edited, and the rule's revision of 2026-11-13 stands as filed.
 
+*(Noted 2026-11-15, at the records after step 2's evidence merged.)* **Step 2's merge, and its evidence's.** The note
+above reads "It lands in one merge, bundle `sjl-13-002`'s after commit, whose first parent is the base. **This holds
+only while the default branch is still `389b55c` when the branch merges**", says that bundle `sjl-13-002`'s runs "are
+all taken after the merge", and that part D's control "is taken after the merge". The branch merged as `467ad7c3`
+(Broiler-Platform/Broiler.VM#206, observed), one true merge whose first parent is `389b55c9`, so the default branch was
+still `389b55c` when it merged, and the branch was not built again. The bundle's runs, part D's control among them, were
+taken after that merge, at the base and the after commit, and its evidence merged as `1e8f648b`
+(Broiler-Platform/Broiler.VM#207, observed): its README gives, in its section 4, each condition the rule's header sets
+on its commits with the git read that shows it, and each part's verdict, and names in its section 6 the readings the
+rule does not settle, none the owner's own dated answer. This note judges nothing, and nothing above it is edited.
+
 ## Settling condition
 
 Settled in the change that files it. **This record is reopened only by a new dated record**; step 2 files the dated

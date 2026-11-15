@@ -86,6 +86,18 @@
   with JSC-328 and bundle `sjl-13-002`'s exclusion EX-135. Dated notes of this date on X6 and on decisions D15, D19
   and D20 say what step 2 did against each. Bundle `sjl-13-002`'s runs are taken after the merge. No sub-area's
   verdict, no row's class and no decision's deletions change, and no clause of "Falsified if" is met.
+- *(Added 2026-11-15, at the records after step 2's evidence merged.)* **Step 2 is merged, and its evidence with it.**
+  The item above reads "**Step 2 is built**, on its branch `sjl-13-3-step2`, cut from the default branch's `389b55c`
+  (Broiler-Platform/Broiler.VM#205), not yet merged" and "Bundle `sjl-13-002`'s runs are taken after the merge". The
+  branch merged as `467ad7c3` (Broiler-Platform/Broiler.VM#206, observed), one true merge whose first parent is
+  `389b55c9`: it is bundle `sjl-13-002`'s after commit, and `389b55c9` its base. The bundle's runs were taken after
+  that merge, and its evidence merged as `1e8f648b` (Broiler-Platform/Broiler.VM#207, observed); its README judges
+  step 2's parts in its section 4 and names, in its section 6, the readings the rule does not settle, each taken under
+  the owner's standing direction of 2026-10-18 and none the owner's own dated answer. The notes of 2026-11-14 on X6 and
+  on decisions D15, D19 and D20, each headed "on its branch `sjl-13-3-step2`, not yet merged", describe the branch that
+  merged as `467ad7c3`, and are left as written. This record's settling condition, clauses 4 to 9 judged on bundles
+  `sjl-13-001` and `sjl-13-002`, waits on SJL-13's exit reading, which reads both bundles. No sub-area's verdict, no
+  row's class and no decision's deletions change, and nothing is accepted.
 
 **Date:** 2026-10-26.
 
