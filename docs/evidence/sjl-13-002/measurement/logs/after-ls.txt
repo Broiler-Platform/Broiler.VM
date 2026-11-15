@@ -1,0 +1,17 @@
+total 208
+drwxr-xr-x 2 root root   4096 Nov 15 10:34 .
+drwxr-xr-x 5 root root   4096 Nov 15 07:49 ..
+-r--r--r-- 1 root root   4259 Nov 15 07:49 README.md
+-r--r--r-- 1 root root   3592 Nov 15 10:33 binaries-a.sha256
+-r--r--r-- 1 root root   3592 Nov 15 10:33 binaries-b.sha256
+-rw-r--r-- 1 root root 125528 Nov 15 10:34 conditions.tsv
+-rw-r--r-- 1 root root    803 Nov 15 10:34 hashes.txt
+-rw-r--r-- 1 root root   5988 Nov 15 10:34 lanes.txt.gz
+-rw-r--r-- 1 root root   3270 Nov 15 10:34 machine.tsv
+-r--r--r-- 1 root root   3028 Nov 15 10:33 manifest.txt
+-rw-r--r-- 1 root root   1336 Nov 15 10:34 measurement-collector.log
+-rw-r--r-- 1 root root      0 Nov 15 10:34 measurement-collector.stderr.txt
+-rw-r--r-- 1 root root    824 Nov 15 10:32 measurement-inputs.txt
+-rw-r--r-- 1 root root   6382 Nov 15 10:34 measurement-machine.txt
+-rw-r--r-- 1 root root  17573 Nov 15 10:34 runs.tsv
+-rw-r--r-- 1 root root   1624 Nov 15 10:34 summary.txt
