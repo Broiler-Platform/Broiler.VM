@@ -207,6 +207,24 @@ evidence merges (its reading 1). Its runs are taken after the merge, and the dev
 against are not evidence. This is the dated note on SJL-13.3 that decision D19 asks for. No clause is met, and nothing
 is accepted. The text above is left as written.
 
+*(Noted 2026-11-15, at the records after step 2's evidence merged.)* The note above reads "The branch lands as one
+merge, that bundle's after commit, its first parent the base, while the default branch is still `389b55c`; nothing else
+merges into the default branch until the bundle's evidence merges (its reading 1). Its runs are taken after the merge".
+Step 2 merged as `467ad7c3` (Broiler-Platform/Broiler.VM#206, observed), one true merge, bundle `sjl-13-002`'s after
+commit, its first parent `389b55c9` the base. Its evidence, tasks 7.1 to 7.3 of work package 7 on the branch
+`sjl-13-002-evidence`, was taken after that merge and merged as `1e8f648b` (Broiler-Platform/Broiler.VM#207, observed),
+which lifts the hold on the default branch. The bundle's README judges step 2's parts in its section 4: parts A, B, C,
+D, E and G met, part C on the reading of control K4 the bundle carries from step 1, part D on what shows rule I6 and
+part A on the hosted runs' SDK and images, and part F, the measurement, which is no gate clause, read with no verdict.
+Its section 6 names each reading the rule does not settle, with the alternative not taken, each taken under the owner's
+standing direction of 2026-10-18 and none the owner's own dated answer; the owner may rule otherwise. Clause 8's
+publication was taken at the after commit (its section 5). Step 2's half of clauses 4 to 6 is judged, and with step 1's
+in bundle `sjl-13-001` both bundles exist; no clause is read yet. The note of 2026-11-12, later, above reads "This
+family's vectors pin moved to it on the branch `vm-pin39` (`b781ebb`), not yet merged"; that branch merged on 2026-11-13
+as `686533fa` (Broiler-Platform/Broiler.VM#204, observed), which the programme ledger's entry of that day observes,
+before step 2's base `389b55c9`, as that note's order asks, and this note records it late. Next: SJL-13's exit reading
+over both bundles, and SJL-13.5. No clause is met, and nothing is accepted. The text above is left as written.
+
 ### SJL-13.4 — Admission and closures
 
 - The allow-list admits the frontend for `Broiler.VM.Profile.JavaScript.Compiler` only.

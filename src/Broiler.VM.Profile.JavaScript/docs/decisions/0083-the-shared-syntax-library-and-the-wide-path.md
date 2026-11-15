@@ -86,6 +86,18 @@
   with JSC-328 and bundle `sjl-13-002`'s exclusion EX-135. Dated notes of this date on X6 and on decisions D15, D19
   and D20 say what step 2 did against each. Bundle `sjl-13-002`'s runs are taken after the merge. No sub-area's
   verdict, no row's class and no decision's deletions change, and no clause of "Falsified if" is met.
+- *(Added 2026-11-15, at the records after step 2's evidence merged.)* **Step 2 is merged, and its evidence with it.**
+  The item above reads "**Step 2 is built**, on its branch `sjl-13-3-step2`, cut from the default branch's `389b55c`
+  (Broiler-Platform/Broiler.VM#205), not yet merged" and "Bundle `sjl-13-002`'s runs are taken after the merge". The
+  branch merged as `467ad7c3` (Broiler-Platform/Broiler.VM#206, observed), one true merge whose first parent is
+  `389b55c9`: it is bundle `sjl-13-002`'s after commit, and `389b55c9` its base. The bundle's runs were taken after
+  that merge, and its evidence merged as `1e8f648b` (Broiler-Platform/Broiler.VM#207, observed); its README judges
+  step 2's parts in its section 4 and names, in its section 6, the readings the rule does not settle, each taken under
+  the owner's standing direction of 2026-10-18 and none the owner's own dated answer. The notes of 2026-11-14 on X6 and
+  on decisions D15, D19 and D20, each headed "on its branch `sjl-13-3-step2`, not yet merged", describe the branch that
+  merged as `467ad7c3`, and are left as written. This record's settling condition, clauses 4 to 9 judged on bundles
+  `sjl-13-001` and `sjl-13-002`, waits on SJL-13's exit reading, which reads both bundles. No sub-area's verdict, no
+  row's class and no decision's deletions change, and nothing is accepted.
 
 **Date:** 2026-10-26.
 
@@ -429,8 +441,11 @@ fallback, the braced-escape decoding and the parenthesis-balance patch (each as 
 with the two places that skip it, and the test-only switch. It is taken from
 SJL-14's `docs/evidence/sjl-14-001/dispositions.md` in Broiler.JS, written at Broiler.JS's `33d3093b` from a
 PublicApiGenerator listing of `Broiler.JavaScript.Ast` and `Broiler.JavaScript.Parser`, with every public type and
-member of both assemblies in its `dispositions.tsv`. The file is filed in Broiler.JS's own change, on its branch
-`sjl-14-1-records`, and is observed until it merges; the programme ledger names its merge commit when it has.
+member of both assemblies in its `dispositions.tsv`. The file is filed in Broiler.JS's own change, merged in
+Broiler-Platform/Broiler.JS#1100 as `d8f146026bd69d2182be9d3c7aa9b85e016179c6` (observed). *(Corrected 2026-11-15, at
+the records after SJL-13's step 2's evidence merged: the sentence read "on its branch `sjl-14-1-records`, and is
+observed until it merges; the programme ledger names its merge commit when it has" after "filed in Broiler.JS's own
+change,", which did not move when it merged on 2026-11-03, as it should have.)*
 Decisions D40 to D56 and D64 are SJL-14's, the owner's under the owner's direction of 2026-10-18 (of 2026-11-03, but
 D41 and D44 to D47, of 2026-10-26 as revised in this record), recorded in Broiler.JS's
 `docs/roadmap/SharedLibraries.md`, section "Broiler.JS on the shared syntax library (SJL-14)"; this
@@ -1875,6 +1890,10 @@ refuses, K refusing on both sides (among them `await using` in a script's block,
 "Unexpected await" today)". Class E's rows by the first condition, class T and the rest of D45 are unchanged; the
 rows and the finding are in SJL-14's `corrections.md`, and Broiler.JS's `docs/roadmap/SharedLibraries.md` records the
 revision with SJL-14's decisions. Both are filed in Broiler.JS's own change and observed until it merges.
+*(Note of 2026-11-15: that change, SJL-14.1's records, merged into Broiler.JS's default branch on 2026-11-03 in
+Broiler-Platform/Broiler.JS#1100 as `d8f146026bd69d2182be9d3c7aa9b85e016179c6`, observed, and carries both; the sentence
+"Both are filed in Broiler.JS's own change and observed until it merges" did not move when it merged, as it should have.
+The X6 note above names the same merge. The text above is left as written.)*
 
 *(Note of 2026-10-27, decision D-asi.)* K10's rows include **P16b**, automatic semicolon insertion in a for statement's
 head: Broiler.JS accepts a line break where the head's first `;` belongs after a `var`, `let` or `const` declaration,

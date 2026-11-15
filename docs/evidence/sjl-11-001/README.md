@@ -81,7 +81,14 @@ SJL-3 meets SJL-3's.
 
 **The commits the rule names.**
 - **The rule commit** carries [`decision-rule-area.md`](decision-rule-area.md). It is named in this section, by all
-  forty digits, when the change that carries it has merged.
+  forty digits, when the change that carries it has merged. *(Note of 2026-11-15: that change, the SJL-11.1 records,
+  merged on 2026-10-25 in Broiler-Platform/Broiler.VM#168 as `cd1928d67a735c467ee0a93e4640834eb4bd2e40`, the rule
+  commit, the default-branch merge, as bundles `sjl-12-001` and `sjl-13-001` name theirs. On that change's branch the
+  file was added in `41837929` and last changed in `f14f3fff18d4cd3154e9d6fce92a67e1e2abe473`, which the merge carries;
+  the file's blob, `5a5f7d7a3769bdadaa5b6e2b419dfab16564b81b`, is the same at `f14f3fff`, at the merge and at the
+  default branch's `1e8f648b`, and the evidence workflow and its driver are the same at `f14f3fff` and at the merge.
+  This section did not name it then, as it should have. The revision of 2026-11-10,
+  [`decision-rule-area-revised-2026-11-10.md`](decision-rule-area-revised-2026-11-10.md), leaves the file unedited.)*
 - **The admission commit** and **the after commit** do not exist yet. The rule states the conditions each must meet,
   and this README names each when it lands. The admission commit descends from the rule commit and from bundle
   `sjl-12-001`'s corpus commit, `865b69b9ede430d5a548e5b97b85e5a7b5e1aed4`.
