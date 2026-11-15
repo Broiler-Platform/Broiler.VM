@@ -1,0 +1,76 @@
+"""Part B of bundle sjl-17-001 (SJL-17.6): from one run of the slice compiler's --checks --verbose, the files bundle
+sjl-9-001's datasets.py writes (its code restated for this rule's list): checks.log, the whole output with the digest
+of the binary; named-checks.txt, the line of each check the rule names, or its absence; files.sha256, the SHA-256 of
+every file under src/tests/cldr/ and src/tests/temporal/.
+The rule's checks (section 1's reading 8): the area's, intl/i1/german-phonebook-and-search-order,
+intl/i1/german-and-english-orderings-match-icu and every intl/i1/the-root-collation-orders-collationtest-* check; the
+guards, every other check whose name begins intl/, tzdb/ or temporal/ at the base commit, as the base's run prints the
+names. At the base the names are read from the run and written to named-check-names.txt; after, that file is read.
+The names the base's sources spell (literal strings beginning "intl/", "tzdb/" or "temporal/", a template standing for
+every check it writes) are listed beside them in source-names.txt, and any name in one list and not the other reported.
+
+usage: datasets.py <tree> <commit> <base|after> <names-file> <run-out> <run-exit> <slicecompiler.sha256> <started> <out-dir>"""
+import hashlib, os, re, sys
+tree, commit, side, names_file, out_txt, exit_txt, digest_txt, started, out = sys.argv[1:10]
+output = open(out_txt, encoding='utf-8').read()
+code = int(open(exit_txt).read().strip())
+digest = open(digest_txt).read().split()[0]
+os.makedirs(out, exist_ok=True)
+AREA = ['intl/i1/german-phonebook-and-search-order', 'intl/i1/german-and-english-orderings-match-icu']
+AREA_PREFIX = 'intl/i1/the-root-collation-orders-collationtest-'
+line_re = re.compile(r'^(\S+)\s+((?:intl|tzdb|temporal)/[^:\s]+):')
+printed = [(m.group(1), m.group(2), l) for l in output.splitlines() for m in [line_re.match(l)] if m]
+with open(os.path.join(out, 'checks.log'), 'w', encoding='utf-8', newline='\n') as o:
+    o.write('# Broiler.VM.Composition.JavaScript.SliceCompiler.dll sha256=%s, at %s, started %s\n# --checks --verbose\n%s\nexit code: %d\n'
+            % (digest, commit, started, output.rstrip(), code))
+if side == 'base':
+    names = sorted({n for _, n, _ in printed})
+    open(names_file, 'w', newline='\n').write('\n'.join(names) + '\n')
+    # the names the base's sources spell
+    lits = set()
+    src = os.path.join(tree, 'src', 'compositions', 'Broiler.VM.Composition.JavaScript.SliceCompiler')
+    for root, _, files in os.walk(src):
+        if os.sep + 'bin' in root or os.sep + 'obj' in root:
+            continue
+        for f in files:
+            if f.endswith('.cs'):
+                for m in re.finditer(r'\$?"((?:intl|tzdb|temporal)/[^"]+)"', open(os.path.join(root, f), encoding='utf-8').read()):
+                    lits.add(m.group(1))
+    lines = ['# names beginning intl/, tzdb/ or temporal/ as string literals in the base\'s slice compiler sources (a {...} template stands for every name it writes), against the names the base\'s --checks prints']
+    covered = set()
+    for lit in sorted(lits):
+        if '{' in lit:
+            pat = re.compile('^' + re.escape(lit.split('{')[0]) + '.+' + re.escape(lit.split('}')[-1]) + '$')
+            hit = [n for n in names if pat.match(n)]
+        else:
+            hit = [n for n in names if n == lit]
+        covered.update(hit)
+        lines.append('%s\t%s' % (lit, ', '.join(hit) if hit else 'NOT PRINTED'))
+    for n in names:
+        if n not in covered:
+            lines.append('PRINTED, NO SOURCE LITERAL\t%s' % n)
+    open(os.path.join(out, 'source-names.txt'), 'w', newline='\n').write('\n'.join(lines) + '\n')
+names = [l.strip() for l in open(names_file) if l.strip()]
+area = [n for n in names if n in AREA or n.startswith(AREA_PREFIX)]
+lines = ['# part B\'s checks at %s, as checks.log beside this file prints them: the area\'s checks, then the guards, every other check whose name begins intl/, tzdb/ or temporal/ at the base commit (named-check-names.txt)' % commit]
+missing_area = [a for a in AREA if a not in names] + ([] if any(n.startswith(AREA_PREFIX) for n in names) else [AREA_PREFIX + '*'])
+for a in missing_area:
+    lines.append('ABSENT %s: the base prints no such check' % a)
+for group, ns in (('area', area), ('guard', [n for n in names if n not in area])):
+    for n in ns:
+        found = [p for p in printed if p[1] == n]
+        if len(found) != 1:
+            lines.append('%s\tABSENT %s: %d lines name it' % (group, n, len(found)))
+        else:
+            lines.append('%s\t%s' % (group, found[0][2]))
+lines.append('slice-compiler exit code %d' % code)
+open(os.path.join(out, 'named-checks.txt'), 'w', encoding='utf-8', newline='\n').write('\n'.join(lines) + '\n')
+digests = []
+for dataset in ('src/tests/cldr', 'src/tests/temporal'):
+    for root, _, files in os.walk(os.path.join(tree, dataset)):
+        for f in files:
+            p = os.path.join(root, f)
+            digests.append('%s  %s' % (hashlib.sha256(open(p, 'rb').read()).hexdigest(), os.path.relpath(p, tree)))
+open(os.path.join(out, 'files.sha256'), 'w', newline='\n').write('\n'.join(sorted(digests, key=lambda l: l[66:])) + '\n')
+ok = sum(1 for l in lines if '\tok ' in l)
+print('%s: %d of %d named checks ok (%d area), %d absent, %d dataset files, exit %d' % (commit, ok, len(names), len(area), sum(1 for l in lines if 'ABSENT' in l), len(digests), code))

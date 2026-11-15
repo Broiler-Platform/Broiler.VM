@@ -1,0 +1,17 @@
+# part A, SJL-17.6: completeness of each hosted run as the rule states it (bundle sjl-6-001's reading), read from the imported artifacts
+.github/workflows/test262-evidence.yml: blob 740a70f8d919ced6cd4bdf31f8bb2408f12fdcf7 at the base commit, 740a70f8d919ced6cd4bdf31f8bb2408f12fdcf7 at the after commit (both runs' dispatched ref)
+eng/test262-evidence.py: blob 55f71ee3da6844dd3e3aeb23ea98d24143222a88 at the base commit, 55f71ee3da6844dd3e3aeb23ea98d24143222a88 at the after commit (both runs' dispatched ref)
+eng/run-test262.py: blob 695674a86701368e4ee19536198c446c77cbeee1 at the base commit, 695674a86701368e4ee19536198c446c77cbeee1 at the after commit (both runs' dispatched ref)
+eng/collect-js-release-candidate.py: blob cd5d8c0a797ea018d04a51382b5693347952fdb7 at the base commit, cd5d8c0a797ea018d04a51382b5693347952fdb7 at the after commit (both runs' dispatched ref)
+eng/compare-test262-forms.py: blob 48e3091a872921849bab1f903b46698be0c69e33 at the base commit, 48e3091a872921849bab1f903b46698be0c69e33 at the after commit (both runs' dispatched ref)
+src/tests/conformance/pins/test262.pin: blob f8678de1ad261b1774f68cb46ec43b66f3a4d539 at the base commit, f8678de1ad261b1774f68cb46ec43b66f3a4d539 at the after commit (both runs' dispatched ref)
+## base (workflow run: https://github.com/Broiler-Platform/Broiler.VM/actions/runs/41825524024 (attempt 1), dispatched 2026-11-04T12:00:17Z, completed 2026-11-04T12:08:05Z, conclusion success)
+run.txt: dispatched ref: refs/heads/main at 983d690adac63f6d117ff2cd2d9cca61fc16e3d2; tested commit: 68cad8baf7403125d44d5007441d30ff07bc4edf; tested tree: clean; inputs: {"commit": "68cad8baf7403125d44d5007441d30ff07bc4edf", "forms": "both"}; partition: 4 runners of 4 shards per form, 16 shards; allowance: fuel=100000000 wallClockMs=5000
+wide-bytecode: shard logs 16 of 16; merge took 16 shard reports; run log exit code 1; retention retainable=True; coverage whole=True; every variant accounted=True; distinct assembly lists 1
+wide-native: shard logs 16 of 16; merge took 16 shard reports; run log exit code 4; retention retainable=True; coverage whole=True; every variant accounted=True; distinct assembly lists 1
+## after (workflow run: https://github.com/Broiler-Platform/Broiler.VM/actions/runs/41827589989 (attempt 1), dispatched 2026-11-04T12:14:43Z, completed 2026-11-04T12:22:30Z, conclusion success)
+run.txt: dispatched ref: refs/heads/main at 983d690adac63f6d117ff2cd2d9cca61fc16e3d2; tested commit: 983d690adac63f6d117ff2cd2d9cca61fc16e3d2; tested tree: clean; inputs: {"commit": "983d690adac63f6d117ff2cd2d9cca61fc16e3d2", "forms": "both"}; partition: 4 runners of 4 shards per form, 16 shards; allowance: fuel=100000000 wallClockMs=5000
+wide-bytecode: shard logs 16 of 16; merge took 16 shard reports; run log exit code 1; retention retainable=True; coverage whole=True; every variant accounted=True; distinct assembly lists 1
+wide-native: shard logs 16 of 16; merge took 16 shard reports; run log exit code 4; retention retainable=True; coverage whole=True; every variant accounted=True; distinct assembly lists 1
+the comparison wide-bytecode: variants present in only one report, ignored by it: 0; its exit: ['0']
+the comparison wide-native: variants present in only one report, ignored by it: 0; its exit: ['0']

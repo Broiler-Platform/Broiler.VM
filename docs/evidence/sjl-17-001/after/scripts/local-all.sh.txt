@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# local-all.sh: the local steps of parts A (re-runs), B and C, in order: base builds, base parts B and C (the base
+# answers), after builds, after parts B and C, part A's (c') re-runs. Each step goes through run.sh.
+S=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-s176
+set -o pipefail
+echo "start $(date -u +%FT%TZ)" >> $S/local-all.status
+$S/scripts/build-roots.sh base || { echo "base builds failed" >> $S/local-all.status; exit 4; }
+echo "base builds $(date -u +%FT%TZ)" >> $S/local-all.status
+$S/scripts/parts-bc.sh base; echo "base parts B C $(date -u +%FT%TZ)" >> $S/local-all.status
+$S/scripts/build-roots.sh after || { echo "after builds failed" >> $S/local-all.status; exit 4; }
+echo "after builds $(date -u +%FT%TZ)" >> $S/local-all.status
+$S/scripts/parts-bc.sh after; echo "after parts B C $(date -u +%FT%TZ)" >> $S/local-all.status
+$S/scripts/part-a-rerun.sh rerun $S/parta/paths-cprime.txt 3; echo "part A re-runs $(date -u +%FT%TZ)" >> $S/local-all.status
+echo ALLDONE >> $S/local-all.status

@@ -1,0 +1,7 @@
+# part A, SJL-17.6: the variants of the rule's named collation directories (test/intl402/Collator/, test/built-ins/String/prototype/localeCompare/, test/intl402/String/prototype/localeCompare/), per form: how many each report holds, by verdict, and every one whose verdict or exhausted dimension differs (part-a-tables.py)
+wide-bytecode	test/intl402/Collator/	base 130 variants {'Failed': 4, 'Passed': 126}	after 130 variants {'Failed': 4, 'Passed': 126}	the same variants: True	differing: 0
+wide-bytecode	test/built-ins/String/prototype/localeCompare/	base 26 variants {'Passed': 26}	after 26 variants {'Passed': 26}	the same variants: True	differing: 0
+wide-bytecode	test/intl402/String/prototype/localeCompare/	base 20 variants {'Passed': 20}	after 20 variants {'Passed': 20}	the same variants: True	differing: 0
+wide-native	test/intl402/Collator/	base 130 variants {'Failed': 4, 'Passed': 126}	after 130 variants {'Failed': 4, 'Passed': 126}	the same variants: True	differing: 0
+wide-native	test/built-ins/String/prototype/localeCompare/	base 26 variants {'Passed': 26}	after 26 variants {'Passed': 26}	the same variants: True	differing: 0
+wide-native	test/intl402/String/prototype/localeCompare/	base 20 variants {'Passed': 20}	after 20 variants {'Passed': 20}	the same variants: True	differing: 0

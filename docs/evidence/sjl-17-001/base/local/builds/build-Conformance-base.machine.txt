@@ -1,0 +1,122 @@
+=== build-Conformance-base before
+time: 2026-11-15T21:05:52Z
+loadavg: 0.90 1.49 1.82 1/129 13734
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 13307 MiB free
+procs-matching:
+kernel: Linux 6.18.44-fc-v470 x86_64
+processes:
+      1    05:44:51 process_api     /process_api --firecracker-init --addr 0.0.0.0:2024 --max-ws-buffer-size 32768 --block-local-connections --log-vsock-port 5002 --control-vsock-port 5001 --listen-vsoc
+      2    05:44:51 kthreadd        [kthreadd]
+      3    05:44:51 pool_workqueue_ [pool_workqueue_release]
+      4    05:44:51 kworker/R-rcu_g [kworker/R-rcu_gp]
+      5    05:44:51 kworker/R-sync_ [kworker/R-sync_wq]
+      6    05:44:51 kworker/R-kvfre [kworker/R-kvfree_rcu_reclaim]
+      7    05:44:51 kworker/R-slub_ [kworker/R-slub_flushwq]
+      8    05:44:51 kworker/R-netns [kworker/R-netns]
+     10    05:44:51 kworker/0:0H-ev [kworker/0:0H-events_highpri]
+     13    05:44:51 kworker/R-mm_pe [kworker/R-mm_percpu_wq]
+     14    05:44:51 ksoftirqd/0     [ksoftirqd/0]
+     15    05:44:51 rcu_preempt     [rcu_preempt]
+     16    05:44:51 rcu_exp_par_gp_ [rcu_exp_par_gp_kthread_worker/0]
+     17    05:44:51 rcu_exp_gp_kthr [rcu_exp_gp_kthread_worker]
+     18    05:44:51 migration/0     [migration/0]
+     19    05:44:51 cpuhp/0         [cpuhp/0]
+     20    05:44:51 cpuhp/1         [cpuhp/1]
+     21    05:44:51 migration/1     [migration/1]
+     22    05:44:51 ksoftirqd/1     [ksoftirqd/1]
+     24    05:44:51 kworker/1:0H-ev [kworker/1:0H-events_highpri]
+     25    05:44:51 cpuhp/2         [cpuhp/2]
+     26    05:44:51 migration/2     [migration/2]
+     27    05:44:51 ksoftirqd/2     [ksoftirqd/2]
+     29    05:44:51 kworker/2:0H-kb [kworker/2:0H-kblockd]
+     30    05:44:51 cpuhp/3         [cpuhp/3]
+     31    05:44:51 migration/3     [migration/3]
+     32    05:44:51 ksoftirqd/3     [ksoftirqd/3]
+     34    05:44:51 kworker/3:0H-ev [kworker/3:0H-events_highpri]
+     35    05:44:51 kdevtmpfs       [kdevtmpfs]
+     36    05:44:51 kworker/R-inet_ [kworker/R-inet_frag_wq]
+     37    05:44:51 rcu_tasks_kthre [rcu_tasks_kthread]
+     38    05:44:51 rcu_tasks_rude_ [rcu_tasks_rude_kthread]
+     39    05:44:51 rcu_tasks_trace [rcu_tasks_trace_kthread]
+     40    05:44:51 kauditd         [kauditd]
+     41    05:44:51 khungtaskd      [khungtaskd]
+     42    05:44:51 kworker/u16:1-k [kworker/u16:1-kvfree_rcu_reclaim]
+     43    05:44:51 oom_reaper      [oom_reaper]
+     44    05:44:51 kworker/u16:2-e [kworker/u16:2-events_unbound]
+     45    05:44:51 kworker/R-write [kworker/R-writeback]
+     46    05:44:51 kcompactd0      [kcompactd0]
+     47    05:44:51 ksmd            [ksmd]
+     48    05:44:51 khugepaged      [khugepaged]
+     49    05:44:51 kworker/R-kbloc [kworker/R-kblockd]
+     50    05:44:51 kworker/R-blkcg [kworker/R-blkcg_punt_bio]
+     51    05:44:51 kworker/2:1-mm_ [kworker/2:1-mm_percpu_wq]
+     53    05:44:51 watchdogd       [watchdogd]
+     54    05:44:51 kworker/R-quota [kworker/R-quota_events_unbound]
+     55    05:44:51 kworker/1:1H-kb [kworker/1:1H-kblockd]
+     56    05:44:51 kswapd0         [kswapd0]
+     57    05:44:51 kworker/R-xfsal [kworker/R-xfsalloc]
+     58    05:44:51 kworker/R-xfs_m [kworker/R-xfs_mru_cache]
+     59    05:44:51 kworker/u17:0   [kworker/u17:0]
+     61    05:44:51 kworker/R-kthro [kworker/R-kthrotld]
+     62    05:44:51 irq/24-ACPI:Ged [irq/24-ACPI:Ged]
+     63    05:44:51 irq/25-ACPI:Ged [irq/25-ACPI:Ged]
+     64    05:44:51 hwrng           [hwrng]
+     65    05:44:51 kworker/3:1H-kb [kworker/3:1H-kblockd]
+     66    05:44:51 kworker/R-kstrp [kworker/R-kstrp]
+     69    05:44:51 kworker/0:1H-kb [kworker/0:1H-kblockd]
+     83    05:44:50 kworker/R-ext4- [kworker/R-ext4-rsv-conversion]
+     85    05:44:50 kworker/R-ext4- [kworker/R-ext4-rsv-conversion]
+     86    05:44:50 kworker/R-ext4- [kworker/R-ext4-rsv-conversion]
+     88    05:44:50 6               sbx-telemetry-collector
+     89    05:44:50 kworker/2:1H-kb [kworker/2:1H-kblockd]
+     90    05:44:50 sh              /bin/sh -c if ! { [ ! -L /var/lib/ccr-ca-store ] && { [ ! -e /var/lib/ccr-ca-store ] || { [ -d /var/lib/ccr-ca-store ] && [ -O /var/lib/ccr-ca-store ] ; } ; } ; } ; t
+     93    05:44:50 environment-man /usr/local/bin/environment-manager task-run --stdin --session cse_01EvynDJNoDfZb8zqpgEWykW --session-mode resume --upgrade-claude-code=False
+    101    05:44:50 claude          /opt/claude-code/bin/claude --preload /home/claude/.claude/remote/spare.sock
+   3669    03:57:07 kworker/3:1-eve [kworker/3:1-events]
+   5806    02:12:13 kworker/1:2-eve [kworker/1:2-events]
+   6857       09:54 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-s176/scripts/run.sh build-Conformance-base /tmp/claude-0/-home-user/0a6f6b61
+   7709       09:47 bash            /bin/bash -c source /root/.claude/shell-snapshots/snapshot-bash-1794756070124-xkxanz.sh 2>/dev/null || true && \builtin export BUN_OPTIONS="--smol${BUN_OPTIONS:+ $BUN
+   7710       09:47 timeout         timeout 590 bash -c until [ -f /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/rx112/verify/logs/head/DONE ] && [ -f /tmp/claude-0/-
+   7711       09:47 bash            bash -c until [ -f /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/rx112/verify/logs/head/DONE ] && [ -f /tmp/claude-0/-home-user/0a
+   8036       09:06 kworker/1:1     [kworker/1:1]
+   8245       08:31 kworker/0:0-mm_ [kworker/0:0-mm_percpu_wq]
+   8294       07:26 bash            /bin/bash -c source /root/.claude/shell-snapshots/snapshot-bash-1794756070124-xkxanz.sh 2>/dev/null || true && \builtin export BUN_OPTIONS="--smol${BUN_OPTIONS:+ $BUN
+   8376       06:06 kworker/3:0-mm_ [kworker/3:0-mm_percpu_wq]
+   9177       00:59 kworker/2:2     [kworker/2:2]
+   9828       00:38 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/s2/ev2/scripts/run.sh s14b-35da77ec /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6
+   9839       00:38 flock           flock 9
+  10256       00:22 kworker/3:2     [kworker/3:2]
+  11088       00:15 bash            /bin/bash -c source /root/.claude/shell-snapshots/snapshot-bash-1794756070124-xkxanz.sh 2>/dev/null || true && \builtin export BUN_OPTIONS="--smol${BUN_OPTIONS:+ $BUN
+  11109       00:12 kworker/0:1     [kworker/0:1]
+  11733       00:11 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/s2/ev2/scripts/run.sh arm-S /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88
+  11745       00:11 flock           flock 9
+  12515       00:07 sleep           sleep 10
+  12547       00:06 sleep           sleep 10
+  12562       00:05 sleep           sleep 10
+  13225       00:00 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/s2/ev2/scripts/run.sh probe-aot /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-902
+  13238       00:00 flock           flock 9
+  13955       00:00 ps              ps -eo pid=,etime=,comm=,args=
+  13956       00:00 cut             cut -c1-200
+  13957       00:00 sed             sed s/^/  /
+  14280       37:06 kworker/u16:0-k [kworker/u16:0-kvfree_rcu_reclaim]
+  18003       35:58 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-s176/scripts/local-all.sh
+  18005       35:58 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-s176/scripts/build-roots.sh base
+  26059    01:01:33 bash            /bin/bash -c source /root/.claude/shell-snapshots/snapshot-bash-1794756070124-xkxanz.sh 2>/dev/null || true && \builtin export BUN_OPTIONS="--smol${BUN_OPTIONS:+ $BUN
+  26060    01:01:33 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/rx112/verify/scripts/verify.sh
+  29808       20:20 kworker/0:2-eve [kworker/0:2-events]
+  31568       14:12 kworker/2:0-eve [kworker/2:0-events]
+  31569    01:00:17 bash            /bin/bash -c source /root/.claude/shell-snapshots/snapshot-bash-1794756070124-xkxanz.sh 2>/dev/null || true && \builtin export BUN_OPTIONS="--smol${BUN_OPTIONS:+ $BUN
+  31570    01:00:17 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/js-s14b/scripts/all.sh
+  32071       59:51 bash            /bin/bash -c source /root/.claude/shell-snapshots/snapshot-bash-1794756070124-xkxanz.sh 2>/dev/null || true && \builtin export BUN_OPTIONS="--smol${BUN_OPTIONS:+ $BUN
+  32072       59:51 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/rx112/verify/scripts/reduce-verify.sh
+=== build-Conformance-base after (rc=0 started=2026-11-15T21:05:52Z)
+time: 2026-11-15T21:06:01Z
+loadavg: 1.47 1.59 1.85 1/132 14106
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 13306 MiB free
+procs-matching:

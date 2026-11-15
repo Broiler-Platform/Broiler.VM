@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+"""compare-closures.py <cutover/closures> <after-commit closures> : every file of either folder, byte for byte; for a
+transcript that differs, the lines that still differ once timings are masked (restore and elapsed times, the heap
+plateau check's readings), each attributed by kind. Prints the comparison; reads only the two folders."""
+import difflib, hashlib, os, re, sys
+a, b = sys.argv[1], sys.argv[2]
+def sha(p): return hashlib.sha256(open(p, 'rb').read()).hexdigest()
+names = sorted(set(os.listdir(a)) | set(os.listdir(b)))
+print("compared: %s against %s" % (a.split("/docs/evidence/")[-1], b.split("/docs/evidence/")[-1]))
+print("(the Native AOT image records are not retained; mstat.sha256 names them)")
+print()
+def mask(line):
+    line = re.sub(r'\(in [0-9.]+ (ms|sec)\)', '(in <t>)', line)
+    line = re.sub(r'elapsed [0-9.]+ s', 'elapsed <t> s', line)
+    line = re.sub(r'Time Elapsed [0-9:.]+', 'Time Elapsed <t>', line)
+    line = re.sub(r'0x[0-9a-f]+', '<addr>', line)
+    line = re.sub(r'\b[0-9]+(\.[0-9]+)? ?(ms|s|sec|seconds)\b', '<t>', line)
+    if 'recycled-runtimes-reach-a-heap-plateau' in line:
+        line = re.sub(r'[0-9]+', '<n>', line)
+    return line
+for n in names:
+    pa, pb = os.path.join(a, n), os.path.join(b, n)
+    if not os.path.exists(pa): print("%-36s only after" % n); continue
+    if not os.path.exists(pb): print("%-36s only at cutover/" % n); continue
+    if n.endswith('.mstat'):
+        continue
+    same = sha(pa) == sha(pb)
+    print("%-36s %s" % (n, "identical" if same else "DIFFERS"))
+    if same: continue
+    la = open(pa, encoding='utf-8', errors='replace').read().splitlines()
+    lb = open(pb, encoding='utf-8', errors='replace').read().splitlines()
+    ma, mb = [mask(x) for x in la], [mask(x) for x in lb]
+    timing = sum(1 for x, y in zip(la, lb) if x != y and mask(x) == mask(y)) if len(la) == len(lb) else None
+    print("    lines %d at cutover/, %d after; masked: %s" % (len(la), len(lb), "identical" if ma == mb else "differ"))
+    if ma != mb and n.endswith('.log'):
+        # A transcript is a run of sections, each opened by a "[root/mode] ..." line. Within a section the
+        # build's restore and output lines come in the order its parallel nodes finish, so each section is
+        # also compared as a sorted list of masked lines.
+        def sections(lines):
+            out, cur = [], None
+            for x in lines:
+                if re.match(r'^\[[a-z]+(/[a-z]+)?\] ', x):
+                    cur = [x, []]; out.append(cur)
+                elif cur is not None:
+                    cur[1].append(x)
+                else:
+                    out.append([x, []])
+            return out
+        sa, sb = sections(ma), sections(mb)
+        heads_same = [h for h, _ in sa] == [h for h, _ in sb]
+        print("    section headings (each publish, run and exit): %s, %d sections" % ("identical" if heads_same else "DIFFER", len(sa)))
+        order_only = 0
+        for (ha, xa), (hb, xb) in zip(sa, sb):
+            if xa == xb: continue
+            if sorted(xa) == sorted(xb):
+                order_only += 1; continue
+            print("    section %s differs in content:" % ha[:120])
+            for d in difflib.unified_diff(sorted(xa), sorted(xb), 'cutover', 'after', n=0, lineterm=''):
+                if d.startswith(('---', '+++', '@@')): continue
+                print("      " + d[:300])
+        print("    %d sections differ in the order of their lines alone" % order_only)
+    elif ma != mb:
+        for d in difflib.unified_diff(ma, mb, 'cutover', 'after', n=0, lineterm=''):
+            print("    " + d[:300])
+    if timing is not None or True:
+        changed = sum(1 for x, y in zip(la, lb) if x != y and mask(x) == mask(y))
+        print("    %d lines differ in timings or the plateau check's readings alone, line for line" % changed)

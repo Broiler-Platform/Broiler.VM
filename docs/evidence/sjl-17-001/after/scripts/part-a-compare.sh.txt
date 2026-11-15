@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# part-a-compare.sh: part A's comparisons for bundle sjl-17-001 (SJL-17.6), Python only, no build or run of the engine
+# (bundle sjl-9-001's part-a-compare.sh, with this bundle's commits and paths). eng/compare-test262-forms.py as the base
+# commit holds it, copied out with git show; the reports decompressed from the imported artifacts; the pin's archive
+# extracted whole for --exempt-guest-loads. Run through run.sh, so behind the lock and the gate.
+S=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-s176
+R=/home/user/vm-s176; Bn=$R/docs/evidence/sjl-17-001
+BASE=68cad8baf7403125d44d5007441d30ff07bc4edf; AFTER=983d690adac63f6d117ff2cd2d9cca61fc16e3d2
+O=$S/parta; W=/dev/shm/s176/parta; rm -rf $W; mkdir -p $O $W/reports $W/suite
+PIN=src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz
+git -C $R show $BASE:eng/compare-test262-forms.py > $W/compare-test262-forms.py
+{
+echo "# part A's comparisons, taken at SJL-17.6 on $(date -u +%FT%TZ) (Python only; no build or run of the engine)"
+echo "# tool: eng/compare-test262-forms.py as the base commit $BASE holds it, blob $(git -C $R rev-parse $BASE:eng/compare-test262-forms.py), the same blob at the after commit ($(git -C $R rev-parse $AFTER:eng/compare-test262-forms.py)), copied out with git show"
+git -C $R show $BASE:$PIN > $W/pin.tar.gz
+echo "# suite for --exempt-guest-loads: the pin archive $PIN extracted whole, sha256 $(sha256sum < $W/pin.tar.gz | cut -d' ' -f1), blob $(git -C $R rev-parse $BASE:$PIN) at the base and $(git -C $R rev-parse $AFTER:$PIN) at the after commit"
+tar -xzf $W/pin.tar.gz -C $W/suite
+echo "# extracted: $(find $W/suite -type f | wc -l) files; tar --compare differences: $(tar --compare -zf $W/pin.tar.gz -C $W/suite 2>&1 | wc -l)"
+for side in base after; do for form in wide-bytecode wide-native; do
+  gzip -dc $Bn/$side/hosted/$form.report.gz > $W/reports/$side-$form.report
+  echo "# input $side/hosted/$form.report.gz sha256 $(sha256sum < $Bn/$side/hosted/$form.report.gz | cut -d' ' -f1), decompressed sha256 $(sha256sum < $W/reports/$side-$form.report | cut -d' ' -f1)"
+done; done
+} > $O/commands.log
+SUITE=$(ls -d $W/suite/*/ | head -1); SUITE=${SUITE%/}
+echo "# suite root: <suite>/$(basename $SUITE)" >> $O/commands.log
+cd $W
+echo "$(date -u +%FT%TZ) python3 -I compare-test262-forms.py --same-form base/hosted/wide-bytecode.report after/hosted/wide-bytecode.report" >> $O/commands.log
+python3 -I compare-test262-forms.py --same-form reports/base-wide-bytecode.report reports/after-wide-bytecode.report > $O/compare-wide-bytecode.log 2>&1; echo "exit=$?" >> $O/compare-wide-bytecode.log
+echo "$(date -u +%FT%TZ) python3 -I compare-test262-forms.py --same-form --exempt-guest-loads --suite <the pin extracted> base/hosted/wide-native.report after/hosted/wide-native.report" >> $O/commands.log
+python3 -I compare-test262-forms.py --same-form --exempt-guest-loads --suite $SUITE reports/base-wide-native.report reports/after-wide-native.report > $O/compare-wide-native.log 2>&1; echo "exit=$?" >> $O/compare-wide-native.log
+sed -i "s|$W/reports|<reports>|g; s|$SUITE|<suite>|g" $O/compare-wide-*.log
+echo "$SUITE" > $O/suite-path.txt
+echo DONE > $O/DONE

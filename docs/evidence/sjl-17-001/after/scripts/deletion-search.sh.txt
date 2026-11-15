@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# deletion-search.sh <commit>: git reads alone. Broiler.VM's SJL-17.4 deletion list, as the milestone's SJL-17.4 and
+# JSD-0084's decision E11 give it (JSD-0086 section 5), searched in the tree of <commit>: each listed file by name, each
+# listed type by a declaration of it, each listed member by a declaration of it in the file of the type that stays,
+# outside docs/; then rule I5's register rows of SJL-17.4. (Bundle sjl-9-001's deletion-search.sh, with SJL-17.4's list.)
+cd /home/user/vm-s176; c=$(git rev-parse "$1")
+echo "# Broiler.VM's SJL-17.4 deletion list searched at $c ($(date -u +%FT%TZ)), by git reads alone"
+echo "# 1. listed files: any path in the tree whose file name is one of them"
+for f in JsCollator.cs JsCollationData.cs; do
+  n=$(git ls-tree -r --name-only "$c" | grep -c "/$f\$"); echo "$f	paths=$n"; git ls-tree -r --name-only "$c" | grep "/$f\$" | sed 's/^/  /'
+done
+echo "# 2. listed types: a declaration (class, struct, record, enum or interface) of the name in a .cs file outside docs/"
+for t in JsCollator JsCaseFirst JsCollationData; do
+  hits=$(git grep -n -E "\b(class|struct|record|enum|interface) +$t\b" "$c" -- '*.cs' ':!docs' | wc -l); echo "$t	declarations=$hits"
+  git grep -n -E "\b(class|struct|record|enum|interface) +$t\b" "$c" -- '*.cs' ':!docs' | sed 's/^/  /'
+done
+echo "# 3. listed members of types that stay: a declaration of the name in the type's own files (JsRealm.*.cs, JsIntlTables.cs)"
+hits=$(git grep -n -E "^\s*(private|internal|public|protected)[^=(]*\bCollatorKeyData\b *\(" "$c" -- 'src/Broiler.VM.Profile.JavaScript/JsRealm*.cs' | wc -l); echo "JsRealm.CollatorKeyData	declarations=$hits"
+hits=$(git grep -n -E "^\s*(private|internal|public|protected|static)[^=(]*\b(Collation|collation)\b *(=|\{|;|=>)" "$c" -- 'src/Broiler.VM.Profile.JavaScript/JsIntlTables.cs' | wc -l); echo "JsIntlTables.Collation and its lazy collation	declarations=$hits"
+git grep -n -E "\bCollatorKeyData\b|\b(Collation|collation)\b *(=|\{|;|=>)" "$c" -- 'src/Broiler.VM.Profile.JavaScript*/*.cs' | cut -c1-200 | sed 's/^/  any mention: /'
+echo "# 4. rule I5's register: the rows of SJL-17.4, and entries by milestone"
+git show "$c:src/tests/Broiler.VM.Architecture.Tests/retired-members.json" | python3 -I -c "import json,sys,collections; r=json.load(sys.stdin)['retired']; [print('row', e['member'], e['milestone'], sep='\t') for e in r if e['milestone']=='SJL-17.4']; [print(k, v, sep='\t') for k, v in sorted(collections.Counter(e['milestone'] for e in r).items())]"

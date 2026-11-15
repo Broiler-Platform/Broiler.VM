@@ -1,0 +1,116 @@
+=== build-SliceCompiler-after before
+time: 2026-11-15T21:27:21Z
+loadavg: 0.90 1.21 1.49 1/127 32187
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 13195 MiB free
+procs-matching:
+kernel: Linux 6.18.44-fc-v470 x86_64
+processes:
+      1    06:06:20 process_api     /process_api --firecracker-init --addr 0.0.0.0:2024 --max-ws-buffer-size 32768 --block-local-connections --log-vsock-port 5002 --control-vsock-port 5001 --listen-vsoc
+      2    06:06:20 kthreadd        [kthreadd]
+      3    06:06:20 pool_workqueue_ [pool_workqueue_release]
+      4    06:06:20 kworker/R-rcu_g [kworker/R-rcu_gp]
+      5    06:06:20 kworker/R-sync_ [kworker/R-sync_wq]
+      6    06:06:20 kworker/R-kvfre [kworker/R-kvfree_rcu_reclaim]
+      7    06:06:20 kworker/R-slub_ [kworker/R-slub_flushwq]
+      8    06:06:20 kworker/R-netns [kworker/R-netns]
+     10    06:06:20 kworker/0:0H-ev [kworker/0:0H-events_highpri]
+     13    06:06:20 kworker/R-mm_pe [kworker/R-mm_percpu_wq]
+     14    06:06:20 ksoftirqd/0     [ksoftirqd/0]
+     15    06:06:20 rcu_preempt     [rcu_preempt]
+     16    06:06:20 rcu_exp_par_gp_ [rcu_exp_par_gp_kthread_worker/0]
+     17    06:06:20 rcu_exp_gp_kthr [rcu_exp_gp_kthread_worker]
+     18    06:06:20 migration/0     [migration/0]
+     19    06:06:20 cpuhp/0         [cpuhp/0]
+     20    06:06:20 cpuhp/1         [cpuhp/1]
+     21    06:06:20 migration/1     [migration/1]
+     22    06:06:20 ksoftirqd/1     [ksoftirqd/1]
+     24    06:06:20 kworker/1:0H-ev [kworker/1:0H-events_highpri]
+     25    06:06:20 cpuhp/2         [cpuhp/2]
+     26    06:06:20 migration/2     [migration/2]
+     27    06:06:20 ksoftirqd/2     [ksoftirqd/2]
+     29    06:06:20 kworker/2:0H-kb [kworker/2:0H-kblockd]
+     30    06:06:20 cpuhp/3         [cpuhp/3]
+     31    06:06:20 migration/3     [migration/3]
+     32    06:06:20 ksoftirqd/3     [ksoftirqd/3]
+     34    06:06:20 kworker/3:0H-ev [kworker/3:0H-events_highpri]
+     35    06:06:20 kdevtmpfs       [kdevtmpfs]
+     36    06:06:20 kworker/R-inet_ [kworker/R-inet_frag_wq]
+     37    06:06:20 rcu_tasks_kthre [rcu_tasks_kthread]
+     38    06:06:20 rcu_tasks_rude_ [rcu_tasks_rude_kthread]
+     39    06:06:20 rcu_tasks_trace [rcu_tasks_trace_kthread]
+     40    06:06:20 kauditd         [kauditd]
+     41    06:06:20 khungtaskd      [khungtaskd]
+     42    06:06:20 kworker/u16:1-k [kworker/u16:1-kvfree_rcu_reclaim]
+     43    06:06:20 oom_reaper      [oom_reaper]
+     44    06:06:20 kworker/u16:2-k [kworker/u16:2-kvfree_rcu_reclaim]
+     45    06:06:20 kworker/R-write [kworker/R-writeback]
+     46    06:06:20 kcompactd0      [kcompactd0]
+     47    06:06:20 ksmd            [ksmd]
+     48    06:06:20 khugepaged      [khugepaged]
+     49    06:06:20 kworker/R-kbloc [kworker/R-kblockd]
+     50    06:06:20 kworker/R-blkcg [kworker/R-blkcg_punt_bio]
+     53    06:06:20 watchdogd       [watchdogd]
+     54    06:06:20 kworker/R-quota [kworker/R-quota_events_unbound]
+     55    06:06:20 kworker/1:1H-kb [kworker/1:1H-kblockd]
+     56    06:06:20 kswapd0         [kswapd0]
+     57    06:06:20 kworker/R-xfsal [kworker/R-xfsalloc]
+     58    06:06:20 kworker/R-xfs_m [kworker/R-xfs_mru_cache]
+     59    06:06:20 kworker/u17:0   [kworker/u17:0]
+     61    06:06:20 kworker/R-kthro [kworker/R-kthrotld]
+     62    06:06:20 irq/24-ACPI:Ged [irq/24-ACPI:Ged]
+     63    06:06:20 irq/25-ACPI:Ged [irq/25-ACPI:Ged]
+     64    06:06:20 hwrng           [hwrng]
+     65    06:06:20 kworker/3:1H-kb [kworker/3:1H-kblockd]
+     66    06:06:20 kworker/R-kstrp [kworker/R-kstrp]
+     69    06:06:20 kworker/0:1H-kb [kworker/0:1H-kblockd]
+     83    06:06:19 kworker/R-ext4- [kworker/R-ext4-rsv-conversion]
+     85    06:06:19 kworker/R-ext4- [kworker/R-ext4-rsv-conversion]
+     86    06:06:19 kworker/R-ext4- [kworker/R-ext4-rsv-conversion]
+     88    06:06:19 6               sbx-telemetry-collector
+     89    06:06:19 kworker/2:1H-kb [kworker/2:1H-kblockd]
+     90    06:06:19 sh              /bin/sh -c if ! { [ ! -L /var/lib/ccr-ca-store ] && { [ ! -e /var/lib/ccr-ca-store ] || { [ -d /var/lib/ccr-ca-store ] && [ -O /var/lib/ccr-ca-store ] ; } ; } ; } ; t
+     93    06:06:19 environment-man /usr/local/bin/environment-manager task-run --stdin --session cse_01EvynDJNoDfZb8zqpgEWykW --session-mode resume --upgrade-claude-code=False
+    101    06:06:19 claude          /opt/claude-code/bin/claude --preload /home/claude/.claude/remote/spare.sock
+   3669    04:18:36 kworker/3:1-mm_ [kworker/3:1-mm_percpu_wq]
+   5806    02:33:42 kworker/1:2-eve [kworker/1:2-events]
+   8036       30:35 kworker/1:1-eve [kworker/1:1-events]
+   9177       22:28 kworker/2:2-mm_ [kworker/2:2-mm_percpu_wq]
+  10256       21:51 kworker/3:2     [kworker/3:2]
+  14280       58:35 kworker/u16:0-k [kworker/u16:0-kvfree_rcu_reclaim]
+  18003       57:27 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-s176/scripts/local-all.sh
+  18132       03:36 kworker/1:0     [kworker/1:0]
+  18650       11:58 kworker/0:0     [kworker/0:0]
+  19065       02:52 kworker/2:1     [kworker/2:1]
+  25841       01:33 bash            /bin/bash -c source /root/.claude/shell-snapshots/snapshot-bash-1794756070124-xkxanz.sh 2>/dev/null || true && \builtin export BUN_OPTIONS="--smol${BUN_OPTIONS:+ $BUN
+  25842       01:33 timeout         timeout 590 bash -c until [ -f /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/rx112/verify/logs/head/DONE ] && [ -f /tmp/claude-0/-
+  25843       01:33 bash            bash -c until [ -f /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/rx112/verify/logs/head/DONE ] && [ -f /tmp/claude-0/-home-user/0a
+  26059    01:23:01 bash            /bin/bash -c source /root/.claude/shell-snapshots/snapshot-bash-1794756070124-xkxanz.sh 2>/dev/null || true && \builtin export BUN_OPTIONS="--smol${BUN_OPTIONS:+ $BUN
+  26060    01:23:01 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/rx112/verify/scripts/verify.sh
+  28118       00:50 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-s176/scripts/build-roots.sh after
+  28379       00:47 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-s176/scripts/run.sh build-SliceCompiler-after /tmp/claude-0/-home-user/0a6f6
+  29728       00:33 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/s2/ev2/scripts/run.sh arm-J-tr-TR /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9
+  29738       00:33 flock           flock 9
+  29808       41:49 kworker/0:2-eve [kworker/0:2-events]
+  30128       00:20 bash            /bin/bash -c source /root/.claude/shell-snapshots/snapshot-bash-1794756070124-xkxanz.sh 2>/dev/null || true && \builtin export BUN_OPTIONS="--smol${BUN_OPTIONS:+ $BUN
+  30360       00:12 kworker/3:0-eve [kworker/3:0-events]
+  30631       00:03 sleep           sleep 10
+  31568       35:41 kworker/2:0-eve [kworker/2:0-events]
+  31709       00:00 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/s2/ev2/scripts/run.sh test262-aot /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9
+  31721       00:00 flock           flock 9
+  31748       00:00 sleep           sleep 10
+  32071    01:21:19 bash            /bin/bash -c source /root/.claude/shell-snapshots/snapshot-bash-1794756070124-xkxanz.sh 2>/dev/null || true && \builtin export BUN_OPTIONS="--smol${BUN_OPTIONS:+ $BUN
+  32072    01:21:19 bash            bash /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/rx112/verify/scripts/reduce-verify.sh
+  32396       00:00 ps              ps -eo pid=,etime=,comm=,args=
+  32397       00:00 cut             cut -c1-200
+  32398       00:00 sed             sed s/^/  /
+=== build-SliceCompiler-after after (rc=0 started=2026-11-15T21:27:21Z)
+time: 2026-11-15T21:27:51Z
+loadavg: 3.00 1.68 1.63 1/126 32747
+nproc: 4
+sdk: 10.0.404
+os: Ubuntu 24.04.5 LTS
+disk: 13195 MiB free
+procs-matching:

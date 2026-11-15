@@ -1,0 +1,4 @@
+2026-11-15T21:20:12Z lock twins-base WAIT
+2026-11-15T21:24:46Z lock twins-base HELD
+2026-11-15T21:24:46Z gate twins-base PASS load1=0.88 procs=none checks=0
+2026-11-15T21:26:31Z stop-servers: done, remaining:

@@ -1,0 +1,9 @@
+wide-bytecode test/annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js
+wide-bytecode test/staging/sm/Date/dst-offset-caching-3-of-8.js
+wide-bytecode test/staging/sm/Date/dst-offset-caching-4-of-8.js
+wide-bytecode test/staging/sm/Date/dst-offset-caching-7-of-8.js
+wide-bytecode test/staging/sm/TypedArray/sort_large_countingsort.js
+wide-native test/staging/sm/Date/dst-offset-caching-4-of-8.js
+wide-native test/staging/sm/Date/dst-offset-caching-6-of-8.js
+wide-native test/staging/sm/Date/dst-offset-caching-7-of-8.js
+wide-native test/staging/sm/TypedArray/sort_large_countingsort.js

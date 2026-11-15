@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# commit-conditions.sh <repo>: the git reads behind bundle sjl-17-001's commit conditions (the rule's "The commits"),
+# SJL-17.6 (bundle sjl-9-001's commit-conditions.sh, with this bundle's commits). Git reads alone; runs nothing else.
+R=$1; g() { git -C $R "$@"; }
+RULE=4e6a41e9d3860b8ca79d5d3ea6de215c1592b0c0; S9=68cad8baf7403125d44d5007441d30ff07bc4edf
+A=983d690adac63f6d117ff2cd2d9cca61fc16e3d2; B=68cad8baf7403125d44d5007441d30ff07bc4edf
+F=docs/evidence/sjl-17-001/decision-rule-area.md
+NAMED=(':(glob)src/Broiler.VM.Profile.JavaScript*/**' ':(glob)src/compositions/**' ':(glob)eng/packages/**' 'Directory.Packages.props')
+echo "# bundle sjl-17-001, SJL-17.6: the commit conditions of the rule's \"The commits\", read with git on $(date -u +%FT%TZ) at $(g rev-parse HEAD)"
+echo "## the rule commit"
+echo "the commits that add or change $F: $(g log --format='%h' -- $F | tr '\n' ' ')"
+echo "git log --diff-filter=A -- $F: $(g log --diff-filter=A --format='%H %s' -- $F)"
+echo "$RULE: parents $(g log -1 --format='%P | %s' $RULE)"
+c=$(g log --diff-filter=A --format=%H -- $F); echo "  $c in $RULE: $(g merge-base --is-ancestor $c $RULE && echo yes || echo NO); in its first parent $(g rev-parse --short $RULE^1): $(g merge-base --is-ancestor $c $RULE^1 && echo yes || echo no)"
+for c in $RULE $B $A $(g rev-parse HEAD); do echo "  blob of $F at $(g rev-parse --short $c): $(g rev-parse $c:$F)"; done
+echo "  dated revisions of the rule (decision-rule-area-revised-*.md) in the bundle at HEAD: $(g ls-tree --name-only HEAD docs/evidence/sjl-17-001/ | grep -c 'decision-rule-area-revised')"
+echo "## the after commit"
+echo "$A: parents $(g log -1 --format=%P $A); $(g log -1 --format=%s $A)"
+echo "  on the default branch's first-parent line: $(g rev-list --first-parent origin/main | grep -qx $A && echo yes || echo NO)"
+echo "## the base commit"
+echo "$A^1 = $(g rev-parse $A^1) (the base: $([ $(g rev-parse $A^1) = $B ] && echo yes || echo NO))"
+echo "  condition 1, descends from the rule commit $RULE: $(g merge-base --is-ancestor $RULE $B && echo yes || echo NO)"
+echo "  condition 2, descends from bundle sjl-9-001's after commit $S9: git merge-base --is-ancestor exits $(g merge-base --is-ancestor $S9 $B; echo $?); the base is that commit: $([ $B = $S9 ] && echo yes || echo no) (section 1's reading 3)"
+echo "  condition 3, git rev-list --first-parent $B..$A: $(g rev-list --first-parent $B..$A | tr '\n' ' ')(section 1's reading 4)"
+echo "  first-parent commits of the default branch after the base, to origin/main $(g rev-parse --short origin/main), each with how many paths under ${NAMED[*]} it changes against its first parent:"
+for c in $(g rev-list --first-parent --reverse $B..origin/main); do echo "    $(g rev-parse --short $c) $(g diff --name-only $c^1 $c -- "${NAMED[@]}" | wc -l) $(g log -1 --format=%s $c)"; done
+echo "  paths under ${NAMED[*]} the after commit changes against the base: $(g diff --name-only $B $A -- "${NAMED[@]}" | wc -l)"
+g diff --name-only $B $A -- "${NAMED[@]}" | sed 's/^/    /'
+echo "## part A's dispatches (both from the default branch at the after commit): the workflow, the driver and the tools"
+for c in $B $A; do echo "  $(g rev-parse --short $c): .github/workflows/test262-evidence.yml $(g rev-parse $c:.github/workflows/test262-evidence.yml), eng/test262-evidence.py $(g rev-parse $c:eng/test262-evidence.py), eng/run-test262.py $(g rev-parse $c:eng/run-test262.py), eng/collect-js-release-candidate.py $(g rev-parse $c:eng/collect-js-release-candidate.py), eng/compare-test262-forms.py $(g rev-parse $c:eng/compare-test262-forms.py), src/tests/conformance/pins/test262.pin $(g rev-parse $c:src/tests/conformance/pins/test262.pin)"; done
+echo "## the data, the datasets and the pins"
+for p in src/Broiler.VM.Profile.JavaScript.Intl/JsCldrTables.g.cs src/tests/cldr/pins/cldr.pin src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SuiteFeatures.cs Directory.Packages.props src/tests/conformance/pins/test262.pin src/tests/vectors/pins/vectors.pin; do echo "  $p: base $(g rev-parse $B:$p), after $(g rev-parse $A:$p)"; done
+echo "  git diff --stat $B $A -- src/tests/cldr/ src/tests/temporal/ src/Broiler.VM.Profile.JavaScript.Intl/: [$(g diff --stat $B $A -- src/tests/cldr/ src/tests/temporal/ src/Broiler.VM.Profile.JavaScript.Intl/ | wc -l) lines]"
+g diff --stat $B $A -- src/tests/cldr/ src/tests/temporal/ src/Broiler.VM.Profile.JavaScript.Intl/ | sed 's/^/    /'
+echo "  twins under src/tests/forms/wide/ (*.small.js): base $(g ls-tree --name-only $B src/tests/forms/wide/ | grep -c '\.small\.js$'), after $(g ls-tree --name-only $A src/tests/forms/wide/ | grep -c '\.small\.js$'); git diff --stat over src/tests/forms/: [$(g diff --stat $B $A -- src/tests/forms/ | wc -l) lines]"

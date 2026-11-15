@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# build-roots.sh <base|after>: a clean git archive of the commit on tmpfs, then the slice compiler, the command-line
+# root and the conformance root built there in Release with --disable-build-servers, one at a time, each behind the
+# lock and the gate (bundle sjl-9-001's build-roots.sh, with the archive step added and this bundle's paths).
+S=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-s176
+side=$1; case $side in base) C=68cad8baf7403125d44d5007441d30ff07bc4edf;; after) C=983d690adac63f6d117ff2cd2d9cca61fc16e3d2;; *) exit 2;; esac
+T=/dev/shm/s176/$side; O=$S/$side/builds; mkdir -p $O
+[ -e $T ] && { echo "REFUSED: $T exists"; exit 3; }
+mkdir -p $T && git -C /home/user/vm-s176 archive --format=tar $C | tar -x -C $T || exit 4
+echo "archive of $C at $(date -u +%FT%TZ) by git archive | tar -x into $T ($(find $T -type f | wc -l) files)" > $S/$side/archive.txt
+for p in SliceCompiler Cli Conformance; do
+  proj=src/compositions/Broiler.VM.Composition.JavaScript.$p/Broiler.VM.Composition.JavaScript.$p.csproj
+  $S/scripts/run.sh build-$p-$side $O $T -- dotnet build $proj -c Release --disable-build-servers -nologo || { echo "build $p failed"; exit 4; }
+  grep -E 'warning [A-Z]+[0-9]+' $O/build-$p-$side.out.txt | sort -u > $O/build-$p-$side.warnings.txt
+done
+echo DONE > $O/DONE
