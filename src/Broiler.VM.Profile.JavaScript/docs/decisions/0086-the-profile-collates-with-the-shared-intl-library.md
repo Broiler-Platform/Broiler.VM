@@ -203,6 +203,13 @@ it reads already, where the adapters live.
 - **Assurance.** Regenerated at each commit; every human line stays PENDING. The code that left this component's
   assurance coverage is the home's to cover, as EX-125 to EX-132 say of the earlier areas; SJL-17.6 files its exclusion
   in bundle `sjl-17-001`, as SJL-9.6 does for SJL-9.4's.
+  *(Noted 2026-11-15, at SJL-17.6.)* SJL-17.6 files it as EX-136, in bundle
+  [`sjl-17-001`](../../../../docs/evidence/sjl-17-001/README.md)'s section 9: the code section 5 names, which
+  `Broiler.ECMAScript.Intl` computes now and the home's own assurance covers in the Broiler.JS repository. The earlier
+  areas' exclusions it reads with are EX-125 and EX-127 to EX-135: the bullet's "EX-125 to EX-132" takes in EX-126, the
+  Android root's closure, which is no area's, and EX-133 to EX-135 were filed after this record. Section 6's "SJL-17.6
+  retakes them at the after commit" is taken in the same bundle's `after-closures/`. The bullet above is left as
+  written.
 - **Correction entry.** [JSC-325](../roadmap.corrections.md#jsc-325).
 - **Dated notes**, each quoting what it reads: JSD-0084's status; the milestone's SJL-17.4 section; the area design's
   deletion lists (section 3.4's companion, "the lists"); `inventory.md`'s collation row; the I5 register's SJL-9.4
@@ -274,6 +281,14 @@ Settled in the change that files it. **This record is reopened only by a new dat
 
 - **Whether SJL-17 is met.** Its evidence is bundle `sjl-17-001`, read at SJL-17.6 under its rule, and the ledger records
   the result.
+  *(Noted 2026-11-15, at SJL-17.6.)* Bundle `sjl-17-001` takes and judges parts A, B and C of its rule at the base
+  `68cad8b` and the after commit `983d690a` (its sections 5 to 8), each MET on readings the bundle names for the owner:
+  no test262 verdict moves but by class C4's wall-clock races, no check of part B and no file under `src/tests/cldr/` or
+  `src/tests/temporal/` moves, and no twin's figure or answer moves; so this record's falsifier "a test262 verdict, a
+  check, a dataset line, a twin's figure or a charge moves at the after commit" is not met by those runs, which take no
+  charge probe. The bundle also retains the closures and the runs of rules I1 to I7, I3 and N28 at the after commit,
+  read and not judged. This note decides nothing of SJL-17: its exit reading waits on Broiler.JS's SJL-17.5, and nothing
+  is accepted. The bullet above is left as written.
 - **Broiler.JS's cut-over**, SJL-17.5, which its own changelog records with its corrections (JSD-0084's decision item 5).
 - **A move of the test262 pin, the CLDR pin, the vectors pin or this family's tables.** None moves.
 - **Any CJK tailoring**, which waits on a data decision that sizes it (decision E3).

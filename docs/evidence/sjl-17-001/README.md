@@ -33,6 +33,17 @@ the owner's decision E-o3h, which JSD-0084 records. It is not a run of the rule.
   commit is its first parent.
 - A collector joins this bundle when there is a run of the rule to take.
 
+*(Added 2026-11-15, at SJL-17.6, this family's run of the rule.)* **The rule is run and judged.** Section 1's readings
+were filed before any run was read; part A's hosted runs at the base and the after commit are imported, parts B and C
+and part A's re-runs are taken locally, and section 5 judges each part: **parts A, B and C are each MET**, on the
+readings section 5 names, none the owner's own answer. The closures at the after commit, with every root published and
+run in three modes and rules I1 to I7, I3 on the image records and N28 run there, are retained in
+[`after-closures/`](after-closures/README.md) and read in section 10, not judged; section 9 defines EX-136. **Nothing
+is accepted**: review is deferred, these verdicts are not SJL-17's exit reading, which follows Broiler.JS's SJL-17.5,
+and they meet no clause by themselves. The "State" line above reads "rule and correspondence only" and "**Nothing here
+is a verdict, and no run of the rule has been taken.**", and the bullet above "A collector joins this bundle when there
+is a run of the rule to take."; each reads as of the day it was written, and is left as written.
+
 Broiler.JS's clauses, and the home's, are judged in Broiler.JS's bundle of the same name. This bundle reads none of
 their runs.
 
@@ -187,6 +198,12 @@ rule, and the rule file is not edited.
 
 The correspondence's `probes/` and `runs/` stay as committed.
 
+*(Noted 2026-11-15, at SJL-17.6.)* `base/` and `after/` hold what the list above names, and more, as section 5's "What
+the folders hold" says: part B's comparison is `after/datasets/`, part A's comparisons, re-runs and tables
+`after/parta/`, and the git reads and the scripts `after/commits/` and `after/scripts/`. The closures at the after
+commit and the rule checks there are [`after-closures/`](after-closures/README.md), which the list does not name.
+[`manifest.json`](manifest.json) lists every file of the bundle with its SHA-256. The list is left as written.
+
 *(2026-11-02, at SJL-17.3: [`han-sizing/`](han-sizing/README.md) retains the sizing of Han's radical-stroke order
 that the owner's decision E-o3h rests on, its scripts, inputs named and outputs; section 3 reads it. It is not a run of
 the rule.)*
@@ -301,12 +318,227 @@ section 4). Nothing under `src/tests/cldr/` or
 `src/tests/temporal/` changes on the branch, and `JsCldrTables.g.cs` is the same file at both ends of it (rule N28). No
 root's assemblies move, so the composition register's evidence stays bundle `sjl-9-001`'s `cutover/closures/`. Part A's
 hosted runs, parts B and C, and the exclusion for the code that left this component's assurance coverage are SJL-17.6's.
+*(Note of 2026-11-15, at SJL-17.6: they are taken, in sections 5 to 9 and 10; the exclusion is EX-136. This section
+is left as written.)*
+
+## 5. The run of the rule (SJL-17.6)
+
+*(Added 2026-11-15, at SJL-17.6.)* Every part of the rule is taken at the base `68cad8baf7403125d44d5007441d30ff07bc4edf`
+and the after commit `983d690adac63f6d117ff2cd2d9cca61fc16e3d2` and judged here, on section 1's readings taken before
+any run was read. Each part decides alone, from the files named with it, and no part reads another's verdict. No
+test262 suite total is quoted: part A is decided per variant.
+
+### What the folders hold
+
+- **[`base/`](base/)**: [`hosted/`](base/hosted/imported.txt), part A's base run, imported unchanged;
+  [`datasets/`](base/datasets/), part B's run (`checks.log`, the whole output with the binary's digest;
+  `named-checks.txt`, the line of each check the rule names; `named-check-names.txt`, those names as the base's run
+  prints them; `source-names.txt`, the same names read from the base's sources, section 1's reading 8;
+  `files.sha256`, every file under `src/tests/cldr/` and `src/tests/temporal/`); [`fuel-parity.log`](base/fuel-parity.log),
+  part C's bisection; and [`local/`](base/local/), the archive, the builds and each run's command, gate log, machine
+  record before and after with the whole process list, exit code, wall time and peak memory.
+- **[`after/`](after/)**: [`hosted/`](after/hosted/imported.txt), part A's after run, imported the same way;
+  [`parta/`](after/parta/), the completeness of all four runs, both comparisons with `commands.log`, every changed
+  verdict with its class (`changed-verdicts.tsv`), the named collation directories' rows (`rows-collation.txt`), the
+  (c′) re-runs with every report and record (`rerun/`), and the note that no row is raced (`race-note.txt`);
+  [`datasets/`](after/datasets/), part B's after run and its comparison with the base (`compare.txt`);
+  [`fuel-parity.log`](after/fuel-parity.log), part C at each ceiling tried; [`commits/`](after/commits/), the git reads
+  behind the commit conditions; [`local/`](after/local/), as at the base; and [`scripts/`](after/scripts/), every
+  script that took or read these files, as run, each named `.txt`.
+- [`base/hashes.txt`](base/hashes.txt) and [`after/hashes.txt`](after/hashes.txt) hold the SHA-256 of every file of
+  their folder outside `hosted/`, and each `hosted/hashes.txt` every file of that folder; `sha256sum -c` verifies each.
+
+### The commits, and the conditions the rule's header sets
+
+[`after/commits/commit-conditions.txt`](after/commits/commit-conditions.txt) is the output of
+[`commit-conditions.sh.txt`](after/scripts/commit-conditions.sh.txt), git reads alone. Every condition holds on those
+reads, on section 1's readings 3 and 4 for the base's second and third conditions, so no part is void.
+
+| Commit | Condition (the rule's "The commits") | The git read, and what it shows |
+|---|---|---|
+| Rule commit `4e6a41e9d3860b8ca79d5d3ea6de215c1592b0c0` (Broiler-Platform/Broiler.VM#179) | carries `decision-rule-area.md` | `git log --diff-filter=A` names `c71b4a889c208366844671a3d7f144caed0ae780`, in the rule commit and not in its first parent, and no later commit changes the file; its blob is `7217a3f2ba7e96aa6a78db1346bc5091bf304073` at the rule commit, the base, the after commit and this branch's head when the read was taken; the bundle holds no dated revision of the rule |
+| After commit `983d690adac63f6d117ff2cd2d9cca61fc16e3d2` (#191) | the default-branch merge that lands SJL-17.4's cut-over, one merge | on the default branch's first-parent line; parents `68cad8b` and `ad03dfab`, the branch `sjl-17-4-cutover` that JSD-0086 records |
+| Base `68cad8baf7403125d44d5007441d30ff07bc4edf` (#190) | the after commit's first parent | `git rev-parse 983d690a^1` is `68cad8b` |
+| | 1. descends from the rule commit | `git merge-base --is-ancestor 4e6a41e9 68cad8b`: yes |
+| | 2. descends from the after commit bundle `sjl-9-001` names, `68cad8b` | the base is that commit, and `git merge-base --is-ancestor` exits 0 (section 1's reading 3) |
+| | 3. the after commit is its only first-parent successor that changes a named path | `git rev-list --first-parent 68cad8b..983d690a` is `983d690a` alone (section 1's reading 4); the read lists every later first-parent merge to the default branch's `4f914a3f` with how many such paths each changes, most of them some |
+| Part A's runs | dispatched from the default branch with forms both and the tested commit's forty-digit identifier, the workflow and the driver at the dispatched ref byte-identical to the base's | each `imported.txt` and `run.txt` names its tested commit and inputs, both dispatched from the default branch at the after commit; `.github/workflows/test262-evidence.yml` is blob `740a70f8…` and `eng/test262-evidence.py` blob `55f71ee3…` at the base and the after commit, and so are `eng/run-test262.py`, `eng/collect-js-release-candidate.py`, `eng/compare-test262-forms.py` and the suite pin (section 1's reading 5) |
+| Parts B and C | built in Release from a clean checkout of each commit, on the local machine | each from a clean `git archive` of its commit on a tmpfs ([`base/local/archive.txt`](base/local/archive.txt), [`after/local/archive.txt`](after/local/archive.txt)), on section 1's reading 1 |
+
+**The data and the pins** (the same file). `JsCldrTables.g.cs`, `src/tests/cldr/pins/cldr.pin`, the test262 pin, the
+vectors pin, `Directory.Packages.props` and `SuiteFeatures.cs` have the same blob at both commits, and `git diff`
+between them over `src/tests/cldr/`, `src/tests/temporal/`, `src/Broiler.VM.Profile.JavaScript.Intl/` and
+`src/tests/forms/` is empty: the after commit changes, under the rule's named paths, the five product files JSD-0086
+names and four of the profile's documents.
+
+### The machine and the gate
+
+The local steps were taken on 2026-11-15 on the machine section 1's reading 1 takes as the rule's: `linux-x64`, four
+logical processors, Ubuntu 24.04.5 LTS, .NET SDK 10.0.404, the native backend `x86-64-sysv`. Each tree is a clean
+`git archive` of its commit on a tmpfs, and each root was built there in Release with `--disable-build-servers`,
+`MSBUILDDISABLENODEREUSE=1` and shared compilation off ([`build-roots.sh.txt`](after/scripts/build-roots.sh.txt)): the
+slice compiler, the command-line root and the conformance root, one build at a time, with no warning in any build log
+(`<side>/local/builds/*.warnings.txt`, each empty). Every build and every run ran under an exclusive lock that the
+other stages working on this machine take too, so that one run is taken at a time, and behind a hard gate
+([`gate.sh.txt`](after/scripts/gate.sh.txt), with [`run.sh.txt`](after/scripts/run.sh.txt)) that waits, with no time
+limit, for a one-minute load of at most 1.0 and no process whose executable is `dotnet`, `testhost`,
+`VBCSCompiler`, `MSBuild`, `ilc`, `crossgen` or a `Broiler.*` program; every gate pass in these folders found none
+and a load of at most 1.0, and no `stop-servers` line names a leftover process. Other stages' runs took the lock
+between this bundle's steps, never during one. Part A's (c′) re-runs took the lock once for the whole batch, so that
+no other stage's run came between them, and each re-run still passed the gate first
+([`part-a-rerun.sh.txt`](after/scripts/part-a-rerun.sh.txt), [`run-inner.sh.txt`](after/scripts/run-inner.sh.txt), which
+is `run.sh` without its own lock).
+
+| Step | Taken (UTC) | Records |
+|---|---|---|
+| Part A's hosted runs | 2026-11-04: base 12:00:17 to 12:08:05, after 12:14:43 to 12:22:30 | `base/hosted/`, `after/hosted/` |
+| Part A's comparisons (Python only) | 20:28:48 to 20:28:50 | `after/parta/commands.log`, `after/parta/logs/` |
+| Builds at the base | 20:40:44 to 21:06:01 | `base/local/builds/` |
+| Part B at the base | 21:15:55 to 21:20:12 | `base/local/partb/`, `base/datasets/` |
+| Part C at the base | 21:24:47 to 21:26:31 | `base/local/partc/`, `base/fuel-parity.log` |
+| Builds at the after commit | 21:27:21 to 21:36:41 | `after/local/builds/` |
+| Part B at the after commit | 21:37:10 to 21:41:23 | `after/local/partb/`, `after/datasets/` |
+| Part C at the after commit | 21:41:49 to 21:42:03 | `after/local/partc/`, `after/fuel-parity.log` |
+| Part A's (c′) re-runs | 21:42:26 to 21:50:51 | `after/parta/rerun/` |
+
+### The verdicts
+
+| Part | Verdict | What it reads |
+|---|---|---|
+| A, test262 in both forms (section 6) | **MET**, on section 1's readings 1 to 6 | [`after/parta/`](after/parta/): `completeness.txt`, `compare-wide-bytecode.log`, `compare-wide-native.log`, `changed-verdicts.tsv`, `rows-collation.txt`, `rerun/`, `race-note.txt` |
+| B, the orderings dataset, the collation checks and the guards (section 7) | **MET**, on section 1's readings 1, 3, 4 and 8 | [`base/datasets/`](base/datasets/), [`after/datasets/`](after/datasets/): `checks.log`, `named-checks.txt`, `files.sha256`, `compare.txt` |
+| C, the fuel-parity twins (section 8) | **MET**, on section 1's readings 1, 3, 4 and 9 | [`base/fuel-parity.log`](base/fuel-parity.log), [`after/fuel-parity.log`](after/fuel-parity.log), each side's `local/partc/attempts.tsv` |
+
+**Which readings each verdict turns on.** Every reading is section 1's, taken before any run was read, under the
+owner's standing direction of 2026-10-18 and not the owner's own answer. Readings 3 and 4 would void every part if
+ruled the other way. Reading 1 would leave parts B and C untaken and part A's fifteen (c′) rows unadmitted, so each
+part NOT MET until runs on another machine. Under reading 2's alternative part A could not be taken; under reading 5's
+it would rest on two new dispatches. Of reading 6, the split between fuel and the wall clock decides part A: fourteen
+of its fifteen rows are exhausted on fuel at one commit and on the wall clock at the other, and would be regressions
+under the alternative; no row's re-runs agree on a wall-clock exhaustion and no row's re-runs differ, so its other
+items decide nothing here. Reading 7 decides nothing, since no row is in one report only, and neither does reading 8,
+whose two lists are the same. Reading 9 is the precedent's allowance. No verdict needs an exclusion (section 9).
+
+## 6. Test262, both forms (rule part A)
+
+*(Added 2026-11-15, at SJL-17.6.)*
+
+**MET.** "MET if and only if all four runs are complete as above, every changed verdict of the bytecode pair is in C1
+or C4 and is listed, and the native pair meets the same conditions."
+- **All four runs are complete** ([`after/parta/completeness.txt`](after/parta/completeness.txt), read off the imported
+  artifacts by [`part-a-tables.py.txt`](after/scripts/part-a-tables.py.txt)). In each form at each commit: sixteen
+  shard logs of sixteen, and the merge took sixteen shard reports; the run log's exit code is 1 in the bytecode form
+  and 4 in the native form, both of which completeness admits; the merged report's retention object says retainable,
+  its coverage is whole and it accounts for every variant; the binaries log has one distinct list of assemblies. Every
+  runner and the merging job of both runs report .NET SDK 10.0.403; the images are `ubuntu24` 20261026.354.1 but one
+  runner of the base run and two of the after run on 20261101.360.1, as each `imported.txt` records (section 1's
+  reading 2).
+- **The comparisons** ([`compare-wide-bytecode.log`](after/parta/compare-wide-bytecode.log),
+  [`compare-wide-native.log`](after/parta/compare-wide-native.log)) are `eng/compare-test262-forms.py --same-form` as
+  the base commit holds it (the same blob after), the base's report as control and the after's as candidate, the native
+  pair with `--exempt-guest-loads` over the pin's archive extracted whole: its SHA-256 is the archive's, it holds the
+  pin's 56,560 files and `tar --compare` finds no difference ([`commands.log`](after/parta/commands.log)). Each exits 0,
+  every row each lists in class (c′), and neither ignores a row: no variant is in one report only (section 1's reading
+  7). The bytecode pair lists 8 changed variants and the native pair 7.
+- **No C1 row**, and so no finding against JSD-0084's correspondence: no variant fails at the base and passes after,
+  in either pair. **No C4 (a) or (b) row.**
+- **The named collation directories** ([`rows-collation.txt`](after/parta/rows-collation.txt)): in both forms, every
+  variant of `test/intl402/Collator/`, `test/built-ins/String/prototype/localeCompare/` and
+  `test/intl402/String/prototype/localeCompare/` is in both reports and gives the same verdict at both commits. The
+  four `Collator` variants that fail, both variants of `resolvedOptions/ignorePunctuation-default.js` (Thai's default)
+  and of `resolvedOptions/resolved-collation-unicode-extensions-and-options.js` (`de` with the collation `eor`), fail
+  alike at the base and after; this family carries neither Thai nor `eor` (JSD-0084's decision E3).
+- **C4 (c′): the fifteen rows** ([`changed-verdicts.tsv`](after/parta/changed-verdicts.tsv)): in the bytecode pair `annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js`
+  [strict], exhausted on `NestedLoadFanOut` at the base and on the wall clock after, and both variants of
+  `staging/sm/Date/dst-offset-caching-3-of-8.js`, `-4-of-8.js` and `-7-of-8.js` with
+  `staging/sm/TypedArray/sort_large_countingsort.js` [strict], each on fuel at the base and on the wall clock after; in
+  the native pair both variants of `dst-offset-caching-4-of-8.js`, `-7-of-8.js` and `sort_large_countingsort.js`, each
+  on the wall clock at the base and on fuel after, and `dst-offset-caching-6-of-8.js` [sloppy], on fuel at the base and
+  on the wall clock after. Each row's three one-process re-runs at each commit, alternating the commits, with
+  `--expect` against the tree's retained pin and every log naming the pin
+  ([`rerun/`](after/parta/rerun/)), give one verdict and one exhausted dimension in all six: exhausted on fuel, or on
+  `NestedLoadFanOut` for the `RegExp` row, never on the wall clock
+  ([`rerun-wide-bytecode.tsv`](after/parta/rerun/rerun-wide-bytecode.tsv),
+  [`rerun-wide-native.tsv`](after/parta/rerun/rerun-wide-native.tsv)). The re-runs agree, which (c′) admits (section
+  1's reading 6). Each re-run exits 1, the conformance root's answer when its selection executes no test to
+  completion (`NoExecutedTests`), and its report gives the verdict.
+- **C4 (e)** has no row: no row's re-runs differ, and the race runs only such rows
+  ([`race-note.txt`](after/parta/race-note.txt)).
+- **No C2**: fourteen rows are exhausted on fuel at one commit and on the wall clock at the other; under section 1's
+  reading 6 such a row is (c′), decided by its re-runs, and none moves on fuel with no wall-clock exhaustion on either
+  side. The `RegExp` row moves between `NestedLoadFanOut` and the wall clock. No variant is a regression.
+
+## 7. The orderings dataset and the collation checks (rule part B)
+
+*(Added 2026-11-15, at SJL-17.6.)*
+
+**MET.** "MET if and only if every check named passes at both commits, and no file under src/tests/cldr/ or
+src/tests/temporal/ differs between them."
+- **The checks named** ([`base/datasets/named-checks.txt`](base/datasets/named-checks.txt),
+  [`after/datasets/named-checks.txt`](after/datasets/named-checks.txt)), on section 1's reading 8: the area's four,
+  `intl/i1/german-phonebook-and-search-order`, `intl/i1/german-and-english-orderings-match-icu` (the `orderings`
+  dataset against its retained answer) and `intl/i1/the-root-collation-orders-collationtest-non-ignorable` and
+  `-shifted` (the archived CollationTest files); and thirty guards, every other check whose name begins `intl/`,
+  `tzdb/` or `temporal/` as the base's run prints them. The names the base's sources spell, with the two templates
+  each check of theirs takes, are the same thirty-four, none printed without a source and none spelled and not printed
+  ([`source-names.txt`](base/datasets/source-names.txt)).
+- **Every one passes at both commits** ([`after/datasets/compare.txt`](after/datasets/compare.txt)): each prints `ok`
+  in the slice compiler's `--checks --verbose`, built in Release from a clean archive of each commit, and each check's
+  whole line, its answer included, is the same at both. Each run exits 0, every check of the run passing or not run on
+  this machine and claimed by nothing ([`checks.log`](after/datasets/checks.log)); the three not run are native rows
+  of the `x86-64-win64` backend, which this host does not arm, as at bundle `sjl-9-001`.
+- **No file differs**: `git diff` between the commits over `src/tests/cldr/` and `src/tests/temporal/` is empty, and the
+  181 files under them hash alike at both commits (`files.sha256`, the same file at both).
+
+## 8. The fuel-parity twins (rule part C)
+
+*(Added 2026-11-15, at SJL-17.6.)*
+
+**MET.** "MET if and only if every twin, in both forms, after gives the verdict it gave at the base at each ceiling
+tried, and completes with the base's answer where it completes."
+- **The base** ([`base/fuel-parity.log`](base/fuel-parity.log)): the ten `*.small.js` twins of `src/tests/forms/wide`,
+  each one's smallest completing fuel allowance bisected under the bytecode form with the command-line root, then each
+  form at that figure and one less, the native form under `x86-64-sysv`, with the wall allowance 600,000 ms (section 1's
+  reading 9); every attempt is in [`base/local/partc/attempts.tsv`](base/local/partc/attempts.tsv). Each twin completes
+  at its figure and is refused with `AllowanceExhausted` on fuel one below, in both forms, with one answer in both.
+- **After** ([`after/fuel-parity.log`](after/fuel-parity.log), [`attempts.tsv`](after/local/partc/attempts.tsv)): every
+  twin, in both forms, completes at its base figure with the base's answer and is refused on fuel one below, so it gives
+  the base's verdict at each ceiling tried. The figures are those bundle `sjl-9-001` retains for this commit as its
+  after commit.
 
 ## 9. Exclusions
 
 Sections 3 to 8 are added as the bundle's runs are taken (section 3 since 2026-11-02). The exclusions keep this section's number, where rule H2
-reads an exclusion's definition, as in bundles `sjl-3-001` to `sjl-13-001`.
+reads an exclusion's definition, as in bundles `sjl-3-001` to `sjl-13-001`. *(Added 2026-11-15, at SJL-17.6: EX-136,
+for the collation code SJL-17.4 moved out of this component's assurance coverage, joins the table, and the row of
+SJL-17.1 is kept as written.)*
 
 | ID | Status | Exclusion |
 |---|---|---|
 | (none) | | No exclusion is defined at SJL-17.1, and none is planned. A later exclusion takes the next free identifier and is defined in this table |
+| EX-136 | Open | **The collation code that left this component's assurance coverage** *(added 2026-11-15, at SJL-17.6, as JSD-0086 section 7 names it)*. The types and members rule I5 registers for SJL-17.4 (`src/tests/Broiler.VM.Architecture.Tests/retired-members.json`) left the JavaScript family's sources at SJL-17.4's cut-over, the after commit `983d690a`: `JsCollator.cs`, with `JsCollator` and `JsCaseFirst`, and `JsCollationData.cs`, with `JsCollationData` and its nested `Tailoring`, whole; `JsRealm.CollatorKeyData`; `JsIntlTables.Collation` with its lazy `collation`; and `NewCollator`'s tailoring core, lines of a member that stays (JSD-0086 section 5). What computes them now is `Broiler.ECMAScript.Intl`, namespace `Broiler.ECMAScript.Intl`: `UcaCollator`, `UcaCollatorOptions`, `UcaCollationData`, `CollationStrength` and `CollationCaseFirst`. The home's own assurance covers it in the Broiler.JS repository: `Broiler.ECMAScript/hairs.config.json` lists the library's project, and its generated manifest, `Broiler.ECMAScript/hairs.manifest.json`, lists every unit of the library's assembly with an annotation on each relevant declaration, checked in CI (rule SL8). No rule of this component reads those units, their human review is the home's and not `HUMAN_REVIEW.md`'s, and this component's assurance figures no longer count them. The adapters of JSD-0086 section 2 stay in this component and stay covered: `NewCollator` with every option read in the specification's order, `CompareStrings`, `JsIntlTables.CollationData`, `CollatorLocaleData`, the `Intl.Collator` object and prototype, `JsCollatorObject` with its resolved options, the bound `compare` and its caching, `localeCompare`'s coercion, the errors and their messages, the default-locale and available-locale providers, and the collation tables this family hands the library through `IJsIntlData` in `JsCldrTables.g.cs`. EX-134 named `NewCollator` and `CollatorKeyData` as staying in this component at SJL-9.4, as they did until SJL-17.4. EX-125 and EX-127 to EX-135 say the same of the earlier areas |
+
+*(Noted 2026-11-15, at SJL-17.6.)* EX-136 is the next free identifier: EX-135 is bundle `sjl-13-002`'s, and no bundle
+defines a later one. It is no part of the rule: parts A, B and C read nothing of this component's assurance coverage,
+and no verdict of sections 6 to 8 needs it or moves with it. It changes no generated assurance file, which no
+exclusion of this kind is cited in. The table above is left as written but for its new row.
+
+## 10. The closures and clauses 6, 8 and 9's runs at the after commit (SJL-17.6)
+
+*(Added 2026-11-15, at SJL-17.6.)* The rule's "What this file does not decide" leaves this family's clauses 6, 8 and 9
+to their own mechanisms: rules I1 to I7 and I5's rows, three-mode publication, optionality under I3, and N28's budget.
+JSD-0086 section 6 leaves the composition register's closures to SJL-17.6. Each is taken at the after commit
+`983d690a` in [`after-closures/`](after-closures/README.md), from a clean checkout behind the lock and the gate of
+section 5, and **read here, not judged**: no part of the rule reads them, and SJL-17's exit reading, which reads
+clauses 6 to 9, follows Broiler.JS's SJL-17.5.
+
+| Clause | Its words | What `after-closures/` holds at `983d690a` |
+|---|---|---|
+| 6 | "Rules `I1` to `I7` hold, and rule `I5` holds the deletion list." | The whole architecture suite passes, every test of rules I1 to I7 among them ([`rules.tsv`](after-closures/rules.tsv)). SJL-17.4's deletion list is absent from the tree, and rule I5's register holds a row of SJL-17.4 for each of its types and members ([`deletion-search.txt`](after-closures/deletion-search.txt); the same search finds each at the base, [`deletion-search-base.txt`](after-closures/deletion-search-base.txt)) |
+| 8 | "Every root is published and run in three modes." | ExecutionOnly, SliceCompiler, Conformance, Cli and PolyglotCli, each published and run under the JIT, trimming and Native AOT, every publish and run exiting as it should; the Android root is EX-126 (section 1's reading 10). Every closure, catalog and admitted package's identity is the base's byte for byte, as bundle `sjl-9-001` collected them at `68cad8b`, and SJL-9.4's (`cutover/closures/`), so no root's assemblies move at SJL-17.4; every other difference is attributed ([`compare.txt`](after-closures/compare.txt)) |
+| 9 | "Optionality is unchanged, as rule `I3` shows, and N28's budget holds for the collation tables." | Rule I3 holds on the Native AOT images of ExecutionOnly, SliceCompiler, Conformance and Cli as on the project graph, in a suite that passes whole with the image records in place; rule N28's tests pass, the one that holds the table data under its budget among them ([`rules.tsv`](after-closures/rules.tsv)); `JsCldrTables.g.cs` is the same blob at the base and the after commit ([`commit-conditions.txt`](after/commits/commit-conditions.txt)), so the collation tables in it, the root, root `search`, and German `phonebook` and `search`, do not move. The collation data's size is restated by citation: bundle [`sjl-8-001`](../sjl-8-001/README.md)'s section 12 gives the table data's size against N28's budget, as section 3 of this README quotes it, and the tables have not moved since |
+
+**The composition register.** The rows of the four roots that compile name bundle `sjl-13-001`'s
+`after/publication/closures/`, a later tree, and the execution-only root's row names bundle `sjl-9-001`'s
+`cutover/closures/`, whose closure and catalog for that root this collection reproduces byte for byte; rule K4 holds
+the rows at the after commit, where the architecture suite passes. No row moves.
