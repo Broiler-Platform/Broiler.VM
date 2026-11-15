@@ -86,6 +86,96 @@ review, rules still come before runs, and SJL-17 may not meet its gate before SJ
 (rule N27), its UCA, and its collation tables in `JsCldrTables.g.cs`, byte for byte (rule N28): the root, root
 `search`, and German `phonebook` and `search`.
 
+### Readings taken before any run is read (2026-11-15, at SJL-17.6)
+
+*(Added 2026-11-15, at SJL-17.6, on the branch `sjl-17-6-evidence`, cut from the default branch's
+`4f914a3f7b9c65bd6066bc9e75f723b78d410a68`.)* These readings are filed before this stage reads any output of a run the
+rule judges. Part A's runs of 2026-11-04 (reading 5) existed when they were filed; of them this stage had read only
+each artifact's `run.txt`, which names the run, the dispatched ref, the tested commit and the inputs, and none of
+their reports, logs or verdicts. No record in this repository names those runs, so whether anyone read them before
+is not recorded. No local run of the rule had been taken. Each reading is recorded as the owner's dated decision under
+the owner's standing direction of 2026-10-18 ("Please do all recommended decisions and skip waiting for review"), taken
+as the recommended choice, with the alternative not taken and what it would do to the verdict; none is the owner's own
+dated answer, asked and answered, and the owner may rule otherwise. They change no part, class or condition of the
+rule, and the rule file is not edited.
+
+1. **"The local machine bundle `sjl-9-001`'s rule names"** (parts A's re-runs, B and C). That rule names it as the
+   machine bundles `sjl-5-001` to `sjl-10-001` were taken on, "by its processor count, its SDK and its operating
+   system". Bundle `sjl-9-001` took its own local parts on this family's machine as replaced, four logical processors,
+   Ubuntu 24.04.5 LTS and .NET SDK 10.0.404 (its reading 9), as bundle `sjl-13-001` did under its reading 10, which the
+   owner ruled on 2026-11-12 ("Accept all five"). *Taken:* this cloud machine, with four logical processors, Ubuntu
+   24.04.5 LTS, .NET SDK 10.0.404 and the native backend `x86-64-sysv`, is the rule's local machine, each run
+   recording its SDK and its machine. *Not taken:* another machine, the one the earlier bundles named before the
+   machine was replaced; no part could then be taken here, parts B and C and part A's re-runs would not be the
+   rule's, and parts B and C would be NOT MET until a run on that machine, as would part A if it had any (c′) row.
+2. **The hosted runs' SDK and images** (part A). The workflow asks `actions/setup-dotnet` for `10.0.x`, and the
+   repository pins no SDK, so the runner image's SDK may be newer: bundle `sjl-13-002`'s hosted runs of 2026-11-14
+   built with 11.0.100 (its section 7). The rule's configuration names the workflow and the driver at the dispatched
+   ref, byte-identical to the base commit's, and "the conformance composition root that commit builds in Release on
+   every runner"; it names no SDK and no image. *Taken:* a run is as configured whatever SDK and image the workflow
+   resolves, so long as both runs of a pair record theirs; `imported.txt` records them, as bundle `sjl-13-002`'s reading
+   3 took it. *Not taken:* hold the hosted runs to the local machine's SDK; the workflow, frozen by decision D37 of
+   JSD-0083 and by the rule's own configuration, cannot be changed to do so, so no run could meet the configuration
+   and part A would be NOT MET.
+3. **Base condition 2, "it descends from the after commit bundle `sjl-9-001` names".** The base, `68cad8b`, *is* that
+   commit (section 1's note of 2026-11-15). *Taken:* "descends from" takes the commit itself, as git's ancestry does
+   (`git merge-base --is-ancestor 68cad8b 68cad8b` exits 0) and as the condition's purpose reads it, that SJL-9.4's
+   cut-over is in the base. *Not taken:* a strict descendant; the base would fail the condition and every part would
+   be void, though no other first parent of the after commit could exist.
+4. **Base condition 3, "the after commit is its only first-parent successor that changes" a named path.** *Taken:* the
+   first-parent successors from the base up to the after commit, `git rev-list --first-parent 68cad8b..983d690a`,
+   which is the after commit alone, as the owner ruled on the same words in bundle `sjl-9-001`'s reading 1 on
+   2026-11-11 ("Up to after commit"). *Not taken:* every first-parent descendant of the base on the default branch
+   today; SJL-13's step 1 and its moves (`a8d8398b`, `389b55c9`, and before them `9775735a`) change such paths, so the
+   condition would fail and every part would be void.
+5. **Part A's runs, dispatched before this bundle's records.** On 2026-11-04, after the after commit merged, three runs
+   of `.github/workflows/test262-evidence.yml` were dispatched from the default branch at `983d690a`, one at a time,
+   each with `forms both` and a forty-digit commit: run 41823557887 tested `3b33530d`, bundle `sjl-9-001`'s base, and
+   is no run of this rule; run 41825524024 tested the base, `68cad8b`; run 41827589989 tested the after commit,
+   `983d690a`. The rule sets their configuration, "dispatched from the default branch with forms both and the tested
+   commit's forty-digit identifier, the workflow and the driver at the dispatched ref byte-identical to the base
+   commit's", and the commits each runs at; it sets no time of dispatch and asks for no record before it, and its
+   "Revisions" section guards a revision of the rule after a run is seen, not a reading. *Taken:* runs 41825524024 and
+   41827589989 are part A's base and after runs, imported unchanged with the digests of their zips. *Not taken:* only
+   runs dispatched after these readings; part A would rest on two new dispatches, whose runners would build with the
+   image's newer SDK under reading 2, and these two runs would be left unread. Which runs part A reads is fixed here,
+   before any report of either is read, and is not changed by what they show.
+6. **Part A's C4 rows** (the rule's (c′) and (e), the same words as bundle `sjl-9-001`'s rule).
+   - *How many re-runs:* three one-process runs at each commit per path, alternating the commits, a process over a path
+     running each of its variants in the row's form, the row admitted when all six give one verdict and one exhausted
+     dimension, as bundles `sjl-9-001` (its reading 5) and `sjl-13-002` took them. *Not taken:* one re-run at each
+     commit; a row whose first pair agrees would need no more.
+   - *A split between fuel and the wall clock:* a row exhausted on fuel on one side and on the wall clock on the other is
+     (c′), decided by its re-runs and (e); "an exhaustion verdict that moves on fuel" under "no C2" is one with no
+     wall-clock exhaustion on either side, as the owner ruled for bundle `sjl-9-001`'s reading 6 ("Accept both").
+     *Not taken:* any such row is a regression, and part A NOT MET if there is one.
+   - *Re-runs that agree on a wall-clock exhaustion:* admitted without (e), since the clause sends to (e) only "a (c′)
+     row whose re-runs differ", as the owner ruled for bundle `sjl-9-001`'s reading 11. *Not taken:* such a row is
+     raced under (e) or is a regression.
+   - *(e):* run only for a row whose re-runs differ. *Not taken:* race every (c′) row.
+   - *Allowances:* the part's fuel and wall clock as the hosted runs' `run.txt` states them (100,000,000 units and
+     5,000 ms), the race's wall clock ten times that, under the manifest `broiler.javascript.wide`, each re-run with
+     `--expect` against the tested tree's retained pin.
+7. **Part A's rows in one report only.** `eng/compare-test262-forms.py` joins on path and variant and ignores a row
+   present in one report only, saying how many. *Taken:* every such row is read from the reports themselves and listed,
+   and, since this rule admits no class that adds or removes a variant, each is a regression. *Not taken:* the
+   comparison's rows alone; a variant missing after would go unread, and part A could not show "a regression on any
+   other path" absent.
+8. **Part B's checks.** *Taken:* the area's checks are the three names the rule gives, the last a prefix that takes
+   every check the base's `IntlChecks.cs` writes under it; the guards are every other check whose name, as the base
+   commit's `--checks --verbose` prints it, begins `intl/`, `tzdb/` or `temporal/`; a check "passes" when its line
+   reads `ok`, so a check the machine does not run is no pass. *Not taken:* names read from the source's literals
+   alone, which miss the names a template writes. Either reading is checked against the other, and a check present in
+   one list and not the other is reported.
+9. **Part C's allowances and backend.** *Taken:* the wall allowance "ample and the same at both commits" is 600,000 ms,
+   as bundles `sjl-5-001` to `sjl-13-002` took it; the bisection runs between 1 and 1,000,000,000 units, as bundle
+   `sjl-9-001`'s did; the native form is under `x86-64-sysv`, the backend this `linux-x64` host arms. *Not taken:* any
+   other wall allowance; a twin that completes inside the fuel ceiling is not near it.
+10. **Clause 8's "every root", for the run this stage takes beside the rule.** *Taken:* every JavaScript root this
+   machine can publish, ExecutionOnly, SliceCompiler, Conformance, Cli and PolyglotCli, the Android root being EX-126,
+   as bundles `sjl-9-001` and `sjl-13-002` read it. *Not taken:* the Android root too, which no machine of the
+   programme publishes. No part of this rule turns on it.
+
 ## 2. What this bundle will hold
 
 - **`base/`**: part A's base dispatch, imported unchanged with the digest of its zip; part B's check runs and the
