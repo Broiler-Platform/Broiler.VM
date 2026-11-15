@@ -441,8 +441,11 @@ fallback, the braced-escape decoding and the parenthesis-balance patch (each as 
 with the two places that skip it, and the test-only switch. It is taken from
 SJL-14's `docs/evidence/sjl-14-001/dispositions.md` in Broiler.JS, written at Broiler.JS's `33d3093b` from a
 PublicApiGenerator listing of `Broiler.JavaScript.Ast` and `Broiler.JavaScript.Parser`, with every public type and
-member of both assemblies in its `dispositions.tsv`. The file is filed in Broiler.JS's own change, on its branch
-`sjl-14-1-records`, and is observed until it merges; the programme ledger names its merge commit when it has.
+member of both assemblies in its `dispositions.tsv`. The file is filed in Broiler.JS's own change, merged in
+Broiler-Platform/Broiler.JS#1100 as `d8f146026bd69d2182be9d3c7aa9b85e016179c6` (observed) *(2026-11-15, at the records
+after SJL-13's step 2's evidence merged; read "on its branch `sjl-14-1-records`, and is observed until it merges; the
+programme ledger names its merge commit when it has", which did not move when it merged on 2026-11-03, as it should
+have)*.
 Decisions D40 to D56 and D64 are SJL-14's, the owner's under the owner's direction of 2026-10-18 (of 2026-11-03, but
 D41 and D44 to D47, of 2026-10-26 as revised in this record), recorded in Broiler.JS's
 `docs/roadmap/SharedLibraries.md`, section "Broiler.JS on the shared syntax library (SJL-14)"; this
