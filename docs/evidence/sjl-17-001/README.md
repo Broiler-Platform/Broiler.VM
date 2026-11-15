@@ -187,6 +187,23 @@ rule, and the rule file is not edited.
    as bundles `sjl-9-001` and `sjl-13-002` read it. *Not taken:* the Android root too, which no machine of the
    programme publishes. No part of this rule turns on it.
 
+*(Noted 2026-11-15, at SJL-17.6's review; the readings above are left as filed.)*
+- **Reading 4's alternative** names "SJL-13's step 1 and its moves (`a8d8398b`, `389b55c9`, and before them
+  `9775735a`)". That is loose. Of those merges, `9775735a` (#192) merged SJL-13's control C22, `a8d8398b` (#196) the
+  review fixes to SJL-13 step 1's records, and `389b55c9` (#205) a records change of SJL-9, so they are not all SJL-13
+  step 1's moves; and most first-parent merges after the after commit change named paths, as
+  [`after/commits/commit-conditions.txt`](after/commits/commit-conditions.txt) lists them, each with how many. What the
+  alternative would do, every part void, stands.
+- **Reading 6** calls (c′) and (e) "the same words as bundle `sjl-9-001`'s rule". Clause (e) is word for word. The (c′)
+  clause differs in two places: it names the machine as "the local machine bundle sjl-9-001's rule names" where that
+  rule says "the local machine this file's header names", and it writes "one whose re-runs differ" for "a (c') row
+  whose re-runs differ". Neither changes what the re-runs must do: the mechanism is the same.
+- **The preamble** says that of part A's runs "this stage had read only each artifact's `run.txt`". To read those
+  files, the three artifacts were downloaded and extracted whole by 20:02Z on 2026-11-15; the readings were committed
+  at 20:07Z (`896e33ff`); the first script that reads a report or a log, `part-a-compare.sh`, was written at 20:08Z and
+  run at 20:28Z (section 5's table). The times are the file times of this stage's scratch directory, which is not
+  retained, and the commit's date: they show the order of these steps, not what was read before the commit.
+
 ## 2. What this bundle will hold
 
 - **`base/`**: part A's base dispatch, imported unchanged with the digest of its zip; part B's check runs and the
@@ -511,7 +528,9 @@ tried, and completes with the base's answer where it completes."
 Sections 3 to 8 are added as the bundle's runs are taken (section 3 since 2026-11-02). The exclusions keep this section's number, where rule H2
 reads an exclusion's definition, as in bundles `sjl-3-001` to `sjl-13-001`. *(Added 2026-11-15, at SJL-17.6: EX-136,
 for the collation code SJL-17.4 moved out of this component's assurance coverage, joins the table, and the row of
-SJL-17.1 is kept as written.)*
+SJL-17.1 is kept as written.)* *(Noted 2026-11-15, at SJL-17.6's review: the first sentence, "Sections 3 to 8 are
+added as the bundle's runs are taken", is left as written; SJL-17.6's runs are in sections 5 to 8, and section 10
+follows this one.)*
 
 | ID | Status | Exclusion |
 |---|---|---|
@@ -542,3 +561,41 @@ clauses 6 to 9, follows Broiler.JS's SJL-17.5.
 `after/publication/closures/`, a later tree, and the execution-only root's row names bundle `sjl-9-001`'s
 `cutover/closures/`, whose closure and catalog for that root this collection reproduces byte for byte; rule K4 holds
 the rows at the after commit, where the architecture suite passes. No row moves.
+
+*(Noted 2026-11-15, at SJL-17.6's review; the table above is left as written.)*
+- **A clean clone, not a clean archive.** The brief that set this stage's work asked for each run "from a clean `git
+  archive` of its commit". The closures, the solution's build for rule I3 and the architecture suite ran instead in a
+  `git clone --no-checkout` of this repository with the after commit checked out detached and no line of `git status
+  --porcelain` ([`local/checkout.txt`](after-closures/local/checkout.txt)), because the collector reads git:
+  `collect-area.py` calls `git rev-parse HEAD`, `git status --porcelain` and `git ls-tree -r HEAD`. Bundle
+  `sjl-9-001`'s `after-closures/` was taken the same way. The build and the suite then ran in that same tree, after the
+  collector's publishes in it ([`closures.sh.txt`](after/scripts/closures.sh.txt)). Only the head checks were taken
+  from an archive. Nothing was re-run.
+- **Clause 6's deletion list.** The row's "SJL-17.4's deletion list is absent from the tree" first rested on
+  [`deletion-search.sh.txt`](after/scripts/deletion-search.sh.txt), which searches the two files, the types
+  `JsCollator`, `JsCaseFirst` and `JsCollationData`, and the members `JsRealm.CollatorKeyData` and
+  `JsIntlTables.Collation` with its lazy. It does not search `JsCollationData`'s nested `Tailoring` or `NewCollator`'s
+  tailoring core, which the milestone's SJL-17.4 and JSD-0086 section 5 also list.
+  [`deletion-search-tailoring.txt`](after-closures/deletion-search-tailoring.txt), by
+  [`deletion-search-tailoring.sh.txt`](after/scripts/deletion-search-tailoring.sh.txt), git reads alone, searches
+  them. At the after commit nothing declares `Tailoring` or `TailoringNamed`, the lookup the core called, and
+  `NewCollator` takes its tailoring from `data.TailoringFor(...)` (`JsRealm.Intl.cs` line 239), which no file of this
+  repository declares: the library's `UcaCollationData` answers it. At the base
+  ([`deletion-search-tailoring-base.txt`](after-closures/deletion-search-tailoring-base.txt)) `JsCollationData.cs`
+  line 108 declares `Tailoring`, and `NewCollator` chooses a tailoring by name and builds a `JsCollator` with it
+  (`JsRealm.Intl.cs` lines 211 to 222). The tailoring core is lines of `NewCollator`, a member that stays, so rule I5
+  has no row for it, as JSD-0086 section 5 says; and `Tailoring` left with `JsCollationData`, whose row rule I5 holds,
+  with no row of its own. The row's "a row of SJL-17.4 for each of its types and members" reads so.
+- **Rule I3's image records in place** is inferred, not recorded. `closures.sh` copies the five records into the
+  tree's `src/i3-image-records/` with no check and no listing, and rule I3's test asserts nothing over a folder that
+  holds no `mstat-*.mstat`. The copy's source held all five when it ran (`closures/mstat.sha256`, written just
+  before); no record of the destination was retained. A later run should retain a listing and the digests of
+  `src/i3-image-records/` taken just before the suite.
+- **`compare.txt`'s labels.** [`compare-closures.py.txt`](after/scripts/compare-closures.py.txt) labels the folder it
+  is given first `cutover/` whatever it is. In [`compare.txt`](after-closures/compare.txt)'s first block, which reads
+  bundle `sjl-9-001`'s `after-closures/closures/`, "cutover/" and "--- cutover" mean that folder.
+- **Clause 8's roots.** Section 1's reading 10 only scopes this run, to every JavaScript root this machine can
+  publish. The composition register (`docs/compositions.md` section 3) also lists roots that are not JavaScript's,
+  `Calculator`, `Workbench`, `WebAssembly.Execution`, `WebAssembly.Harness` and `Ubc.Fixture`, none of them published
+  here, and `PolyglotCli`, which is. Whether clause 8's "every root" reaches them is for SJL-17's exit reading, as
+  bundles `sjl-9-001` and `sjl-13-002` read the clause for every JavaScript root.

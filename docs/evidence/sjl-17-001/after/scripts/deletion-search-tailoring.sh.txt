@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# deletion-search-tailoring.sh <commit>: git reads alone, added at SJL-17.6's review to deletion-search.sh, which it
+# leaves as run. The two items of SJL-17.4's deletion list that deletion-search.sh does not search: JsCollationData's
+# nested Tailoring (JSD-0086 section 5), with the lookup NewCollator called on it, and NewCollator's tailoring core,
+# which JSD-0086 section 5 says is "lines of a member that stays, not a member" (the milestone's SJL-17.4).
+cd /home/user/vm-s176; c=$(git rev-parse "$1")
+F=src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs
+echo "# The rest of Broiler.VM's SJL-17.4 deletion list searched at $c ($(date -u +%FT%TZ)), by git reads alone"
+echo "# 1. the nested type: a declaration (class, struct, record, enum or interface) of Tailoring in a .cs file outside docs/"
+hits=$(git grep -n -E "\b(class|struct|record|enum|interface) +Tailoring\b" "$c" -- '*.cs' ':!docs' | wc -l); echo "Tailoring	declarations=$hits"
+git grep -n -E "\b(class|struct|record|enum|interface) +Tailoring\b" "$c" -- '*.cs' ':!docs' | sed 's/^/  /'
+echo "# 2. the tailoring lookup the core called: a declaration of TailoringNamed, and any call of it, in a .cs file outside docs/"
+hits=$(git grep -n -E "^\s*(private|internal|public|protected)[^=(]*\bTailoringNamed *\(" "$c" -- '*.cs' ':!docs' | wc -l); echo "TailoringNamed	declarations=$hits"
+git grep -n -E "\bTailoringNamed\b" "$c" -- '*.cs' ':!docs' | cut -c1-200 | sed 's/^/  any mention: /'
+echo "# 3. NewCollator's tailoring core: each line of NewCollator in $F that names a tailoring or the collator it builds"
+git show "$c:$F" | awk '/static JsValue NewCollator\(/{on=1} on{print NR": "$0} on && /^    }$/{exit}' \
+  | grep -E "[Tt]ailoring|de-search|und-search|de-phonebk|JsCollator\(|JsCaseFirst|UcaCollator\(|UcaCollatorOptions|Intl!\.Collation" | cut -c1-200 | sed 's/^/  /'
+echo "# 4. what NewCollator calls for the tailoring after SJL-17.4: a declaration of TailoringFor in this repository's .cs files"
+hits=$(git grep -n -E "^\s*(private|internal|public|protected)[^=(]*\bTailoringFor *\(" "$c" -- '*.cs' | wc -l); echo "TailoringFor	declarations=$hits"

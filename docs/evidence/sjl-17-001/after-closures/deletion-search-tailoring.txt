@@ -1,0 +1,15 @@
+# The rest of Broiler.VM's SJL-17.4 deletion list searched at 983d690adac63f6d117ff2cd2d9cca61fc16e3d2 (2026-11-15T22:57:52Z), by git reads alone
+# 1. the nested type: a declaration (class, struct, record, enum or interface) of Tailoring in a .cs file outside docs/
+Tailoring	declarations=0
+# 2. the tailoring lookup the core called: a declaration of TailoringNamed, and any call of it, in a .cs file outside docs/
+TailoringNamed	declarations=0
+# 3. NewCollator's tailoring core: each line of NewCollator in src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs that names a tailoring or the collator it builds
+  226:         // decision E11): its UcaCollationData answers them from the tailorings this family's tables carry,
+  227:         // as CollatorKeyData and the choice of a tailoring here did.
+  228:         var data = engine.Intl!.CollationData;
+  239:         var tailoring = data.TailoringFor(LanguageOf(resolved.DataLocale) ?? "en", usage, collationValue);
+  242:         var ignorePunctuation = GetBooleanOption(engine, options, "ignorePunctuation", data.ShiftedByDefault(tailoring)) ?? false;
+  244:         var collator = new UcaCollator(
+  246:             UcaCollatorOptions.FromResolved(sensitivity, ignorePunctuation, caseFirst, numeric, tailoring),
+# 4. what NewCollator calls for the tailoring after SJL-17.4: a declaration of TailoringFor in this repository's .cs files
+TailoringFor	declarations=0

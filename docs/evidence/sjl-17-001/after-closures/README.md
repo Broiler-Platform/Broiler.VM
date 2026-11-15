@@ -94,3 +94,23 @@ each of them, which shows the search can.
   register holds a row of SJL-17.4 for each type and member (`JsCollator`, `JsCaseFirst`, `JsCollationData`,
   `JsIntlTables.Collation`, `JsIntlTables.collation` and `JsRealm.CollatorKeyData`). At the base the same search finds
   each of them.
+
+*(Noted 2026-11-15, at SJL-17.6's review; the text above is left as written.)*
+- **A clean clone, not a clean archive.** "From a clean checkout" is a `git clone --no-checkout` with the after commit
+  checked out detached, not the clean `git archive` the brief that set this stage's work asked for, because the
+  collector reads git (`git rev-parse HEAD`, `git status --porcelain`, `git ls-tree -r HEAD`), as bundle `sjl-9-001`'s
+  `after-closures/` was taken. Steps 2 and 3, the build and the suite, ran in that same tree after the collector's
+  publishes in it. Nothing was re-run.
+- **The rest of the deletion list.** `deletion-search.sh` does not search `JsCollationData`'s nested `Tailoring` or
+  `NewCollator`'s tailoring core, which the milestone's SJL-17.4 and JSD-0086 section 5 list too.
+  [`deletion-search-tailoring.txt`](deletion-search-tailoring.txt) and
+  [`deletion-search-tailoring-base.txt`](deletion-search-tailoring-base.txt), by
+  [`deletion-search-tailoring.sh.txt`](../after/scripts/deletion-search-tailoring.sh.txt), git reads alone, search
+  them at the after commit and the base; the bundle's section 10 reads them. "SJL-17.4's deletion list is absent"
+  above rests on both searches.
+- **The image records in place** (step 3) is inferred: the script's copy into `src/i3-image-records/` is unchecked and
+  unlisted, and rule I3's test asserts nothing over a folder with no record. Its source held all five when it ran
+  ([`closures/mstat.sha256`](closures/mstat.sha256)). A later run should retain a listing and the digests of that
+  folder taken just before the suite.
+- **`compare.txt`'s first block** compares bundle `sjl-9-001`'s `after-closures/closures/`; the script labels that side
+  "cutover/" and "--- cutover" whatever it is given.
