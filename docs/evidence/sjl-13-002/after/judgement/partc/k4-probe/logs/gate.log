@@ -1,0 +1,65 @@
+2026-11-15T14:10:37Z lock k4-pack WAIT
+2026-11-15T14:10:37Z lock k4-pack HELD
+2026-11-15T14:10:37Z gate k4-pack PASS load1=0.53 procs=none checks=0
+2026-11-15T14:10:45Z stop-servers: done, remaining:
+2026-11-15T14:10:55Z lock build-sc-k4 WAIT
+2026-11-15T14:10:55Z lock build-sc-k4 HELD
+2026-11-15T14:10:55Z gate build-sc-k4 PASS load1=0.91 procs=none checks=0
+2026-11-15T14:11:30Z stop-servers: done, remaining:
+2026-11-15T14:11:30Z lock build-sc-plain WAIT
+2026-11-15T14:11:30Z lock build-sc-plain HELD
+2026-11-15T14:11:30Z gate build-sc-plain WAIT load1=3.32 procs=none
+2026-11-15T14:12:31Z gate build-sc-plain WAIT load1=1.33 procs=none
+2026-11-15T14:12:51Z gate build-sc-plain PASS load1=1.00 procs=none checks=8
+2026-11-15T14:13:23Z stop-servers: done, remaining:
+2026-11-15T14:13:24Z lock k4-J000243 WAIT
+2026-11-15T14:13:24Z lock k4-J000243 HELD
+2026-11-15T14:13:24Z gate k4-J000243 WAIT load1=4.16 procs=none
+2026-11-15T14:14:25Z gate k4-J000243 WAIT load1=1.53 procs=none
+2026-11-15T14:14:55Z gate k4-J000243 PASS load1=0.99 procs=none checks=9
+2026-11-15T14:14:58Z stop-servers: done, remaining:
+2026-11-15T14:14:58Z lock plain-J000243 WAIT
+2026-11-15T14:14:58Z lock plain-J000243 HELD
+2026-11-15T14:14:58Z gate plain-J000243 PASS load1=0.99 procs=none checks=0
+2026-11-15T14:15:01Z stop-servers: done, remaining:
+2026-11-15T14:15:01Z lock k4-J000451 WAIT
+2026-11-15T14:15:01Z lock k4-J000451 HELD
+2026-11-15T14:15:01Z gate k4-J000451 PASS load1=0.99 procs=none checks=0
+2026-11-15T14:15:04Z stop-servers: done, remaining:
+2026-11-15T14:15:04Z lock plain-J000451 WAIT
+2026-11-15T14:15:04Z lock plain-J000451 HELD
+2026-11-15T14:15:04Z gate plain-J000451 PASS load1=0.99 procs=none checks=0
+2026-11-15T14:15:07Z stop-servers: done, remaining:
+2026-11-15T14:15:07Z lock k4-J000799 WAIT
+2026-11-15T14:15:07Z lock k4-J000799 HELD
+2026-11-15T14:15:07Z gate k4-J000799 WAIT load1=1.07 procs=none
+2026-11-15T14:15:17Z gate k4-J000799 PASS load1=0.91 procs=none checks=1
+2026-11-15T14:15:20Z stop-servers: done, remaining:
+2026-11-15T14:15:20Z lock plain-J000799 WAIT
+2026-11-15T14:15:20Z lock plain-J000799 HELD
+2026-11-15T14:15:20Z gate plain-J000799 PASS load1=0.91 procs=none checks=0
+2026-11-15T14:15:23Z stop-servers: done, remaining:
+2026-11-15T14:15:23Z lock k4-J001976 WAIT
+2026-11-15T14:15:23Z lock k4-J001976 HELD
+2026-11-15T14:15:23Z gate k4-J001976 PASS load1=1.00 procs=none checks=0
+2026-11-15T14:15:25Z stop-servers: done, remaining:
+2026-11-15T14:15:26Z lock plain-J001976 WAIT
+2026-11-15T14:15:26Z lock plain-J001976 HELD
+2026-11-15T14:15:26Z gate plain-J001976 PASS load1=1.00 procs=none checks=0
+2026-11-15T14:15:28Z stop-servers: done, remaining:
+2026-11-15T14:15:29Z lock k4-T050099 WAIT
+2026-11-15T14:15:29Z lock k4-T050099 HELD
+2026-11-15T14:15:29Z gate k4-T050099 PASS load1=1.00 procs=none checks=0
+2026-11-15T14:15:31Z stop-servers: done, remaining:
+2026-11-15T14:15:32Z lock plain-T050099 WAIT
+2026-11-15T14:15:32Z lock plain-T050099 HELD
+2026-11-15T14:15:32Z gate plain-T050099 PASS load1=1.00 procs=none checks=0
+2026-11-15T14:15:35Z stop-servers: done, remaining:
+2026-11-15T14:15:35Z lock k4-V000064 WAIT
+2026-11-15T14:15:35Z lock k4-V000064 HELD
+2026-11-15T14:15:35Z gate k4-V000064 PASS load1=1.00 procs=none checks=0
+2026-11-15T14:15:38Z stop-servers: done, remaining:
+2026-11-15T14:15:38Z lock plain-V000064 WAIT
+2026-11-15T14:15:38Z lock plain-V000064 HELD
+2026-11-15T14:15:38Z gate plain-V000064 PASS load1=1.00 procs=none checks=0
+2026-11-15T14:15:41Z stop-servers: done, remaining:

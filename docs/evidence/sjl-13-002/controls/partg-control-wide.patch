@@ -1,0 +1,16 @@
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.Walks.cs
+@@ -702,9 +702,10 @@
+                 return;
+             }
+ 
+-            case ExpressionStatement statement:
+-                Push(pending, statement.Expression, context);
+-                return;
++            case ExpressionStatement:
++                // CONTROL OF BUNDLE sjl-13-002 PART G (a scratch copy of the after commit, never merged): the
++                // binder's walk over the shared tree throws on one node kind the wide seeds produce.
++                throw new System.InvalidOperationException("control of part G: the binder's walk throws on an ExpressionStatement");
+ 
+             case VariableDeclaration statement:
+                 VisitDeclarators(pending, statement, context);

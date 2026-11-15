@@ -1,0 +1,6 @@
+patching file NuGet.config
+patching file src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Program.cs
+patching file src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/WideFrontEndChecks.cs
+patching file src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Program.cs
+patching file src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/WideFrontEndChecks.cs
+patching file NuGet.config

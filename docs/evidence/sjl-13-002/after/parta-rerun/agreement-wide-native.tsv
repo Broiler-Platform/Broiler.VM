@@ -1,0 +1,14 @@
+path	variant	re-runs (side run verdict/dimension)	agree
+test/annexB/built-ins/RegExp/RegExp-leading-escape-BMP.js	strict	after1=Exhausted/NestedLoadFanOut after2=Exhausted/NestedLoadFanOut after3=Exhausted/NestedLoadFanOut base1=Exhausted/NestedLoadFanOut base2=Exhausted/NestedLoadFanOut base3=Exhausted/NestedLoadFanOut	yes
+test/annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js	sloppy	after1=Exhausted/NestedLoadFanOut after2=Exhausted/NestedLoadFanOut after3=Exhausted/NestedLoadFanOut base1=Exhausted/NestedLoadFanOut base2=Exhausted/NestedLoadFanOut base3=Exhausted/NestedLoadFanOut	yes
+test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js	sloppy	after1=Exhausted/Fuel after2=Exhausted/Fuel after3=Exhausted/Fuel base1=Exhausted/Fuel base2=Exhausted/Fuel base3=Exhausted/Fuel	yes
+test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js	strict	after1=Exhausted/Fuel after2=Exhausted/Fuel after3=Exhausted/Fuel base1=Exhausted/Fuel base2=Exhausted/Fuel base3=Exhausted/Fuel	yes
+test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js	sloppy	after1=Exhausted/Fuel after2=Exhausted/Fuel after3=Exhausted/Fuel base1=Exhausted/Fuel base2=Exhausted/Fuel base3=Exhausted/Fuel	yes
+test/staging/sm/Date/dst-offset-caching-2-of-8.js	sloppy	after1=Exhausted/Fuel after2=Exhausted/Fuel after3=Exhausted/Fuel base1=Exhausted/Fuel base2=Exhausted/Fuel base3=Exhausted/Fuel	yes
+test/staging/sm/Date/dst-offset-caching-2-of-8.js	strict	after1=Exhausted/Fuel after2=Exhausted/Fuel after3=Exhausted/Fuel base1=Exhausted/Fuel base2=Exhausted/Fuel base3=Exhausted/Fuel	yes
+test/staging/sm/Date/dst-offset-caching-4-of-8.js	sloppy	after1=Exhausted/Fuel after2=Exhausted/Fuel after3=Exhausted/Fuel base1=Exhausted/Fuel base2=Exhausted/Fuel base3=Exhausted/Fuel	yes
+test/staging/sm/Date/dst-offset-caching-4-of-8.js	strict	after1=Exhausted/Fuel after2=Exhausted/Fuel after3=Exhausted/Fuel base1=Exhausted/Fuel base2=Exhausted/Fuel base3=Exhausted/Fuel	yes
+test/staging/sm/Date/dst-offset-caching-8-of-8.js	sloppy	after1=Exhausted/Fuel after2=Exhausted/Fuel after3=Exhausted/Fuel base1=Exhausted/Fuel base2=Exhausted/Fuel base3=Exhausted/Fuel	yes
+test/staging/sm/Date/dst-offset-caching-8-of-8.js	strict	after1=Exhausted/Fuel after2=Exhausted/Fuel after3=Exhausted/Fuel base1=Exhausted/Fuel base2=Exhausted/Fuel base3=Exhausted/Fuel	yes
+test/staging/sm/TypedArray/sort_large_countingsort.js	sloppy	after1=Exhausted/Fuel after2=Exhausted/Fuel after3=Exhausted/Fuel base1=Exhausted/Fuel base2=Exhausted/Fuel base3=Exhausted/Fuel	yes
+test/staging/sm/TypedArray/sort_large_countingsort.js	strict	after1=Exhausted/Fuel after2=Exhausted/Fuel after3=Exhausted/Fuel base1=Exhausted/Fuel base2=Exhausted/Fuel base3=Exhausted/Fuel	yes

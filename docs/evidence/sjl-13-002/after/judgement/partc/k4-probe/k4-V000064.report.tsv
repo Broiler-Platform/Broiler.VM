@@ -1,0 +1,21 @@
+#% format	broiler-vm-parse-corpus-report	1
+#% corpus	parse-1
+#% manifest-sha256	1c5342104766f14d0c17d950537e4ed078a0c438c3652f8c65bff8c6c347e9cc
+#% manifest-rows	55751
+#% archive-sha256	f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040
+#% populations	B1,B2
+#% selection	48b1202e7c68de7f0bb33a8b4722fc9f76344ac944432899382ecb5449117c88
+#% compilations	4
+#% twice-concurrent	no
+#% workers	1
+#% native-backend	x86-64-sysv
+# B1 each input alone, under each variant (strict: ForceStrict, text unchanged), bytecode and native; B2 the conformance root's composition, bytecode; B3 eval code under E0-E7, bytecode; B4 the slice front end, once per input, under its goal, text unchanged.
+# reading 1: alone in B1 is nothing composed around the input; a module is compiled with the graph the conformance root's resolution reaches from it, so its hash covers the modules it reaches.
+# reading 2: the outcomes are accepted and refused; not-compiled is reported, never left out, in two cases only: B2's test262 _FIXTURE rows (note fixture), which the conformance root never composes alone, and B4's json rows (note no-json-goal), for which the slice front end has no goal.
+# reading 3: any other not-compiled row, and every crashed row (an exception left the compiler), is an incomplete run.
+# diagnostics are code:line:column in the order the compiler reported them; sha256 and length are the artifact's, for an accepted compilation.
+id	population	variant	form	outcome	diagnostics	sha256	length	note
+V000064	B1	strict	bytecode	refused	2103:1:64	-	-	-
+V000064	B1	strict	native	refused	2103:1:64	-	-	-
+V000064	B1	sloppy	bytecode	refused	2103:1:64	-	-	-
+V000064	B1	sloppy	native	refused	2103:1:64	-	-	-

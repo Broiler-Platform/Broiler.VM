@@ -1,0 +1,7 @@
+total 212
+drwxr-xr-x 2 root root     80 Nov 15 10:24 .
+drwxr-xr-x 9 root root    180 Nov 15 10:24 ..
+-rw-r--r-- 1 root root 174200 Nov 15 10:24 Broiler.ECMAScript.Frontend.0.1.0-preview.11.nupkg
+-rw-r--r-- 1 root root  39035 Nov 15 10:24 Broiler.ECMAScript.Frontend.0.1.0-preview.11.snupkg
+fe5ea34c74370999c310ef2d9876d3cd4286b0fe6ab52b3e9217c82979ea69a5  Broiler.ECMAScript.Frontend.0.1.0-preview.11.nupkg
+c19875375e647d2fa88fe3b042509263d9f186dc8a4ffb6e4b167b3275fdc9f4  Broiler.ECMAScript.Frontend.0.1.0-preview.11.snupkg

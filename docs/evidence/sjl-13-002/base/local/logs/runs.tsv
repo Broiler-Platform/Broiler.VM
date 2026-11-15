@@ -1,0 +1,12 @@
+build-sc-base	rc=0	wall=39.2s maxrss=748MB	started=2026-11-15T07:42:51Z	ended=2026-11-15T07:43:31Z
+build-cf-base	rc=0	wall=7.3s maxrss=233MB	started=2026-11-15T07:44:53Z	ended=2026-11-15T07:45:01Z
+build-cli-base	rc=0	wall=6.3s maxrss=236MB	started=2026-11-15T07:46:02Z	ended=2026-11-15T07:46:09Z
+parse-corpus-base-run1	rc=0	wall=515.9s maxrss=1289MB	started=2026-11-15T07:48:48Z	ended=2026-11-15T07:57:25Z
+census-inputs-base	rc=0	wall=1.9s maxrss=254MB	started=2026-11-15T07:57:36Z	ended=2026-11-15T07:57:38Z
+census-test-base	rc=0	wall=16.1s maxrss=494MB	started=2026-11-15T07:57:39Z	ended=2026-11-15T07:57:55Z
+checks-base	rc=0	wall=282.4s maxrss=816MB	started=2026-11-15T08:30:39Z	ended=2026-11-15T08:35:21Z
+fuzz-wide-base	rc=0	wall=10.2s maxrss=533MB	started=2026-11-15T08:43:08Z	ended=2026-11-15T08:43:19Z
+fuzz-slice-1-base	rc=0	wall=30.6s maxrss=245MB	started=2026-11-15T08:43:40Z	ended=2026-11-15T08:44:11Z
+fuzz-slice-2-base	rc=0	wall=35.1s maxrss=239MB	started=2026-11-15T08:44:12Z	ended=2026-11-15T08:44:47Z
+fuzz-slice-3-base	rc=0	wall=32.9s maxrss=249MB	started=2026-11-15T08:44:48Z	ended=2026-11-15T08:45:22Z
+fuzz-slice-4-base	rc=0	wall=39.2s maxrss=269MB	started=2026-11-15T08:45:23Z	ended=2026-11-15T08:46:02Z

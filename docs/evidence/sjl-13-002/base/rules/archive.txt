@@ -1,0 +1,8 @@
+commit 389b55c9ec9bb77409bb2487067fbebc0868849b
+tree 1c1d27311f61a756213bcebdb50ba501f76229d2
+mode full (git archive of the whole commit, docs/ included)
+made 2026-11-15T09:02:25Z
+command git -C /home/user/vm-s2ev archive --format=tar 389b55c9ec9bb77409bb2487067fbebc0868849b | tar -xf - -C /dev/shm/s2ev/base-full
+files 15629
+extracted-files 15629
+content-sha256 eeb45724d38a9c0752bb1fc1f7d0fef0df53537a3cb9adc94efd348d6ec1b349 (sha256 of sha256sum over every file, C-sorted, bin/ and obj/ excluded)

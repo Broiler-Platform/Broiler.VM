@@ -1,0 +1,1 @@
+# control (bundle sjl-13-002 part B): T000001 B1 strict bytecode has its hash changed, T000741 B1 strict bytecode has the column of its first diagnostic moved by one, and T013133 B5 module requests has the last code unit of its first specifier changed, its note with its sha256 and length; nothing else differs from parse-corpus-base-run1.tsv.gz

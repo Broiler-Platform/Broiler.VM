@@ -1,0 +1,22 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> /dev/shm/s2ev/after-full/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> /dev/shm/s2ev/after-full/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Fixtures -> /dev/shm/s2ev/after-full/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /dev/shm/s2ev/after-full/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Architecture.Tests -> /dev/shm/s2ev/after-full/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /dev/shm/s2ev/after-full/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v4.0.1+0f7d528729 (64-bit .NET 10.0.15)
+[xUnit.net 00:00:00.25]   Discovering: Broiler.VM.Architecture.Tests
+[xUnit.net 00:00:00.64]   Discovered:  Broiler.VM.Architecture.Tests
+[xUnit.net 00:00:00.85]   Starting:    Broiler.VM.Architecture.Tests
+  Passed Broiler.VM.Architecture.Tests.I5RetiredDuplicatesRuleTests.I5_A_Retired_Member_Declared_Again_Is_Reported [1 s]
+[xUnit.net 00:00:03.18]   Finished:    Broiler.VM.Architecture.Tests (ID = '10ef898d114fc0048becd2a41e6367f2ddf714dc8a871596cf53d529b1bc5b26')
+  Passed Broiler.VM.Architecture.Tests.I5RetiredDuplicatesRuleTests.I5_No_Retired_Member_Is_Declared_Again [400 ms]
+
+Test Run Successful.
+Total tests: 2
+     Passed: 2
+ Total time: 3.5761 Seconds
+VSTEST_ARTIFACTS_DIRECTORY environment variable was not found, falling back to a user-private temporary directory. This is most likely caused by an outdated Microsoft.NET.Test.Sdk package reference in the test project.

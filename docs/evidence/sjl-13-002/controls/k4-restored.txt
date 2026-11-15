@@ -1,0 +1,5 @@
+restored library package:
+fe5ea34c74370999c310ef2d9876d3cd4286b0fe6ab52b3e9217c82979ea69a5  /dev/shm/s2ev/k4-packages/broiler.ecmascript.frontend/0.1.0-preview.11/broiler.ecmascript.frontend.0.1.0-preview.11.nupkg
+377064e8740793ad883213ab3d464d6da6d421e4b012aeaef3c3f78f3317b275  /dev/shm/s2ev/k4/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.ECMAScript.Frontend.dll
+the scratch pack: fe5ea34c74370999c310ef2d9876d3cd4286b0fe6ab52b3e9217c82979ea69a5
+the published package (the global cache's copy): 63c58346a229cc2206c708202d9dd04c2dafca4b75d88fc5f216a3554453521c

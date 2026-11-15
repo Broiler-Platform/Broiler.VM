@@ -1,0 +1,5 @@
+made (the after commit's tree, after part D's run) 84f3783013564695c6edce83fcecd0b5500305183d921db6bc6fb4116fc62d2b
+control-1 made 32b546d04f66c76a4ed3c04470413febc599a22cab8dc63b07da2a29b3f80507
+control-1 reverted 84f3783013564695c6edce83fcecd0b5500305183d921db6bc6fb4116fc62d2b equal-to-made
+control-2 made ad10240d73ba0eacdd5690e25faa1a4438fb9769452e24b309f11eb19fa3534f
+control-2 reverted 84f3783013564695c6edce83fcecd0b5500305183d921db6bc6fb4116fc62d2b equal-to-made

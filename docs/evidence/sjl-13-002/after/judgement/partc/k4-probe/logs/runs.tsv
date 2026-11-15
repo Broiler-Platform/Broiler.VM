@@ -1,0 +1,15 @@
+k4-pack	rc=0	wall=7.6s maxrss=305MB	started=2026-11-15T14:10:37Z	ended=2026-11-15T14:10:45Z
+build-sc-k4	rc=0	wall=33.4s maxrss=697MB	started=2026-11-15T14:10:56Z	ended=2026-11-15T14:11:29Z
+build-sc-plain	rc=0	wall=31.3s maxrss=676MB	started=2026-11-15T14:12:52Z	ended=2026-11-15T14:13:23Z
+k4-J000243	rc=0	wall=1.6s maxrss=659MB	started=2026-11-15T14:14:56Z	ended=2026-11-15T14:14:58Z
+plain-J000243	rc=0	wall=1.7s maxrss=659MB	started=2026-11-15T14:14:59Z	ended=2026-11-15T14:15:01Z
+k4-J000451	rc=134	wall=1.7s maxrss=676MB	started=2026-11-15T14:15:02Z	ended=2026-11-15T14:15:04Z
+plain-J000451	rc=0	wall=1.6s maxrss=665MB	started=2026-11-15T14:15:05Z	ended=2026-11-15T14:15:07Z
+k4-J000799	rc=0	wall=1.6s maxrss=659MB	started=2026-11-15T14:15:18Z	ended=2026-11-15T14:15:20Z
+plain-J000799	rc=0	wall=1.6s maxrss=659MB	started=2026-11-15T14:15:21Z	ended=2026-11-15T14:15:22Z
+k4-J001976	rc=0	wall=1.6s maxrss=670MB	started=2026-11-15T14:15:23Z	ended=2026-11-15T14:15:25Z
+plain-J001976	rc=0	wall=1.8s maxrss=670MB	started=2026-11-15T14:15:26Z	ended=2026-11-15T14:15:28Z
+k4-T050099	rc=0	wall=1.7s maxrss=662MB	started=2026-11-15T14:15:29Z	ended=2026-11-15T14:15:31Z
+plain-T050099	rc=0	wall=2.0s maxrss=662MB	started=2026-11-15T14:15:32Z	ended=2026-11-15T14:15:35Z
+k4-V000064	rc=0	wall=1.9s maxrss=659MB	started=2026-11-15T14:15:36Z	ended=2026-11-15T14:15:38Z
+plain-V000064	rc=0	wall=1.6s maxrss=659MB	started=2026-11-15T14:15:39Z	ended=2026-11-15T14:15:41Z

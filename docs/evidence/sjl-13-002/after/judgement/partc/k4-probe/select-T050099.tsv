@@ -1,0 +1,6 @@
+T050099	B1	strict	bytecode
+T050099	B1	strict	native
+T050099	B1	sloppy	bytecode
+T050099	B1	sloppy	native
+T050099	B2	strict	bytecode
+T050099	B2	sloppy	bytecode

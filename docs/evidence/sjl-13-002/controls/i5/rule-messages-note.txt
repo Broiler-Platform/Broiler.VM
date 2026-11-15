@@ -1,0 +1,1 @@
+BROILER_RULE_MESSAGES was set for each control run to a scratch folder outside the repository ($SCRATCH/sjl-rest/s2/ev1/controls/i5-rule-messages-1 and -2); the test run wrote no file there, so none is retained

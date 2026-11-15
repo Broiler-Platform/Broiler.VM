@@ -1,0 +1,15 @@
+# part A, task 7.3: completeness of each hosted run as bundle sjl-13-001's part A states it (bundle sjl-6-001's reading), read from the imported artifacts
+.github/workflows/test262-evidence.yml: blob 740a70f8d919ced6cd4bdf31f8bb2408f12fdcf7 at the base commit, 740a70f8d919ced6cd4bdf31f8bb2408f12fdcf7 at the after commit (both dispatches ran from the default branch at the after commit)
+eng/test262-evidence.py: blob 55f71ee3da6844dd3e3aeb23ea98d24143222a88 at the base commit, 55f71ee3da6844dd3e3aeb23ea98d24143222a88 at the after commit (both dispatches ran from the default branch at the after commit)
+## base (workflow run: https://github.com/Broiler-Platform/Broiler.VM/actions/runs/43651721567 (attempt 1), dispatched 2026-11-14T23:08:35Z, completed 2026-11-14T23:16:07Z, conclusion success)
+tested: tested commit: 389b55c9ec9bb77409bb2487067fbebc0868849b
+wide-bytecode: shard logs 16 of 16; merge took 16 shard reports; run log exit code 1; retention retainable=True; coverage whole=True; every variant accounted=True; distinct assembly lists 1; runners' SDK 11.0.100
+wide-native: shard logs 16 of 16; merge took 16 shard reports; run log exit code 4; retention retainable=True; coverage whole=True; every variant accounted=True; distinct assembly lists 1; runners' SDK 11.0.100
+merging job: image ubuntu24 20261111.127.1; Linux-7.0.0-1014-aws-x86_64-with-glibc2.39 x86_64 cpus=4; sdk 11.0.100
+## after (workflow run: https://github.com/Broiler-Platform/Broiler.VM/actions/runs/43652416341 (attempt 1), dispatched 2026-11-14T23:16:41Z, completed 2026-11-14T23:24:51Z, conclusion success)
+tested: tested commit: 467ad7c395234b335c816b8f49ae5b505740e32c
+wide-bytecode: shard logs 16 of 16; merge took 16 shard reports; run log exit code 1; retention retainable=True; coverage whole=True; every variant accounted=True; distinct assembly lists 1; runners' SDK 11.0.100
+wide-native: shard logs 16 of 16; merge took 16 shard reports; run log exit code 4; retention retainable=True; coverage whole=True; every variant accounted=True; distinct assembly lists 1; runners' SDK 11.0.100
+merging job: image ubuntu24 20261111.370.1; Linux-7.0.0-1017-azure-x86_64-with-glibc2.39 x86_64 cpus=4; sdk 11.0.100
+the comparison wide-bytecode (after/parta-comparisons/compare-wide-bytecode.log): variants present in only one report: 0; exit 0; "every difference is in an admitted class"
+the comparison wide-native (after/parta-comparisons/compare-wide-native.log): variants present in only one report: 0; exit 0; "every difference is in an admitted class"

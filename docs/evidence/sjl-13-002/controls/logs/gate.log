@@ -1,0 +1,134 @@
+2026-11-15T09:12:01Z lock build-sc-k1 WAIT
+2026-11-15T09:12:01Z lock build-sc-k1 HELD
+2026-11-15T09:12:01Z gate build-sc-k1 WAIT load1=1.01 procs=none
+2026-11-15T09:12:11Z gate build-sc-k1 PASS load1=0.85 procs=none checks=1
+2026-11-15T09:12:41Z stop-servers: done, remaining:
+2026-11-15T09:12:41Z lock k1-checks WAIT
+2026-11-15T09:12:41Z lock k1-checks HELD
+2026-11-15T09:12:41Z gate k1-checks WAIT load1=5.00 procs=none
+2026-11-15T09:13:42Z gate k1-checks WAIT load1=1.83 procs=none
+2026-11-15T09:14:22Z gate k1-checks PASS load1=0.94 procs=none checks=10
+2026-11-15T09:18:53Z stop-servers: done, remaining:
+2026-11-15T09:18:53Z lock k1-parse-corpus WAIT
+2026-11-15T09:18:53Z lock k1-parse-corpus HELD
+2026-11-15T09:18:53Z gate k1-parse-corpus PASS load1=0.83 procs=none checks=0
+2026-11-15T09:27:44Z stop-servers: done, remaining:
+2026-11-15T09:27:44Z lock k1-identity-after WAIT
+2026-11-15T09:27:44Z lock k1-identity-after HELD
+2026-11-15T09:27:44Z gate k1-identity-after PASS load1=0.95 procs=none checks=0
+2026-11-15T09:27:53Z stop-servers: done, remaining:
+2026-11-15T09:27:55Z lock build-sc-k2 WAIT
+2026-11-15T09:27:55Z lock build-sc-k2 HELD
+2026-11-15T09:27:55Z gate build-sc-k2 PASS load1=0.96 procs=none checks=0
+2026-11-15T09:28:26Z stop-servers: done, remaining:
+2026-11-15T09:28:26Z lock k2-checks WAIT
+2026-11-15T09:28:26Z lock k2-checks HELD
+2026-11-15T09:28:26Z gate k2-checks WAIT load1=3.11 procs=none
+2026-11-15T09:29:27Z gate k2-checks WAIT load1=1.14 procs=none
+2026-11-15T09:29:37Z gate k2-checks PASS load1=0.96 procs=none checks=7
+2026-11-15T09:34:16Z stop-servers: done, remaining:
+2026-11-15T09:34:17Z lock k2-parse-corpus-run1 WAIT
+2026-11-15T09:34:17Z lock k2-parse-corpus-run1 HELD
+2026-11-15T09:34:17Z gate k2-parse-corpus-run1 PASS load1=0.63 procs=none checks=0
+2026-11-15T09:43:20Z stop-servers: done, remaining:
+2026-11-15T09:43:20Z lock k2-parse-corpus-run2 WAIT
+2026-11-15T09:43:20Z lock k2-parse-corpus-run2 HELD
+2026-11-15T09:43:21Z gate k2-parse-corpus-run2 WAIT load1=1.05 procs=none
+2026-11-15T09:43:31Z gate k2-parse-corpus-run2 PASS load1=0.88 procs=none checks=1
+2026-11-15T09:52:29Z stop-servers: done, remaining:
+2026-11-15T09:52:30Z lock k2-parse-corpus-run3 WAIT
+2026-11-15T09:52:30Z lock k2-parse-corpus-run3 HELD
+2026-11-15T09:52:30Z gate k2-parse-corpus-run3 WAIT load1=1.01 procs=none
+2026-11-15T09:52:40Z gate k2-parse-corpus-run3 PASS load1=0.85 procs=none checks=1
+2026-11-15T10:04:56Z stop-servers: done, remaining:
+2026-11-15T10:04:57Z lock k2-determinism WAIT
+2026-11-15T10:04:57Z lock k2-determinism HELD
+2026-11-15T10:04:57Z gate k2-determinism WAIT load1=1.79 procs=none
+2026-11-15T10:05:37Z gate k2-determinism PASS load1=0.92 procs=none checks=4
+2026-11-15T10:05:51Z stop-servers: done, remaining:
+2026-11-15T10:05:53Z lock build-sc-k3 WAIT
+2026-11-15T10:05:53Z lock build-sc-k3 HELD
+2026-11-15T10:05:53Z gate build-sc-k3 WAIT load1=1.02 procs=none
+2026-11-15T10:06:04Z gate build-sc-k3 PASS load1=0.87 procs=none checks=1
+2026-11-15T10:06:38Z stop-servers: done, remaining:
+2026-11-15T10:06:38Z lock k3-checks WAIT
+2026-11-15T10:06:38Z lock k3-checks HELD
+2026-11-15T10:06:38Z gate k3-checks WAIT load1=3.47 procs=none
+2026-11-15T10:07:39Z gate k3-checks WAIT load1=1.27 procs=none
+2026-11-15T10:08:00Z gate k3-checks PASS load1=0.91 procs=none checks=8
+2026-11-15T10:13:30Z stop-servers: done, remaining:
+2026-11-15T10:13:32Z lock build-sc-partg-wide WAIT
+2026-11-15T10:13:32Z lock build-sc-partg-wide HELD
+2026-11-15T10:13:32Z gate build-sc-partg-wide PASS load1=0.72 procs=none checks=0
+2026-11-15T10:14:04Z stop-servers: done, remaining:
+2026-11-15T10:14:05Z lock partg-control-wide WAIT
+2026-11-15T10:14:05Z lock partg-control-wide HELD
+2026-11-15T10:14:05Z gate partg-control-wide WAIT load1=3.02 procs=none
+2026-11-15T10:15:06Z gate partg-control-wide WAIT load1=1.11 procs=none
+2026-11-15T10:15:16Z gate partg-control-wide PASS load1=0.94 procs=none checks=7
+2026-11-15T10:15:28Z stop-servers: done, remaining:
+2026-11-15T10:15:29Z lock build-sc-partg-slice WAIT
+2026-11-15T10:15:29Z lock build-sc-partg-slice HELD
+2026-11-15T10:15:30Z gate build-sc-partg-slice PASS load1=0.87 procs=none checks=0
+2026-11-15T10:16:02Z stop-servers: done, remaining:
+2026-11-15T10:16:02Z lock partg-control-slice-1 WAIT
+2026-11-15T10:16:02Z lock partg-control-slice-1 HELD
+2026-11-15T10:16:03Z gate partg-control-slice-1 WAIT load1=3.71 procs=none
+2026-11-15T10:17:04Z gate partg-control-slice-1 WAIT load1=1.29 procs=none
+2026-11-15T10:17:24Z gate partg-control-slice-1 PASS load1=0.92 procs=none checks=8
+2026-11-15T10:17:25Z stop-servers: done, remaining:
+2026-11-15T10:17:25Z lock partg-control-slice-2 WAIT
+2026-11-15T10:17:25Z lock partg-control-slice-2 HELD
+2026-11-15T10:17:25Z gate partg-control-slice-2 PASS load1=0.92 procs=none checks=0
+2026-11-15T10:17:26Z stop-servers: done, remaining:
+2026-11-15T10:17:26Z lock partg-control-slice-3 WAIT
+2026-11-15T10:17:26Z lock partg-control-slice-3 HELD
+2026-11-15T10:17:26Z gate partg-control-slice-3 PASS load1=0.92 procs=none checks=0
+2026-11-15T10:17:28Z stop-servers: done, remaining:
+2026-11-15T10:17:28Z lock partg-control-slice-4 WAIT
+2026-11-15T10:17:28Z lock partg-control-slice-4 HELD
+2026-11-15T10:17:28Z gate partg-control-slice-4 PASS load1=0.92 procs=none checks=0
+2026-11-15T10:17:29Z stop-servers: done, remaining:
+2026-11-15T10:17:33Z lock build-sc-k-reverted WAIT
+2026-11-15T10:17:33Z lock build-sc-k-reverted HELD
+2026-11-15T10:17:33Z gate build-sc-k-reverted PASS load1=0.85 procs=none checks=0
+2026-11-15T10:18:01Z stop-servers: done, remaining:
+2026-11-15T10:18:02Z lock k-reverted-checks WAIT
+2026-11-15T10:18:02Z lock k-reverted-checks HELD
+2026-11-15T10:18:02Z gate k-reverted-checks WAIT load1=3.50 procs=none
+2026-11-15T10:19:03Z gate k-reverted-checks WAIT load1=1.28 procs=none
+2026-11-15T10:19:23Z gate k-reverted-checks PASS load1=0.92 procs=none checks=8
+2026-11-15T10:23:59Z stop-servers: done, remaining:
+2026-11-15T10:24:09Z lock k4-pack WAIT
+2026-11-15T10:24:09Z lock k4-pack HELD
+2026-11-15T10:24:09Z gate k4-pack PASS load1=0.88 procs=none checks=0
+2026-11-15T10:24:18Z stop-servers: done, remaining:
+2026-11-15T10:24:19Z lock build-sc-k4 WAIT
+2026-11-15T10:24:19Z lock build-sc-k4 HELD
+2026-11-15T10:24:19Z gate build-sc-k4 WAIT load1=1.12 procs=none
+2026-11-15T10:24:29Z gate build-sc-k4 PASS load1=0.94 procs=none checks=1
+2026-11-15T10:25:01Z stop-servers: done, remaining:
+2026-11-15T10:25:01Z lock k4-checks WAIT
+2026-11-15T10:25:01Z lock k4-checks HELD
+2026-11-15T10:25:01Z gate k4-checks WAIT load1=2.82 procs=none
+2026-11-15T10:26:02Z gate k4-checks WAIT load1=1.03 procs=none
+2026-11-15T10:26:13Z gate k4-checks PASS load1=0.87 procs=none checks=7
+2026-11-15T10:26:29Z stop-servers: done, remaining:
+2026-11-15T10:26:30Z lock build-sc-k4-row WAIT
+2026-11-15T10:26:30Z lock build-sc-k4-row HELD
+2026-11-15T10:26:30Z gate build-sc-k4-row PASS load1=0.91 procs=none checks=0
+2026-11-15T10:26:40Z stop-servers: done, remaining:
+2026-11-15T10:26:40Z lock k4-row-checks WAIT
+2026-11-15T10:26:40Z lock k4-row-checks HELD
+2026-11-15T10:26:40Z gate k4-row-checks WAIT load1=1.24 procs=none
+2026-11-15T10:27:00Z gate k4-row-checks PASS load1=0.89 procs=none checks=2
+2026-11-15T10:27:03Z stop-servers: done, remaining:
+2026-11-15T10:27:04Z lock build-sc-k4-reverted WAIT
+2026-11-15T10:27:04Z lock build-sc-k4-reverted HELD
+2026-11-15T10:27:04Z gate build-sc-k4-reverted PASS load1=0.98 procs=none checks=0
+2026-11-15T10:27:34Z stop-servers: done, remaining:
+2026-11-15T10:27:34Z lock k4-reverted-checks WAIT
+2026-11-15T10:27:34Z lock k4-reverted-checks HELD
+2026-11-15T10:27:34Z gate k4-reverted-checks WAIT load1=2.46 procs=none
+2026-11-15T10:28:35Z gate k4-reverted-checks PASS load1=0.90 procs=none checks=6
+2026-11-15T10:32:58Z stop-servers: done, remaining:

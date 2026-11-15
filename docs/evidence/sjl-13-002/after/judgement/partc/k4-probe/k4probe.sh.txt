@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# k4probe.sh: which input overflows step 2's admission walk under part C's control K4 as configured (bundle sjl-13-002,
+# task 7.3). The K4 library is made as task 7.2b made it (controls/k4.patch on a git archive of Broiler.JS 29061d65,
+# packed as Broiler.ECMAScript.Frontend 0.1.0-preview.11 into /dev/shm/s2ev/k4-feed, the feed controls/k4-nuget-config.patch
+# names), a copy of the after commit restores it, and the slice compiler's --parse-corpus mode runs, one process per
+# input, over every compilation the after commit's run 1 refuses with 2103 (NestingTooDeep) in B1 and B2, with a journal.
+# Then the same selections over the after commit unpatched (the published library), for the same inputs.
+E2=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/s2/ev2
+REPO=/home/user/vm-s2ev; B=$REPO/docs/evidence/sjl-13-002
+AFTER=467ad7c395234b335c816b8f49ae5b505740e32c; JS=/home/user/broiler.js; JSC=29061d65f0ca41c5bd93074083f2018ccedd5c57
+W=/dev/shm/s2ev2; FEED=/dev/shm/s2ev/k4-feed; PKG=$W/k4-packages; O=$E2/k4probe; L=$O/logs
+R=$E2/scripts/run.sh
+SCP=src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler
+SCDLL=$SCP/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+export PATH=/root/.dotnet:$PATH DOTNET_ROOT=/root/.dotnet
+[ -e /dev/shm/s2ev ] && { echo "REFUSED: /dev/shm/s2ev exists"; exit 3; }
+mkdir -p $O $L $W/k4-lib $FEED $PKG $W/k4 $W/plain
+git -C $JS archive --format=tar $JSC | tar -xf - -C $W/k4-lib
+( cd $W/k4-lib && patch -p1 < $B/controls/k4.patch ) > $O/k4-library-patch-apply.txt 2>&1 || exit 4
+$R k4-pack $L $W/k4-lib -- dotnet pack Broiler.ECMAScript/Broiler.ECMAScript.Frontend/Broiler.ECMAScript.Frontend.csproj -c Release --disable-build-servers -nologo -o $FEED -p:Version=0.1.0-preview.11 || exit 4
+( cd $FEED && sha256sum * ) > $O/k4-feed.txt
+git -C $REPO archive --format=tar $AFTER | tar -xf - -C $W/k4
+git -C $REPO archive --format=tar $AFTER | tar -xf - -C $W/plain
+( cd $W/k4 && patch -p1 < $B/controls/k4-nuget-config.patch ) > $O/k4-patch-apply.txt 2>&1 || exit 4
+$R build-sc-k4 $L $W/k4 -- env NUGET_PACKAGES=$PKG dotnet build $SCP/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj -c Release --disable-build-servers -nologo || exit 4
+$R build-sc-plain $L $W/plain -- dotnet build $SCP/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj -c Release --disable-build-servers -nologo || exit 4
+{ echo "K4 build's library: $(sha256sum $W/k4/$SCP/bin/Release/net10.0/Broiler.ECMAScript.Frontend.dll)"
+  echo "the after commit's own build's library: $(sha256sum $W/plain/$SCP/bin/Release/net10.0/Broiler.ECMAScript.Frontend.dll)"
+  echo "K4 restored package: $(find $PKG/broiler.ecmascript.frontend -name '*.nupkg' | xargs -r sha256sum)"; } > $O/libraries.txt
+# the selection: every key the after commit's run 1 refuses with 2103 in B1 or B2, one file per input id
+zcat $B/after/local/parse-corpus-after-run1.tsv.gz | awk -F'\t' '($2=="B1"||$2=="B2") && $6 ~ /(^|,)2103:/ {print $1"\t"$2"\t"$3"\t"$4"\t"$6}' > $O/keys-2103.tsv
+for id in $(cut -f1 $O/keys-2103.tsv | sort -u); do
+  grep -P "^$id\t" $O/keys-2103.tsv | cut -f1-4 > $O/select-$id.tsv
+  for side in k4 plain; do
+    $R $side-$id $L $W/$side -- dotnet $W/$side/$SCDLL --parse-corpus src/tests/corpus/parse-1/corpus.manifest $W/$side-$id.tsv --workers 1 --populations B1,B2 --select $O/select-$id.tsv --journal $W/$side-$id.journal
+    cp $W/$side-$id.journal $O/$side-$id.journal 2>/dev/null; cp $W/$side-$id.tsv $O/$side-$id.report.tsv 2>/dev/null
+  done
+done
+rm -rf $W /dev/shm/s2ev
+echo DONE > $O/DONE

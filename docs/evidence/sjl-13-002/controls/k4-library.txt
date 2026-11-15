@@ -1,0 +1,5 @@
+library source: git archive of Broiler.JS 29061d65f0ca41c5bd93074083f2018ccedd5c57 (1c7108fc3adef86e1ba6fa65e47a6d0b5d10adae tree) at 2026-11-15T10:24:09Z, patched with k4.patch
+the after commit references Broiler.ECMAScript.Frontend 0.1.0-preview.11 (Directory.Packages.props); the scratch pack is given that version (-p:Version=0.1.0-preview.11)
+(this line was corrected before the file was retained: the script's search also matched the props file's dated comment, which quotes the earlier 0.1.0-preview.10, and wrote both values)
+Broiler.JS between 29061d65f0ca41c5bd93074083f2018ccedd5c57 and e4b6b49e (tag ecmascript-v0.1.0-preview.11) changes the library's Frontend sources in comments only:  27 files changed, 1835 insertions(+), 1835 deletions(-)
+read: of that diff's added and removed lines (git diff 29061d65 e4b6b49e -- Broiler.ECMAScript/Broiler.ECMAScript.Frontend), 0 are other than a // comment line or an empty line

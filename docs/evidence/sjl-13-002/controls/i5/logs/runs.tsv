@@ -1,0 +1,3 @@
+i5-control-1	rc=1	wall=6.3s maxrss=184MB	started=2026-11-15T09:10:38Z	ended=2026-11-15T09:10:45Z
+i5-control-2	rc=1	wall=6.9s maxrss=292MB	started=2026-11-15T09:10:48Z	ended=2026-11-15T09:10:55Z
+i5-reverted	rc=0	wall=6.1s maxrss=192MB	started=2026-11-15T09:10:57Z	ended=2026-11-15T09:11:03Z

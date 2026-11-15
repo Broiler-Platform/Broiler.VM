@@ -1,0 +1,3 @@
+k4 made (NuGet.config patched) af4420028b0f5f87b77b6892776003c4e6050d100bf269bd5ebd9919d3900789
+k4-row made (NuGet.config and harness patched) e03c303376869c3c61ac4ef3e9c5c66209ba24a3478ee0a80a5de565972c0e1b
+k4 reverted 84f3783013564695c6edce83fcecd0b5500305183d921db6bc6fb4116fc62d2b equal-to-made

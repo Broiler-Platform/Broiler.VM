@@ -1,0 +1,2 @@
+the reverted copy restores from the default packages folder: 63c58346a229cc2206c708202d9dd04c2dafca4b75d88fc5f216a3554453521c  /root/.nuget/packages/broiler.ecmascript.frontend/0.1.0-preview.11/broiler.ecmascript.frontend.0.1.0-preview.11.nupkg
+f5487f16cf5511488edb0c11e328cb53be50905cc42eee183097a455ac51f7f7  /dev/shm/s2ev/k4/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.ECMAScript.Frontend.dll

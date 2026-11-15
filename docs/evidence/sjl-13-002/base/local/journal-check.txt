@@ -1,0 +1,2 @@
+=== parse-corpus-base-run1 journal: 1124200 lines
+begin 562100, end 562100

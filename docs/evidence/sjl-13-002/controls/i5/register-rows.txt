@@ -1,0 +1,5 @@
+# rule I5's register at the after commit 467ad7c395234b335c816b8f49ae5b505740e32c (src/tests/Broiler.VM.Architecture.Tests/retired-members.json, blob 349ed7358bdd61c1ee11339270dfa06fa52903fd), read for the names the two controls declare; read 2026-11-15T09:11:44Z
+Broiler.VM.Profile.JavaScript.Compiler.JsMemberExpression	row: milestone SJL-13.3; replacedBy Broiler.ECMAScript.Syntax.MemberExpression (read by the lowering through JsTreeFacts)
+Broiler.VM.Profile.JavaScript.Compiler.JsMemberExpression.NameSpan	no row
+Broiler.VM.Profile.JavaScript.Compiler.JsNumberLiteral	row: milestone SJL-13.3; replacedBy Broiler.ECMAScript.Syntax.NumericLiteral (read by the lowering through JsTreeFacts)
+Broiler.VM.Profile.JavaScript.Compiler.JsNumberLiteral.Value	no row

@@ -1,0 +1,37 @@
+# closure Broiler.VM.Composition.PolyglotCli rid=linux-x64
+
+[jit] 14 non-framework assemblies
+Broiler.ECMAScript.Algorithms
+Broiler.ECMAScript.Frontend
+Broiler.ECMAScript.Intl
+Broiler.Unicode.Algorithms
+Broiler.VM.Abstractions
+Broiler.VM.Binary
+Broiler.VM.Composition.PolyglotCli
+Broiler.VM.Emitter.Bytecode
+Broiler.VM.Profile.JavaScript
+Broiler.VM.Profile.JavaScript.Compiler
+Broiler.VM.Profile.JavaScript.Format
+Broiler.VM.Profile.WebAssembly
+Broiler.VM.Runtime
+Broiler.VM.Ubc
+
+[trimmed] 14 non-framework assemblies
+Broiler.ECMAScript.Algorithms
+Broiler.ECMAScript.Frontend
+Broiler.ECMAScript.Intl
+Broiler.Unicode.Algorithms
+Broiler.VM.Abstractions
+Broiler.VM.Binary
+Broiler.VM.Composition.PolyglotCli
+Broiler.VM.Emitter.Bytecode
+Broiler.VM.Profile.JavaScript
+Broiler.VM.Profile.JavaScript.Compiler
+Broiler.VM.Profile.JavaScript.Format
+Broiler.VM.Profile.WebAssembly
+Broiler.VM.Runtime
+Broiler.VM.Ubc
+
+[aot] 0 non-framework assemblies
+
+[aot] the image's record is mstat-polyglotcli.mstat
