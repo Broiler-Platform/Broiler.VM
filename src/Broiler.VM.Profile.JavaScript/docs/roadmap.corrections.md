@@ -14199,7 +14199,7 @@ commit it was taken:
   its shared half, one producer per check and no copy in the binder (decision D20), and SJL-15 meets it whole, as
   decision D33 reads the requirement JSD-0080 adopted.
 
-*(Added 2026-11-15, later, in a review fix of the same change.)* The delivery plan's statement of JS-2's exit gate
+*(Added 2026-11-15, later, in a later commit of the same change, before it merged.)* The delivery plan's statement of JS-2's exit gate
 names more than decision D33 does: rules N5 to N9, N12 and N19 with a registry revision for every code whose meaning
 changes, no compiler-free root's closure carrying the frontend, every root published and run in three modes, and the
 two-way boundary rule, every shared package on the allow-list and pinned by content hash. Those are SJL-13's clauses
