@@ -195,11 +195,18 @@ taken, and JS-2's gate is re-scoped.
   wide tree and then the shared tree itself; its bundles `sjl-13-001` and `sjl-13-002` are this
   milestone's evidence ([JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md),
   decision D33). Nothing is due in this component before that milestone's steps land *(corrected:
-  [JSC-320](roadmap.corrections.md#jsc-320))*.
+  [JSC-320](roadmap.corrections.md#jsc-320))*. *(Noted 2026-11-15, at the programme's SJL-13.5: the sentences above
+  read "replaces the wide path's parser with the shared frontend in two steps" and "Nothing is due in this component
+  before that milestone's steps land". Both steps have landed with their bundles, and the gate below reads met on them
+  as JSD-0083's decision D33 reads it, so the [ledger](roadmap.status.md#2-current-milestone-status)'s row reads closed
+  on the bundles, and not accepted. Nothing is due in this component for the gate; acceptance waits on review.
+  Corrected: [JSC-329](roadmap.corrections.md#jsc-329).)*
 - **Dependencies:** JS-1, plus **one external dependency: the shared frontend**, built in the
   Broiler.JS repository by the programme's milestones SJL-12 and SJL-13 and admitted under core
   record ADR 0014 from the programme's SJL-2. The core contract's acceptance no longer binds this
-  milestone, because nothing is adapted from a copy to a moving contract.
+  milestone, because nothing is adapted from a copy to a moving contract. *(Noted 2026-11-15, at the programme's
+  SJL-13.5: the external dependency is met. The shared frontend, `Broiler.ECMAScript.Frontend`, is admitted for the
+  compiler alone, and the wide path parses with it. Corrected: [JSC-329](roadmap.corrections.md#jsc-329).)*
 - **Objective exit gate:** **The general front end is the shared frontend (SJL-13).** This
   profile's wide parser is gone and the wide path parses with the shared frontend; the artifacts are
   byte-identical over the parse corpus, or every difference is classified under the programme's
@@ -1034,7 +1041,7 @@ holds them.
 |---|---|---|---|
 | [Parity](roadmap.parity.md) | JSP-1 to JSP-10, every stage | — | — |
 | [Workloads](roadmap.workloads.md) | JSW-1, JSW-3, JSW-5 (under `wide`), JSW-6, JSW-7 | JSW-2 (its exclusion now reopened), JSW-4 (`broiler.javascript.regexp` not minted), JSW-8 (the module identity's remainder), JSW-9 (Native AOT depth, and the five Octane workloads `MaximumTreeDepth` refuses), JSW-10 (no retained whole run on a claimed RID) | — |
-| [Backends](roadmap.backends.md) | JSB-4, JSB-5, JSB-6 | JSB-2, JSB-3, JSB-7 to JSB-11 | JSB-1 *(corrected: [JSC-319](roadmap.corrections.md#jsc-319))*, and JSB-12 beyond its predeclared bounds |
+| [Backends](roadmap.backends.md) | JSB-4, JSB-5, JSB-6 | JSB-2, JSB-3, JSB-7 to JSB-11 | JSB-1 *(corrected: [JSC-319](roadmap.corrections.md#jsc-319); judged in the ledger: [JSC-330](roadmap.corrections.md#jsc-330))*, and JSB-12 beyond its predeclared bounds |
 | [Hosting](roadmap.hosting.md) | JSH-1, and JSH-2 and JSH-3 for the members their gates name | JSH-4 (the host-versus-guest provider route), JSH-7 (the clone carrier, without a second realm) | JSH-5, JSH-6, JSH-8 |
 
 **What that leaves of the parity roadmap is its record, not its work.** Its section 4 is the gap
