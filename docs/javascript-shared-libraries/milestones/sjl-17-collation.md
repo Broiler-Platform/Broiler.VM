@@ -101,6 +101,12 @@ in the `.Intl` assembly do not change, byte for byte (rule N28), and neither do 
 in a composition that carries no Intl data. `Broiler.ECMAScript.Intl` `0.1.0-preview.9`, admitted at SJL-9.4, carries the
 collator, so no package moves. The text above is left as written.
 
+*(Noted 2026-11-15, at the records after SJL-13's step 2's evidence merged.)* The note above reads "The deletions are
+made on the branch `sjl-17-4-cutover`, which lands in one merge, bundle `sjl-17-001`'s after commit". That branch merged
+on 2026-11-04 as `983d690a` (Broiler-Platform/Broiler.VM#191, observed), one merge, bundle `sjl-17-001`'s after commit,
+its first parent `68cad8b` the base, which that bundle's README now names. No run of the rule is taken, no clause is
+met, and nothing is accepted. The text above is left as written.
+
 ### SJL-17.5 — Broiler.JS's cut-over
 
 **Deleted:** the `CompareInfo` path of `Intl.Collator` and `String.prototype.localeCompare` for the

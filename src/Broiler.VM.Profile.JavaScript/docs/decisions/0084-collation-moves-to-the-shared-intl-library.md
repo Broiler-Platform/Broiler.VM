@@ -52,6 +52,11 @@ it.
 - The same verdict is recorded in Broiler.JS's shared-libraries plan, `docs/roadmap/SharedLibraries.md`, section "Area
   verdicts", "Collation (SJL-17.1)", with this record's decisions that bind Broiler.JS, by these numbers. It is filed in
   Broiler.JS's own change, observed on its branch until it merges; the ledger names its merge commit when it has.
+  *(Note of 2026-11-15: it merged into Broiler.JS's default branch on 2026-11-01 in Broiler-Platform/Broiler.JS#1087 as
+  `d1e8f5beec824438f0fc42c37bd941ad7421ce52`, observed, which stands here for the branch, as the programme ledger's
+  SJL-17.1 entry asked; the sentence above, "observed on its branch until it merges", did not move when it merged, as it
+  should have. The ledger's entry of 2026-11-15, later, names the merge, and its SJL-17 row now does. This record named
+  no branch commit to replace.)*
 - **SJL-17 started before SJL-9, which it waits on, met its gate**, at the owner's words of 2026-10-19, which the
   programme ledger's SJL-17.0 entry records with this record. SJL-17 waits on SJL-9 for the provider interface, the
   locale core and the data home, and through SJL-9 on SJL-7 for normalization. It may not meet its gate before SJL-9
