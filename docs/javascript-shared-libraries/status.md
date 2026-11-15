@@ -3718,7 +3718,9 @@ the after commit (the bundle's reading 1).
 - **Findings.** Control K4's overflow is the control's: the input is a stored input of the parse corpus whose binary
   chain the published library refuses at the parse, and no normal run of the bundle lost its process, so it is no
   product finding. The hosted runs built with a newer SDK than the workflow asks for, since the repository pins none;
-  both runs built alike, and no verdict moves.
+  both runs built with the same SDK, on images that differ between runners, and no verdict moves. *(Revised
+  2026-11-15, later, at the review of task 7.3: it read "both runs built alike, and no verdict moves.", which the
+  images do not bear out.)*
 
 This change meets no clause: SJL-13's exit reading reads both bundles, and no other ledger's row moves. No pin moves.
 SJL-13 stays `In progress`, every clause of this family's unmet. Nothing is accepted. Next:
