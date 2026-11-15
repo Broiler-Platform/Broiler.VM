@@ -1,0 +1,39 @@
+# Broiler.VM's SJL-17.4 deletion list searched at 68cad8baf7403125d44d5007441d30ff07bc4edf (2026-11-15T22:24:38Z), by git reads alone
+# 1. listed files: any path in the tree whose file name is one of them
+JsCollator.cs	paths=1
+  src/Broiler.VM.Profile.JavaScript/JsCollator.cs
+JsCollationData.cs	paths=1
+  src/Broiler.VM.Profile.JavaScript/JsCollationData.cs
+# 2. listed types: a declaration (class, struct, record, enum or interface) of the name in a .cs file outside docs/
+JsCollator	declarations=1
+  68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsCollator.cs:57:internal sealed class JsCollator
+JsCaseFirst	declarations=1
+  68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsCollator.cs:26:internal enum JsCaseFirst
+JsCollationData	declarations=1
+  68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsCollationData.cs:48:internal sealed class JsCollationData
+# 3. listed members of types that stay: a declaration of the name in the type's own files (JsRealm.*.cs, JsIntlTables.cs)
+JsRealm.CollatorKeyData	declarations=1
+JsIntlTables.Collation and its lazy collation	declarations=2
+  any mention: 68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsCollationData.cs:531:    // Broiler-AI:           Origin=AI; Spec=UTS35 numeric collation; IP=Low; Security=Low; Resources=
+  any mention: 68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsIntlTables.cs:102:    private readonly Lazy<JsCollationData> collation;
+  any mention: 68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsIntlTables.cs:143:        collation = new(() => new JsCollationData(data.Table(JsIntlTable.CollationRoot), data.Table(JsInt
+  any mention: 68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsIntlTables.cs:253:    internal JsCollationData Collation => collation.Value;
+  any mention: 68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:187:        var collation = GetStringOption(engine, options, "collation", null, null);
+  any mention: 68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:202:        }, ["co", "kf", "kn"], (locale, key) => CollatorKeyData(locale, key, usage));
+  any mention: 68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:211:        var data = engine.Intl!.Collation;
+  any mention: 68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:232:            Collation = collationValue,
+  any mention: 68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:244:    private static string?[] CollatorKeyData(string locale, string key, string usage) => key switch
+  any mention: 68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:275:    /// collations from <see cref="CollatorKeyData"/>, and the one collation this family's data adds,
+  any mention: 68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:292:        public IReadOnlyList<string?> SortLocaleData(string locale) => CollatorKeyData(locale, "co", "sor
+  any mention: 68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:528:    internal string Collation { get; init; } = "default";
+  any mention: 68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsRealm.Locale.cs:277:        var collation = TypeOption("collation");
+  any mention: 68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsRealm.Locale.cs:298:            Collation = collation,
+# 4. rule I5's register: the rows of SJL-17.4, and entries by milestone
+SJL-10.4	147
+SJL-3.4	34
+SJL-4.4	44
+SJL-5.4	44
+SJL-6.4	53
+SJL-7.4	29
+SJL-8.5	24
+SJL-9.4	148
