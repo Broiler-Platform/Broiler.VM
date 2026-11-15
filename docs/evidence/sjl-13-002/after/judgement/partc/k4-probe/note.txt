@@ -39,3 +39,14 @@ What it shows:
 
 So the overflow needs the planted change: the published library refuses J000451 at the parse, before the admission
 walk sees it. Section 6's reading 1 and section 7's first finding of the README read this.
+
+Added 2026-11-15, later, at the review of task 7.3, with nothing above changed. The line above that reads "the
+configured run's frame count is J000451's" says more than the count shows. The count, JsAdmissionWalk.Expression
+repeated 19055 times, is the compile stack's capacity for that call shape, a binary chain in a variable's initialiser
+inside a function: a chain of that shape deep enough to overflow would repeat the frame as often, and chains at a
+script's top level of 19500 and 20000 operands overflow under K4 with the frame repeated 19056 times each (the review's
+own runs, kept outside this repository). So the count shows the same call shape at the stack's capacity, not the input.
+What names the input is the selection: K4 changes what the library charges against the tree-depth bound, not the tree it
+builds, so only an input the after commit's run 1 refuses with 2103 can reach a deeper tree under K4; run 1 refuses with
+2103 six inputs of B1, one of them, T050099, also of B2, and seven of B4, the slice front end, which reads no library
+tree, and none of B3 or B5; and of the six, J000451 alone overflows under K4.
