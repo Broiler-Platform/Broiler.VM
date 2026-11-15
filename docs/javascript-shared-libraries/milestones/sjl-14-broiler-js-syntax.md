@@ -18,9 +18,10 @@
 revised it.)* In this file "decision Dn" is SJL-13's plan's numbering, which JSD-0083 keeps: D40 to D56 and D64 are
 SJL-14's, the owner's decisions under the owner's direction of 2026-10-18, recorded in Broiler.JS's
 `docs/roadmap/SharedLibraries.md`, section "Broiler.JS on the shared syntax library (SJL-14)", which is filed in
-Broiler.JS's own change, merged in Broiler-Platform/Broiler.JS#1100 as `d8f14602` (observed) *(2026-11-15; read "which
-is filed in Broiler.JS's own change and observed until it merges", which did not move when it merged on 2026-11-03, as
-it should have)*: D41 and D44 to D47 as JSD-0083 revised them on 2026-10-26, the
+Broiler.JS's own change, merged in Broiler-Platform/Broiler.JS#1100 as `d8f14602` (observed) *(Corrected 2026-11-15, at
+the records after SJL-13's step 2's evidence merged: the clause read "which is filed in Broiler.JS's own change and
+observed until it merges", which did not move when it merged on 2026-11-03, as it should have.)*: D41 and D44 to D47 as
+JSD-0083 revised them on 2026-10-26, the
 owner's decisions of that day; the others of 2026-11-03, with D45 revised again that day (JSD-0083's note under
 D45).
 - **"the remains of `SyntaxValidation`"** is read as its compiler-stage checks, which SJL-15.5 deletes when the
@@ -58,9 +59,9 @@ Native AOT sample (part E); the packages, the downstream consumers and the publi
 parse measurement (part I); fuzzing (part J); and the deletion search (part K). The same bundle holds the corrections
 by row (`corrections.md`), the disposition of every public type and member of `Ast` and `Parser`
 (`dispositions.md`), the inherited-context probes and the rule's inputs. It is filed in Broiler.JS's own change,
-merged in Broiler-Platform/Broiler.JS#1100 as `d8f14602` (observed) *(2026-11-15; read "on its branch
-`sjl-14-1-records`, and is observed until it merges", which did not move when it merged on 2026-11-03, as it should
-have)*.
+merged in Broiler-Platform/Broiler.JS#1100 as `d8f14602` (observed). *(Corrected 2026-11-15, at the records after
+SJL-13's step 2's evidence merged: the sentence read "on its branch `sjl-14-1-records`, and is observed until it merges"
+after "filed in Broiler.JS's own change,", which did not move when it merged on 2026-11-03, as it should have.)*
 
 ### SJL-14.2 — The bridge
 
