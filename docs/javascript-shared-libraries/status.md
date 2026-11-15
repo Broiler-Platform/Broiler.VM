@@ -3726,7 +3726,11 @@ This change meets no clause: SJL-13's exit reading reads both bundles, and no ot
 SJL-13 stays `In progress`, every clause of this family's unmet. Nothing is accepted. Next:
 - the review of task 7.3 and its fixes, then the evidence branch's merge, which lifts the hold on the default branch;
 - the owner's ruling on the readings above, should the owner rule otherwise than the readings taken;
-- SJL-13's exit reading over both bundles, and SJL-9's gate: SJL-7's, SJL-8's and SJL-3's gates, and review.
+- SJL-13's exit reading over both bundles, and SJL-13's gate: SJL-12's, SJL-3's and SJL-7's gates, and review.
+  *(Corrected 2026-11-15, at the records after the evidence merged: it read "SJL-13's exit reading over both bundles,
+  and SJL-9's gate: SJL-7's, SJL-8's and SJL-3's gates, and review.", a gate list carried from the entries above whose
+  changes were SJL-9's as well as SJL-13's. SJL-13 may not meet its gate before SJL-12, SJL-3 and SJL-7 meet theirs, as
+  its row says; the entry of 2026-11-14 above ends its list the same way, and is left as written.)*
 
 ---
 
