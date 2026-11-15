@@ -14199,6 +14199,13 @@ commit it was taken:
   its shared half, one producer per check and no copy in the binder (decision D20), and SJL-15 meets it whole, as
   decision D33 reads the requirement JSD-0080 adopted.
 
+*(Added 2026-11-15, later, in a review fix of the same change.)* The delivery plan's statement of JS-2's exit gate
+names more than decision D33 does: rules N5 to N9, N12 and N19 with a registry revision for every code whose meaning
+changes, no compiler-free root's closure carrying the frontend, every root published and run in three modes, and the
+two-way boundary rule, every shared package on the allow-list and pinned by content hash. Those are SJL-13's clauses
+7 and 8 and rule I1. SJL-13's exit reading reads clauses 7 and 8 met on both bundles, and rule I1 passes in both
+bundles' part D and at the default branch's head, so the row closes on the delivery plan's text as on decision D33's.
+
 So the ledger's JS-2 row reads `[FULL]` and `In progress`: closed on the bundles, as decision D33 says SJL-13.5 files
 it, and not accepted, since `Accepted` needs an owner's and a reviewer's decision and one person holds every role
 (EX-30). Section 3's blocker is closed: the library exists, is admitted for the compiler alone, and the wide path parses
