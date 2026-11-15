@@ -46,6 +46,59 @@ development checks' test262 comparison found only Exhausted rows whose allowance
 as the base build's own re-runs do. Every part is taken after the merge, at the base and the after commit: part A by
 the hosted workflow, dispatched for both, and parts B to G locally. Nothing here is a verdict yet.
 
+*(Added 2026-11-15, after the merge, at task 7.1 of step 2's evidence, before any part is judged.)* **Step 2 merged**
+as Broiler-Platform/Broiler.VM#206, `467ad7c395234b335c816b8f49ae5b505740e32c`, the after commit, a true merge; its
+first parent is the base named above, `389b55c9ec9bb77409bb2487067fbebc0868849b`, and the after commit is the only
+first-parent commit after the base. Part A's two runs were dispatched from the default branch at the after commit, with
+`forms both`: the base run, workflow run 43651721567, tested `389b55c9`, and the after run, workflow run 43652416341,
+tested `467ad7c3`. Each run's artifact `test262-evidence` is imported unchanged, with the digest of its zip as
+downloaded, into [`base/hosted/`](base/hosted/imported.txt) and [`after/hosted/`](after/hosted/imported.txt); each
+`imported.txt` names the run, the tested commit and the commit input, the workflow's and the driver's blobs at the
+dispatched ref, which are the base commit's, and the images. Nothing here reads or judges them yet.
+
+*(Added 2026-11-15, at task 7.2 of step 2's evidence, after the merge and before any part is judged.)* **Parts B to G
+are taken locally, with part A's comparisons and one-process re-runs, and are retained here without being read.**
+Every run was taken on 2026-11-15 on this family's local machine (four logical processors, .NET SDK 10.0.404, Ubuntu
+24.04.5 LTS; section 1's reading 4 carries bundle `sjl-13-001`'s reading 10, the machine as replaced, each run
+recording its SDK), from a clean `git archive`
+of the commit it names, `docs/` included, extracted to a tmpfs, built in Release with `--disable-build-servers`: the
+base `389b55c9ec9bb77409bb2487067fbebc0868849b` and the after commit `467ad7c395234b335c816b8f49ae5b505740e32c`. Every
+run, build and comparison waited behind a gate that waits, with no fallback, for a one-minute load of at most 1.0 and no
+dotnet, testhost, VBCSCompiler, MSBuild, ilc, crossgen or Broiler.* process, under an exclusive lock so that one run is
+taken at a time, and no compiler server was alive at any run's start (section 1's reading 4: bundle `sjl-13-001`'s reading 9 does not
+carry). The drivers
+are kept outside this repository. Every folder's `logs/` holds each run's command line, exit, wall time, peak memory,
+the machine record before and after it with the whole process list at its start, and the gate's record; each
+folder's `hashes.txt` holds the SHA-256 of every other file in it. Where each part's output is:
+- **Part A:** the comparisons of the imported reports, through `eng/compare-test262-forms.py` as the base commit holds
+  it (`after/parta-comparisons/`; first taken without the gate, and taken again behind it with the same output, which
+  is what that folder retains); each (c′) row's three one-process re-runs at each commit, with `--expect` against
+  the commit's retained pin (`after/parta-rerun/`); and the (e) race, which runs only the rows whose re-runs differ
+  (`after/parta-race/`, with its note).
+- **Part B:** run 1 of `--parse-corpus` (B1 to B5, one worker) at each commit (`base/local/`, `after/local/`); the
+  census over the parse corpus's inputs and over the suite's `test/` at both (`census-*.txt.gz`); the identity of the
+  two runs with both census pairs (`after/local/partb-keys/`); the control in `controls/partb/`.
+- **Part C:** runs 2 and 3 at the after commit (`after/local/`) and their determinism comparison
+  (`after/local/determinism/`); `--checks --verbose` at both commits (`local/checks.log.gz`); the controls K1 to K4,
+  re-made against step 2's code on copies of the after commit, their patches, outputs and revert checks, in
+  `controls/`.
+- **Part D:** the architecture tests at both commits after a Release build of the solution, from a clean archive of
+  each, with `BROILER_RULE_MESSAGES` set to a scratch folder whose files are copied unchanged into
+  `<side>/rules/rule-messages/` (`base/rules/`, `after/rules/`); rule I5's two controls, pinned by the revision of
+  2026-11-13, taken in the after commit's tree of that run (`controls/i5/`).
+- **Part E:** the bisect at the base, `base/fuel-parity.log`, and the after run at the base's figures,
+  `after/fuel-parity.log`, each run's record and attempts in `base/parte/` and `after/parte/`.
+- **Part F:** the sub-bundle [`measurement/`](measurement/README.md), whose README was written and made read-only
+  before the collector ran, collected last by bundle `sjl-13-001`'s
+  [`collect-measurement.py`](../sjl-13-001/collect-measurement.py), unchanged; the collector wrote its own `hashes.txt`,
+  and the three records copied in after it (`measurement-machine.txt`, `measurement-collector.log` and
+  `measurement-collector.stderr.txt`) are appended to it, its lines unchanged.
+- **Part G:** `--fuzz-wide` and the four `--fuzz` sessions at both commits (`local/fuzz-*`); the planted throws, the
+  wide one in the binder's walk over the shared tree (`controls/partg-*`).
+
+[`controls/note.txt`](controls/note.txt) says how each control was made and reverted. Nothing here is a verdict: the
+next task reads these outputs under the rule.
+
 ## 1. SJL-13's area rule for step 2 (SJL-13.1)
 
 **Step 2 changes no outcome, no byte and no diagnostic** (JSD-0083 decision D19). The rule therefore admits no class
