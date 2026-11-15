@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# verify-hashes.sh <commit> <outfile>: from a clean git archive of <commit> (tmpfs), every hashes.txt under
+# docs/evidence/sjl-13-001/ and sjl-13-002/ checked with sha256sum -c in its own folder; and each bundle's manifest.json
+# checked by verify-manifest.py against the tree of its collected-at commit and its sources at source-revision.
+E=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/exit13
+REPO=/home/user/vm-s2ev
+c=$(git -C $REPO rev-parse "$1"); out=$2; T=/dev/shm/exit13-verify-$$
+mkdir -p $T; git -C $REPO archive --format=tar "$c" docs/evidence/sjl-13-001 docs/evidence/sjl-13-002 | tar -x -C $T
+{ echo "# hashes and manifests of bundles sjl-13-001 and sjl-13-002 at $c ($(date -u +%FT%TZ))"
+  bad=0; n=0
+  for h in $(cd $T && find docs/evidence/sjl-13-001 docs/evidence/sjl-13-002 -name hashes.txt | sort); do
+    n=$((n+1)); d=$(dirname $h)
+    r=$(cd $T/$d && sha256sum -c --quiet hashes.txt 2>&1); rc=$?
+    if [ $rc -eq 0 ]; then echo "OK	$h	$(wc -l < $T/$h) lines"; else bad=$((bad+1)); echo "FAIL	$h"; echo "$r" | sed 's/^/  /'; fi
+  done
+  echo "hashes.txt files: $n, failing: $bad"
+  for b in sjl-13-001 sjl-13-002; do python3 -I $E/scripts/verify-manifest.py $REPO "$c" docs/evidence/$b; done
+} > "$out" 2>&1
+rm -rf $T

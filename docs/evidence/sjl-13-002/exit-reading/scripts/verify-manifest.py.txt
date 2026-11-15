@@ -1,0 +1,22 @@
+# verify-manifest.py <repo> <commit> <bundle-dir>: reads <bundle-dir>/manifest.json as <commit> holds it; checks that
+# every file it lists has that SHA-256 in the tree of its collected-at commit, that collected-at's tree under the bundle
+# holds no other file but the manifest, and that each source's git blob id is the one source-revision holds.
+import hashlib, json, subprocess, sys
+repo, commit, b = sys.argv[1], sys.argv[2], sys.argv[3].rstrip('/') + '/'
+def git(*a, text=True): return subprocess.run(['git', '-C', repo] + list(a), capture_output=True, text=text, check=True).stdout
+m = json.loads(git('show', '%s:%smanifest.json' % (commit, b)))
+at = m['collected-at']; bad = []
+listed = set(m['files'])
+present = set(n[len(b):] for n in git('ls-tree', '-r', '--name-only', at, b).splitlines()) - {'manifest.json'}
+for f, h in m['files'].items():
+    try: got = hashlib.sha256(git('cat-file', 'blob', '%s:%s%s' % (at, b, f), text=False)).hexdigest()
+    except subprocess.CalledProcessError: got = 'missing'
+    if got != h: bad.append('file %s: %s != %s' % (f, got, h))
+for f in sorted(present - listed): bad.append('unlisted at collected-at: ' + f)
+for f in sorted(listed - present): bad.append('listed, absent at collected-at: ' + f)
+src = m.get('sources', {}); rev = m.get('source-revision')
+for p, h in src.items():
+    got = git('rev-parse', '%s:%s' % (rev, p)).strip()
+    if got != h: bad.append('source %s: %s != %s' % (p, got, h))
+print('%s manifest.json at %s: collected-at %s, %d files, %d sources at %s: %s' % (b, commit[:12], at[:12], len(m['files']), len(src), (rev or '')[:12], 'OK' if not bad else 'FAIL'))
+for x in bad: print('  ' + x)

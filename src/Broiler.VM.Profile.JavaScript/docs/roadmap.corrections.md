@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap — corrections and rejections
 
-**Last updated:** 2026-10-12 (JSC-296: the package baseline's "No foreign dependency" paragraph, on decision JSD-0064, at the shared JavaScript libraries programme's SJL-2). Before that, 2026-10-11: JSC-291 to JSC-295, invariant 11, the edge clause, the seed copy rows, the gates and JS-2's gate, on decision JSD-0063; and JSC-290, three retained closure reports restored to what their bundles retained, and the JavaScript roots' catalogs and closures collected again as bundle JS-10-004
+**Last updated:** 2026-11-15 (JSC-329: JS-2 read closed on the shared JavaScript libraries programme's SJL-13 bundles, not accepted, on decision JSD-0083's D33; JSC-330: the ledger's JSB-1 row, on its decision D34; JSC-297 to JSC-328, filed after the date below, did not move this line). Before that, 2026-10-12 (JSC-296: the package baseline's "No foreign dependency" paragraph, on decision JSD-0064, at the shared JavaScript libraries programme's SJL-2). Before that, 2026-10-11: JSC-291 to JSC-295, invariant 11, the edge clause, the seed copy rows, the gates and JS-2's gate, on decision JSD-0063; and JSC-290, three retained closure reports restored to what their bundles retained, and the JavaScript roots' catalogs and closures collected again as bundle JS-10-004
 
 **This file is part of the [Broiler.VM.Profile.JavaScript roadmap](roadmap.md)**, which
 [names every file](roadmap.md#how-this-roadmap-is-split). It carries no numbered section of the
@@ -172,10 +172,12 @@ rather than a decision record.
 | [JSC-324](#jsc-324) | the records of the profile's admission of `Broiler.ECMAScript.Intl` and of what its cut-over deleted: `packages.md`, `support.md`, `eng/packages/README.md`, ADR 0001, the notices row, the composition register, rule I5's register, and the programme's inventory and architecture documents | The profile references the shared Intl library from SJL-9.4, the package baseline is bundle JS-10-015's, `canonical-tz` is admitted, the register's rows carry the library, the code it replaced is gone and registered, and a stale Unicode version in `packages.md` is corrected | [JSD-0085](decisions/0085-the-profile-on-the-shared-intl-library.md), applying [JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md) |
 | [JSC-326](#jsc-326) | backends' sentence naming `JsParser.Parse` in the wide compile's order, parity's sentence naming `JsParser.cs`'s primary-expression switch, and rule I5's register | From SJL-13.3's step 1 the wide path parses through the shared syntax library and `JsParser` is deleted, and rule I5 registers the types and members the step deleted | [JSD-0087](decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md), applying [JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md) |
 | [JSC-327](#jsc-327) | the records of the four admitted stream packages' version and identity: `Directory.Packages.props`, the allow-list, rule I1's witnesses, the feed's README and the notices rows; the locales dataset's divergence line for `fr-CA`'s hour cycles | The stream's four packages move to `0.1.0-preview.11` as published on 2026-11-13, the algorithms and syntax packages' code unchanged, the Intl library carrying its changes of 2026-11-08 and 2026-11-09 and the generator two options whose defaults are this family's; Intl.Locale's hour cycles move under row L19 | the owner's publication of 2026-11-13; the admission procedure of `9d0f80e`; [JSD-0082](decisions/0082-locale-data-and-the-intl-algorithms-move-to-the-shared-libraries.md)'s note on row L19 |
+| [JSC-329](#jsc-329) | the ledger's JS-2 row, its section 3's blocker on the shared frontend, and delivery JS-2's "Next action" and "Dependencies" | JS-2's re-scoped gate is read met on the programme's SJL-13 bundles `sjl-13-001` and `sjl-13-002`, and its row closes on them, not accepted; the shared frontend exists, is admitted for the compiler and is what the wide path parses with | [JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md), decision D33 |
+| [JSC-330](#jsc-330) | the ledger's section 2, which gains a JSB-1 row; backends JSB-1's State, "Where this document stands" and section 7; delivery section 26.2's table | The ledger reads JSB-1, as JSC-319's first route asked: its gate is read met on bundle `sjl-13-001`'s two wide-lowering rows and their controls, and not accepted | [JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md), decision D34 |
 
 *(Added 2026-10-25, with JSC-319's row.)* The index holds rows for JSC-01 to JSC-80 and for JSC-319. JSC-81 to
 JSC-318 are not indexed here, and each is found by its heading below. *(Added 2026-10-26, with JSC-320's row: the
-index holds JSC-320's row too.)* *(Added 2026-11-01, with JSC-321's row: the index holds JSC-321's row too.)* *(Added 2026-11-03, with JSC-322's row: the index holds JSC-322's row too.)* *(Added 2026-11-03, later, with JSC-323's row: the index holds JSC-323's row too.)* *(Added 2026-11-04, with JSC-324's row: the index holds JSC-324's row too.)* *(Added 2026-11-10, with JSC-326's row: the index holds JSC-326's row too. JSC-325, filed on 2026-11-04, was given no row, and has none.)* *(Added 2026-11-13, with JSC-327's row: the index holds JSC-327's row too.)*
+index holds JSC-320's row too.)* *(Added 2026-11-01, with JSC-321's row: the index holds JSC-321's row too.)* *(Added 2026-11-03, with JSC-322's row: the index holds JSC-322's row too.)* *(Added 2026-11-03, later, with JSC-323's row: the index holds JSC-323's row too.)* *(Added 2026-11-04, with JSC-324's row: the index holds JSC-324's row too.)* *(Added 2026-11-10, with JSC-326's row: the index holds JSC-326's row too. JSC-325, filed on 2026-11-04, was given no row, and has none.)* *(Added 2026-11-13, with JSC-327's row: the index holds JSC-327's row too.)* *(Added 2026-11-15, with JSC-329's and JSC-330's rows: the index holds both. JSC-328, filed on 2026-11-14, was given no row, and has none.)*
 
 ### JSC-01
 
@@ -14148,3 +14150,163 @@ D20, taken by the owner on 2026-10-26 under the direction of 2026-10-18, as its 
 read them; rule I5; the programme's work package SJL-13.3, step 2, as
 [JSD-0087](decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md)'s dated note of 2026-11-14 records it.
 2026-11-14.
+
+### JSC-329
+
+**Where:** the [ledger](roadmap.status.md)'s row for JS-2, its "Last updated" line, a dated paragraph after its
+paragraph of 2026-10-11 on JS-2, and its section 3: the paragraph above the blockers' table and that table's row "The
+shared frontend does not exist."; and [`roadmap.delivery.md`](roadmap.delivery.md), milestone JS-2's "Next action"
+and "Dependencies". Each carries a dated note that quotes what it replaces, beside the bare pointer this file's update
+rule asks for. JS-2's objective, its exit gate and its owner are not edited, and neither are
+[JSD-0063](decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md) and
+[JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md), but by JSD-0083's dated notes.
+
+**What the plan said.** The ledger's JS-2 row: the verdict `[NONE]`; the state "**Blocked** (recorded as `Not started`
+above the blocker, because no work has begun either)"; the evidence "None. No snapshot has been taken, **and none will
+be**", with the record JS-2's settling condition asked for; and the next action "**Blocked on one named external
+dependency, the shared frontend**, which the shared JavaScript libraries programme builds in the Broiler.JS repository
+and closes JS-2 with at its milestone SJL-13." Section 3: "**One is open today**, and it belongs to JS-2: the shared
+frontend, from 2026-10-11", its row's unblock condition reading "The programme's milestone SJL-13 meets its Broiler.VM
+clauses, as JS-2's gate restates them". The delivery plan's "Next action": "Nothing is due in this component before
+that milestone's steps land", with SJL-13's bundles `sjl-13-001` and `sjl-13-002` named as this milestone's evidence.
+
+**What replaced it.** Both of SJL-13.3's steps have landed with their evidence, and JS-2's re-scoped gate, "the
+general front end is the shared frontend", is read met on those two bundles, as JSD-0083's decision D33 reads it:
+SJL-13's clauses 4 to 6 and JSD-0063's requirements, on bundles `sjl-13-001` and `sjl-13-002`. Each piece, at the
+commit it was taken:
+- **This profile's wide parser is gone, and the wide path parses with the shared frontend.** Step 1, `a8d8398`
+  (Broiler-Platform/Broiler.VM#196), deletes `JsParser` and parses through `Broiler.ECMAScript.Frontend`: bundle
+  [`sjl-13-001`](../../../docs/evidence/sjl-13-001/README.md)'s commit conditions find `JsParser.cs` absent there, and
+  its part D finds rule I5 registering what the step deleted. Step 2, `467ad7c3` (Broiler-Platform/Broiler.VM#206),
+  deletes `JsSyntax` and the adapter, and the admission walk, the numeric admission, the binder and the lowering read
+  the shared tree: bundle [`sjl-13-002`](../../../docs/evidence/sjl-13-002/README.md)'s part D finds rule I5
+  registering them.
+- **The artifacts over the parse corpus.** Bundle `sjl-13-001`'s part B classifies every difference under its rule, on
+  the owner's rulings of 2026-11-11 on the readings it turns on; bundle `sjl-13-002`'s part B reports no difference of
+  any kind.
+- **test262 in both forms.** Bundle `sjl-13-001`'s part A meets its rule; bundle `sjl-13-002`'s part A meets its rule
+  on that bundle's reading of the hosted runs' SDK and images, taken under the owner's standing direction of
+  2026-10-18 and not the owner's own answer.
+- **JSD-0063's requirements on the shared frontend**, held by the programme's rules rather than by a copy. Decision D33
+  settles JS-2 on them "on bundles `sjl-13-001` and `sjl-13-002`", and not every one of them is read by a rule of this
+  family. Each, and what holds it:
+  - *no ambient parse state, two parses with different goals running concurrently*: part C's row "two goals on the
+    wide path in one process do not reach each other", in both bundles, passing at every commit it names;
+  - *a deep-nesting corpus refused rather than terminating the process*: part C's row "a deep-nesting corpus is
+    refused on the wide path", in both bundles, the same;
+  - *no IL emission, assembly loading, name-based type resolution, activator construction or module initializer*: rule
+    I2, which holds every admitted assembly, the shared frontend's among them, read from the package itself, to
+    reaching nothing on rules B5's, B5b's and B5c's lists, passing in both bundles' part D;
+  - *trim and AOT analyzers clean across its reference closure*: for the code a root reaches, every JavaScript root
+    this machine can publish, published with warnings as errors and run under the JIT, trimming and Native AOT at both
+    after commits, the Android root being EX-126; for the code no root reaches, which rule I2's own remark says ILC
+    does not see, no rule of this family, and the home's rule SL5 and its Native AOT probe;
+  - *no thread-static field and no async-local type*: no rule of this family reads the library for them, since rule N12
+    reads only the compiler assembly's own sources; the home's rule SL2;
+  - *no conditional compilation* and *no run-time generic construction*: no rule of this family reads either, since
+    rule B5's lists name neither; the home's rules SL10 and SL3 (its convention 8);
+  - *one early-error stage*: reads met in its shared half, one producer per check and no copy in the binder (decision
+    D20), and SJL-15 meets it whole, as decision D33 reads the requirement JSD-0080 adopted.
+
+  The home's rules are read in Broiler.JS's bundle `sjl-13-001` (observed): its part E runs rules SL1 to SL10 with
+  their witnesses, and its Native AOT probe is read met under its rule's third revision, which is weaker evidence. They
+  are not this profile's evidence: the roadmap's [invariant 12](roadmap.md#2-engineering-invariants) says no result
+  another component produces is this component's evidence, and the ledger's section 3 says no evidence the programme
+  collects in the Broiler.JS repository meets a clause here. **The reading taken:** decision D33's "JSD-0063's
+  requirements on bundles `sjl-13-001` and `sjl-13-002`" reads met by the programme's rules wherever each runs, this
+  family's on its own bundles and the home's read as observed, because JSD-0063 places the requirements on the shared
+  frontend, "held by the programme's rules rather than by a copy", and the programme's governance (its
+  [section 3.2](../../../docs/javascript-shared-libraries/governance.md#32-shared-libraries-group-sl-in-their-home-repository))
+  says Broiler.VM's gates rely on the home's SL rules being active there; they are requirements on another component,
+  not clauses this component's evidence re-demonstrates. It is taken under the owner's standing direction of
+  2026-10-18 as the recommended one and is not the owner's own answer. **The alternative not taken:** the requirements
+  this family's bundles do not show (thread-static and async-local state in the library, conditional compilation,
+  run-time generic construction, the analyzers over the code no root reaches, and the delivery plan's "no edge to an
+  engine") stay open under invariant 12 until a bundle of this family shows them, so the row reads `[PARTIAL]` with
+  them named, and SJL-13's clause 10 is not met until then. The programme's ledger records both.
+
+So the ledger's JS-2 row reads `[FULL]` and `In progress`: closed on the bundles, as decision D33 says SJL-13.5 files
+it, and not accepted, since `Accepted` needs an owner's and a reviewer's decision and one person holds every role
+(EX-30). Section 3's blocker is closed: the library exists, is admitted for the compiler alone, and the wide path parses
+with it. Its unblock condition, "SJL-13 meets its Broiler.VM clauses", is read as those clauses read met on the bundles,
+which SJL-13's exit reading records in bundle `sjl-13-002`, and not as SJL-13's gate, which waits on SJL-12's, SJL-3's
+and SJL-7's gates and on review; decision D33's "clause 10 is met by the JSC entries and the profile ledger's closed
+row, filed by SJL-13.5" reads it so, since SJL-13.5 files that row before the gate can be met. That reading is taken
+under the owner's standing direction of 2026-10-18 as the recommended one, and the alternative, the row kept `Blocked`
+until SJL-13's gate is met, is recorded with it in the programme's ledger. The delivery plan's "Next action" reads that
+nothing is due in this component for JS-2, and its "Dependencies" that the external dependency reads met on the
+bundles. This entry is JS-2's closing entry, the one decision D3 asks for at SJL-13.5 "for JS-2's closure", which
+decision D33 has SJL-13.5 file; [JSC-330](#jsc-330) is the JSB-1 row decision D34 asks for at the same work package.
+SJL-13's exit reading reads clause 10, "JS-2 closes, with its JSC entries", on both, taking JSC-330 with JSC-329 since
+SJL-13.5 files them together; that is a reading, and clause 10 reads met on JSC-329 alone as well. No other row of the
+ledger moves: the milestones the delivery order places after JS-2 have moved without it, as section 3's second row
+records, and their rows say what is open in each.
+
+*(Added 2026-11-15, later, in a later commit of the same change, before it merged.)* The delivery plan's statement of
+JS-2's exit gate names more than decision D33 does: rules N5 to N9, N12 and N19 with a registry revision for every code
+whose meaning changes, no compiler-free root's closure carrying the frontend, every root published and run in three
+modes, and the two-way boundary rule with its witnesses, no edge to an engine and every shared package on the allow-list
+and pinned by content hash. The first three are SJL-13's clauses 7 and 8, which SJL-13's exit reading reads met on both
+bundles, "every root" for every JavaScript root this machine can publish, the Android root being EX-126. This family's
+half of the boundary rule is rule I1, every package reference on the allow-list, from a project the list names for it,
+at its pinned hash, which passes in both bundles' part D and at the default branch's head; the home's half, no shared
+project referencing an engine, is the home's rule SL1, read as observed on the reading above. So the row closes on the
+delivery plan's text as on decision D33's, on that reading.
+
+**Authority and date.** [JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md)'s decisions D3 and
+D33, taken by the owner on 2026-10-26 under the direction of 2026-10-18;
+[JSD-0063](decisions/0063-shared-libraries-admission-and-the-seed-copy-withdrawn.md)'s decision SJL-D-7 and its
+settling condition; the programme's work package SJL-13.5, read on bundles `sjl-13-001` and `sjl-13-002` by SJL-13's
+exit reading. 2026-11-15.
+
+### JSC-330
+
+**Where:** the [ledger](roadmap.status.md)'s section 2, which gains a JSB-1 row, with a dated note after its table, and
+its paragraph "A backend roadmap exists in this checkout as of 2026-09-07, and it moves nothing in this ledger.", by a
+dated note after it; [`roadmap.backends.md`](roadmap.backends.md): JSB-1's State, by a new dated bullet after the
+bullet of 2026-10-25, the paragraph "Where this document stands", and section 7's note of 2026-10-25, each by a dated
+note; and the table of the proposal documents' stages in
+[section 26.2](roadmap.delivery.md#262-what-is-finished) of the delivery plan, by a bare pointer beside JSB-1, which
+stays in its column, since the table states the stages as of 2026-10-03. JSB-1's objective and exit gate are not
+edited, and neither are [JSD-0080](decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md) and
+JSD-0083, but by JSD-0083's dated notes.
+
+**What the plan said.** [JSC-319](#jsc-319): "So the judgement decision D14 defers to has, at this commit, no row to be
+made in. This entry keeps the deferral, and names the gap as a finding against JSD-0080's decision D14 for the profile
+owner: either the ledger comes to read JSB-1, or the decision names another judge." JSB-1's State bullet of
+2026-10-25: "That ledger holds no JSB-1 row at this date, and reads this document's stages only as observed repository
+state, which moves nothing in it, so no record has judged this stage yet." The ledger's paragraph on the backend
+roadmap: its stages are minted in a `JSB-n` namespace that "section 2's table does not read".
+
+**What replaced it.** The ledger comes to read JSB-1, the first of JSC-319's two routes, as
+[JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md)'s decision D34 decided on 2026-10-26: a JSB-1
+row in section 2, filed at the programme's SJL-13.5, judged on the two wide-lowering rows bundle
+[`sjl-13-001`](../../../docs/evidence/sjl-13-001/README.md)'s part C runs. JSB-1's gate, clause by clause, on that
+bundle's retained outputs:
+- **"Every source in the wide and module corpora is compiled twice through `JsCompiler.Compile` and the artifacts
+  compared byte for byte, in a check that runs where the slice front end's equivalent already runs."** The row "the
+  wide lowering is deterministic", in the slice compiler's `--checks` beside "the lowering is deterministic", passes at
+  step 1's base `df75f8c` and its after commit `a8d8398` (`base/local-idle/checks.log.gz`,
+  `after/local/checks.log.gz`), each source of its population compiled twice in turn and twice at once on two threads,
+  over the population JSC-319 reads "the wide and module corpora" as.
+- **"The global lexical hoisting sites ... emit in an order derived from the source, with a negative control that
+  perturbs the order and is watched failing and watched passing after revert."** The row "the wide lowering declares
+  lexical names in source order" passes at both commits. Control K1, which reverses the order, makes it fail
+  (`controls/k1-checks-named-rows.txt`); control K2, which shuffles it per compilation, makes the determinism row fail
+  (`controls/k2-checks-named-rows.txt`); each revert's digest is the made copy's (`controls/k-digests.txt`), and every
+  row of the reverted copy passes (`controls/retake/k-reverted-checks-named-rows.txt`).
+- **"The corrections file carries an appended entry recording which half of the determinism claim was covered and
+  which was not."** [JSC-319](#jsc-319).
+
+So the JSB-1 row reads `[FULL]` and `In progress`: its gate read met on the bundle, and not accepted (EX-30). What
+JSC-319 records as not covered, an order that varies only from one process to the next, identity across machines and
+machine code, stays not covered: the gate asks that the entry record it, and it does. Bundle
+[`sjl-13-002`](../../../docs/evidence/sjl-13-002/README.md)'s part C runs the same two rows at step 2's base `389b55c9`
+and after commit `467ad7c3`, where the lowering reads the shared tree, with K1 and K2 again; they pass and fail there as
+at step 1. Decision D34 names step 1's bundle, so the row is judged on it and cites step 2's as the same rows on the
+lowering SJL-13 leaves. JSC-319's finding against JSD-0080's decision D14 is answered.
+
+**Authority and date.** [JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md)'s decision D34,
+taken by the owner on 2026-10-26 under the direction of 2026-10-18;
+[JSD-0080](decisions/0080-the-shared-frontend-contract-and-the-in-place-preparation.md)'s decision D14; the programme's
+work package SJL-13.5. 2026-11-15.

@@ -262,6 +262,15 @@ The profile's ledger row JS-2 was `Blocked` on the seed copy. It closes under th
 [SJL-D-7](../decisions.md#sjl-d-7) re-scoped: "the general front end is the shared frontend". This
 milestone's bundle is the evidence. JSC entries record the change.
 
+*(Noted 2026-11-15, at SJL-13.5.)* The text above reads "This milestone's bundle is the evidence. JSC entries record
+the change." The evidence is two bundles, one per step of SJL-13.3, and the change is recorded by the profile's
+[JSC-329](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-329): JS-2's re-scoped gate reads
+met on bundles `sjl-13-001` and `sjl-13-002` as JSD-0083's decision D33 reads it, and the profile ledger's JS-2 row
+reads `[FULL]` and `In progress`, closed on the bundles and not accepted, its blocker on the shared frontend closed.
+[JSC-330](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-330) records the JSB-1 row
+decision D34 asks for at SJL-13.5, judged on bundle `sjl-13-001`'s two wide-lowering rows and their controls, read
+met and not accepted. Nothing is accepted. The text above is left as written.
+
 ### SJL-13.6 — Evidence
 
 **In Broiler.VM:**
@@ -317,6 +326,27 @@ compiler's own measurement (part J, not met, no gate clause). Its README judges 
 a closure that clauses 4 to 6 settle: JS-2's re-scoped gate is met by clauses 4 to 6 and JSD-0063's requirements on
 bundles `sjl-13-001` and `sjl-13-002`, and clause 10 by the JSC entries and the profile ledger's closed JS-2 row that
 SJL-13.5 files. There is no circularity.
+
+*(Noted 2026-11-15, at SJL-13's exit reading, over both repositories' bundles.)* Each clause above is read against the
+bundles of the repository whose group holds it, at the commit each piece of evidence was taken: clauses 1 to 3 in
+Broiler.JS's bundle `sjl-13-001` (observed, Broiler-Platform/Broiler.JS#1097 and #1099), clause 3 under its rule's third
+revision, which is weaker evidence; and clauses 4 to 10 in this repository's bundle
+[`sjl-13-002`](../../evidence/sjl-13-002/README.md), section 10, on both of this family's bundles, step 1's
+[`sjl-13-001`](../../evidence/sjl-13-001/README.md) and step 2's. Clause 5 rests on the owner's rulings of 2026-11-11 on
+bundle `sjl-13-001`'s readings and on step 1's rule revisions, two of them, the owner's own, written after a development
+pre-check of step 1 had seen what they admit, which is weaker evidence; clause 6 at step 1 on that rule's revisions of
+2026-11-02, taken under the owner's standing direction of 2026-10-18, and of 2026-11-09, later that day, the owner's own
+("Rows + class F"), written after that pre-check had seen the test262 files it admits; clause 7 on the owner's ruling on
+bundle `sjl-13-001`'s reading 11 and on the owner's revisions of 2026-11-04 and 2026-11-08; clause 6 at step 2 on bundle
+`sjl-13-002`'s reading of the hosted runs' SDK and images, and clause 4 on JSD-0083's readings of the milestone's words
+above and on part D's revisions of 2026-11-10 and 2026-11-13, each taken under the owner's standing direction and not
+the owner's own answer; clause 8, for every JavaScript root this machine can publish, on EX-126; and clause 10 on the
+reading of 2026-10-26 above, by the profile's JSC-329 and JSC-330 and its ledger's JS-2 row, closed on the bundles and
+not accepted, and its JSB-1 row, which SJL-13.5 files, and on the reading JSC-329 records, under the same direction,
+that JSD-0063's requirements on the shared frontend are held by the programme's rules, the home's read as observed,
+whose alternative is the row `[PARTIAL]`. Every clause read met on the bundles; the gate waits on SJL-12's, SJL-3's and
+SJL-7's gates and on review (EX-30). The programme ledger's entry of 2026-11-15, later still, is the record over both,
+with each clause's reading and the open items. The clauses above are left as written.
 
 ---
 

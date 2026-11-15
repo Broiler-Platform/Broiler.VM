@@ -1,0 +1,16 @@
+# rules-from-trx.py <trx> <commit>: every test of rules I1 to I7 and N5 to N9, N12 and N19 (the rules SJL-13's clauses 7 and 8
+# and SJL-13.6 name) in the architecture suite's TRX, with its outcome, and the suite's counters.
+import re, sys, xml.etree.ElementTree as ET
+ns = {'t': 'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'}
+root = ET.parse(sys.argv[1]).getroot()
+rows = []
+for r in root.iterfind('.//t:UnitTestResult', ns):
+    short = r.get('testName').rsplit('.', 1)[-1]
+    m = re.match(r'(I[1-7]|N[5-9]|N12|N19)_', short)
+    if m: rows.append((m.group(1), short, r.get('outcome')))
+c = root.find('.//t:ResultSummary/t:Counters', ns)
+print('# rules I1 to I7, N5 to N9, N12 and N19 in the architecture suite at %s, from its TRX (%s); the suite: outcome %s, total %s, passed %s, failed %s, not executed %s'
+      % (sys.argv[2], sys.argv[1].rsplit('/', 1)[-1], root.find('.//t:ResultSummary', ns).get('outcome'), c.get('total'), c.get('passed'), c.get('failed'), c.get('notExecuted')))
+key = lambda t: (t[0][0], int(t[0][1:]), t[1])
+for rule, short, outcome in sorted(rows, key=key):
+    print(rule, outcome, short, sep='\t')

@@ -56,7 +56,10 @@ JSB-1's gate names exists since 2026-10-20, and its State bullet of 2026-10-25 s
 accepted *(revised 2026-10-25, at the shared JavaScript libraries programme's SJL-12.6: the sentence
 read "JSB-1 and JSB-12 are not started; none is accepted". JSD-0080 leaves whether what exists meets
 JSB-1's gate to the profile's ledger, which holds no JSB-1 row at this date, so no record has judged it,
-and this paragraph does not. Corrected: [JSC-319](roadmap.corrections.md#jsc-319))*. The plan's [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile) runs the remainder as a performance track beside the
+and this paragraph does not. Corrected: [JSC-319](roadmap.corrections.md#jsc-319))* *(noted 2026-11-15, at the
+programme's SJL-13.5: the ledger holds a JSB-1 row from this date, by JSD-0083's decision D34, and reads JSB-1's gate
+met on bundle `sjl-13-001`, not accepted, so "none is accepted" still holds. Corrected:
+[JSC-330](roadmap.corrections.md#jsc-330))*. The plan's [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile) runs the remainder as a performance track beside the
 feature phases, meeting them at the release
 ([JSC-251](roadmap.corrections.md#jsc-251)).
 
@@ -632,6 +635,19 @@ names, and a stage identifier is never reused.
   profile owner. No row of the ledger moves for this bullet. Re-emission equality is now asserted beside a
   standing row over the wide front end's determinism in one process; across processes and machines, nothing in
   the checks lane asserts it.
+
+- **State on 2026-11-15: the profile's ledger judges this stage, and its gate reads met on bundle `sjl-13-001`, not
+  accepted** *(added 2026-11-15, at the shared JavaScript libraries programme's SJL-13.5, by
+  [JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md)'s decision D34; corrected:
+  [JSC-330](roadmap.corrections.md#jsc-330))*. The bullet above reads "That ledger holds no JSB-1 row at this date,
+  and reads this document's stages only as observed repository state, which moves nothing in it, so no record has
+  judged this stage yet." The [ledger](roadmap.status.md) holds a JSB-1 row from this date, judged on the two
+  wide-lowering rows bundle [`sjl-13-001`](../../../docs/evidence/sjl-13-001/README.md)'s part C runs: both pass at
+  step 1's base and after commit, controls K1 and K2 make the rows they target fail and pass after their revert, and
+  [JSC-319](roadmap.corrections.md#jsc-319) is the entry the gate's last clause asks for. The row reads `[FULL]` and
+  `In progress`: the gate read met on the bundle, and not accepted, since one person holds every role. What JSC-319
+  records as not covered stays not covered, and the order section 7 argues does not change. The bullet above is kept as
+  written.
 
 ### JSB-2 — The enforcement, which is right whether or not a backend is ever written
 
@@ -1328,7 +1344,10 @@ consumed", were true when they were written. Since then, what JSB-1's gate names
 rows assert the wide lowering's determinism in one process. JSB-1's State bullet of 2026-10-25, in
 [section 6](#jsb-1--determinism-over-bytecode-before-determinism-over-machine-code), says what exists and
 what it does not cover. Whether that meets the gate is not said here, and no record has judged the stage;
-the order this section argues does not change.
+the order this section argues does not change. *(Noted 2026-11-15, at the programme's SJL-13.5: the profile's
+[ledger](roadmap.status.md) judges the stage from this date, by JSD-0083's decision D34, and reads its gate met on
+bundle `sjl-13-001`, not accepted; the order this section argues still does not change. Corrected:
+[JSC-330](roadmap.corrections.md#jsc-330).)*
 
 **The rest are ordered by what they unblock rather than by size.** JSB-3 needs JSB-1's determinism;
 JSB-4 needs JSB-3's exit to have something to write; JSB-5 needs JSB-4's sections to have something to
