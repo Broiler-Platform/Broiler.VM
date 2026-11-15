@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# deletion-search.sh <commit>: git reads alone. SJL-13's clause 4 at <commit>: the files SJL-13.3's two steps deleted
+# (JsParser.cs at step 1; JsSyntax.cs and JsFrontendAdapter.cs with its parts at step 2) searched by name in the tree;
+# every name rule I5's register holds for milestone SJL-13.3 searched as a declaration of its last segment in the
+# family's product sources; and where the wide path's parse is, the shared library's parser named in JsFrontend.cs.
+REPO=/home/user/vm-s2ev
+c=$(git -C $REPO rev-parse "$1"); cd $REPO
+echo "# SJL-13's clause 4 searched at $c ($(date -u +%FT%TZ)), by git reads alone"
+echo "# 1. the deleted files: any path in the tree whose file name is one of them"
+for f in JsParser.cs JsSyntax.cs JsFrontendAdapter.cs JsFrontendAdapter.Expressions.cs JsFrontendAdapter.Functions.cs JsFrontendAdapter.Modules.cs; do
+  n=$(git ls-tree -r --name-only "$c" | grep -c "/$f\$"); echo "$f	paths=$n"; git ls-tree -r --name-only "$c" | grep "/$f\$" | sed 's/^/  /'
+done
+echo "# 2. rule I5's register, milestone SJL-13.3: entries, and a declaration (class, struct, record, enum, interface) of each entry's last segment in src/Broiler.VM.Profile.JavaScript*/ (.cs, outside docs/), for the entries that name a type (whose parent is the namespace Broiler.VM.Profile.JavaScript.Compiler or Broiler.VM.Profile.JavaScript)"
+git show "$c:src/tests/Broiler.VM.Architecture.Tests/retired-members.json" > /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/exit13/.rm.json
+python3 -I - "$c" <<'PY'
+import json, re, subprocess, sys
+c = sys.argv[1]
+e = [x for x in json.load(open('/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/exit13/.rm.json'))['retired'] if x['milestone'] == 'SJL-13.3']
+print('entries', len(e))
+types = []
+for x in e:
+    parts = x['member'].split('.')
+    # a type entry: its parent segment is the namespace Broiler.VM.Profile.JavaScript.Compiler (or .JavaScript)
+    if '.'.join(parts[:-1]) in ('Broiler.VM.Profile.JavaScript.Compiler', 'Broiler.VM.Profile.JavaScript'):
+        types.append(parts[-1])
+print('by type', len(types), 'by member', len(e) - len(types))
+hits = 0
+for t in types:
+    r = subprocess.run(['git', 'grep', '-n', '-E', r'\b(class|struct|record|enum|interface) +%s\b' % re.escape(t), c, '--', 'src/Broiler.VM.Profile.JavaScript*/*.cs', ':!docs'], capture_output=True, text=True).stdout
+    if r.strip():
+        hits += 1; print('DECLARED', t); print('  ' + r.strip().replace('\n', '\n  '))
+print('types declared again', hits)
+PY
+rm -f /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/exit13/.rm.json
+echo "# 3. where the wide path parses: the shared syntax library's parser and namespace named in the compiler's JsFrontend.cs"
+git grep -n -E 'SyntaxParser|using Broiler\.ECMAScript\.Syntax' "$c" -- src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs | cut -c1-200 | head -8
+echo "# 4. the compiler project's package reference to the shared frontend, and its central version"
+git grep -n 'Broiler.ECMAScript.Frontend' "$c" -- src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj Directory.Packages.props | cut -c1-200

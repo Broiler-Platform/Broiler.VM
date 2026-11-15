@@ -743,3 +743,93 @@ assurance coverage, joins the table, and the row of SJL-13.1 is kept as written.
 |---|---|---|
 | (none) | | No exclusion is defined at SJL-13.1, and none is planned. A later exclusion takes the next free identifier and is defined in this table |
 | EX-135 | Open | **The adapted tree and its adapter, which left this component's assurance coverage** *(added 2026-11-14, at step 2's records, as JSD-0087's dated note of that day records)*. The types rule I5 registers for SJL-13.3's step 2 (`src/tests/Broiler.VM.Architecture.Tests/retired-members.json`) left the JavaScript family's sources at step 2: `JsSyntax.cs`, `JsFrontendAdapter.cs`, `JsFrontendAdapter.Expressions.cs`, `JsFrontendAdapter.Functions.cs` and `JsFrontendAdapter.Modules.cs` whole, with every type in them. What the admission walk, the numeric admission, the binder and the lowering read in the adapted tree's place is `Broiler.ECMAScript.Frontend`'s own tree, namespace `Broiler.ECMAScript.Syntax`, which the wide path has parsed with since step 1. The home's own assurance covers it in the Broiler.JS repository: its generated manifest, `Broiler.ECMAScript/hairs.manifest.json`, lists every unit of the library's assembly with an annotation on each relevant declaration, checked in CI (rule SL8). No rule of this component reads those units, their human review is the home's and not `HUMAN_REVIEW.md`'s, and this component's assurance figures no longer count the adapted tree's or the adapter's units. The request and the side tables it hands on (`JsFrontend.cs`), the readings of the shared tree (`JsTreeFacts.cs`, which holds `FindConstructor` and `Unwrapped`, members rule I5 registers as `JsCompiler`'s), the admission walk (`JsAdmissionWalk.cs`), the diagnostics and their texts, the providers, the numeric admission, the binder and the lowering stay in this component and stay covered. EX-125 and EX-127 to EX-134 say the same of the earlier areas |
+
+## 10. SJL-13's exit reading, Broiler.VM's half, 2026-11-15
+
+*(Added 2026-11-15, after both steps' evidence had merged, bundle [`sjl-13-001`](../sjl-13-001/README.md)'s in
+Broiler-Platform/Broiler.VM#197 and this bundle's in Broiler-Platform/Broiler.VM#207, and after the records that observe
+them merged in Broiler-Platform/Broiler.VM#208.)* It reads the milestone's clauses 4 to 10, this family's, against both
+bundles' evidence at the commit each piece was taken. It changes no rule, widens none, revises no clause and declares
+nothing of SJL-13 met. The home's clauses 1 to 3 are Broiler.JS's, read in its bundle `sjl-13-001` (observed). The
+record over both repositories, each clause 1 to 10 with its reading and where it is recorded, JSD-0083's settling
+condition read and the open items, is the programme ledger's entry of this date, as that ledger placed SJL-9's (its
+entry of 2026-11-12), each bundle reading its own repository's half; SJL-13's Broiler.VM half has two bundles, one per
+step, and this section, in the bundle of SJL-13's final state, reads both.
+
+**What it reads.** The milestone's words are
+[`sjl-13-shared-syntax-and-vm.md`](../../javascript-shared-libraries/milestones/sjl-13-shared-syntax-and-vm.md) at the
+default branch's `6efc06315d40bafd68048c5e55fa5064010369fe` (the merge of Broiler-Platform/Broiler.VM#208), the head
+when this reading was taken, with the readings of 2026-10-26 noted under its work packages and its exit gate. The
+evidence:
+- **step 1**, bundle `sjl-13-001`: its rule's run at the base `df75f8cea79aa2452ca22892d47d8afa5a14c93f` and the after
+  commit `a8d8398bd59e7f5600cb0aa9e733ff8948859cf4` (Broiler-Platform/Broiler.VM#196), judged in its section 4, with
+  its section 5's readings, every one of them the owner's own dated answer by the rulings of 2026-11-11 and
+  2026-11-12, and the publication at the after commit (its `after/publication/`);
+- **step 2**, this bundle: its rule's run at the base `389b55c9ec9bb77409bb2487067fbebc0868849b` and the after commit
+  `467ad7c395234b335c816b8f49ae5b505740e32c` (Broiler-Platform/Broiler.VM#206), judged in section 4, with section 6's
+  readings, each taken under the owner's standing direction of 2026-10-18 and none the owner's own answer, and the
+  publication at the after commit (section 5, [`after/publication/`](after/publication/README.md));
+- **the head's rule checks**, [`exit-reading/`](exit-reading/), taken for this reading before any change of it, at
+  `6efc0631`: a clean `git archive` on a tmpfs ([`local/archive.txt`](exit-reading/local/archive.txt)), whose scratch
+  folder is named `base` in the retained records because the checks are this reading's answers before it changed
+  anything, though they hold the head and not either rule's base; the solution built there in Release with
+  `--disable-build-servers`, with no warning ([`build-solution.out.txt`](exit-reading/local/build-solution.out.txt),
+  [`build-warnings.txt`](exit-reading/local/build-warnings.txt), empty), then the architecture suite and the contract
+  tests with `--no-build`, each passing ([`test-architecture.out.txt`](exit-reading/local/test-architecture.out.txt),
+  [`test-contract.out.txt`](exit-reading/local/test-contract.out.txt)). Each wrote a TRX of every test, which is not
+  retained ([`trx.sha256`](exit-reading/trx.sha256)); the architecture suite's rows for rules I1 to I7, N5 to N9, N12
+  and N19 are [`rules.tsv`](exit-reading/rules.tsv), each `Passed`, by
+  [`rules-from-trx.py.txt`](exit-reading/scripts/rules-from-trx.py.txt). Each step ran under the exclusive lock and
+  behind the hard idle gate this bundle's runs used, which wait, with no fallback, for a one-minute load of at most 1.0
+  and no dotnet, testhost, VBCSCompiler, MSBuild, ilc, crossgen or `Broiler.*` process
+  ([`gate.log`](exit-reading/local/gate.log), [`checks.sh.txt`](exit-reading/scripts/checks.sh.txt) with
+  [`run.sh.txt`](exit-reading/scripts/run.sh.txt) and [`gate.sh.txt`](exit-reading/scripts/gate.sh.txt)), whose
+  `stop-servers` lines name no leftover process, on this family's local machine (four logical processors, .NET SDK
+  10.0.404, Ubuntu 24.04.5 LTS, each run's `machine.txt`);
+- [`exit-reading/deletion-search.txt`](exit-reading/deletion-search.txt), git reads alone at `6efc0631`
+  ([`deletion-search.sh.txt`](exit-reading/scripts/deletion-search.sh.txt)): the files the two steps deleted searched by
+  name, every name rule I5's register holds for SJL-13.3 that names a type searched as a declaration in the family's
+  product sources, and the shared library's parser and package reference where the wide path parses;
+- [`exit-reading/verify-hashes.txt`](exit-reading/verify-hashes.txt): every `hashes.txt` of both bundles checked with
+  `sha256sum -c` in a clean archive of `6efc0631`, and both bundles' `manifest.json` checked against the tree of the
+  commit each was collected at, all of them verifying
+  ([`verify-hashes.sh.txt`](exit-reading/scripts/verify-hashes.sh.txt),
+  [`verify-manifest.py.txt`](exit-reading/scripts/verify-manifest.py.txt));
+- **for clause 10**, the profile's JSC entries
+  [JSC-329](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-329) and
+  [JSC-330](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-330) and its ledger's JS-2 and
+  JSB-1 rows, filed by SJL-13.5 at `dfc818e29133210bd4fe44ec94ce16b83c542f3b`, this reading's first commit.
+
+No path outside `docs/` and the profile's `docs/` differs between the after commit `467ad7c3` and the head `6efc0631`,
+and the commits that carry this reading change documents and `exit-reading/` alone, so the code the head's checks read
+is step 2's. The registry's last change is the registry commit `cbee7c4`, revision 19, at both after commits and the
+head. [`exit-reading/hashes.txt`](exit-reading/hashes.txt) holds the SHA-256 of every other file of that folder, which
+`sha256sum -c` verifies.
+
+**Whose readings these are.** A clause below rests on a reading where the documents did not settle its words. Step 1's
+are the owner's own rulings: bundle `sjl-13-001`'s readings 2, 3, 6, 7 and 11 ruled on 2026-11-11 ("Narrowed run
+counts", "Not undone", "Accept both", "Counts as match") and readings 1, 4, 5, 8, 9 and 10 on 2026-11-12 ("Accept all
+five", "Accept as taken"). Step 2's readings 1 to 3 of section 6, on which parts C, D and A turn, are taken under the
+owner's standing direction of 2026-10-18 ("Please do all recommended decisions and skip waiting for review") as the
+recommended choice; the owner may rule otherwise. So are JSD-0083's decisions of 2026-10-26, its readings of the
+milestone's words noted under SJL-13.3 and the exit gate, and its notes of 2026-11-10 and 2026-11-13 on decisions D20
+and D15; none is the owner's own dated answer.
+
+| Clause | Its words | Read from, at the commit | Reading, and what it rests on |
+|---|---|---|---|
+| 4 | "`JsParser` is gone, and the wide path parses with the frontend." | bundle `sjl-13-001`, section 4's commit conditions and part D, at `a8d8398`; this bundle, section 4's commit conditions and part D, at `467ad7c3`; [`deletion-search.txt`](exit-reading/deletion-search.txt) and [`rules.tsv`](exit-reading/rules.tsv) at `6efc0631` | **Read met** at `a8d8398`, at `467ad7c3` and at the head. At step 1's after commit `JsParser.cs` is absent and the wide path parses through `Broiler.ECMAScript.Frontend`, rule I5 registering `JsParser` and the rest of step 1's deletion list (bundle `sjl-13-001`, part D, MET); at step 2's, `JsSyntax.cs` and `JsFrontendAdapter.cs` with its parts are deleted and the admission walk, the numeric admission, the binder and the lowering read the shared tree, rule I5 registering what they declared (part D, MET). At the head no file either step deleted is in the tree, no type the register names for SJL-13.3 is declared again, `JsFrontend.Parse` calls the library's `SyntaxParser`, and rules I5 and N19, which counts the library's namespace as a parser that must run on the declared stack, pass. It rests on readings, not on a ruling or a revision: the milestone's "Deleted: `JsParser`" read with step 1's deletion list (decision D20) and "the adapter and `JsSyntax`'s parse-only parts go" read as `JsSyntax` whole (decision D19), both of 2026-10-26; JSD-0083's note of 2026-11-10 on decision D20, which names the binder's checks of `syntax` rows by row where rule I5 cannot register them, written into bundle `sjl-13-001`'s part D by its revision of 2026-11-10 before any run; and section 1's reading 7 on where the facts are computed at step 2. Each was taken under the owner's standing direction of 2026-10-18. Part D's verdict here turns on section 6's reading 2, rule I6, which clause 4 does not name |
+| 5 | "Artifacts are byte-identical over the parse corpus, or every difference is classified under the rule." | part B of bundle `sjl-13-001` at `df75f8c`, the registry commit `cbee7c4` and `a8d8398`; part B of this bundle at `389b55c9` and `467ad7c3` | **Read met.** Step 1's every difference between the base and the after commit is in a class its rule admits and is listed (R, R2, S, F for rows P37, D64 and P15b, and N), and B4 and the census show none but R (bundle `sjl-13-001`, part B, MET); step 2's runs show no difference of any kind in any sub-population, B5's ordered specifiers among them, and both census pairs are identical (part B, MET). It rests on the owner's rulings of 2026-11-11 on bundle `sjl-13-001`'s readings 3 ("Not undone"), 6 and 11 ("Accept both"), on which step 1's part B turns, and on that rule's revisions of 2026-11-02 to 2026-11-10, each filed before any run of step 1, class N's among them on the owner's own decisions of 2026-11-09. Step 2's part B rests on no reading |
+| 6 | "test262 in both forms meets the rule." | part A of bundle `sjl-13-001`, hosted runs at `df75f8c` and `a8d8398`, with its re-runs; part A of this bundle, hosted runs at `389b55c9` and `467ad7c3`, with its re-runs | **Read met.** Step 1: all four runs complete, every changed verdict of either pair in class C1 kind (F), each a row of this family's corrections, or C4, and listed (bundle `sjl-13-001`, part A, MET), on readings 1 and 10 that the owner ruled on 2026-11-12, on which no verdict turns. Step 2: all four runs complete, every changed verdict in C4 (c′), a wall-clock exhaustion whose re-runs agree, and none a regression (part A, MET). Step 2's rests on section 6's reading 3, taken under the owner's standing direction of 2026-10-18: the hosted runs as configured, built with .NET SDK 11.0.100 on images that differ between runners, which the rule does not name; the alternative would void both runs |
+| 7 | "Rules N5 to N9, N12 and N19 hold. The registry revision is filed, if any." | part D of bundle `sjl-13-001` at `a8d8398` and its part E (the registry and its mapping); part D of this bundle at `467ad7c3`; [`rules.tsv`](exit-reading/rules.tsv) at `6efc0631` | **Read met** at both after commits and at the head: every test of rules N5 to N9, N12 and N19 passes, in a suite that passes whole, each rule refusing the witness its register row names; N12 counts the compiler assembly's files with a dated comment naming each file each step added and deleted. Registry revision 19 is filed at step 1's registry commit (decision D12), and the mapping checker passes at step 1's after commit and refuses its three controls (bundle `sjl-13-001`, part E, MET); step 2 takes no revision, since it changes no meaning, and the registry's last change is the registry commit. It rests on no ruling and no reading of clause 7's own words: this bundle's part D turns on section 6's reading 2, which reads rule I6, not one of the rules clause 7 names |
+| 8 | "Rule `I3` keeps the frontend out of the compiler-free roots. Every root is published and run in three modes." | bundle `sjl-13-001`'s part D and [`after/publication/`](../sjl-13-001/after/publication/README.md) at `a8d8398`; this bundle's section 5 and [`after/publication/`](after/publication/README.md) at `467ad7c3`, and the I3 test in part D's suite there; [`rules.tsv`](exit-reading/rules.tsv) at `6efc0631` | **Read met** at `a8d8398` and `467ad7c3` for every JavaScript root this machine can publish, ExecutionOnly, SliceCompiler, Conformance, Cli and PolyglotCli, each published and run under the JIT, trimming and Native AOT, the collector's last line reading "every root published and run in three modes: True" at both commits. In both closures the compiler-bearing roots carry `Broiler.ECMAScript.Frontend` and ExecutionOnly does not, and rule I3, whose register row names the frontend clause's subject from step 1, passes at both after commits and at the head. It rests on an exclusion, EX-126, for the Android root (bundle `sjl-3-001`), as SJL-3's, SJL-8's, SJL-10's and SJL-9's readings of the clause did, and on section 6's reading 13, taken under the owner's standing direction of 2026-10-18, that step 2's publication was taken at task 7.3; no verdict turns on that reading |
+| 9 | "Fuzzing runs clean under the rule." | part G of bundle `sjl-13-001` at `a8d8398`; part G of this bundle at `467ad7c3`, SJL-13's final state | **Read met.** At each after commit the wide session over bundle `sjl-13-001`'s seeds and the four slice sessions end "no finding", and each control is reported as stated (bundle `sjl-13-001`, part G, MET; this bundle, part G, MET), the wide control at step 2 in the binder's walk over the shared tree. It rests on no ruling and no revision; section 6's reading 11, which places step 2's wide control, is taken under the owner's standing direction of 2026-10-18, and no verdict turns on it |
+| 10 | "JS-2 closes, with its JSC entries." | JSC-329 and JSC-330, and the profile ledger's JS-2 and JSB-1 rows, at `dfc818e2` | **Read met** at `dfc818e2`, as JSD-0083's decision D33 reads the clause: "the record of a closure that clauses 4 to 6 settle". JS-2's re-scoped gate reads met on both bundles, clauses 4 to 6 above with JSD-0063's requirements, and JSC-329 records it; the profile ledger's JS-2 row reads `[FULL]` and `In progress`, closed on the bundles and not accepted, and its blocker on the shared frontend is closed. JSC-330 and the JSB-1 row decision D34 calls for are filed in the same commit. It rests on readings taken under the owner's standing direction of 2026-10-18: decision D33 itself, and the reading that "closes" is the row read closed on the bundles in the ledger's own vocabulary, `In progress` and not `Accepted`, which needs review (EX-30), and not the row kept `Blocked` until SJL-13's gate is met |
+
+**So, of this family's clauses 4 to 10:** each reads met on bundles `sjl-13-001` and `sjl-13-002`. Clause 5 rests on the
+owner's rulings of 2026-11-11 and on step 1's rule revisions, each filed before any run; clause 6 at step 2 on section
+6's reading 3, taken under the owner's standing direction; clause 4 on JSD-0083's readings of the milestone's words,
+taken under that direction; clause 8 on EX-126 for the Android root; clause 10 on decision D33 and the reading of
+"closes" that JSC-329 records; clauses 7 and 9 on no ruling and no revision. This reading meets no gate and accepts
+nothing: SJL-13 may not meet its gate before SJL-12, SJL-3 and SJL-7 meet theirs, and review is deferred (EX-30). The
+programme ledger's entry of this date gives the record over both repositories, JSD-0083's settling condition read, and
+the open items.

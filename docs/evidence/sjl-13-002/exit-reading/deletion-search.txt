@@ -1,0 +1,19 @@
+# SJL-13's clause 4 searched at 6efc06315d40bafd68048c5e55fa5064010369fe (2026-11-15T16:36:25Z), by git reads alone
+# 1. the deleted files: any path in the tree whose file name is one of them
+JsParser.cs	paths=0
+JsSyntax.cs	paths=0
+JsFrontendAdapter.cs	paths=0
+JsFrontendAdapter.Expressions.cs	paths=0
+JsFrontendAdapter.Functions.cs	paths=0
+JsFrontendAdapter.Modules.cs	paths=0
+# 2. rule I5's register, milestone SJL-13.3: entries, and a declaration (class, struct, record, enum, interface) of each entry's last segment in src/Broiler.VM.Profile.JavaScript*/ (.cs, outside docs/), for the entries that name a type (whose parent is the namespace Broiler.VM.Profile.JavaScript.Compiler or Broiler.VM.Profile.JavaScript)
+entries 110
+by type 88 by member 22
+types declared again 0
+# 3. where the wide path parses: the shared syntax library's parser and namespace named in the compiler's JsFrontend.cs
+6efc06315d40bafd68048c5e55fa5064010369fe:src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs:18:using Broiler.ECMAScript.Syntax;
+6efc06315d40bafd68048c5e55fa5064010369fe:src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontend.cs:114:        var result = SyntaxParser.Parse(Request(text, options, forceStrict));
+# 4. the compiler project's package reference to the shared frontend, and its central version
+6efc06315d40bafd68048c5e55fa5064010369fe:Directory.Packages.props:33:         <PackageVersion Include="Broiler.ECMAScript.Frontend" Version="0.1.0-preview.10" />). -->
+6efc06315d40bafd68048c5e55fa5064010369fe:Directory.Packages.props:34:    <PackageVersion Include="Broiler.ECMAScript.Frontend" Version="0.1.0-preview.11" />
+6efc06315d40bafd68048c5e55fa5064010369fe:src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj:55:    <PackageReference Include="Broiler.ECMAScript.Frontend" />
