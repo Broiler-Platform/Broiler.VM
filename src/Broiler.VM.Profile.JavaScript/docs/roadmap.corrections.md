@@ -14187,24 +14187,43 @@ commit it was taken:
 - **test262 in both forms.** Bundle `sjl-13-001`'s part A meets its rule; bundle `sjl-13-002`'s part A meets its rule
   on that bundle's reading of the hosted runs' SDK and images, taken under the owner's standing direction of
   2026-10-18 and not the owner's own answer.
-- **JSD-0063's requirements on the shared frontend**, held by the programme's rules rather than by a copy. Two goals on
-  the wide path in one process do not reach each other, and a deep-nesting corpus is refused on the wide path rather
-  than survived: two of part C's checks rows in both bundles, each passing at every commit it names. Rule N12, no
-  mutable static, thread-static, async-local or thread-local state in the compiler assembly, and rule I2, which holds
-  every admitted assembly, the shared frontend's among them, to reaching nothing on rule B5's lists (assembly loading,
-  name-based type resolution, activator construction, IL emission, module initializers), pass in both bundles' part D.
-  Every JavaScript root this machine can publish is published and run under the JIT, trimming and Native AOT at both
-  after commits, the Android root being EX-126. The library's own conventions and its Native AOT probe are its home's,
-  read in Broiler.JS's bundle `sjl-13-001` and observed, not this profile's evidence. "One early-error stage" is met in
-  its shared half, one producer per check and no copy in the binder (decision D20), and SJL-15 meets it whole, as
-  decision D33 reads the requirement JSD-0080 adopted.
+- **JSD-0063's requirements on the shared frontend**, held by the programme's rules rather than by a copy. Decision D33
+  settles JS-2 on them "on bundles `sjl-13-001` and `sjl-13-002`", and not every one of them is read by a rule of this
+  family. Each, and what holds it:
+  - *no ambient parse state, two parses with different goals running concurrently*: part C's row "two goals on the
+    wide path in one process do not reach each other", in both bundles, passing at every commit it names;
+  - *a deep-nesting corpus refused rather than terminating the process*: part C's row "a deep-nesting corpus is
+    refused on the wide path", in both bundles, the same;
+  - *no IL emission, assembly loading, name-based type resolution, activator construction or module initializer*: rule
+    I2, which holds every admitted assembly, the shared frontend's among them, read from the package itself, to
+    reaching nothing on rules B5's, B5b's and B5c's lists, passing in both bundles' part D;
+  - *trim and AOT analyzers clean across its reference closure*: for the code a root reaches, every JavaScript root
+    this machine can publish, published with warnings as errors and run under the JIT, trimming and Native AOT at both
+    after commits, the Android root being EX-126; for the code no root reaches, which rule I2's own remark says ILC
+    does not see, no rule of this family, and the home's rule SL5 and its Native AOT probe;
+  - *no thread-static field and no async-local type*: no rule of this family reads the library for them, since rule N12
+    reads only the compiler assembly's own sources; the home's rule SL2;
+  - *no conditional compilation* and *no run-time generic construction*: no rule of this family reads either, since
+    rule B5's lists name neither; the home's rules SL10 and SL3 (its convention 8);
+  - *one early-error stage*: reads met in its shared half, one producer per check and no copy in the binder (decision
+    D20), and SJL-15 meets it whole, as decision D33 reads the requirement JSD-0080 adopted.
 
-*(Added 2026-11-15, later, in a later commit of the same change, before it merged.)* The delivery plan's statement of JS-2's exit gate
-names more than decision D33 does: rules N5 to N9, N12 and N19 with a registry revision for every code whose meaning
-changes, no compiler-free root's closure carrying the frontend, every root published and run in three modes, and the
-two-way boundary rule, every shared package on the allow-list and pinned by content hash. Those are SJL-13's clauses
-7 and 8 and rule I1. SJL-13's exit reading reads clauses 7 and 8 met on both bundles, and rule I1 passes in both
-bundles' part D and at the default branch's head, so the row closes on the delivery plan's text as on decision D33's.
+  The home's rules are read in Broiler.JS's bundle `sjl-13-001` (observed): its part E runs rules SL1 to SL10 with
+  their witnesses, and its Native AOT probe is read met under its rule's third revision, which is weaker evidence. They
+  are not this profile's evidence: the roadmap's [invariant 12](roadmap.md#2-engineering-invariants) says no result
+  another component produces is this component's evidence, and the ledger's section 3 says no evidence the programme
+  collects in the Broiler.JS repository meets a clause here. **The reading taken:** decision D33's "JSD-0063's
+  requirements on bundles `sjl-13-001` and `sjl-13-002`" reads met by the programme's rules wherever each runs, this
+  family's on its own bundles and the home's read as observed, because JSD-0063 places the requirements on the shared
+  frontend, "held by the programme's rules rather than by a copy", and the programme's governance (its
+  [section 3.2](../../../docs/javascript-shared-libraries/governance.md#32-shared-libraries-group-sl-in-their-home-repository))
+  says Broiler.VM's gates rely on the home's SL rules being active there; they are requirements on another component,
+  not clauses this component's evidence re-demonstrates. It is taken under the owner's standing direction of
+  2026-10-18 as the recommended one and is not the owner's own answer. **The alternative not taken:** the requirements
+  this family's bundles do not show (thread-static and async-local state in the library, conditional compilation,
+  run-time generic construction, the analyzers over the code no root reaches, and the delivery plan's "no edge to an
+  engine") stay open under invariant 12 until a bundle of this family shows them, so the row reads `[PARTIAL]` with
+  them named, and SJL-13's clause 10 is not met until then. The programme's ledger records both.
 
 So the ledger's JS-2 row reads `[FULL]` and `In progress`: closed on the bundles, as decision D33 says SJL-13.5 files
 it, and not accepted, since `Accepted` needs an owner's and a reviewer's decision and one person holds every role
@@ -14215,10 +14234,24 @@ and SJL-7's gates and on review; decision D33's "clause 10 is met by the JSC ent
 row, filed by SJL-13.5" reads it so, since SJL-13.5 files that row before the gate can be met. That reading is taken
 under the owner's standing direction of 2026-10-18 as the recommended one, and the alternative, the row kept `Blocked`
 until SJL-13's gate is met, is recorded with it in the programme's ledger. The delivery plan's "Next action" reads that
-nothing is due in this component for JS-2, and its "Dependencies" that the external dependency is met. This entry and
-[JSC-330](#jsc-330) are the JSC entries SJL-13's clause 10, "JS-2 closes, with its JSC entries", names, as decision D3
-asks for them at SJL-13.5. No other row of the ledger moves: the milestones the delivery order places after JS-2 have
-moved without it, as section 3's second row records, and their rows say what is open in each.
+nothing is due in this component for JS-2, and its "Dependencies" that the external dependency reads met on the
+bundles. This entry is JS-2's closing entry, the one decision D3 asks for at SJL-13.5 "for JS-2's closure", which
+decision D33 has SJL-13.5 file; [JSC-330](#jsc-330) is the JSB-1 row decision D34 asks for at the same work package.
+SJL-13's exit reading reads clause 10, "JS-2 closes, with its JSC entries", on both, taking JSC-330 with JSC-329 since
+SJL-13.5 files them together; that is a reading, and clause 10 reads met on JSC-329 alone as well. No other row of the
+ledger moves: the milestones the delivery order places after JS-2 have moved without it, as section 3's second row
+records, and their rows say what is open in each.
+
+*(Added 2026-11-15, later, in a later commit of the same change, before it merged.)* The delivery plan's statement of
+JS-2's exit gate names more than decision D33 does: rules N5 to N9, N12 and N19 with a registry revision for every code
+whose meaning changes, no compiler-free root's closure carrying the frontend, every root published and run in three
+modes, and the two-way boundary rule with its witnesses, no edge to an engine and every shared package on the allow-list
+and pinned by content hash. The first three are SJL-13's clauses 7 and 8, which SJL-13's exit reading reads met on both
+bundles, "every root" for every JavaScript root this machine can publish, the Android root being EX-126. This family's
+half of the boundary rule is rule I1, every package reference on the allow-list, from a project the list names for it,
+at its pinned hash, which passes in both bundles' part D and at the default branch's head; the home's half, no shared
+project referencing an engine, is the home's rule SL1, read as observed on the reading above. So the row closes on the
+delivery plan's text as on decision D33's, on that reading.
 
 **Authority and date.** [JSD-0083](decisions/0083-the-shared-syntax-library-and-the-wide-path.md)'s decisions D3 and
 D33, taken by the owner on 2026-10-26 under the direction of 2026-10-18;

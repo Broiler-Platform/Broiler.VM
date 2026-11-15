@@ -2246,19 +2246,23 @@ clauses 1 to 3 on the home's bundle `sjl-13-001`, whatever each decides; clause 
 clauses 4 to 6 settle (decision D33).
 
 *(Noted 2026-11-15, at SJL-13's exit reading, over both repositories' bundles.)* Clauses 4 to 9 are read on bundles
-[`sjl-13-001`](../../../../docs/evidence/sjl-13-001/README.md) and [`sjl-13-002`](../../../../docs/evidence/sjl-13-002/README.md)
-by the latter's section 10, each at the commit its evidence was taken, every one read met. Clauses 1 to 3 are judged on
-the home's bundle `sjl-13-001` (observed, Broiler-Platform/Broiler.JS#1097 and #1099), clause 3 under that rule's third
-revision, which is weaker evidence, and "whatever each decides" takes them as they read. Clause 10's record is the
-profile's [JSC-329](../roadmap.corrections.md#jsc-329) with its ledger's JS-2 row, closed on the bundles and not
-accepted (decision D33). One word the condition does not settle: clause 8's publication is "read, not judged" by both
-bundles, whose rules leave it to the collector's runs. The exit reading takes "judged on bundles" as its own reading of
-clause 8 on what both bundles retain, rule I3 in both bundles' part D and the publications at both after commits; the
-alternative, judged by a part of a rule, under which no part of either rule judges the publication and the condition
-is not met until one does, is not taken. That reading is taken under the owner's standing direction of 2026-10-18 and
-is not the owner's own answer. So the condition reads met on the bundles, on that reading; the programme ledger's
-entry of 2026-11-15, later still, records it. It moves no gate, revises no decision, and accepts nothing. The condition
-and the notes above are left as written.
+[`sjl-13-001`](../../../../docs/evidence/sjl-13-001/README.md) and
+[`sjl-13-002`](../../../../docs/evidence/sjl-13-002/README.md) by the latter's section 10, each at the commit its
+evidence was taken, every one read met. Clauses 1 to 3 are judged on the home's bundle `sjl-13-001` (observed,
+Broiler-Platform/Broiler.JS#1097 and #1099), clause 3 under that rule's third revision, which is weaker evidence, and
+"whatever each decides" takes them as they read. Clause 10's record is the profile's
+[JSC-329](../roadmap.corrections.md#jsc-329) with its ledger's JS-2 row, closed on the bundles and not accepted
+(decision D33), on the reading JSC-329 records, taken under the owner's standing direction of 2026-10-18, that decision
+D33's "JSD-0063's requirements on bundles `sjl-13-001` and `sjl-13-002`" are held by the programme's rules, the home's
+read as observed for what no rule of this family reads; the alternative, the row `[PARTIAL]` until a bundle of this
+family shows them, is not taken. One word the condition does not settle: clause 8's publication is "read, not judged" by
+both bundles, whose rules leave it to the collector's runs. The exit reading takes "judged on bundles" as its own
+reading of clause 8 on what both bundles retain, rule I3 in both bundles' part D and the publications at both after
+commits; the alternative, judged by a part of a rule, under which no part of either rule judges the publication and the
+condition is not met until one does, is not taken. That reading is taken under the owner's standing direction of
+2026-10-18 and is not the owner's own answer. So the condition reads met on the bundles, on those readings; the programme
+ledger's entry of 2026-11-15, later still, records it. It moves no gate, revises no decision, and accepts nothing. The
+condition and the notes above are left as written.
 
 ## Correction entries
 

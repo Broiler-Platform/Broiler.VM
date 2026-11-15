@@ -205,8 +205,9 @@ taken, and JS-2's gate is re-scoped.
   Broiler.JS repository by the programme's milestones SJL-12 and SJL-13 and admitted under core
   record ADR 0014 from the programme's SJL-2. The core contract's acceptance no longer binds this
   milestone, because nothing is adapted from a copy to a moving contract. *(Noted 2026-11-15, at the programme's
-  SJL-13.5: the external dependency is met. The shared frontend, `Broiler.ECMAScript.Frontend`, is admitted for the
-  compiler alone, and the wide path parses with it. Corrected: [JSC-329](roadmap.corrections.md#jsc-329).)*
+  SJL-13.5: the external dependency reads met on the bundles. The shared frontend, `Broiler.ECMAScript.Frontend`, is
+  admitted for the compiler alone, and the wide path parses with it. Corrected:
+  [JSC-329](roadmap.corrections.md#jsc-329).)*
 - **Objective exit gate:** **The general front end is the shared frontend (SJL-13).** This
   profile's wide parser is gone and the wide path parses with the shared frontend; the artifacts are
   byte-identical over the parse corpus, or every difference is classified under the programme's
