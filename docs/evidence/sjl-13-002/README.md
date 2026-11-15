@@ -384,7 +384,10 @@ quoted: part A is decided per variant. The rule admits no class but part A's C4 
 [`after/judgement/commits/commit-conditions.txt`](after/judgement/commits/commit-conditions.txt) is the output of
 [`commit-conditions.sh.txt`](after/judgement/commits/commit-conditions.sh.txt), git reads alone, over this repository,
 taken at task 7.3 against this branch's head before task 7.3's commits. Every condition holds on these reads, so no
-part is void.
+part is void. *(Added 2026-11-15, later, at the review of task 7.3.)* Where the table says "this branch's head", it is
+that head, `a2387f186e2c1a989448cbffdaa56c012039b12a`, as the read's first line says. Neither task 7.3's commits nor
+the review's fixes after them change any `decision-rule-area*.md` of this bundle, so the rule's blob and the
+revision's are the same at this branch's final head.
 
 | Commit | Condition (the rule's "The commits") | The git read, and what it shows |
 |---|---|---|
@@ -492,8 +495,15 @@ height charge of a chain node ... the fifth row must fail" (that rule's revision
   `J000451`, a stored input of the parse corpus whose function declares a variable initialised by one binary chain of
   `+` some twenty thousand operands long. The after commit with the published library refuses it at the parse with
   2103, the contract's nesting refusal, as run 1 does; under K4 the library no longer charges the chain's height,
-  accepts it, and the admission walk, recursing down the chain's left spine, overflows, with the frame repeated as
-  often as in the configured run. No other input the after commit refuses with 2103 overflows under K4. The
+  accepts it, and the admission walk, recursing down the chain's left spine, overflows. The frame is repeated as often
+  as in the configured run, which shows the same call shape, a chain in a variable's initialiser inside a function, at
+  the compile stack's capacity, not the input. What names the input is the selection: K4 changes what the library
+  charges, not the tree it builds, so only an input run 1 refuses with 2103 can reach a deeper tree under K4; run 1
+  refuses with 2103 inputs of B1, B2 and B4 only, none of B3 or B5, and B4, the slice front end, reads no library tree;
+  of B1's and B2's, `J000451` alone overflows under K4 (the probe note's dated addition). *(Revised 2026-11-15, later,
+  at the review of task 7.3: it read "overflows, with the frame repeated as often as in the configured run. No other
+  input the after commit refuses with 2103 overflows under K4.", which offered the frame count as tying the configured
+  overflow to `J000451`; the count is the stack's capacity for that call shape.)* The
   determinism row is the first that compiles the parse corpus's stored inputs. **Under the harness narrowed to the
   fifth row**, the adjunct the carried reading names, the same library patch makes the fifth row fail, every one of
   its sources past the bound accepted (`controls/k4-row-*`). Section 6's reading 1 takes that as K4 making the fifth
@@ -528,9 +538,12 @@ it), I6 finds no shared type in this family's public API baseline, and the contr
   SJL-13.3's step 2 names by kind, per type, the positional record parameters, enumeration members and constructors
   its reader does not read. The read against both commits' generated assurance manifests finds no unit of the deleted
   files outside a registered type and no unit of a file that stays, listed at the base and not after, unregistered
-  ([`partd-reads.txt`](after/judgement/partd/partd-reads.txt)); its coarse read of the files that stay finds no field
-  or property name lost. That read is the generator's units and a line read, not rule I5's reader; the rule's own
-  test, which passes, refuses any registered name declared again.
+  ([`partd-reads.txt`](after/judgement/partd/partd-reads.txt)); its coarse read of the files that stay, `fields.py`,
+  which prints a `gone` line for each field- or property-like name a file declares at the base and not after, prints
+  none there, so it finds no such name lost. *(Revised 2026-11-15, later, at the review of task 7.3: it read "its
+  coarse read of the files that stay finds no field or property name lost.", while the output shows that only by the
+  `gone` lines it does not hold.)* That read is the generator's units and a line read, not rule I5's reader; the
+  rule's own test, which passes, refuses any registered name declared again.
 - **I6** finds no shared type in the family's public API baseline: its test, which passes at the after commit, asserts
   that rule I6 reports nothing over `src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt` against every public
   type of every admitted assembly as restored, and that its witness, a family member returning an admitted type, is
@@ -637,15 +650,20 @@ otherwise.** Where a verdict turns on one, it says so.
    bundle `sjl-13-001`'s part A's: the workflow and the driver at the dispatched ref byte-identical to the base
    commit's, which hold, and "the conformance composition root that commit builds in Release on every runner", which
    it is; it names no SDK and no image, and the re-runs' local machine is section 1's reading 4's (reading 10). Taken:
-   the hosted runs are as configured, both built alike, and `imported.txt` records the SDK and the images. Not taken:
+   the hosted runs are as configured, both built with the same SDK, and `imported.txt` records the SDK and the images
+   *(revised 2026-11-15, later, at the review of task 7.3: it read "both built alike", which the images, different
+   between runners, do not bear out)*. Not taken:
    hold the hosted runs to the local machine's SDK or to step 1's, which would void both runs and ask for dispatches
    again with a workflow the rule holds to the base's. **Part A's verdict turns on this reading**, which no difference
    of the comparisons does.
 4. **Part F gets no verdict.** The rule writes a MET line for part F and calls it no gate clause; section 1's reading
    5 takes it after the merge and reads it as no gate clause; this stage's brief and the plan's question 3 say it gets
    no verdict. Taken: part F is read, its clauses set against `measurement/summary.txt` in section 4, and no verdict
-   is written. Not taken: judge it under its MET line, as bundle `sjl-13-001`'s README judged its part J; it would
-   then be NOT MET on its third clause, for literals and statements. No gate clause turns on either.
+   is written. Not taken: judge it under its MET line, as bundle `sjl-13-001`'s README judged its part J, on the
+   rule's own words "Seven predeclared decisions, one per part", which count part F's among them; it would then be NOT
+   MET on its third clause, for literals and statements. No gate clause turns on either. *(Revised 2026-11-15, later,
+   at the review of task 7.3: it read "Not taken: judge it under its MET line, as bundle `sjl-13-001`'s README judged
+   its part J; it would", and did not quote the rule's words the alternative rests on.)*
 5. **Task 7.2's reading 1, "re-runs agree" (part A)**, confirmed: all six re-runs of a row, three at each commit, give
    one verdict and one exhausted dimension. Not taken: agreement within each commit only. Either gives the same rows
    here.
@@ -659,7 +677,8 @@ otherwise.** Where a verdict turns on one, it says so.
    (`controls/note.txt`), so the scratch copy is the after commit's library's code with the patch. Not taken: take K4
    again from `e4b6b49e`, or from preview.10 with the copy's version pins changed. No verdict turns on it.
 8. **Task 7.2's reading 4, part E's folder named `parte/`**, confirmed: it names this rule's part, and the README says
-   where bundle `sjl-13-001` kept the same runs. A name only.
+   where bundle `sjl-13-001` kept the same runs. A name only. Not taken: the precedent's `parti/`. No verdict turns on
+   it. *(Added 2026-11-15, later, at the review of task 7.3: the alternative not taken, which the reading lacked.)*
 9. **Task 7.2's reading 5, one reverted copy for K1 to K3**, confirmed: the rule asks that each control "pass after
    their revert", and each revert's digest equals the made copy's, which is the after commit's tree, so one copy of
    that tree, built afresh, carries each check, as bundle `sjl-13-001` did; K4's revert, which restores the published
@@ -687,17 +706,23 @@ otherwise.** Where a verdict turns on one, it says so.
   refuses it at the parse with 2103 before the admission walk sees it, at both commits, in every run that compiles it:
   part B's runs, part C's runs and checks, and the probe's copy with the published library. No normal run of this
   bundle lost its process: part B's and part C's runs balance their journals with none crashed, every `--checks` row
-  passes, the fuzz sessions report no finding, and part A's four hosted runs are complete; the rows "a deep-nesting
+  passes, the fuzz sessions report no finding, and part A's four hosted runs are complete; the row "the binder walks a
+  tree at the tree-depth bound" compiles a binary chain exactly at the bound through `JsCompiler.Compile`, and so
+  through the admission walk, with the process alive, and the rows "a deep-nesting corpus is refused on the wide path
+  rather than survived" and "a left operand's spine is charged to the chain it begins" compile chains within the bound
+  with the process alive. *(Revised 2026-11-15, later, at the review of task 7.3: it read "the rows "a deep-nesting
   corpus is refused on the wide path rather than survived" and "a left operand's spine is charged to the chain it
-  begins" compile the chains within the bound with the process alive. The walk is recursive, and it relies, as rule
+  begins" compile the chains within the bound with the process alive.", which did not name the row that compiles a
+  chain at the bound.)* The walk is recursive, and it relies, as rule
   N19 says the compiler does, on the bound the library enforces against the declared stack; K4 removes that bound for
   chains. This is not a product finding, and no part's verdict turns on it but part C's, through section 6's reading
   1.
 - **The hosted runs built with .NET SDK 11.0.100.** `.github/workflows/test262-evidence.yml` asks
   `actions/setup-dotnet` for `10.0.x`, and with no `global.json` in the repository the newer SDK the runner image
-  holds builds the conformance root, as both runs' `run.txt` and `*.runners.txt` record. Both runs built alike, and no
-  verdict moves; the workflow is frozen under this rule, and whether it should pin the SDK is for a later change,
-  after this bundle's evidence merges.
+  holds builds the conformance root, as both runs' `run.txt` and `*.runners.txt` record. Both runs built with the same
+  SDK, on images that differ between runners of one run, and no verdict moves *(revised 2026-11-15, later, at the
+  review of task 7.3: it read "Both runs built alike", which the images do not bear out)*; the workflow is frozen
+  under this rule, and whether it should pin the SDK is for a later change, after this bundle's evidence merges.
 - **No figure of the base answers or of the development checks** is quoted here; this branch's own checks, a clean
   build of the solution and the architecture and contract tests at its head, are no run of the rule.
 
