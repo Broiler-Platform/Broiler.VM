@@ -67,32 +67,62 @@ run, build and comparison waited behind a gate that waits, with no fallback, for
 dotnet, testhost, VBCSCompiler, MSBuild, ilc, crossgen or Broiler.* process, under an exclusive lock so that one run is
 taken at a time, and no compiler server was alive at any run's start (section 1's reading 4: bundle `sjl-13-001`'s reading 9 does not
 carry). The drivers
-are kept outside this repository. Every folder's `logs/` holds each run's command line, exit, wall time, peak memory,
-the machine record before and after it with the whole process list at its start, and the gate's record; each
-folder's `hashes.txt` holds the SHA-256 of every other file in it. Where each part's output is:
+are kept outside this repository. Every folder that holds a run keeps a `logs/` with each run's command line, exit, wall
+time, peak memory, the machine record before and after it with the whole process list at its start, and the gate's
+record; `after/parta-race/` holds no run and no `logs/`, as its note says, and `measurement/logs/` joined that
+sub-bundle after its collector had finished (part F below). Each run's `logs/<run>.machine.txt` is the part's machine
+record, one per run in place of the single `machine.txt` a part of bundle `sjl-13-001` keeps (its
+`after/parti/machine.txt`, for one): the precedent's form, with the whole process list at the run's start added on
+purpose, so that what else ran then, a python or dotnet process among it, can be read from it. Each folder's
+`hashes.txt` holds the SHA-256 of every other file in it, its `logs/` included. *(Revised 2026-11-15, later, at the
+review of these records: it read "Every folder's `logs/` holds each run's command line, exit, wall time, peak memory,
+the machine record before and after it with the whole process list at its start, and the gate's record; each folder's
+`hashes.txt` holds the SHA-256 of every other file in it.", which `measurement/` and `after/parta-race/` did not bear
+out.)* Where each part's output is:
 - **Part A:** the comparisons of the imported reports, through `eng/compare-test262-forms.py` as the base commit holds
   it (`after/parta-comparisons/`; first taken without the gate, and taken again behind it with the same output, which
   is what that folder retains); each (c′) row's three one-process re-runs at each commit, with `--expect` against
-  the commit's retained pin (`after/parta-rerun/`); and the (e) race, which runs only the rows whose re-runs differ
-  (`after/parta-race/`, with its note).
+  the commit's retained pin (`after/parta-rerun/`), whose row lists (`rows-cprime-wide-*.tsv`) were read from the
+  first comparison, before the gated one was taken, the two comparisons' logs being the same bytes; and the (e) race,
+  which runs only the rows whose re-runs differ (`after/parta-race/`, with its note).
 - **Part B:** run 1 of `--parse-corpus` (B1 to B5, one worker) at each commit (`base/local/`, `after/local/`); the
   census over the parse corpus's inputs and over the suite's `test/` at both (`census-*.txt.gz`); the identity of the
   two runs with both census pairs (`after/local/partb-keys/`); the control in `controls/partb/`.
 - **Part C:** runs 2 and 3 at the after commit (`after/local/`) and their determinism comparison
-  (`after/local/determinism/`); `--checks --verbose` at both commits (`local/checks.log.gz`); the controls K1 to K4,
+  (`after/local/determinism/determinism-after-runs-1-2-3.tsv`, the file bundle `sjl-13-001` keeps in
+  `after/judgement/partc/`); `--checks --verbose` at both commits (`local/checks.log.gz`); the controls K1 to K4,
   re-made against step 2's code on copies of the after commit, their patches, outputs and revert checks, in
-  `controls/`.
+  `controls/`. K4 as configured: `controls/k4-checks.log.gz` holds ten `ok` lines, the last "the lowering is
+  deterministic", and stops; the process ended with exit 134 (`controls/logs/k4-checks.exit.txt`) and a stack overflow
+  in this component's `JsAdmissionWalk.Expression`, under `JsFrontend.Parse` (`controls/k4-checks.stderr.txt`), and
+  `controls/k4-checks-named-rows.txt` is empty. The output does not name the check that overflowed; in the after
+  commit's own `--checks` the next check is "the wide lowering is deterministic", the first of part C's five rows, so
+  by the order of the checks the overflow came in that row, before the fifth row ran. That is the input to section 1's
+  reading 2, under which the adjunct `controls/k4-row-*` was run; whether it meets K4's "must" is the judgement's.
 - **Part D:** the architecture tests at both commits after a Release build of the solution, from a clean archive of
   each, with `BROILER_RULE_MESSAGES` set to a scratch folder whose files are copied unchanged into
   `<side>/rules/rule-messages/` (`base/rules/`, `after/rules/`); rule I5's two controls, pinned by the revision of
   2026-11-13, taken in the after commit's tree of that run (`controls/i5/`).
 - **Part E:** the bisect at the base, `base/fuel-parity.log`, and the after run at the base's figures,
-  `after/fuel-parity.log`, each run's record and attempts in `base/parte/` and `after/parte/`.
+  `after/fuel-parity.log`, each run's record and attempts in `base/parte/` and `after/parte/`, where bundle
+  `sjl-13-001` keeps its part I's, the same runs, in `after/parti/` (its `controls/parte/` holds its own part E's
+  controls, a different part).
 - **Part F:** the sub-bundle [`measurement/`](measurement/README.md), whose README was written and made read-only
   before the collector ran, collected last by bundle `sjl-13-001`'s
   [`collect-measurement.py`](../sjl-13-001/collect-measurement.py), unchanged; the collector wrote its own `hashes.txt`,
   and the three records copied in after it (`measurement-machine.txt`, `measurement-collector.log` and
-  `measurement-collector.stderr.txt`) are appended to it, its lines unchanged.
+  `measurement-collector.stderr.txt`) are appended to it, its lines unchanged. The README was written first, and part
+  F's driver made it read-only (`chmod a-w`) at its own start, just before the gate and the collector: the listing it
+  took then, `measurement/logs/before-ls.txt`, holds the README alone, read-only, and `logs/after-ls.txt`, taken after
+  the three records were copied in, shows the manifest and the arms' binary lists read-only, as the collector makes
+  them before its first lane. git keeps no read-only mode, so those two listings are the record of it. Part F's own
+  run record, which its driver wrote outside this repository, was copied in unchanged into `measurement/logs/` at the
+  review of these records (its command line, the gate's record, exit, wall time and peak memory, the machine records,
+  the two listings, and the collector's `hashes.txt` as it wrote it, `logs/hashes-as-collected.txt`), and its lines are
+  appended to `measurement/hashes.txt` in the same way; the sub-bundle's README, written before the run, does not list
+  them. Part F started one second after the last control
+  run ended (`controls/logs/runs.tsv`, `measurement/logs/runs.tsv`); its start record in
+  `measurement/measurement-machine.txt` gives the one-, five- and fifteen-minute loads at that start.
 - **Part G:** `--fuzz-wide` and the four `--fuzz` sessions at both commits (`local/fuzz-*`); the planted throws, the
   wide one in the binder's walk over the shared tree (`controls/partg-*`).
 
