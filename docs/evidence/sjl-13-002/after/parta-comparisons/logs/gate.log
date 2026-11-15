@@ -1,0 +1,4 @@
+2026-11-15T09:11:52Z lock parta-compare WAIT
+2026-11-15T09:11:54Z lock parta-compare HELD
+2026-11-15T09:11:54Z gate parta-compare PASS load1=0.93 procs=none checks=0
+2026-11-15T09:11:56Z stop-servers: done, remaining:

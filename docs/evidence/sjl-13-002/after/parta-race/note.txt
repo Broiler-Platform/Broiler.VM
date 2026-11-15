@@ -1,0 +1,9 @@
+Part A's class C4 (e), the wall-clock race (bundle sjl-13-001's part A, which bundle sjl-13-002's part A admits): "a
+(c') row whose re-runs differ is run alone once more at each commit on the same machine ... with the wall-clock
+allowance raised to ten times the part's". The race runs only the rows parta-rerun/ finds differing.
+
+parta-rerun/agreement-wide-bytecode.tsv and agreement-wide-native.tsv list every (c') row of the two comparisons
+with its six one-process re-runs (three at each commit); parta-rerun/differing-wide-bytecode.tsv and
+differing-wide-native.tsv, copied here as differing-wide-*.tsv, are empty: no row's re-runs differ. No row was
+therefore raced: race-wide-*.tsv are empty, and there is no race report or run record. The race step ran and found nothing
+to run (parta-rerun.sh, which holds both steps, outside this repository).

@@ -1,0 +1,14 @@
+# part A comparisons taken 2026-11-15T09:11:54Z on the local machine, df 17109 MiB free, load 0.93 1.55 1.42 3/118 19820
+# tool: eng/compare-test262-forms.py as the base commit 389b55c9ec9bb77409bb2487067fbebc0868849b holds it, blob 48e3091a872921849bab1f903b46698be0c69e33 (after 467ad7c395234b335c816b8f49ae5b505740e32c: 48e3091a872921849bab1f903b46698be0c69e33); written to the scratch folder and run with python3 -I
+# input docs/evidence/sjl-13-002/base/hosted/wide-bytecode.report.gz at b10f694c69c089373f6b1fb0fb003d29a43b2812: blob d8958b1c875a7c2dd34d18a173678cd587a246f6, gz sha256 043c2767fc3f614deb767ee08aabde542ad53714d71d95c2f8d2102a8dcd1563
+# decompressed bce71c2295bde6b7411810cad99ead97c87b542372fdc17e861bb68fb88e37e9  rep/base-bytecode.report
+# input docs/evidence/sjl-13-002/base/hosted/wide-native.report.gz at b10f694c69c089373f6b1fb0fb003d29a43b2812: blob 0519fadc4fe4f91c38496472a6eb9fc0821b2cda, gz sha256 01c7eea6a818013169319b7b2aa25ec3ffae3a084bcc128f408552516b0c86a9
+# decompressed d9dfb309c768c32424a7fb0c6f63bdbe555eb3570bca1e66456610441924fdea  rep/base-native.report
+# input docs/evidence/sjl-13-002/after/hosted/wide-bytecode.report.gz at b10f694c69c089373f6b1fb0fb003d29a43b2812: blob 40b69480fbba6669021574e7fbff36eb3fbba51e, gz sha256 8cfe2421721e33ba2b0ef3e01a0b7505412f9df817b08fb45565f5f997a1b243
+# decompressed f2d51da5adf40ce704ee67f7f543de71c04156d736c2535601e44aae7fc29c71  rep/after-bytecode.report
+# input docs/evidence/sjl-13-002/after/hosted/wide-native.report.gz at b10f694c69c089373f6b1fb0fb003d29a43b2812: blob 18ed47f8ba12e23cae8237eb48e178e28db4893b, gz sha256 116a9d14ee35212e8bcacfeccd1f33587a1295c561d95617d5bd7d3825089944
+# decompressed 5a2e938c587845944b65613ff17e34c93f3ffec052833be924acc10ee2151951  rep/after-native.report
+# suite for --exempt-guest-loads: /dev/shm/s2ev/suite/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e, the pin archive extracted whole, archive sha256 f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040 (src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz, blob dab6824d08de4f3dc6787ce9fdebcce822b84e23 at both commits)
+2026-11-15T09:11:55Z cd /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/s2/ev1/parta/comparisons && python3 -I compare-test262-forms.py --same-form rep/base-bytecode.report rep/after-bytecode.report
+2026-11-15T09:11:55Z cd /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/s2/ev1/parta/comparisons && python3 -I compare-test262-forms.py --same-form --exempt-guest-loads --suite /dev/shm/s2ev/suite/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e rep/base-native.report rep/after-native.report
+2026-11-15T09:11:55Z done, df 17059 MiB free
