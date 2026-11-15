@@ -1,0 +1,3 @@
+Total tests: 393
+     Passed: 393
+ Total time: 33.4122 Seconds

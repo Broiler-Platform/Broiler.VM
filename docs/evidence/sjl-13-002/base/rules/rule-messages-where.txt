@@ -1,0 +1,1 @@
+BROILER_RULE_MESSAGES=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/s2/ev1/base/rule-messages-scratch, a scratch folder outside the repository; its files are copied unchanged into docs/evidence/sjl-13-002/base/rules/rule-messages/ (23 files)
