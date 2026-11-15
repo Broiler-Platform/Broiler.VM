@@ -2,7 +2,7 @@
   "bundle": "sjl-13-002",
   "milestone": "SJL-13",
   "step": "step 2 of SJL-13.3 (the lowering, the numeric admission and the binder on the shared tree; JsSyntax and the adapter deleted); bundle sjl-13-001 judges step 1",
-  "collected-at": "2fc73ddbba05925c95f545eee26ecbab9e8a9b5b",
+  "collected-at": "48b58062837b2f2b31b52a187613bef606e0a3c1",
   "describes": "the tree of collected-at under docs/evidence/sjl-13-002/: every file there but this manifest, which is committed on top of it; each file listed by its path in the bundle and the SHA-256 of the bytes git stores for it at collected-at",
   "worktree-clean": true,
   "hash-method": "sources: the git blob id of each path at source-revision, the after commit; the bundle's files: sha256 of each blob as git stores it at collected-at",
@@ -43,7 +43,7 @@
     "docs/evidence/sjl-7-001/collect-area.py": "5561d5eb64e08021a5cede6c43018567b689e9e8"
   },
   "files": {
-    "README.md": "d724f3ae3604c200f376e6a9c1adaa101e03e4acce7ea9d17c3339bf2210b6f7",
+    "README.md": "14d69ae340bf01ddb70c61c16b518532cb4e9c1e56a2b49075dd7f747bbdd95e",
     "after/fuel-parity.log": "3f32e8206ba65254d19cd3aa13f054e9c3be23851ba83e3003e1257716f4bf06",
     "after/hosted/binaries.sha256": "01038433d0faa7351e60436331305228a3f32e602fdc0c2638a1f6d2903cf1d3",
     "after/hosted/build-conformance.log": "42468a819cd7bf58515385278b5d43c87b7f0645b8a4ed8399f13e58e759158f",
