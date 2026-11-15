@@ -35,3 +35,48 @@ obj/ left out, compared with the made one (k-digests.txt, k4-digests.txt, i5/i5-
   src/tests/corpus/js-1/js-1-source-fuzz-findings/ (partg-control-slice-findings-in-tree.txt lists them, and
   partg-control-slice-findings/ keeps them); k-digests.txt gives the reverted slice copy's digest with that directory
   in place and with it removed.
+
+Added 2026-11-15, later, at the review of stage S10's records, before any part is judged. Nothing above is changed.
+
+- k4-library.txt: s10-k4.sh (outside this repository) wrote three lines, the file's first, second and fourth. The
+  second was corrected by hand before the file was retained: the script had written both 0.1.0-preview.10 and
+  0.1.0-preview.11 on it, as the third line says. The third line, "(this line was corrected before the file was
+  retained: ...)", and the fifth, "read: of that diff's added and removed lines ...", were added by hand then. The
+  fifth line's read is, from Broiler.JS's clone:
+    git diff 29061d65 e4b6b49e -- Broiler.ECMAScript/Broiler.ECMAScript.Frontend | grep -E '^[+-]' \
+      | grep -vE '^(\+\+\+|---) ' | sed -E 's/^[+-][[:space:]]*//' | grep -vE '^(//|$)' | wc -l
+  which gives 0 of 3670 added and removed lines.
+- The library's Frontend project references Broiler.ECMAScript.Algorithms as a project
+  (Broiler.ECMAScript/Broiler.ECMAScript.Frontend/Broiler.ECMAScript.Frontend.csproj at 29061d65, line 43), so the
+  scratch pack depends on the Algorithms package. The after commit's Directory.Packages.props pins
+  Broiler.ECMAScript.Algorithms at 0.1.0-preview.11, and the restore maps only Broiler.ECMAScript.Frontend to the
+  scratch feed (k4-nuget-config.patch), so Algorithms is the published package. Between the same two commits
+  Algorithms' sources also change in comments only:
+    git diff --stat 29061d65 e4b6b49e -- Broiler.ECMAScript/Broiler.ECMAScript.Algorithms
+  gives "74 files changed, 2327 insertions(+), 2327 deletions(-)", and the command above over that path gives 0 of
+  4654 added and removed lines. Broiler.ECMAScript/Directory.Build.props is the same at both; the root
+  Directory.Packages.props differs in two package lines (Broiler.Unicode.Cldr.LocaleData removed, Microsoft.CodeAnalysis.BannedApiAnalyzers
+  added), neither of which Frontend or Algorithms references.
+- 29061d65f0ca41c5bd93074083f2018ccedd5c57 is the commit Broiler.JS's tag ecmascript-v0.1.0-preview.10 names
+  (git rev-parse 'ecmascript-v0.1.0-preview.10^{commit}'), and e4b6b49ed290983e02525ca1a9318fd46517dc2c the one its
+  tag ecmascript-v0.1.0-preview.11 names. The scratch pack is therefore preview.10's code, patched with k4.patch,
+  stamped 0.1.0-preview.11.
+- K4 as configured (k4-checks.*, logs/k4-checks.*): k4-checks.log.gz holds ten ok lines, the last "the lowering is
+  deterministic", and stops; k4-checks-named-rows.txt is empty; the process ended with exit 134
+  (logs/k4-checks.exit.txt) and a stack overflow repeated in JsAdmissionWalk.Expression, under JsAdmissionWalk.Walk,
+  JsFrontend.Parse and JsCompiler.Run (k4-checks.stderr.txt), in this component's admission walk and not in the
+  library. The output does not name the check that overflowed. In the after commit's own run
+  (../after/local/checks.log.gz) the check after "the lowering is deterministic" is "the wide lowering is
+  deterministic", the first of part C's five rows, so the overflow is inferred to be in that row, before the fifth row
+  ran. This is what k4-adjunct-note.txt's "the fifth row did not report FAIL" rests on, and the input to reading 2.
+- Rule I5's controls (i5/): control-1.log and control-2.log name the refused declaration only as far as xUnit's
+  truncated line 'Collection: ["src/Broiler.VM.Profile.JavaScript.Compiler/Control"···]'. Which register row
+  refuses each rests on register-rows.txt and the test: Violations() in
+  src/tests/Broiler.VM.Architecture.Tests/I5RetiredDuplicatesRuleTests.cs reports a declared name only when the
+  register (retired-members.json, keyed by each row's member) holds it as a key, and at the after commit the register's
+  639 rows hold, of the names the two files declare, only the two type rows that register-rows.txt quotes.
+- K1 (k1-identity-after.txt.gz): identity is taken against the after commit's run 1 only. The base's run 1 and the
+  after commit's run 1 are the same bytes uncompressed (zcat ../base/local/parse-corpus-base-run1.tsv.gz | sha256sum
+  and the same over ../after/local/parse-corpus-after-run1.tsv.gz both give
+  cccd81c914eb3fb74a2806f5396b1ff7d74a73f12f9a80612fee8760ebe3ee66), so the comparison against the after commit's run 1
+  is the one against the base's.
