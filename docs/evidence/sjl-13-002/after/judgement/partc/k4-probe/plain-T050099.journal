@@ -1,0 +1,12 @@
+begin	1	T050099	B1	strict	bytecode
+end	1	T050099	B1	strict	bytecode	refused
+begin	1	T050099	B1	strict	native
+end	1	T050099	B1	strict	native	refused
+begin	1	T050099	B1	sloppy	bytecode
+end	1	T050099	B1	sloppy	bytecode	refused
+begin	1	T050099	B1	sloppy	native
+end	1	T050099	B1	sloppy	native	refused
+begin	1	T050099	B2	strict	bytecode
+end	1	T050099	B2	strict	bytecode	refused
+begin	1	T050099	B2	sloppy	bytecode
+end	1	T050099	B2	sloppy	bytecode	refused

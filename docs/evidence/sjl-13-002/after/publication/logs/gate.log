@@ -1,0 +1,4 @@
+2026-11-15T14:17:37Z lock collect-cutover-closures WAIT
+2026-11-15T14:17:37Z lock collect-cutover-closures HELD
+2026-11-15T14:17:37Z gate collect-cutover-closures PASS load1=0.30 procs=none checks=0
+2026-11-15T14:39:04Z stop-servers: done, remaining:

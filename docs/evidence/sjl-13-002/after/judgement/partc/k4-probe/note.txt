@@ -1,0 +1,41 @@
+Added 2026-11-15, at task 7.3 of step 2's evidence (bundle sjl-13-002), when part C was judged.
+
+What this folder is. Part C's control K4 as configured (../../../../controls/k4-checks.*) stopped with exit 134 and a
+stack overflow in this component's admission walk, JsAdmissionWalk.Expression repeated 19055 times under
+JsAdmissionWalk.Variables, Statement, Function and Walk, JsFrontend.Parse and JsCompiler.Run, before any of part C's
+five rows printed; the output names no input. This probe finds the input. It is task 7.3's own run, kept here because
+section 4 of the bundle's README reads it; it is no control and no run the rule names.
+
+How it was taken (k4probe.sh.txt, outside this repository when it ran; logs/ holds every run's command line, exit,
+wall time, peak memory, machine records and the gate's record):
+- The K4 library made again as task 7.2b made it: controls/k4.patch applied to a git archive of Broiler.JS
+  29061d65f0ca41c5bd93074083f2018ccedd5c57 (k4-library-patch-apply.txt), packed as Broiler.ECMAScript.Frontend
+  0.1.0-preview.11 into /dev/shm/s2ev/k4-feed, the feed controls/k4-nuget-config.patch names (k4-feed.txt).
+- Two clean git archives of the after commit 467ad7c395234b335c816b8f49ae5b505740e32c: "k4", patched with
+  controls/k4-nuget-config.patch (k4-patch-apply.txt) and restored into a scratch packages folder, and "plain", as the
+  commit holds it, which restores the published package. The slice compiler of each, built in Release with
+  --disable-build-servers (libraries.txt: the plain build's Broiler.ECMAScript.Frontend.dll is f5487f16..., the after
+  build's of part B; the K4 build's is the scratch pack's).
+- The selection, keys-2103.tsv: every B1 and B2 compilation that the after commit's run 1
+  (../../../local/parse-corpus-after-run1.tsv.gz) refuses with code 2103, NestingTooDeep, the contract's nesting
+  refusal. Only those can reach a deeper tree under K4: K4 changes what the library charges against the tree-depth
+  bound, not the tree it builds, so an input the after commit accepts gives the same tree, which every run of the
+  bundle walked with its process alive. B3 holds none of them; B4 is the slice front end, which reads no library tree.
+- For each of the six inputs, select-<id>.tsv, one process of --parse-corpus over B1 and B2 with --select and a journal,
+  first in the K4 copy, then in the plain copy.
+
+What it shows:
+- J000451 (inputs/broiler-js/31e5a0c6f2e884ed06fdad81f85f47bfc6d7e6cbc65ad4ef6361a752449712cc.js of the parse corpus,
+  a stored input: a function whose variable is initialised by one binary chain "1+1+...+1" some twenty thousand
+  operands long) overflows under K4: exit 134 (logs/k4-J000451.exit.txt), the same stack, JsAdmissionWalk.Expression
+  repeated 19055 times under Optional, Variables, Statement, Function and Walk (logs/k4-J000451.err.txt), and the
+  journal holds its first compilation begun and none ended (k4-J000451.journal). The plain copy refuses it with
+  2103:1:24 in all four compilations, exit 0 (plain-J000451.report.tsv), as run 1 does.
+- J000243, J000799, J001976, T050099 and V000064 are refused with the same 2103 diagnostics in the K4 copy and the plain
+  copy, each process exiting 0: the library charges their nesting (parentheses, conditionals, functions) without the
+  chain charge K4 removes.
+- The determinism row "the wide lowering is deterministic" is the first --checks row that compiles the parse corpus's
+  stored inputs, J000451 among them, and the configured run's frame count is J000451's.
+
+So the overflow needs the planted change: the published library refuses J000451 at the parse, before the admission
+walk sees it. Section 6's reading 1 and section 7's first finding of the README read this.

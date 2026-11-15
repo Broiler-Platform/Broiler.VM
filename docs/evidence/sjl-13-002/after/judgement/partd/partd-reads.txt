@@ -1,0 +1,70 @@
+# read 2026-11-15T14:14:51Z
+## rule I6: the family's public API baseline
+src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt at 389b55c9ec9bb77409bb2487067fbebc0868849b: blob d02f66827e59dba6a88a33ec3d4e2271d5128c93, 2794 lines, lines naming Broiler.ECMAScript: 0
+src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt at 467ad7c395234b335c816b8f49ae5b505740e32c: blob d02f66827e59dba6a88a33ec3d4e2271d5128c93, 2794 lines, lines naming Broiler.ECMAScript: 0
+every public-api.txt the repository holds, changed between the base and the after commit: 0
+the I6 test at the after commit, src/tests/Broiler.VM.Architecture.Tests/AdmissionRuleTests.cs, blob e6d52f29594fd3d4b4b0f7b9a22afab6337b943e; test files that write a group's rule messages (RuleReport.Write) at the after commit:
+  src/tests/Broiler.VM.Architecture.Tests/ApiSurfaceTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/AssuranceRuleTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/BaselineRegisterTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/CompilationStackRuleTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/CompositionRegisterTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/CoreContractVersionTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/DiagnosticRegistryRuleTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/HostSurfaceRuleTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/LegacyBoundaryTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/NativeMappingRuleTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/PackageRuleTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/ProfileApiSurfaceTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/ProjectFileRuleTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/RegisterFigureTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/ReviewRecordRuleTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/RuleMessageReport.cs
+  src/tests/Broiler.VM.Architecture.Tests/TopologyBudgetTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/UbcRuleTests.cs
+  src/tests/Broiler.VM.Architecture.Tests/WebAssemblyFamilyRuleTests.cs
+groups they write: A A14 A15 A7 B C D E H J J12 K L M1 N N10 N19 N20 N21 U V W X 
+## rule N12: the compiler assembly's files added and deleted between the base and the after commit
+  D	src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs
+  D	src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs
+  D	src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs
+  D	src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.cs
+  D	src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs
+  A	src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs
+the assembly's .cs files at the after commit: 58
+## rule I5: the register against the generated assurance manifests' units
+deleted files at the base: units 172 distinct names 167 outermost names (types declared directly in a namespace) 85
+outermost names of the deleted files with no register row: none
+of them declared at the after commit (any unit of that name): none
+units of the deleted files not under a registered type row: none
+units of files that stay, listed at the base and not after: 2
+   Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.FindConstructor REGISTERED
+   Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.Unwrapped REGISTERED
+SJL-13.3 rows: 110, of which type rows of the deleted files 85, other rows 25
+   row Broiler.VM.Profile.JavaScript.Compiler.JsParser | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTemplate | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceSubstitution | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.StructuredTemplates | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.Templates | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.templates | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.streamTemplates | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.scanned | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.textStart | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TokenizeSubstitutions | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateNestingLimit | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.Start | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.End | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.EndLine | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.EndLineStart | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.ChunkStart | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.Chunks | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.Substitutions | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.SubstitutionStart | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.SubstitutionLine | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.TemplateScan.SubstitutionLineStart | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.JsBinder.CheckRegExp | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.JsBinder.ResourceScoped | not declared after | not a base unit
+   row Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.FindConstructor | not declared after | listed at base
+   row Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.Unwrapped | not declared after | listed at base
+## rule I5: field- and property-like declarations of the compiler's files that stay (a coarse line read, not rule I5's reader)
+field/property-like declarations, base 298 after 311

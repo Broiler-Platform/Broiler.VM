@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# publication.sh: clause 8's publication at step 2's after commit, as bundle sjl-13-001 took it at step 1 (its
+# after/publication/README.md): bundle sjl-7-001's collect-area.py --only cutover-closures, run with --out outside the
+# tree from a clean checkout of the after commit (here a local clone, detached at the after commit, on a tmpfs), with
+# NuGetAudit=false as step 1's retained collection ran, behind run.sh's lock and gate.
+E2=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/s2/ev2
+AFTER=467ad7c395234b335c816b8f49ae5b505740e32c
+W=/dev/shm/s2ev2-pub; O=$E2/publication; L=$O/logs
+[ -e $W ] && { echo "REFUSED: $W exists"; exit 3; }
+mkdir -p $W $L
+git clone -q --no-checkout /home/user/vm-s2ev $W/vm || exit 4
+git -C $W/vm checkout -q --detach $AFTER || exit 4
+{ echo "clone of /home/user/vm-s2ev at $W/vm, detached at $(git -C $W/vm rev-parse HEAD), made $(date -u +%FT%TZ)"; echo "status: [$(git -C $W/vm status --porcelain | wc -l) entries]"; } > $O/checkout.txt
+$E2/scripts/run.sh collect-cutover-closures $L $W/vm -- env NuGetAudit=false python3 -I docs/evidence/sjl-7-001/collect-area.py --tree $W/vm --out $O/out --only cutover-closures
+echo "rc=$?" >> $O/status.txt
+find $W/vm -name bin -o -name obj | head -0
+rm -rf $W
+echo DONE > $O/DONE

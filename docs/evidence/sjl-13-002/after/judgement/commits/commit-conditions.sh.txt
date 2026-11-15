@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# The conditions bundle sjl-13-002's area rule sets in "The commits", each read with git alone in a clone of
+# Broiler.VM. Task 7.3 of step 2's evidence; kept with a .txt suffix so that nothing in the repository reads it as a
+# script. usage: bash commit-conditions.sh.txt <repository> <evidence head>
+cd "$1" || exit 2
+H=${2:-HEAD}
+R=faa8af78cddc32d460a7299f088b18b9e4407d7a        # the rule commit (the merge of Broiler.VM#172)
+RA=ef3f0567a5eba0dca7fa4fc584bd53e94ce81281       # the commit of #172's branch that added the rule file
+B=389b55c9ec9bb77409bb2487067fbebc0868849b        # the base commit (the merge of Broiler.VM#205)
+A=467ad7c395234b335c816b8f49ae5b505740e32c        # the after commit (the merge of Broiler.VM#206)
+S1=a8d8398bd59e7f5600cb0aa9e733ff8948859cf4       # bundle sjl-13-001's after commit
+RULE=docs/evidence/sjl-13-002/decision-rule-area.md
+REV=docs/evidence/sjl-13-002/decision-rule-area-revised-2026-11-13.md
+anc() { if git merge-base --is-ancestor "$1" "$2"; then echo "yes: $1 is an ancestor of $2"; else echo "NO: $1 is not an ancestor of $2"; fi; }
+echo "# read $(date -u +%FT%TZ); evidence head $(git rev-parse $H); origin/main $(git rev-parse origin/main 2>/dev/null)"
+echo "## the rule commit $R"
+echo "the commit that added $RULE: $(git log --format=%H --diff-filter=A $A -- $RULE | tail -1); $R is a merge whose parents are $(git log -1 --format=%P $R) ($(git log -1 --format=%s $R))"
+anc $RA $R
+echo "the rule's blob: at the rule commit $(git rev-parse $R:$RULE), at the base $(git rev-parse $B:$RULE), at the after commit $(git rev-parse $A:$RULE), at the evidence head $(git rev-parse $H:$RULE)"
+echo "the revision of 2026-11-13: added by $(git log --format=%H --diff-filter=A $A -- $REV | tail -1); blob at the base $(git rev-parse $B:$REV), at the after commit $(git rev-parse $A:$REV), at the evidence head $(git rev-parse $H:$REV)"
+echo "every decision-rule-area*.md of the bundle unchanged between the after commit and the evidence head: $(git diff --quiet $A $H -- 'docs/evidence/sjl-13-002/decision-rule-area*.md' && echo yes || echo NO)"
+echo "## the base commit $B"
+echo "the after commit's first parent: $(git rev-parse $A^1)"
+anc $R $B
+anc $S1 $B
+echo "## the after commit $A"
+echo "parents: $(git log -1 --format=%P $A); $(git log -1 --format=%s $A)"
+echo "the after commit's second parent: $(git rev-parse $A^2)"
+echo "first-parent commits from the base to the after commit: $(git rev-list --first-parent $B..$A | tr '\n' ' ')"
+echo "merges from the base to the after commit on the first-parent line: $(git rev-list --first-parent --merges $B..$A | wc -l)"
+echo "the branch the after commit merges, its first commit: $(git rev-list --reverse $A^2 ^$B | head -1); its parent: $(git rev-parse $(git rev-list --reverse $A^2 ^$B | head -1)^1)"
+echo "at the base: JsSyntax.cs present: $(git cat-file -e $B:src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs 2>/dev/null && echo yes || echo no); JsFrontendAdapter.cs present: $(git cat-file -e $B:src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.cs 2>/dev/null && echo yes || echo no); JsTreeFacts.cs present: $(git cat-file -e $B:src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs 2>/dev/null && echo yes || echo no)"
+echo "at the after commit: JsSyntax.cs present: $(git cat-file -e $A:src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs 2>/dev/null && echo yes || echo no); JsFrontendAdapter.cs present: $(git cat-file -e $A:src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.cs 2>/dev/null && echo yes || echo no); JsTreeFacts.cs present: $(git cat-file -e $A:src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs 2>/dev/null && echo yes || echo no)"
+echo "the compiler assembly's files the after commit adds and deletes against the base:"; git diff --name-status $B $A -- src/Broiler.VM.Profile.JavaScript.Compiler/ | grep -v '^M' | sed 's/^/  /'
+echo "## part A's dispatched ref and the base's workflow and driver"
+for p in .github/workflows/test262-evidence.yml eng/test262-evidence.py; do echo "$p: base $(git rev-parse $B:$p), after $(git rev-parse $A:$p), evidence head $(git rev-parse $H:$p)"; done
+echo "## the evidence branch"
+echo "the evidence head descends from the after commit: $(git merge-base --is-ancestor $A $H && echo yes || echo NO)"
+echo "paths the evidence branch changes outside docs/evidence/sjl-13-002/ and the records: $(git diff --name-only $A $H | grep -v '^docs/evidence/sjl-13-002/' | tr '\n' ' ')"

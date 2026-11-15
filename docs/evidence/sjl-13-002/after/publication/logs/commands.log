@@ -1,0 +1,1 @@
+2026-11-15T14:17:38Z collect-cutover-closures: cd /dev/shm/s2ev2-pub/vm && env NuGetAudit=false python3 -I docs/evidence/sjl-7-001/collect-area.py --tree /dev/shm/s2ev2-pub/vm --out /tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/s2/ev2/publication/out --only cutover-closures

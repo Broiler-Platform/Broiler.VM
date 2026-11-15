@@ -1,0 +1,32 @@
+# read 2026-11-15T14:19:25Z; evidence head a2387f186e2c1a989448cbffdaa56c012039b12a; origin/main 467ad7c395234b335c816b8f49ae5b505740e32c
+## the rule commit faa8af78cddc32d460a7299f088b18b9e4407d7a
+the commit that added docs/evidence/sjl-13-002/decision-rule-area.md: ef3f0567a5eba0dca7fa4fc584bd53e94ce81281; faa8af78cddc32d460a7299f088b18b9e4407d7a is a merge whose parents are 4cf9ca449fc96a1a5be810f6d0ca31c42b855c8f 49231eb796bc3602c6037910845d445d6a700688 (Merge pull request #172 from Broiler-Platform/claude/busy-lamport-m3yprr)
+yes: ef3f0567a5eba0dca7fa4fc584bd53e94ce81281 is an ancestor of faa8af78cddc32d460a7299f088b18b9e4407d7a
+the rule's blob: at the rule commit a6b2a086c5775b3e4ca7450da530bb9510bc5095, at the base a6b2a086c5775b3e4ca7450da530bb9510bc5095, at the after commit a6b2a086c5775b3e4ca7450da530bb9510bc5095, at the evidence head a6b2a086c5775b3e4ca7450da530bb9510bc5095
+the revision of 2026-11-13: added by 90c4d07cfb38d916bcc804c17b2f5726a01c1933; blob at the base 1ecc4c712e26768344b9214f8f68b21e38528973, at the after commit 1ecc4c712e26768344b9214f8f68b21e38528973, at the evidence head 1ecc4c712e26768344b9214f8f68b21e38528973
+every decision-rule-area*.md of the bundle unchanged between the after commit and the evidence head: yes
+## the base commit 389b55c9ec9bb77409bb2487067fbebc0868849b
+the after commit's first parent: 389b55c9ec9bb77409bb2487067fbebc0868849b
+yes: faa8af78cddc32d460a7299f088b18b9e4407d7a is an ancestor of 389b55c9ec9bb77409bb2487067fbebc0868849b
+yes: a8d8398bd59e7f5600cb0aa9e733ff8948859cf4 is an ancestor of 389b55c9ec9bb77409bb2487067fbebc0868849b
+## the after commit 467ad7c395234b335c816b8f49ae5b505740e32c
+parents: 389b55c9ec9bb77409bb2487067fbebc0868849b bc12ab2c37c425b579db20b86ed7648cccaea482; Merge pull request #206 from Broiler-Platform/claude/busy-lamport-m3yprr
+the after commit's second parent: bc12ab2c37c425b579db20b86ed7648cccaea482
+first-parent commits from the base to the after commit: 467ad7c395234b335c816b8f49ae5b505740e32c 
+merges from the base to the after commit on the first-parent line: 1
+the branch the after commit merges, its first commit: db7a6f0eaf516d6113c2d11c986fe3232be9f6df; its parent: 389b55c9ec9bb77409bb2487067fbebc0868849b
+at the base: JsSyntax.cs present: yes; JsFrontendAdapter.cs present: yes; JsTreeFacts.cs present: no
+at the after commit: JsSyntax.cs present: no; JsFrontendAdapter.cs present: no; JsTreeFacts.cs present: yes
+the compiler assembly's files the after commit adds and deletes against the base:
+  D	src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Expressions.cs
+  D	src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Functions.cs
+  D	src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.Modules.cs
+  D	src/Broiler.VM.Profile.JavaScript.Compiler/JsFrontendAdapter.cs
+  D	src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs
+  A	src/Broiler.VM.Profile.JavaScript.Compiler/JsTreeFacts.cs
+## part A's dispatched ref and the base's workflow and driver
+.github/workflows/test262-evidence.yml: base 740a70f8d919ced6cd4bdf31f8bb2408f12fdcf7, after 740a70f8d919ced6cd4bdf31f8bb2408f12fdcf7, evidence head 740a70f8d919ced6cd4bdf31f8bb2408f12fdcf7
+eng/test262-evidence.py: base 55f71ee3da6844dd3e3aeb23ea98d24143222a88, after 55f71ee3da6844dd3e3aeb23ea98d24143222a88, evidence head 55f71ee3da6844dd3e3aeb23ea98d24143222a88
+## the evidence branch
+the evidence head descends from the after commit: yes
+paths the evidence branch changes outside docs/evidence/sjl-13-002/ and the records: 

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Part D of bundle sjl-13-002 (task 7.3): git reads beside the architecture tests' run at the after commit. Runs no
+# build and no test. Kept with a .txt suffix so that nothing in the repository reads it as a script.
+# usage: bash partd-reads.sh.txt <repository> <this folder>
+R=$1; D=$2
+B=389b55c9ec9bb77409bb2487067fbebc0868849b; A=467ad7c395234b335c816b8f49ae5b505740e32c
+API=src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt
+cd "$R" || exit 2
+echo "# read $(date -u +%FT%TZ)"
+echo "## rule I6: the family's public API baseline"
+for c in $B $A; do echo "$API at $c: blob $(git rev-parse $c:$API), $(git show $c:$API | wc -l) lines, lines naming Broiler.ECMAScript: $(git show $c:$API | grep -c 'Broiler\.ECMAScript')"; done
+echo "every public-api.txt the repository holds, changed between the base and the after commit: $(git diff --name-only $B $A -- $(git ls-files '*public-api.txt') | wc -l)"
+echo "the I6 test at the after commit, src/tests/Broiler.VM.Architecture.Tests/AdmissionRuleTests.cs, blob $(git rev-parse $A:src/tests/Broiler.VM.Architecture.Tests/AdmissionRuleTests.cs); test files that write a group's rule messages (RuleReport.Write) at the after commit:"
+git grep -l 'RuleReport.Write("' $A -- src/tests/Broiler.VM.Architecture.Tests | sed "s|^$A:|  |"
+echo "groups they write: $(git grep -h -o 'RuleReport.Write("[A-Z0-9]*"' $A -- src/tests/Broiler.VM.Architecture.Tests | sed 's/.*("//;s/"//' | sort -u | tr '\n' ' ')"
+echo "## rule N12: the compiler assembly's files added and deleted between the base and the after commit"
+git diff --name-status $B $A -- src/Broiler.VM.Profile.JavaScript.Compiler/ | grep -v '^M' | sed 's/^/  /'
+echo "the assembly's .cs files at the after commit: $(git ls-tree -r --name-only $A src/Broiler.VM.Profile.JavaScript.Compiler/ | grep -c '\.cs$')"
+echo "## rule I5: the register against the generated assurance manifests' units"
+python3 -I "$D/i5-units.py" "$R" $B $A
+echo "## rule I5: field- and property-like declarations of the compiler's files that stay (a coarse line read, not rule I5's reader)"
+python3 -I "$D/fields.py" "$R" $B $A
