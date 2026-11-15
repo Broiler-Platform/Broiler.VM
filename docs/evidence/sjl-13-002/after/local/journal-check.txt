@@ -1,0 +1,6 @@
+=== parse-corpus-after-run1 journal: 1124200 lines
+begin 562100, end 562100
+=== parse-corpus-after-run2 journal: 1124200 lines
+begin 562100, end 562100
+=== parse-corpus-after-run3 journal: 2248400 lines
+begin 1124200, end 1124200
