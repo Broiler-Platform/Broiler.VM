@@ -3958,7 +3958,8 @@ sections 1 and 5 to 10 read every file named here.
   correction and no finding against JSD-0084's correspondence; the `Collator` and `localeCompare` directories give the
   same verdicts at both commits in both forms; every changed verdict is a race between the wall clock and another
   allowance, admitted under class C4 (c′) by its re-runs at both commits on the local machine, which agree, so no race
-  is run. **Met.**
+  is run. **Met**, on the bundle's reading of class C4 (c′), on which part A turns: a verdict exhausted on fuel at one
+  commit and on the wall clock at the other is a (c′) row, decided by its re-runs, and not a regression.
 - **Part B**, the `orderings` dataset, the collation checks and every other Intl, tzdb and Temporal check as a guard:
   every named check passes at both commits with the same line, and no file under `src/tests/cldr/` or
   `src/tests/temporal/` differs. **Met.**
@@ -3981,6 +3982,8 @@ This change meets no clause, and no other ledger's row moves. SJL-17 stays `In p
 of this family's rule is not SJL-17's exit reading. Nothing is accepted. Next:
 - this branch's review, then its merge;
 - the owner's rulings on the bundle's readings, should the owner rule otherwise than the readings taken;
+- the SJL-13 row's "taken on the branch `sjl-13-exit`, not yet merged", which did not move when that branch merged and
+  is owed a dated note by the next records change *(added 2026-11-15, at SJL-17.6's review)*;
 - Broiler.JS's SJL-17.5, its cut-over, and its SJL-17.6 runs, then SJL-17's exit reading over both repositories;
 - SJL-17's gate: SJL-9's gate, and so SJL-7's, SJL-8's and SJL-3's, and review.
 

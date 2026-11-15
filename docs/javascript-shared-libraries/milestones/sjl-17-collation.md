@@ -180,6 +180,8 @@ I7; it takes no run of the differential harness, the nuspecs or the pristine con
 and no measurement, which its rule has no part for (JSD-0084's decision E10). Broiler.JS's half waits on SJL-17.5.
 This meets no clause: SJL-17's exit reading follows SJL-17.5, and nothing is
 accepted. The list above is left as written.
+*(Noted 2026-11-15, at SJL-17.6's review.)* The note above's "sections 3, 5 and 10" reads sections 3 and 5 to
+10: the test262 runs are the bundle's section 6 and the twins its section 8. The note is left as written.
 
 ---
 

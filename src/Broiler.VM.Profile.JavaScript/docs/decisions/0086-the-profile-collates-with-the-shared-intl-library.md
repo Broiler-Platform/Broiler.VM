@@ -283,10 +283,12 @@ Settled in the change that files it. **This record is reopened only by a new dat
   the result.
   *(Noted 2026-11-15, at SJL-17.6.)* Bundle `sjl-17-001` takes and judges parts A, B and C of its rule at the base
   `68cad8b` and the after commit `983d690a` (its sections 5 to 8), each MET on readings the bundle names for the owner:
-  no test262 verdict moves but by class C4's wall-clock races, no check of part B and no file under `src/tests/cldr/` or
-  `src/tests/temporal/` moves, and no twin's figure or answer moves; so this record's falsifier "a test262 verdict, a
-  check, a dataset line, a twin's figure or a charge moves at the after commit" is not met by those runs, which take no
-  charge probe. The bundle also retains the closures and the runs of rules I1 to I7, I3 and N28 at the after commit,
+  test262 verdicts move in the hosted reports, each a race between the wall clock and another allowance that the rule's
+  class C4 (c′) admits on the bundle's reading of that class, which the owner has not ruled on; no check of part B and
+  no file under `src/tests/cldr/` or `src/tests/temporal/` moves, and no twin's figure or answer moves. On the bundle's
+  readings, then, this record's falsifier "a test262 verdict, a check, a dataset line, a twin's figure or a charge moves
+  at the after commit, without a dated decision admitting it" is not met by those runs, the rule's class C4 admitting
+  each moved verdict; they take no charge probe. The bundle also retains the closures and the runs of rules I1 to I7, I3 and N28 at the after commit,
   read and not judged. This note decides nothing of SJL-17: its exit reading waits on Broiler.JS's SJL-17.5, and nothing
   is accepted. The bullet above is left as written.
 - **Broiler.JS's cut-over**, SJL-17.5, which its own changelog records with its corrections (JSD-0084's decision item 5).
