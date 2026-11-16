@@ -89,6 +89,24 @@ named. This bundle retains none of that run, so it quotes no figure of it (rule 
   class (c) under that rule as written. So the arms' MET, which needs class (c) empty, cannot be read at the candidate
   reading until both move.
 
+*(Added 2026-11-16, later, under the owner's decision D-jsexec of that day, which JSD-0081 records.)* Broiler.RegEx's
+classifier `@5` (Broiler-Platform/Broiler.Regex#21) reads the rows above and row M8 with its list, and so leaves in class
+(c) Broiler.JS's other `exec` answers that differ from the text's, with one input of P3, `O06`, whose difference the
+arbiter cannot reach.
+- **Broiler.JS's `exec` answers outside row M8's list**: the correspondence's rows M10 to M15, corrections of Broiler.JS,
+  one row to a mechanism read in arm J's copy (a rewritten group name, a `?`'s empty iteration, `\p{…}`, `\P{…}` and
+  `\a` in a non-`u` class, a class subtraction, `\-` starting no range, and `i` and `I` under `tr-TR` and `lt-LT`), and
+  row M8's dated note giving its reading, each row taking an input where the condition its text states holds: for
+  rows M11 to M14, that the arbiter's answer to the pattern with the row's construct read as .NET reads it is
+  Broiler.JS's. The answers no row takes stay class (c), named by no row: those whose mechanism no row reads, and those
+  that hold a row's construct where its reading does not give Broiler.JS's answer, as some under `i`.
+- **`O06`**: row B1's, by its widening, the budget's early exit that row reads; the arbiter cannot reach it, so under
+  the reference-arm rule it stays class (c) whatever row names it, as the inputs whose difference the reduction does not
+  show do.
+- **What still keeps class (c) from emptying**, read with the list above: the arms' classifier does not yet read rows
+  M10 to M15 or row B1's widening; the answers no row names; and the inputs the arbiter cannot reach. The arms' MET
+  still cannot be read at the candidate reading.
+
 ## 1. SJL-11's area rule and its correspondence (SJL-11.1)
 
 **The correspondence.**
