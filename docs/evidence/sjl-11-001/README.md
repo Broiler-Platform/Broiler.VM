@@ -107,6 +107,23 @@ arbiter cannot reach.
   M10 to M15 or row B1's widening; the answers no row names; and the inputs the arbiter cannot reach. The arms' MET
   still cannot be read at the candidate reading.
 
+*(Added 2026-11-16, later still, under the owner's decision D-jsrest of that day, which JSD-0081 records.)*
+Broiler.RegEx's classifier `@7` (Broiler-Platform/Broiler.Regex#23, merged as `23deeb63`) reads rows M10 to M15, and
+leaves in class (c) the `exec` answers of arm J no row names, with `O06`.
+- **Those answers, by mechanism**: the correspondence's rows M16 to M26, corrections of Broiler.JS, rows M16, M17 and M19
+  of Broiler.Regex's preview.4 too, each read in arm J's copy and, where the pattern reaches preview.4 or its parser
+  decides the route, in preview.4's source: `\c` with no control letter, which preview.4 reads as `\`; a group name or
+  a `\k<…>` name with `\u{…}`, which preview.4 refuses and the translator writes as no back-reference; a legacy octal
+  escape, which preview.4 misreads and, before `\d` in a class, .NET reads with the next digit; `\S` in a class; an
+  empty group under a lazy quantifier; `^` or `$` in a class under `m`; a back-reference to a group with no capture
+  without `RegexOptions.ECMAScript`; a letter expanded inside a modifier group that removes `i`; and a class with
+  `\W`, `\p` or `\P` under `i`. Rows M8, M12, M13 and M15 carry dated notes that read inputs of theirs the classifier
+  `@7` does not take, M13's fixing its reading where it was undefined. One pattern's inputs stay named by no row.
+- **`O06`**: still row B1's; whether a row-named input the arbiter cannot reach may leave class (c) is the reference-arm
+  rule owner's, in Broiler.RegEx.
+- **What still keeps class (c) from emptying**: the arms' classifier does not yet read rows M16 to M26 or the notes;
+  the one pattern no row names; and `O06`. The arms' MET still cannot be read at the candidate reading.
+
 ## 1. SJL-11's area rule and its correspondence (SJL-11.1)
 
 **The correspondence.**
