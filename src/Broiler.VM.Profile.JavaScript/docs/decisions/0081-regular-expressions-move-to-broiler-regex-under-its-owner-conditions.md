@@ -73,11 +73,11 @@
   read in full, until a row names them, and the owner's choice is open. `O06`'s reading is the reference-arm rule
   owner's. The arms' class (c) is still not empty. *(Note of 2026-11-16, after rows M16 to M26 merged: "its first
   clause now stands only for the inputs of pattern `P4-47050`, whose mechanism is not read in full, until a row names
-  them, and the owner's choice is open" now reads: their mechanism is read, and row M27 names them under decision
-  D-jsrest, below. On the reading of "Falsified if" taken, the clause stands for no difference the arms found once
-  Broiler.Regex's classifier reads row M27, and until then for those inputs. Broiler.Regex's classifier `@8`
-  (Broiler-Platform/Broiler.Regex#24) classes `O06` by row B1 under the reference-arm rule's revision of 2026-11-16c,
-  the owner's ruling. Nothing is declared met.)*
+  them, and the owner's choice is open" now reads: their mechanism is read, and row M27 names them, `P4-47050-s-05` in
+  arm J's three cultures, under decision D-jsrest, below. On the reading of "Falsified if" taken, the clause stands for
+  no difference the arms found once Broiler.Regex's classifier reads row M27, and until then for those inputs.
+  Broiler.Regex's classifier `@8` (Broiler-Platform/Broiler.Regex#24) classes `O06` by row B1 under the reference-arm
+  rule's revision of 2026-11-16c, the owner's ruling. Nothing is declared met.)*
 - Nothing in this profile changes with this record. The cut-overs are SJL-11.4's and SJL-11.5's own changes, and
   this record is what they apply.
 
@@ -1433,9 +1433,9 @@ decision D23 and the SJL-12 milestone's reading of its clause 1 carry dated note
   the clause stands on the reading taken until a row names them, and the owner's choice is open.)* *(Note of 2026-11-16,
   after rows M16 to M26 merged: the note above's "but for the inputs of pattern `P4-47050`, whose mechanism is not read
   in full, for which the clause stands on the reading taken until a row names them, and the owner's choice is open" now
-  reads: row M27 names them, by decision D-jsrest, so on the reading taken no difference the arms found remains named by
-  no row once Broiler.Regex's classifier reads row M27; until it does, the clause stands for them. Nothing is declared
-  met.)*
+  reads: row M27 names them, `P4-47050-s-05` in arm J's three cultures, by decision D-jsrest, so on the reading taken
+  no difference the arms found remains named by no row once Broiler.Regex's classifier reads row M27; until it does,
+  the clause stands for them. Nothing is declared met.)*
 - A requirement that cannot be met by the end of SJL-11.2: the area is then refused (decision D1), and this record
   is revised.
 - This family's exhaustion verdicts moving outside its rule's class C2 population.
