@@ -2,7 +2,7 @@
   "bundle": "sjl-17-001",
   "milestone": "SJL-17",
   "step": "SJL-17.6, this family's run of its area rule (parts A to C) at the base and the after commit of SJL-17.4's cut-over, with the closures and the rule checks at the after commit",
-  "collected-at": "0f125cf074047afe177e2f64b7d1348e4bbf02e8",
+  "collected-at": "e24ed37c43b6a8afa725c136b96452ab2b766f55",
   "describes": "the tree of collected-at under docs/evidence/sjl-17-001/: every file there but this manifest, which is committed on top of it; each file listed by its path in the bundle and the SHA-256 of the bytes git stores for it at collected-at",
   "worktree-clean": true,
   "hash-method": "sources: the git blob id of each path at source-revision, the after commit; the bundle's files: sha256 of each blob as git stores it at collected-at",
@@ -50,7 +50,7 @@
     "docs/evidence/sjl-7-001/collect-area.py": "5561d5eb64e08021a5cede6c43018567b689e9e8"
   },
   "files": {
-    "README.md": "13c1dc130a88f797f6280da3807ffb35651e9d3d7a630d2828964014c5ddb479",
+    "README.md": "9a8b27520b454d55d1a371c95b8459cf6b2b3e058f17426e96c16a6db1947b34",
     "after-closures/README.md": "5a6f94639da70e5302435ffbd53b4528a0f6dce5419ec01e60d1de8e6094f07d",
     "after-closures/architecture-trx.sha256": "c86ee0ef6a5c04e5148502c694a83e92d1ac38cb82d307555d60e1456c5a1a0d",
     "after-closures/closures/admitted-packages.json": "91e0cc1e2ea55a3245cc9d99809fb646062140a36ca445cda9db7be08e4aa8ca",
