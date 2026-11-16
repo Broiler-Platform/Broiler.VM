@@ -8,7 +8,14 @@
 SJL-15.1, for this family. The windows this bundle judges are SJL-15.3, this family's lowering on the model with the
 binder pass deleted, and SJL-15.4, the slice path rebuilt on the shared tree and model.
 
-**Rule:** [`decision-rule-area.md`](decision-rule-area.md), written at SJL-15.1, before any change it judges exists.
+**Rule:** [`decision-rule-area.md`](decision-rule-area.md), written at SJL-15.1, before any change it judges exists, and
+revised the same day, before any run and before the branch that carries both merged, by
+[`decision-rule-area-revised-2026-11-16.md`](decision-rule-area-revised-2026-11-16.md), which quotes it whole and leaves
+it unedited: the tools read the slice binding table through one member of `SliceCompilation` (JSD-0088's decision
+D-tables); the inputs part S expects to differ at window 2 are named in three classes, H, R and C, each put to the owner
+by decision D-census; rule I5 registers each type deleted whole by type and each other member by member; a `--checks`
+row a window deletes is listed with what replaces it; and the precedents' parts are named by their own bundles'
+letters and revisions.
 
 **Correspondence:** [`correspondence.md`](correspondence.md), this family's half, read from code at Broiler.VM
 `a86b6f5d` and against the model surface at Broiler.JS `6fda6ca4`. Broiler.JS's half fills its column by a dated note in
