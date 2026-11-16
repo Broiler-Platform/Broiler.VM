@@ -96,7 +96,10 @@ arbiter cannot reach.
 - **Broiler.JS's `exec` answers outside row M8's list**: the correspondence's rows M10 to M15, corrections of Broiler.JS,
   one row to a mechanism read in arm J's copy (a rewritten group name, a `?`'s empty iteration, `\p{…}`, `\P{…}` and
   `\a` in a non-`u` class, a class subtraction, `\-` starting no range, and `i` and `I` under `tr-TR` and `lt-LT`), and
-  row M8's dated note giving its reading. The answers whose mechanism no row reads stay class (c), named by no row.
+  row M8's dated note giving its reading, each row taking an input where the condition its text states holds: for
+  rows M11 to M14, that the arbiter's answer to the pattern with the row's construct read as .NET reads it is
+  Broiler.JS's. The answers no row takes stay class (c), named by no row: those whose mechanism no row reads, and those
+  that hold a row's construct where its reading does not give Broiler.JS's answer, as some under `i`.
 - **`O06`**: row B1's, by its widening, the budget's early exit that row reads; the arbiter cannot reach it, so under
   the reference-arm rule it stays class (c) whatever row names it, as the inputs whose difference the reduction does not
   show do.

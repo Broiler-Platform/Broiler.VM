@@ -4071,15 +4071,20 @@ with the alternative not taken.
   `1f91b8f1`: a group name the translator rewrites (M10); the empty iteration of a `?` that .NET keeps (M11); `\p{…}`,
   `\P{…}` and `\a` in a class without `u` or `v`, which .NET reads as its own escapes (M12); `-[…]` in a class, which
   .NET reads as a subtraction (M13); `\-` in a class, which .NET reads as starting no range (M14); and `i` and `I` under
-  `tr-TR` and `lt-LT` (M15). Each was checked outside this repository by asking the arbiter for its answer to the
-  pattern as .NET reads the row's construct. Row M8 carries a dated note that reads it with its list. Not taken: row
-  M8's opening read as naming every such answer, which no predicate can read without guessing.
+  `tr-TR` and `lt-LT` (M15). Each row's text states when it takes an input. Rows M11 to M14 take one only where the
+  arbiter's answer to the pattern, with the row's construct written as .NET reads it, is Broiler.JS's, and were checked
+  that way outside this repository; row M10 was checked by its names, the same captures under a rewritten name, and
+  row M15 by the culture, arm J under the invariant culture answering as the text does. Row M8 carries a dated note
+  that reads it with its list. Not taken: row M8's opening read as naming every such answer, which no predicate can
+  read without guessing; and a row naming what is left, with no mechanism.
 - **`O06`.** `/^[a]*$/u` over a run of `a` one longer than the library's step budget, which Broiler.JS answers `null`:
   row B1's mechanism, held by a dated widening of that row. The arbiter cannot reach it, so the arms' rule keeps it in
   class (c) whatever row names it.
-- **What no row names.** The `exec` answers whose mechanism is not read, most of them patterns Broiler.JS routes to
-  Broiler.Regex's preview.4 without `u`, stay in class (c). On the reading of "Falsified if" JSD-0081 takes, the clause
-  stands for them until a row names them; JSD-0081's dated note says so, and the owner's choice is open.
+- **What no row names.** The `exec` answers no row takes stay in class (c): those whose mechanism is not read, most of
+  them patterns Broiler.JS routes to Broiler.Regex's preview.4 without `u`, and those that hold a construct of rows M11
+  to M13 where the row's reading does not give Broiler.JS's answer, most of them under `i`. On the reading of
+  "Falsified if" JSD-0081 takes, the clause stands for them until a row names them; JSD-0081's dated note says so,
+  and the owner's choice is open.
 - **Rules.** None is filed. The rows are Broiler.JS's corrections and move no verdict of this family's rule, and no
   test262 file that Broiler.JS's bundle `sjl-10-001` after run fails is known to move for them.
 - **Records.** The correspondence carries the rows, row M8's note, row B1's widening and dated notes in its
@@ -4107,7 +4112,9 @@ is declared met, and nothing is accepted. Next (the entry above's Next list carr
   before any base run;
 - Broiler.JS's records of rows S12 to S15 and M8 to M15 in its own list of corrections, should a Broiler.JS test262
   file move for them *(read "rows S12 to S15, M8 and M9" until 2026-11-16, later)*;
-- Broiler.JS's SJL-17.6 runs, then SJL-17's exit reading over both repositories;
+- Broiler.JS's SJL-17.6 runs, then SJL-17's exit reading over both repositories *(read "Broiler.JS's SJL-17.6 runs,
+  its SJL-17.5 cut-over having merged as `2f012739` (Broiler-Platform/Broiler.JS#1118, observed), then SJL-17's exit
+  reading over both repositories" until 2026-11-16, later)*;
 - SJL-11's gate: SJL-7's, and so SJL-3's, and review; SJL-17's: SJL-9's, and so SJL-7's, SJL-8's and SJL-3's, and
   review.
 
