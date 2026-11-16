@@ -26,6 +26,9 @@
   *(Note of 2026-11-01, decision D-s5: S5 leaves this family's list. `regexpref` refutes the reading it rested on,
   and this family's acceptance of `\k` in a class beside a named group is the text's answer. This family's
   corrections are row S1 (kind D) and rows S10, M4 (a non-empty match), M7 and T3 (kind R).)*
+  *(Note of 2026-11-16, decision D-wiv: row S8a joins this family's list, kind R, so its corrections are row S1 (kind
+  D) and rows S8a, S10, M4 (a non-empty match), M7 and T3 (kind R); Broiler.JS's gain rows S12 to S15, M8 and M9 by
+  decision D-jsrows.)*
 - *(Added 2026-11-01.)* **The owner's decisions D-s5, D-p5, D-widen and D-partd of 2026-11-01 are recorded**, under
   the same direction, in section "The owner's decisions of 2026-11-01". SJL-11.3's first runs of the
   regular-expression vectors found them, on Broiler.JS's corpus revision 31. They are classified at revision 32.
@@ -218,11 +221,15 @@ risk D10's stop.** Nothing here weakens either.
 **X2 - met.** Every row is classified:
 - **Corrections of this family:** S1 (kind D); S5's class case and S10 (kind R). *(Note of 2026-11-01, decision
   D-s5: S1 (kind D) and S10 (kind R). S5's class case is the text's answer in this family, and a correction of
-  Broiler.JS.)*
+  Broiler.JS.)* *(Note of 2026-11-16, decision D-wiv: and S8a (kind R), `\w` as the first operand of a class
+  difference under `iv`, which the reference arms reach and no probe reached.)*
 - **Corrections of Broiler.JS:** S2a, S2b, S7, S8, S10's class case and S11; S3b's process abort, with the library.
   *(Note of 2026-11-01: and S5's class case, by decision D-s5. S7 and S8 are read with the inputs decision D-widen
   adds. S3b's 200,000 is accepted since Broiler.JS's `a58d31d1`, by decision D-p5, and so reads as engine policy
-  under D7, as 20,000 does.)*
+  under D7, as 20,000 does.)* *(Note of 2026-11-16, decision D-jsrows: and S12 to S15, the reference arms' groups no
+  row named: patterns the text refuses that Broiler.JS accepts (S12, S13), patterns B.1.2 admits that it refuses
+  without `u` or `v` (S14), and a quantifier bound past 2^31 − 1 it refuses under `i`, with or without `u` or `v`
+  (S15). Every row is still classified.)*
 - **Corrections of Broiler.Regex's preview.4**, where Broiler.JS's fallback masks them: S1's refusal of valid
   duplicates, S2, S2a, S4, S5's parse-only acceptance, S6 and S10's refusal.
 - **Engine policy that becomes a parameter:** S3, the nesting limit, and S3b's deep but finite nesting, which
@@ -245,11 +252,6 @@ risk D10's stop.** Nothing here weakens either.
   scanner's defect, is no longer a difference of this family on the vectors; it was no C1 row, and is none now. This
   family's divergence fields of the regular-expression area that remain are those of rows S1, S10, M4, M7 and T3, its
   corrections, which SJL-11.4 makes. No decision is revised, and the text above is left as written.
-  *(Noted 2026-11-16, decisions D-wiv and D-jsrows.)* The reference arms reach rows no probe reached. Row S8a, `\w` as
-  the first operand of a class difference under `iv`, joins this family's corrections (kind R), and rows S12 to S15
-  join Broiler.JS's: patterns the text refuses that Broiler.JS accepts (S12, S13), patterns B.1.2 admits that it
-  refuses without `u` or `v` (S14), and a quantifier bound past 2^31 − 1 it refuses under `u` or `v` (S15). Every row
-  is still classified.
 
 **X6 - extended.**
 - **This family:** the parser in `JsRegExpMatcher.cs` and the public `JsRegExpSyntaxError`, deleted with the file.
@@ -277,7 +279,8 @@ risk D10's stop.** Nothing here weakens either.
 - **Same in both:** M1, M2c and M5. M5's sticky emulation costs work on Broiler.JS's .NET path that no answer
   shows; the anchored argument removes it.
 - *(Noted 2026-11-16, decision D-jsrows.)* **Corrections of Broiler.JS** also: M8, `exec` answers that differ from the
-  text's on inputs no other row's mechanism records, and M9, an `exec` its .NET engine throws on.
+  text's on inputs no other row's mechanism records, and M9, an `exec` its .NET engine throws on; and M4's half-pair
+  matches hold its own vectors that the arms reached, by the row's widening.
 
 **X6 - extended.**
 - **This family:** `JsRegExpMatcher.cs` whole: the public `JsRegExpMatcher` and `JsRegExpMatch`, and
@@ -740,7 +743,8 @@ clause 1, and Broiler.JS's SJL-12 record of decision D23, whose note Broiler.JS'
     `ReferenceError` on a pattern only Broiler.Regex holds: M6.
   - *(added 2026-11-16, decision D-jsrows)* the reference arms' groups no row named: patterns the text refuses and
     Broiler.JS accepts (S12, S13), patterns B.1.2 admits and it refuses (S14), a bound past 2^31 − 1 it refuses under
-    `u` or `v` (S15), `exec` answers that differ (M8) and an `exec` that throws (M9). No test262 file at `ccaac100`
+    `i` (S15), `exec` answers that differ (M8) and an `exec` that throws (M9), and row M4's own vectors that the arms
+    reached, by that row's widening. No test262 file at `ccaac100`
     is known to move for any of them, so none names a part A row;
   - **Removed from the plan's list:** `\0` before a non-ASCII digit, which the correspondence shows is
     Broiler.Regex's alone and not observable in Broiler.JS (row S4); it is a library fix (decision D36). An invalid
@@ -996,9 +1000,9 @@ each with the alternative not taken. Like the decisions of 2026-11-01 they carry
 verdict.
 
 **Decision D-wiv - row S8a, `\w` in a class difference under `iv`, is a correction of this family, kind R.** Every
-difference of arm V that no row named is `\w` as the first operand of a class difference under `iv`, in four patterns of
-the arms' population P4, `[\w--I]`, `[\w--\ud83d--\S]?`, `[\w--[^]--K]\B|😀` and `𝐀+?[[\w--[\x6b\D\s]]\r]*`. Arm V is a
-byte-for-byte copy of this family's `JsRegExpMatcher.cs`, so the answer is the matcher's.
+difference of arm V that no row named is `\w` as the first operand of a class difference under `iv`, in the arms'
+population P4's patterns `[\w--I]`, `[\w--\ud83d--\S]?`, `[\w--[^]--K]\B|😀` and `𝐀+?[[\w--[\x6b\D\s]]\r]*`. Arm V is
+a byte-for-byte copy of this family's `JsRegExpMatcher.cs`, so the answer is the matcher's.
 - **What the matcher does.** Under `v`, its `ParseClassSetOperand` builds `\d`, `\s` and `\w` from their ranges and
   returns them unfolded, where every other operand passes through its `MaybeFold`, and a complement takes the folded
   universe. Under `iu` and `iv`, `\w`'s ranges hold `A` to `Z`, U+017F and U+212A, which fold to other code points.
@@ -1027,25 +1031,34 @@ The differences of arm J that no row named are grouped by Broiler.JS's answer an
 arbiter's reason (PatternSyntaxError's code), one row to a group:
 - **S12**: Broiler.JS accepts a pattern the grammar refuses (the arbiter's `grammar:` reasons: a quantified assertion or
   a lone quantifier, an invalid escape or class escape under `u` or `v`, a lone syntax character, a trailing backslash,
-  an unterminated class, a range as an operand of `&&`, an escaped modifier);
+  an unterminated class, a range as an operand of `&&`, an escaped modifier). The vectors among them that rows S7 and
+  S8 already name are those rows', which the arms' classifier's predicates do not reach; the arms' other inputs of
+  those rows' constructs are S12's, one group to the arbiter's reason, and widening S7 and S8 instead by dated notes
+  is the alternative not taken;
 - **S13**: Broiler.JS accepts a pattern an early error refuses (the arbiter's `early:` reasons: a decimal escape past
   the group count, a class range out of order, an undefined group name, a braced quantifier after an assertion, a
   negated class with strings);
-- **S14**: without `u` or `v`, Broiler.JS refuses a pattern B.1.2 admits (`\p{…}`, `\P{…}` and `\u{…}` read with their
-  `u`-mode or .NET meaning, class ranges ending in a class escape, `\c`, `\q`, `\k` and `\8` in a class, octal
-  escapes, a lone brace, a quantified look-ahead), grouped by the arbiter's reason for the same pattern with `u`
-  added;
-- **S15**: under `u` or `v`, Broiler.JS refuses a quantifier bound past 2^31 − 1, which the text accepts;
+- **S14**: without `u` or `v`, Broiler.JS refuses a pattern B.1.2 admits, split by what triggers the refusal: with no
+  flag as well as under the pattern's flags, by the constructs the row lists (`\p{…}`, `\P{…}` and `\u{…}` read with
+  their `u`-mode or .NET meaning, class ranges ending in a class escape, `\c`, `\q`, `\k` and `\8` in a class, octal
+  escapes, a lone brace); only under `s`, where Broiler.JS's `ParseFlags` drops .NET's ECMAScript option, a reading;
+  and only under `i` or only under `m`, not traced. The groups are also named by the arbiter's reason for the same
+  pattern with `u` added, which names what B.1.2 admits, not what Broiler.JS refuses under one flag;
+- **S15**: under `i`, with or without `u` or `v`, Broiler.JS refuses a quantifier bound past 2^31 − 1 in a pattern it
+  does not refuse without `i`, which the text accepts;
 - **M8**: an `exec` both answer, where Broiler.JS's answer differs (.NET's word set for `\b` and `\B`, case pairs no row
-  records, an empty `\q{}`, and answers from a `lastIndex` inside a pair that row M4 does not record);
-- **M9**: the one `exec` on which Broiler.JS's .NET engine throws.
+  records, an empty `\q{}`);
+- **M4**, widened by a dated note: its own vectors from a `lastIndex` inside a pair that the arms reached, on answers
+  its cell did not record;
+- **M9**: an `exec` on which Broiler.JS's .NET engine throws.
 
 Each row names its inputs, examples and Broiler.JS's mechanism as read in arm J's copy of Broiler.JS's code at
 `1f91b8f1`, marked a reading where no input was traced, and this family's answer, which on every one of these inputs is
 the arbiter's but where rows S1 and M4 name this family's corrections.
 - **Where the rows are.** In this record's correspondence, as decision D27 keeps it with Broiler.JS's column in every
   row, and because Broiler.JS's rule classifies by it ("The correspondence this rule classifies by is Broiler.VM's
-  `docs/evidence/sjl-11-001/correspondence.md`"). Decision D23's list of Broiler.JS's corrections gains the six rows.
+  `docs/evidence/sjl-11-001/correspondence.md`"). Decision D23's list of Broiler.JS's corrections gains the six rows,
+  and row M4's half-pair matches gain its own vectors that the arms reached.
 - **Broiler.JS's test262 verdicts.** Broiler.JS's rule's part A names its C1 corrections by a fixed list of rows. No
   test262 file that Broiler.JS's bundle `sjl-10-001` after run fails, the run that rule names its files from, is
   explained by any of the six rows, so none is known to move a Broiler.JS part A row. A dated Broiler.JS rule file
@@ -1053,8 +1066,10 @@ the arbiter's but where rows S1 and M4 name this family's corrections.
   files none.
 - **Two inputs the reduction reached.** Broiler.Regex's reduction of 2026-11-15 reduced two inputs the arbiter could not
   reach, `P4-38461-s-03` and `-s-05`, to prefixes it reaches, where S and the arbiter answer `null` and Broiler.JS
-  refuses the pattern, a quantified look-ahead and `\q` in a class without `u` or `v`, which B.1.2 admits. They are row
-  S14's.
+  refuses the pattern, which B.1.2 admits. It refuses it only under `s`: without `u` or `v` it accepts the same pattern
+  under every other flag, so the refusal is not its reading of the quantified look-ahead or of `\q` in a class but
+  follows the `s` flag, under which `ParseFlags` drops .NET's ECMAScript option. They are row S14's, of its inputs
+  refused only under `s`.
 - **Not taken:** keeping the rows out of this record and drafting them for Broiler.JS's own records; Broiler.JS's rule
   reads this file, so rows elsewhere would classify nothing.
 - The reason: decision D25, as for D-wiv; and a row that names a mechanism by group, rather than one row to an input,
@@ -1074,8 +1089,10 @@ prefixes. It found three sets, which its roadmap's record of that day counts:
   body that can match the empty string, so the arbiter's cost is in the pattern. Under the rule as written they stay
   class (c);
 - **inputs whose difference does not survive the reduction**: at the longest prefix the arbiter reaches, S and the arm
-  answer alike, and S's answer is the arbiter's. The difference exists only at sizes the arbiter cannot reach, so it
-  was not reduced to an input the arbiter reaches, and under the rule as written they stay class (c);
+  answer alike, and S's answer is the arbiter's. The difference exists only at sizes the arbiter cannot reach. The
+  rule's "until reduced to an input it can" is met for the input, which was cut to a prefix the arbiter reaches, but
+  not for the difference, which no reduced input shows; so they are no class (a), (a') or (b) difference, and they
+  stay class (c) by the rule's "every other difference is class (c)". That reading is open for the rule's owner;
 - **inputs that reduce to another difference**, `P4-38461-s-03` and `-s-05` above: reduced to an input the arbiter
   reaches whose difference row S14 names. Under the rule as written they leave class (c) for class (a) under row S14
   when the arms' classification reads the reduction and that row; until then they are (c).
@@ -1087,7 +1104,8 @@ is decided here, and both are open for that rule's owner, by a dated rule file o
 **The reading of "Falsified if" these decisions answer.** Its first clause reads "A vector or a reference-arm difference
 that no row classifies". **Taken:** a reference-arm difference the arbiter decides is classified when a row of the
 correspondence names its input and classes the engine the arbiter shows wrong, as rows S8a, S12 to S15, M8 and M9 now
-do for every such difference the classification of 2026-11-15 left in class (c); an input the arbiter cannot reach is
+do for every such difference the classification of 2026-11-15 left in class (c), with rows S7, S8 and M4 for the
+vectors they name, M4 by its widening; an input the arbiter cannot reach is
 no difference the arbiter decides, so it does not falsify this record, though it keeps the arms' class (c) non-empty
 under their rule. **Not taken:** reading "classifies" as the arms' classification listing a difference outside class
 (c), under which the clause stands until Broiler.Regex's classifier reads the new rows, and stands for the unreachable
@@ -1131,9 +1149,10 @@ decision D23 and the SJL-12 milestone's reading of its clause 1 carry dated note
 
 - A vector or a reference-arm difference that no row classifies.
   *(Note of 2026-11-16: Broiler.Regex's reference arms found differences of this family and of Broiler.JS that no
-  row classified, which falsified this record from their classification until rows S8a, S12 to S15, M8 and M9
-  classified them, by decisions D-wiv and D-jsrows. The reading taken of "classifies", and of the inputs the arbiter cannot reach, is in section
-  "The owner's decisions of 2026-11-16", with the reading not taken.)*
+  row classified, which falsified this record from their classification until, on the reading of "classifies" taken
+  in section "The owner's decisions of 2026-11-16", rows S8a, S12 to S15, M8 and M9, and row M4 by its widening,
+  classified them, by decisions D-wiv and D-jsrows. That section also gives the reading of the inputs the arbiter
+  cannot reach, and the reading not taken, under which the clause still stands.)*
 - A requirement that cannot be met by the end of SJL-11.2: the area is then refused (decision D1), and this record
   is revised.
 - This family's exhaustion verdicts moving outside its rule's class C2 population.
