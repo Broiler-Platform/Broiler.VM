@@ -126,6 +126,17 @@ leaves in class (c) the `exec` answers of arm J no row names, with `O06`.
   the inputs of pattern `P4-47050`, which no row names; and `O06`. The arms' MET still cannot be read at the candidate
   reading.
 
+*(Added 2026-11-16, after rows M16 to M26 merged, under the owner's decision D-jsrest, which JSD-0081 records.)*
+Broiler.RegEx's classifier `@8` (Broiler-Platform/Broiler.Regex#24, merged as `9dd15fc4`) reads rows M16 to M26 and
+the notes, and classes `O06` by row B1 under its reference-arm rule's revision of 2026-11-16c; it leaves in class (c)
+only `P4-47050-s-05`, the input of pattern `P4-47050` above, in arm J's three cultures.
+- **That input, by mechanism**: the correspondence's row M27, a correction of Broiler.JS: without
+  `RegexOptions.ECMAScript`, .NET makes a loop over the translator's `\D` atomic and greedy before `\b`, read in arm J's
+  copy and in .NET's source. The paragraph above's "The inputs of pattern `P4-47050` stay named by no row" and "the
+  inputs of pattern `P4-47050`, which no row names" read with it.
+- **What still keeps class (c) from emptying**: the arms' classifier does not yet read row M27. The arms' MET is
+  not read here; what the candidate reading waits on is Broiler.RegEx's to record.
+
 ## 1. SJL-11's area rule and its correspondence (SJL-11.1)
 
 **The correspondence.**
