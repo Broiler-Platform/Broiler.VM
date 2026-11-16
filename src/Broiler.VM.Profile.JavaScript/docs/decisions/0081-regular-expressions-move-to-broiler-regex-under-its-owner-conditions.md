@@ -28,7 +28,8 @@
   corrections are row S1 (kind D) and rows S10, M4 (a non-empty match), M7 and T3 (kind R).)*
   *(Note of 2026-11-16, decision D-wiv: row S8a joins this family's list, kind R, so its corrections are row S1 (kind
   D) and rows S8a, S10, M4 (a non-empty match), M7 and T3 (kind R); Broiler.JS's gain rows S12 to S15, M8 and M9 by
-  decision D-jsrows.)*
+  decision D-jsrows.)* *(Note of 2026-11-16, later, decision D-jsexec: Broiler.JS's gain rows M10 to M15 too, and row
+  B1's correction of Broiler.JS gains P3's `O06` by its widening.)*
 - *(Added 2026-11-01.)* **The owner's decisions D-s5, D-p5, D-widen and D-partd of 2026-11-01 are recorded**, under
   the same direction, in section "The owner's decisions of 2026-11-01". SJL-11.3's first runs of the
   regular-expression vectors found them, on Broiler.JS's corpus revision 31. They are classified at revision 32.
@@ -281,6 +282,11 @@ risk D10's stop.** Nothing here weakens either.
 - *(Noted 2026-11-16, decision D-jsrows.)* **Corrections of Broiler.JS** also: M8, `exec` answers that differ from the
   text's on inputs no other row's mechanism records, and M9, an `exec` its .NET engine throws on; and M4's half-pair
   matches hold its own vectors that the arms reached, by the row's widening.
+- *(Noted 2026-11-16, later, decision D-jsexec.)* M8 reads with its list, and Broiler.JS's other `exec` answers that
+  differ from the text's are **corrections of Broiler.JS** by mechanism: M10, a group name its translator rewrites;
+  M11, the empty iteration of a `?` that .NET keeps; M12, `\p{…}`, `\P{…}` and `\a` in a class without `u` or `v`;
+  M13, a class subtraction; M14, `\-` starting no range; M15, `i` and `I` under `tr-TR` and `lt-LT`. The rest,
+  whose mechanism is not read, no row names yet.
 
 **X6 - extended.**
 - **This family:** `JsRegExpMatcher.cs` whole: the public `JsRegExpMatcher` and `JsRegExpMatch`, and
@@ -746,6 +752,11 @@ clause 1, and Broiler.JS's SJL-12 record of decision D23, whose note Broiler.JS'
     `i` (S15), `exec` answers that differ (M8) and an `exec` that throws (M9), and row M4's own vectors that the arms
     reached, by that row's widening. No test262 file at `ccaac100`
     is known to move for any of them, so none names a part A row;
+  - *(added 2026-11-16, later, decision D-jsexec)* the arms' `exec` answers outside row M8's list, by mechanism: a
+    rewritten group name (M10), a `?`'s empty iteration (M11), `\p{…}`, `\P{…}` and `\a` in a non-`u` class (M12), a
+    class subtraction (M13), `\-` starting no range (M14) and `i` and `I` under `tr-TR` and `lt-LT` (M15); and
+    `/^[a]*$/u` over 10,000,001 `a`, by row B1's widening. No test262 file at `ccaac100` is known to move for any of
+    them, so none names a part A row;
   - **Removed from the plan's list:** `\0` before a non-ASCII digit, which the correspondence shows is
     Broiler.Regex's alone and not observable in Broiler.JS (row S4); it is a library fix (decision D36). An invalid
     literal read as division stays SJL-14's (row S9).
@@ -1112,6 +1123,59 @@ under their rule. **Not taken:** reading "classifies" as the arms' classificatio
 inputs until that rule's owner decides them. On the reading taken, no clause of "Falsified if" stands for the
 differences the arbiter decides; the arms' class (c) is still not empty.
 
+*(Added 2026-11-16, later.)* Broiler.Regex's classifier `@5` (Broiler-Platform/Broiler.Regex#21) read the rows above,
+row M8 to its list (its roadmap's record: "Row M8 read with its list (above). Not taken: its first sentence alone."),
+and left in class (c) the `exec` answers of arm J that differ from the text's on inputs that list does not name
+("Whether row M8 holds them is Broiler.VM's to say, by a dated widening of the row or a row of its own"), with one input
+of P3, `O06`, whose difference the arbiter cannot reach. The decision below was taken on 2026-11-16 as recommended,
+under the same direction, and is recorded as the owner's decision of that day, with the alternative not taken.
+
+**Decision D-jsexec - Broiler.JS's `exec` answers outside row M8's list are rows M10 to M15 by mechanism, row M8 reads
+with its list, and `O06` is row B1's.** The differences are grouped by Broiler.JS's mechanism, read in arm J's copy of
+Broiler.JS at `1f91b8f1`, one row to a mechanism, not by the shape of the answer:
+- **M10**: the translator rewrites the pattern's text before it renames the groups, and its rewrites of `$` (under `m`,
+  and beside an inline modifier group) and of a letter with case variants (under `i`) reach into a group's name, so
+  `groups` reports another name for the same capture;
+- **M11**: a `?` over a group whose body matches the empty string reaches .NET, which keeps that iteration and its
+  captures, where RepeatMatcher discards it; the translator's rewrite of zero-width bodies and `GapScan`'s routing of
+  quantifiers whose maximum is above 1 leave it there;
+- **M12**: without `u` or `v`, `\p{…}`, `\P{…}` and `\a` in a class reach .NET as written, which reads a
+  General_Category and U+0007 where B.1.2 reads the letters;
+- **M13**: without `u` or `v`, `-[…]` in a class reaches .NET, which reads a class subtraction;
+- **M14**: without `u` or `v`, `\-` in a class before `-` reaches .NET, which reads it as starting no range;
+- **M15**: under `i` without `u` or `v`, `i` and `I` under `tr-TR` and `lt-LT`, row M2a's culture casing on the ASCII
+  pair, where the invariant culture answers as the text does;
+- **B1**, widened: `/^[a]*$/u` over 10,000,001 `a`, which Broiler.JS answers `null` by the budget's early exit the
+  row's cell reads for `/[a]*/u` and `/^a*$/u`; the arbiter cannot reach it, so the arms' rule keeps it in class (c)
+  whatever row names it, as it keeps the other inputs above whose difference the reduction does not show.
+
+Each row was checked, outside this repository, by asking the arbiter for its answer to each input's pattern with the
+row's construct written as .NET reads it: that answer is Broiler.JS's, up to row M10's names, and not the text's.
+Row M8 carries a dated note: its opening reads with its list, and its "`\w`, `\d` and `\s` beside them" reads
+"beside `\b` or `\B` beside a non-ASCII letter", adding no input, as Broiler.Regex's classifier reads it; its `tr-TR`
+inputs of P5 are row M15's mechanism and stay its own. Like D-jsrows, no test262 file that Broiler.JS's bundle
+`sjl-10-001` after run fails is explained by these rows, so none is known to move a Broiler.JS part A row, and this
+record files no rule; none moves a verdict of this family's.
+- **Not taken:** reading row M8's opening as naming every `exec` answer of Broiler.JS that differs from the text's, the
+  scope its decision D-jsrows wrote it with, so that no new row is needed. A classifier's predicate cannot read that
+  scope without guessing, which Broiler.Regex's review of its classifier `@4` found, and it names no mechanism.
+- The reason: decision D25, as for D-jsrows; and a row is what a predicate reads, so each row names the construct that
+  moves the answer.
+- **What it leaves.** The `exec` answers whose mechanism is not read stay in class (c), named by no row: most are
+  patterns `GapScan` routes to Broiler.Regex's preview.4 without `u` (a quantifier whose maximum is above 1 over a
+  body that matches both empty and non-empty, or a capture inside a look-behind), and the others .NET readings no row
+  records, such as a letter's case expansion inside a `(?-i:…)` group. They are open, below.
+
+**The reading of "Falsified if", as decision D-jsexec changes it.** *(Note of 2026-11-16, later: the paragraph above
+read the clause as answered because "rows S8a, S12 to S15, M8 and M9 now do" name "every such difference the
+classification of 2026-11-15 left in class (c)"; that held on row M8's opening read as naming every `exec` answer that
+differs, the reading D-jsexec does not take.)* **Taken:** the same reading of "classifies", a row naming the input and
+classing the engine the arbiter shows wrong, now with row M8 read to its list. Rows M10 to M15 name the `exec` answers
+whose mechanism is read. The rest are differences the arbiter decides that no row names, so on this reading the clause
+stands for them until a row names them; this record is not revised for them here, and the owner's choice is open.
+**Not taken:** row M8's wider reading, under which the clause would not stand for them. The inputs the arbiter cannot
+reach, `O06` among them, still do not falsify this record, as above.
+
 ## What this rejects, and why
 
 - **Porting this family's matcher into the package** (SJL-D-14 (b)): the owner chose (a), and `areas/regexp.md`
@@ -1152,7 +1216,10 @@ decision D23 and the SJL-12 milestone's reading of its clause 1 carry dated note
   row classified, which falsified this record from their classification until, on the reading of "classifies" taken
   in section "The owner's decisions of 2026-11-16", rows S8a, S12 to S15, M8 and M9, and row M4 by its widening,
   classified them, by decisions D-wiv and D-jsrows. That section also gives the reading of the inputs the arbiter
-  cannot reach, and the reading not taken, under which the clause still stands.)*
+  cannot reach, and the reading not taken, under which the clause still stands.)* *(Note of 2026-11-16, later: by
+  decision D-jsexec row M8 reads with its list, rows M10 to M15 name Broiler.JS's other `exec` answers whose mechanism
+  is read, and row B1's widening names `O06`. The `exec` answers whose mechanism is not read are named by no row, so on
+  the reading taken the clause stands for them until a row names them; that section's note says so.)*
 - A requirement that cannot be met by the end of SJL-11.2: the area is then refused (decision D1), and this record
   is revised.
 - This family's exhaustion verdicts moving outside its rule's class C2 population.
