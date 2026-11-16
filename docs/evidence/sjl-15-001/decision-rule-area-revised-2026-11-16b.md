@@ -3,12 +3,17 @@
 
 # Bundle SJL-15-001's area rule, revised again on 2026-11-16 by the owner's answer to decision D-census: part S admits classes H, R and C, each listed by row
 
-**Written:** 2026-11-16, later the same day, before any run this rule judges and before any code it judges exists. No
-rule commit, tools commit, pin commit, base or after commit of either window exists, and no run of any part of this
-rule has been taken. This file revises [`decision-rule-area.md`](decision-rule-area.md) as that file's section
-"Revisions" requires ("A revision filed before any run of the part it revises, the owner's answer to decision D-census
-among them, quotes this file whole and says so"): it is a new dated file, it quotes that file whole at its end, and that
-file is not edited. The revision of the same morning,
+**Written:** 2026-11-16, after SJL-15.1 merged, later the same day as the revision it follows, before any run this rule
+judges and before any code it judges exists. It is filed on the branch `sjl-records-2026-11-16`, before that branch
+merges. The commit that first carried the rule and the revision of the same morning, `45876164`, exists, and is on the
+default branch through the merge `0ddc146f` (Broiler-Platform/Broiler.VM#214). As that revision named the rule commit
+"the commit that carries both files", **the rule commit, as the rule names it, is from this revision on the commit that
+carries all three files**, so that the tools commit and every base, which must descend from the rule commit, descend
+from this revision too. No tools commit, pin commit, base or after commit of either window exists, and no run of any
+part of this rule has been taken. This file revises [`decision-rule-area.md`](decision-rule-area.md) as that file's
+section "Revisions" requires ("A revision filed before any run of the part it revises, the owner's answer to decision
+D-census among them, quotes this file whole and says so"): it is a new dated file, it quotes that file whole at its end,
+and that file is not edited. The revision of the same morning,
 [`decision-rule-area-revised-2026-11-16.md`](decision-rule-area-revised-2026-11-16.md), stands as written: this file
 changes only the lines of part S's rule block that revision wrote, quoted below, and two sentences that revision and the
 rule read through it, and it changes nothing else that revision changed. In this file, "this revision" is this file.
@@ -41,14 +46,14 @@ the milestone file, which quotes the clause as it stood.
    now read:
 
    ```rule
-   admitted difference classes, each a class of clause 5 as revised on 2026-11-16, each input or line listed by row before the after commit's reports are compared:
+   admitted difference classes, each a class of clause 5 as revised on 2026-11-16, each input or line listed by row before any after run of window 2 is taken:
      (H) the corrections of hand-offs H23 and H25 (correspondence row SL4): a B4 input, or a program of SliceSourcePrograms, that reaches H23 (the slice tokenizer's escape digits, which its .NET HexNumber parses read with white space or `_` in them) or H25 (a regular-expression body ending in a backslash at the end of the text, and a strict directive with `\8` or `\08` kept with no early error), whose outcome and ordered diagnostics at the after commit are the library's answer to that defect, as row SL4 says the library corrects it (it refuses each), and whose binding table and artifact, where it is accepted at both commits, are unchanged
-     (R) the refusals the library makes in place of the slice path's own (rows SL3, DE3 and EE1): a B4 input, or a program of SliceSourcePrograms that pins a refusal, refused at the base under ReservedWordAsBinding, DuplicateLexicalDeclaration, VarAndLexicalCollision, LegacyOctalInStrictCode, ConstWithoutInitialiser, InvalidAssignmentTarget, IllegalBreak or IllegalContinue, or refused at the base with more than one diagnostic, that is refused at the after commit, whose ordered diagnostic list there is the library's first refusal (row EE2) under the library's row for the check its listing names, its code, its message and its place the library's
-     (C) the census lines the library's parse moves (row SL5): a line of either census output that counts files parsed or parse failures by the first slice diagnostic's code, or a per-construct line, that moves only by the files whose parse is the library's and not SliceParser's: a file SliceParser parsed that the library refuses, a file the library parses that SliceParser refused, or a parse failure counted under the library's first code in place of the first slice code, each such file named with its line
-   the listing, by row: class H is listed by its rows before any run of this part, in this bundle, from the correspondence (row SL4 and hand-offs H23 and H25, each with the defect it corrects), with the inputs the correspondence names (the parse corpus's J000262 and J001009); classes R and C, whose inputs and lines only a run can show, are listed by input and by line at the window-2 base run, from the base's reports and before the after commit's reports are compared: class R from the base's refusals, each refused input or pinned program with the row of the correspondence (SL3, DE3 or EE1) whose check refused it and the library's row that refuses it in its place, and class H's inputs the base's reports show reaching H23 or H25 added to class H by the same listing; class C from the base's census outputs, each line of the kind class C names with the files it counts; the listing is retained in this bundle with the base's reports
-   every other difference is a regression: a difference of an input, a program or a line that the listing does not hold, or of a listed one beyond its class (an accepted input's artifact hash, binding table or slot order; an input that moves between accepted and refused outside classes H and R; a refusal of rows RS3 and RS4, the admission's; a census line that moves by a file the listing does not name; a --checks row's verdict)
+     (R) the refusals the library makes in place of the slice path's own (rows SL2, SL3, DE3 and EE1): a B4 input, or a program of SliceSourcePrograms that pins a refusal, refused at the base under ReservedWordAsBinding, DuplicateLexicalDeclaration, VarAndLexicalCollision, LegacyOctalInStrictCode, ConstWithoutInitialiser, InvalidAssignmentTarget, IllegalBreak or IllegalContinue, or refused at the base with one diagnostic under a code of the slice tokenizer or the slice parser (row SL2: UnexpectedCharacter, UnterminatedComment, MalformedNumericLiteral, UnterminatedStringLiteral, UnknownEscapeSequence, UnterminatedRegularExpression, UnterminatedTemplateLiteral, UnexpectedToken, ExpectedToken or NestingTooDeep, and not ConstructOutsideManifest, which is the manifest's admission), or refused at the base with more than one diagnostic, that is refused at the after commit, whose ordered diagnostic list there is the library's first refusal (row EE2) under the library's row for the check its listing names, its code, its message and its place the library's
+     (C) the census lines the library's parse moves (row SL5): any line of either census output that moves only by the files below, among them a line that counts files parsed or parse failures by the first slice diagnostic's code, a per-construct line, and a line of the curve section `--census` prints over the parsed files (a "constructs-needed|files" line, a rank line, which appears or goes as the count it prints moves, and the line "# N of M parsed files are admissible ..."), each such line moving only by the files whose parse is the library's and not SliceParser's: a file SliceParser parsed that the library refuses, a file the library parses that SliceParser refused, or a parse failure counted under the library's first code in place of the first slice code, each such file named with its line
+   the listing, by row: class H is listed by its rows before any run of this part, in this bundle, from the correspondence (row SL4 and hand-offs H23 and H25, each with the defect it corrects), with the inputs the correspondence names (the parse corpus's J000262 and J001009); classes R and C, whose inputs and lines only a run can show, are listed by input and by line from the window-2 base run's reports, after the base run and before any after run of window 2 is taken, and the listing is committed in this bundle, or retained in it with the time it was written, before the after run is taken: class R from the base's refusals, each refused input or pinned program with the row of the correspondence (SL2, SL3, DE3 or EE1) whose check refused it and the library's row that refuses it in its place, and class H's inputs the base's reports show reaching H23 or H25 added to class H by the same listing, under row SL4 as it is listed now; class C from the base's census outputs, each line of the kinds class C names with the files it counts; the listing is retained in this bundle with the base's reports
+   every other difference is a regression: a difference of an input, a program or a line that the listing does not hold, or of a listed one beyond its class (an accepted input's artifact hash, binding table or slot order; an input that moves between accepted and refused outside class H (class R admits no such move: its inputs are refused at both commits); a refusal of rows RS3 and RS4, the admission's; a census line that moves by a file the listing does not name; a --checks row's verdict)
    a --checks row outside the population that the window's merge deletes or rewrites because it reads a type the window deletes (the row "the shared and slice tokenizers agree on the slice path's inputs" at window 2) is listed before any run of this part with what replaces it, or with "none" and why, and this part does not judge it
-   MET if and only if all runs of each window are complete, the control is reported as stated, every difference reported is in class H, R or C, listed by row as above before the after commit's reports were compared, and of its class, no other difference is reported, and every --checks row of the population passes at both commits.
+   MET if and only if all runs of each window are complete, the control is reported as stated, every difference reported is in class H, R or C, listed by row as above before any after run of window 2 was taken, and of its class, no other difference is reported, and every --checks row of the population passes at both commits.
    ```
 
    The lines "evidence class", "population", "configuration", "completeness", "controls" and "comparison" are as the
@@ -57,23 +62,25 @@ the milestone file, which quotes the clause as it stood.
 2. **Part S, "How it is read".** The rule's "**Should the owner revise clause 5 under decision D-census**, the revision
    is filed by a new dated rule file in this directory, quoting this part, before any run of it, and that file's class,
    not this part, judges the listed inputs", which the revision of 2026-11-16 reads with "that file's class" as "that
-   file's class or classes, for whichever of classes H, R and C the owner's answer admits", is answered: this file is that
-   file, the owner's answer admits all three, and the classes above judge the listed inputs and lines.
+   file's class or classes, for whichever of classes H, R and C the owner's answer admits", is answered: this file is
+   that file, the owner's answer admits all three, and the classes above judge the listed inputs and lines.
 3. **"What this file does not decide", its third item.** It reads, as the revision of 2026-11-16 left it, "**What clause
    5 means for the inputs of classes H, R and C**: the owner's (JSD-0088's decision D-census)." It now reads "**What
-   clause 5 means for the inputs of classes H, R and C**: decided by the owner on 2026-11-16, "Admit listed rows", as this
-   revision files it."
+   clause 5 means for the inputs of classes H, R and C**: decided by the owner on 2026-11-16, "Admit listed rows", as
+   this revision files it."
 
 ## How it reads
 
 - **Clause 5 as revised, and no more.** Each class is the clause's: the corrections of hand-offs H23 and H25 that the
-  correspondence lists by row before any run, the refusals the library makes in place of the slice path's own, and the
+  correspondence lists by row before any run (row SL4, whose defects are named now; the base run only names which of
+  its inputs reach them, see "Choices" below), the refusals the library makes in place of the slice path's own, and the
   census lines the library's parse moves, each input listed with its row and class. A difference is admitted only where
   its input, program or line is listed and the difference is of its class.
-- **Listed before the after run is seen.** Class H's rows are listed now. Classes R and C cannot be listed by input
+- **Listed before the after run is taken.** Class H's rows are listed now. Classes R and C cannot be listed by input
   before a run exists, because which inputs the slice path refuses under which codes, and which census lines count which
-  files, are the base's answers; they are listed from the window-2 base's reports before the after commit's reports are
-  compared, so that no listing is written knowing which inputs moved.
+  files, are the base's answers; they are listed from the window-2 base's reports after the base run and before any
+  after run of window 2 is taken, and the listing is committed in this bundle, or retained in it with the time it was
+  written, before the after run, so that no listing is written after any after report exists.
 - **Everything else stays byte for byte.** The slot order, the binding tables, the accepted inputs' artifacts, the
   admission refusals of rows RS3 and RS4, every other refusal, and every census line no listed file moves are judged as
   the rule judged them, and a difference in any of them fails part S, as the owner's answer says.
@@ -83,7 +90,31 @@ the milestone file, which quotes the clause as it stood.
 ## What this revision does not change
 
 Every other part, class and control, the commits and the local machine, and every line of part S the revision of
-2026-11-16 did not write. Window 1. JSD-0088's deletion lists and decision D60.
+2026-11-16 did not write. The commits are the rule's, but for which commit is the rule commit, which "Written" above
+names as the revision of the same morning named it, as the commit that carries every file of the rule. Window 1.
+JSD-0088's deletion lists and decision D60.
+
+**Choices this revision takes, each with its alternative.**
+- **Class H's inputs, completed at the base run.** Class H's row, SL4, and the defects it corrects (hand-offs H23 and
+  H25) are listed now, with the inputs the correspondence names. Which other B4 inputs or programs reach those defects
+  only the base's reports show, so they are added to class H by the same listing as classes R and C, before any after
+  run. This stays inside clause 5 as revised, whose class is "the corrections of hand-offs H23 and H25" that the
+  correspondence lists by row before any run: the row is listed before any run, and only its inputs are listed at the
+  base run, from the base's answers and not the after commit's. The alternative, **class H limited to the inputs listed
+  now** (`J000262` and `J001009`), would make any other input reaching H23 or H25 a regression of part S, although its
+  difference is the correction the row names; it is not taken because the owner's answer admits the class by row, not
+  by the inputs known before a run.
+- **Class R counts the slice parser's and tokenizer's single refusals.** The owner's words, "the refusals the library
+  now makes in place of the slice path's own", name no codes. Decision D60 deletes `SliceParser` and `SliceTokenizer`,
+  whose codes (`SliceSourceDiagnostics.cs`, the 2000 and 2100 ranges) are refusals of the slice path that the library's
+  parse replaces, as class C already expects of the census ("a parse failure counted under the library's first code in
+  place of the first slice code"). So a B4 input refused at the base with one such diagnostic is in class R, as
+  bundle `sjl-13-001`'s part B admitted its class R for B4 inputs refused at both commits whose codes a registry revision
+  renumbered. `ConstructOutsideManifest` is left
+  out: it is the manifest's admission, which the slice path keeps (row SL3: "Engine policy for admission (RS3, RS4, the
+  manifest)"), and a change to it is a regression. The alternative, **class R bounded to the static-semantics codes**,
+  would make every B4 input refused by the slice parser a regression of part S once the library parses it, although no
+  after path can keep the deleted parser's codes; it is not taken.
 
 **Not taken.**
 - **"Keep as written"**, the other option put to the owner: part S admits no difference, and an input of class H, R or C

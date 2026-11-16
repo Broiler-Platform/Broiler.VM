@@ -62,10 +62,11 @@ S, which admits no difference; what it means for the outputs that parsing with t
 (the corrections of hand-offs H23 and H25, the refusals the library makes in place of the slice path's own, and the
 census lines its parse moves), is put to the owner (decision D-census), and clause 5 stands as written meanwhile. "Broiler.JS's closure-sensitive suites" are Broiler.JS's rule's;
 this family's rule names its own as its part H. The text above is left as written.
-*(Noted 2026-11-16, later, on the owner's answer to decision D-census.)* The note above read "is put to the owner
-(decision D-census), and clause 5 stands as written meanwhile". The owner chose "Admit listed rows" the same day, so
-clause 5 is revised below, before any evidence, and part S admits the three classes, each listed by row, by bundle
-`sjl-15-001`'s rule revision [`decision-rule-area-revised-2026-11-16b.md`](../../evidence/sjl-15-001/decision-rule-area-revised-2026-11-16b.md);
+*(Noted 2026-11-16, after SJL-15.1 merged, on the owner's answer to decision D-census.)* The note above read "is put to
+the owner (decision D-census), and clause 5 stands as written meanwhile". The owner chose "Admit listed rows" the same
+day, so clause 5 is revised below, before any evidence, and part S admits the three classes, each listed by row, by
+bundle `sjl-15-001`'s rule revision
+[`decision-rule-area-revised-2026-11-16b.md`](../../evidence/sjl-15-001/decision-rule-area-revised-2026-11-16b.md);
 every other byte difference still fails part S.
 
 ### SJL-15.2 — The semantic model
@@ -181,7 +182,7 @@ as written.
    census counts, slot order and refusals are byte-identical before and after, but for the corrections the
    correspondence lists by row before any run (hand-offs H23 and H25), the refusals the library makes in place of the
    slice path's own, and the census lines the library's parse moves, each input listed with its row and class.
-   *(Revised 2026-11-16, later, at SJL-15.1, before any evidence of SJL-15 existed, under the
+   *(Revised 2026-11-16, after SJL-15.1 merged, before any evidence of SJL-15 existed, under the
    [ledger](../status.md)'s update rule 5, by the owner's answer to
    [JSD-0088](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0088-static-semantics-move-to-the-shared-frontend.md)'s
    decision D-census: the clause read "The slice path is rebuilt on the shared model: `SliceParser` is gone, and the
@@ -196,7 +197,9 @@ as written.
    with the library; admitting them changes what the clause means, which is a gate revision, not a reading. The words
    are JSD-0088's alternative (ii). Bundle `sjl-15-001` files the class of each by a new dated rule file,
    [`decision-rule-area-revised-2026-11-16b.md`](../../evidence/sjl-15-001/decision-rule-area-revised-2026-11-16b.md),
-   before any run of its part S. This is the owner's own decision, not one taken under the owner's direction of
+   before any run of its part S: class H by its rows now, and classes R and C, whose inputs and lines only a run can
+   show, from the window-2 base run's reports, the listing committed or retained with the time it was written before
+   any after run of window 2 is taken. This is the owner's own decision, not one taken under the owner's direction of
    2026-10-18. No evidence of SJL-15 existed to re-evaluate.)*
 6. Artifacts are byte-identical, or every difference is classified.
 7. test262 in both forms meets the rule.
@@ -216,13 +219,13 @@ chose SJL-D-13 (a) on 2026-10-11, so what the clause means for those inputs is t
 revised before any evidence under update rule 5 to admit the classes listed by row, each input listed with its class. Until the owner chooses,
 clause 5 stands as written, and bundle [`sjl-15-001`](../../evidence/sjl-15-001/decision-rule-area.md)'s part S judges it so.
 
-*(Noted 2026-11-16, later, on the owner's answer to decision D-census: revised. The note above said "Until the owner
-chooses, clause 5 stands as written"; on 2026-11-16 the owner chose "Admit listed rows", described as "A dated revision
-now, before any evidence, admits those three classes, each listed by row. Every other byte difference still fails part
-S." That is alternative (ii). Clause 5 is revised above, its old text quoted beside it, and bundle `sjl-15-001`'s part S
-admits classes H, R and C, each listed by row, by its rule's revision of the same day; every other byte difference fails
-part S. This is the owner's own dated choice, not one taken under the owner's direction of 2026-10-18. No evidence of
-SJL-15 existed to re-evaluate.)*
+*(Noted 2026-11-16, after SJL-15.1 merged, on the owner's answer to decision D-census: revised. The note above said
+"Until the owner chooses, clause 5 stands as written"; on 2026-11-16 the owner chose "Admit listed rows", described as
+"A dated revision now, before any evidence, admits those three classes, each listed by row. Every other byte difference
+still fails part S." That is alternative (ii). Clause 5 is revised above, its old text quoted beside it, and bundle
+`sjl-15-001`'s part S admits classes H, R and C, each listed by row, by its rule's revision of the same day; every other
+byte difference fails part S. This is the owner's own dated choice, not one taken under the owner's direction of
+2026-10-18. No evidence of SJL-15 existed to re-evaluate.)*
 
 **Broiler.JS clauses**
 

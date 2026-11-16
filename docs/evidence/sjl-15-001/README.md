@@ -16,12 +16,14 @@ D-tables); the inputs part S expects to differ at window 2 are named in three cl
 by decision D-census; rule I5 registers each type deleted whole by type and each other member by member; a `--checks`
 row a window deletes is listed with what replaces it; and the precedents' parts are named by their own bundles'
 letters and revisions.
-*(Noted 2026-11-16, later.)* The rule is revised a second time the same day, before any run, by the owner's answer to
-JSD-0088's decision D-census ("Admit listed rows"), in
-[`decision-rule-area-revised-2026-11-16b.md`](decision-rule-area-revised-2026-11-16b.md), which quotes the rule whole and
-leaves both earlier files unedited: part S admits at window 2 class H (row SL4, hand-offs H23 and H25), class R (rows
-SL3, DE3 and EE1) and class C (row SL5), each listed by row, class H now and classes R and C from the window-2 base's
-reports before the after commit's are compared; every other byte difference still fails part S. SJL-15's clause 5 is
+*(Noted 2026-11-16, after SJL-15.1 merged.)* The rule is revised a second time the same day, before any run, by the
+owner's answer to JSD-0088's decision D-census ("Admit listed rows"), in
+[`decision-rule-area-revised-2026-11-16b.md`](decision-rule-area-revised-2026-11-16b.md), which quotes the rule whole
+and leaves both earlier files unedited; the rule commit is the commit that carries all three files. Part S admits at
+window 2 class H (row SL4, hand-offs H23 and H25), class R (rows SL2, SL3, DE3 and EE1) and class C (row SL5), each
+listed by row: class H now, its inputs completed at the base run, and classes R and C from the window-2 base run's
+reports, the listing committed or retained here with the time it was written before any after run of window 2 is taken;
+every other byte difference still fails part S. SJL-15's clause 5 is
 revised to match, before any evidence.
 
 **Correspondence:** [`correspondence.md`](correspondence.md), this family's half, read from code at Broiler.VM
