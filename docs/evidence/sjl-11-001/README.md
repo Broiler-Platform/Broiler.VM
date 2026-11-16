@@ -63,6 +63,28 @@ should have moved.)*
 Broiler.JS's clauses are judged in Broiler.JS's bundle of the same name, and the component's in Broiler.RegEx's.
 This bundle reads none of their runs.
 
+*(Added 2026-11-16, under the owner's decisions D-wiv and D-jsrows of that day, which JSD-0081 records.)* **The
+reference arms' class (c).** Broiler.RegEx's task 2.13 ran its reference arms, which its own rule judges
+(`reference-arms.md` in its bundle `sjl-11-001`), and its classification, kept outside the repositories as its roadmap's
+records of task 2.13 and of 2026-11-15 say, left differences in class (c) that no row of this bundle's correspondence
+named. This bundle retains none of that run, so it quotes no figure of it (rule H5); the counts are that roadmap's.
+- **This family's**, `\w` as the first operand of a class difference under `iv`: the correspondence's row S8a, a
+  correction of this family, kind R, which the rule's revision of 2026-11-16 lists in part A.
+- **Broiler.JS's**: the correspondence's rows S12 to S15, M8 and M9, corrections of Broiler.JS, grouped by Broiler.JS's
+  answer and by the arbiter's reason. They are filed here because Broiler.JS's rule classifies by this bundle's
+  correspondence.
+- **The inputs the arbiter cannot reach.** Broiler.RegEx's reduction of 2026-11-15 cut each one's subject to the
+  longest prefix the arbiter reaches. It found inputs no prefix reaches, inputs whose difference does not survive the
+  reduction, and two inputs, `P4-38461-s-03` and `-s-05`, that reduce to another difference, which row S14 holds. Under
+  the reference-arm rule as written, "a difference the arbiter cannot reach in its step cut-off is class (c) until
+  reduced to an input it can", the first two sets stay class (c), and the two inputs leave it for row S14's class (a)
+  when the arms' classification reads the reduction and that row. That rule is Broiler.RegEx's, and whether the second
+  set may leave class (c), or a stop of the library at its own ceiling be classed other than (c), is its owner's to
+  decide by a dated file there. Nothing here decides it.
+- **What still keeps class (c) from emptying**: the arms' classifier, Broiler.RegEx's, does not yet read the new rows,
+  and the unreachable inputs stay class (c) under that rule as written. So the arms' MET, which needs class (c) empty,
+  cannot be read at the candidate reading until both move.
+
 ## 1. SJL-11's area rule and its correspondence (SJL-11.1)
 
 **The correspondence.**
