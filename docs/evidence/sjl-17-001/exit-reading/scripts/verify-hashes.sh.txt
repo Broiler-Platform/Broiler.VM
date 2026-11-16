@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# verify-hashes.sh <commit> <outfile> <bundle>...: from a clean git archive of <commit> (tmpfs), every hashes.txt under
+# docs/evidence/<bundle>/ checked with sha256sum -c in its own folder; and each bundle's manifest.json checked by
+# verify-manifest.py against the tree of its collected-at commit and its sources at source-revision.
+E=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-exit17
+REPO=/home/user/vm-exit17
+c=$(git -C $REPO rev-parse "$1"); out=$2; shift 2; T=/dev/shm/vm-exit17-verify-$$
+dirs=""; for b in "$@"; do dirs="$dirs docs/evidence/$b"; done
+mkdir -p $T; git -C $REPO archive --format=tar "$c" $dirs | tar -x -C $T
+{ echo "# hashes and manifests of bundles $* at $c ($(date -u +%FT%TZ))"
+  bad=0; n=0
+  for h in $(cd $T && find $dirs -name hashes.txt | sort); do
+    n=$((n+1)); d=$(dirname $h)
+    r=$(cd $T/$d && sha256sum -c --quiet hashes.txt 2>&1); rc=$?
+    if [ $rc -eq 0 ]; then echo "OK	$h	$(wc -l < $T/$h) lines"; else bad=$((bad+1)); echo "FAIL	$h"; echo "$r" | sed 's/^/  /'; fi
+  done
+  echo "hashes.txt files: $n, failing: $bad"
+  for b in "$@"; do python3 -I $E/scripts/verify-manifest.py $REPO "$c" docs/evidence/$b; done
+} > "$out" 2>&1
+rm -rf $T

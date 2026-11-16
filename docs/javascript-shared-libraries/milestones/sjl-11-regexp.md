@@ -296,6 +296,39 @@ An invalid literal becoming division stays the frontend's (row S9), SJL-14's. Th
 invalid group names; the culture-dependent case-insensitive matching; `lastIndex` in the middle of a surrogate pair;
 `source` rewriting; an invalid literal becoming division".
 
+*(Noted 2026-11-16, after Broiler.JS's port to Broiler.Regex `0.1.0-preview.6`, observed.)* The list above reads "with
+Broiler.Regex's `0.1.0-preview.4`: the budget's no-match, shortened match, wrong index and flipped look-around (rows B1
+to B3); the stack guard's fallback, to .NET and to no match (row B5); the process aborts of a flat sequence and of deep
+nesting (rows B8 and S3b); and the look-behind back-reference inside a pair (row M7)". On 2026-11-16 Broiler.JS's
+default branch took `cdf5559d` ("Update dependencies"), which moved its Broiler.Regex to
+`0.1.0-preview.6`, whose syntax tree, `RegexParser` and `RegexFlagsParser.Parse` are internal and whose
+`RegexMatch.Groups` is a span, so Broiler.JS's regular-expression adapter no longer compiled. Asked how to fix the
+default branch, with the options "Pin back to preview.5" (recommended), "Adapt to preview.6 now" and "Leave it to the
+contributor", the owner chose **"Adapt to preview.6 now"**, described as "A PR that ports JSRegExp.Broiler.cs onto
+preview.6's public surface now. This pulls part of SJL-11.5's adapter work ahead of its rule's base and after commits,
+and changes regex code on main outside SJL-11.5's window." It is the owner's own dated ruling, asked and answered. The
+port merged with `cdf5559d` in Broiler-Platform/Broiler.JS#1119 as `6fda6ca4`, and Broiler.JS's plan records it
+(`docs/roadmap/SharedLibraries.md`, SJL-11's note of 2026-11-16; both observed). What now reads differently here:
+- **The pin.** SJL-11.5's base, the first parent of the merge that lands it (SJL-11.6's "The bases"), will already pin
+  `0.1.0-preview.6` and route Broiler.JS's `u` and `v` patterns and its gap shapes through it, so Broiler.JS's base runs
+  answer as that version answers, not as `0.1.0-preview.4` or `0.1.0-preview.5` answered. Moving Broiler.JS's pin is no
+  longer SJL-11.5's work. JSD-0081's decision D12 reads "Broiler.JS moves its pin only at SJL-11.5", which its note of
+  2026-11-01 already reads as not holding; it still does not.
+- **The rows the list names with `0.1.0-preview.4`.** Each may already follow the specification at SJL-11.5's base and
+  then not move between Broiler.JS's base and after runs. Such a row is a correction the runs cannot show, not a
+  regression. The correspondence of bundle [`sjl-11-001`](../../evidence/sjl-11-001/correspondence.md) records
+  Broiler.JS's answers on these rows through `0.1.0-preview.4`, and on rows B8, S3b and M4 through `0.1.0-preview.5` too
+  (its note D-p5); it is left as written, and reading them on `0.1.0-preview.6` is SJL-11.5's.
+- **SJL-11.5's adapter work.** The port is a stopgap that reads none of the members `0.1.0-preview.6` made internal. The
+  routing (`GapScan`, `TryRouteToBroiler`), the translator, the validators and every other item of the deletion list
+  above stay, and SJL-11.5 still deletes them.
+- **This family.** Broiler.VM references no Broiler.Regex package, so the hazard decision D12 was made against, one
+  Broiler.Regex in a process hosting both engines, still cannot arise here; it arises when SJL-11.4 admits one. No rule
+  file of this repository names Broiler.Regex's version or Broiler.JS's pin: bundle `sjl-11-001`'s rule judges this
+  family alone, so no rule's words stop fitting here, and none is revised.
+
+The list above is left as written.
+
 ### SJL-11.6 — Evidence
 
 The same as SJL-3.6, plus the adversarial resource corpus in both engines. **Broiler.VM's

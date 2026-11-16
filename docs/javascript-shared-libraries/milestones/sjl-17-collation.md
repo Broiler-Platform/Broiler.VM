@@ -216,6 +216,21 @@ bundles.
 8. Every root is published and run in three modes.
 9. Optionality is unchanged, as rule `I3` shows, and N28's budget holds for the collation tables.
 
+*(Noted 2026-11-16, at SJL-17's exit reading, over both repositories' bundles.)* Broiler.JS's SJL-17.5 merged as
+`2f012739` (Broiler-Platform/Broiler.JS#1118, observed), the after commit of its bundle `sjl-17-001`, and its SJL-17.6
+as `6fda6ca4` (Broiler-Platform/Broiler.JS#1119, observed). Each clause above is read against the bundle of the
+repository whose group holds it, at the commit each piece of evidence was taken: clauses 1 to 5 in Broiler.JS's bundle
+`sjl-17-001` (observed), clause 1 at SJL-17.3's merge and at the after commit, where it reads SJL-17.5's revision of a
+test the owner has not yet acknowledged, clause 3 on SJL-17.5's reading of "the `CompareOptions` mapping", and clause
+4 on that bundle's part A, which, as every part there, turns on its reading of base condition 3; and clauses 6 to 9 in
+this repository's bundle [`sjl-17-001`](../../evidence/sjl-17-001/README.md), section 11, clause 7 on that bundle's
+readings, its part A turning on its reading of class C4 (c′), clause 8, for every JavaScript root this machine can
+publish, on EX-126, and clauses 6, 8 and 9 on the readings that section takes. Every reading named here was taken under
+the owner's standing direction of 2026-10-18 and is not the owner's own answer. Every clause read met on the bundles;
+the gate waits on SJL-9's gate, on SJL-3's and SJL-4's measurement clauses, and on review (EX-30). The programme
+ledger's entry of 2026-11-16, later yet, is the record over both, with each clause's reading and the open items. The
+clauses above are left as written.
+
 **Records.** The area-verdict JSD, amending JSD-0043 where it moves, and Broiler.JS's record.
 
 ---

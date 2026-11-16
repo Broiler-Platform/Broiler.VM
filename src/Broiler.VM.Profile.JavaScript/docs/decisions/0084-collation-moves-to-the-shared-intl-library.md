@@ -36,6 +36,14 @@
   [JSD-0086](0086-the-profile-collates-with-the-shared-intl-library.md)**, a record of its own, which says why it is not
   a section of this record, with [JSC-325](../roadmap.corrections.md#jsc-325). The bullet above that reads "The cut-overs
   are SJL-17.4's and SJL-17.5's own changes, and this record is what they apply" stands; nothing else here is edited.
+- *(Added 2026-11-16, at SJL-17's exit reading.)* **Both cut-overs have landed and both repositories' rules are
+  judged.** This family's SJL-17.4 landed as `983d690a`, and Broiler.JS's SJL-17.5 as `2f012739`
+  (Broiler-Platform/Broiler.JS#1118, observed); every part of both repositories' `sjl-17-001` rules is judged met, this
+  family's in its bundle and Broiler.JS's in its own (Broiler-Platform/Broiler.JS#1119, observed), each on readings
+  taken under the owner's standing direction of 2026-10-18. SJL-17's clauses 1 to 9 read met on the bundles, and the
+  settling condition reads met on the bundles, as the note under "Settling condition" says. No sub-area's verdict, no
+  row's class and no decision changes, and nothing is accepted. The bullet above that reads "The cut-overs are
+  SJL-17.4's and SJL-17.5's own changes, and this record is what they apply" is left as written.
 
 **Date:** 2026-11-01.
 
@@ -458,6 +466,19 @@ JSD-0043 §5 to §7 carry dated notes of 2026-11-01, each beside the text it rea
 
 This record is settled when SJL-17.4's and SJL-17.5's cut-overs have landed with both deletion lists absent, and every
 part of both repositories' `sjl-17-001` rules has been judged, whatever each decides.
+
+*(Noted 2026-11-16, at SJL-17's exit reading, over both repositories' bundles.)* SJL-17.4's cut-over landed as
+`983d690a`, its deletion list absent there and at the default branch's `44511066`, by decision E11's reading of it
+(bundle [`sjl-17-001`](../../../../docs/evidence/sjl-17-001/README.md), sections 10 and 11). SJL-17.5's landed as
+`2f012739` (Broiler-Platform/Broiler.JS#1118, observed), its deletion list, with the Collator's hand resolution the
+owner's ruling of 2026-11-11 moved to it, absent from the code there, on SJL-17.5's reading that "the `CompareOptions`
+mapping" is read for the covered locales (Broiler.JS's bundle `sjl-17-001`, its clause 3, observed); the alternative,
+the mapping gone everywhere, which no code meets, would leave the condition unmet. Every part of both rules is judged:
+this family's parts A, B and C, each met, and Broiler.JS's, each met (Broiler-Platform/Broiler.JS#1119, observed), its
+parts on its reading 4, under whose alternative they would be void, which "whatever each decides" takes as they read.
+So the condition reads met on the bundles, on Broiler.JS's reading of the mapping, taken under the owner's standing
+direction of 2026-10-18 and not the owner's own answer; the programme ledger's entry of 2026-11-16, later yet,
+records it. It moves no gate, revises no decision, and accepts nothing. The condition is left as written.
 
 ## Correction entries
 

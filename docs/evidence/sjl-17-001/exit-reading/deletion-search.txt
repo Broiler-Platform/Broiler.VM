@@ -1,0 +1,51 @@
+# Broiler.VM's SJL-17.4 deletion list searched at 44511066bfb38952c12c81557f56a34bd21ee41e (2026-11-16T14:53:42Z), by git reads alone
+# 1. listed files: any path in the tree whose file name is one of them
+JsCollator.cs	paths=0
+JsCollationData.cs	paths=0
+# 2. listed types: a declaration (class, struct, record, enum or interface) of the name in a .cs file outside docs/
+JsCollator	declarations=0
+JsCaseFirst	declarations=0
+JsCollationData	declarations=0
+# 3. listed members of types that stay: a declaration of the name in the type's own files (JsRealm.*.cs, JsIntlTables.cs)
+JsRealm.CollatorKeyData	declarations=0
+JsIntlTables.Collation and its lazy collation	declarations=0
+  any mention: 44511066bfb38952c12c81557f56a34bd21ee41e:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:215:        var collation = GetStringOption(engine, options, "collation", null, null);
+  any mention: 44511066bfb38952c12c81557f56a34bd21ee41e:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:227:        // as CollatorKeyData and the choice of a tailoring here did.
+  any mention: 44511066bfb38952c12c81557f56a34bd21ee41e:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:255:            Collation = collationValue,
+  any mention: 44511066bfb38952c12c81557f56a34bd21ee41e:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:286:    /// <c>CollatorKeyData</c>", which SJL-17.4 deleted; they are the shared library's
+  any mention: 44511066bfb38952c12c81557f56a34bd21ee41e:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:545:    internal string Collation { get; init; } = "default";
+  any mention: 44511066bfb38952c12c81557f56a34bd21ee41e:src/Broiler.VM.Profile.JavaScript/JsRealm.Locale.cs:277:        var collation = TypeOption("collation");
+  any mention: 44511066bfb38952c12c81557f56a34bd21ee41e:src/Broiler.VM.Profile.JavaScript/JsRealm.Locale.cs:298:            Collation = collation,
+# 4. rule I5's register: the rows of SJL-17.4, and entries by milestone
+row	Broiler.VM.Profile.JavaScript.JsCaseFirst	SJL-17.4
+row	Broiler.VM.Profile.JavaScript.JsCollationData	SJL-17.4
+row	Broiler.VM.Profile.JavaScript.JsCollator	SJL-17.4
+row	Broiler.VM.Profile.JavaScript.JsIntlTables.Collation	SJL-17.4
+row	Broiler.VM.Profile.JavaScript.JsIntlTables.collation	SJL-17.4
+row	Broiler.VM.Profile.JavaScript.JsRealm.CollatorKeyData	SJL-17.4
+SJL-10.4	147
+SJL-13.3	110
+SJL-17.4	6
+SJL-3.4	34
+SJL-4.4	44
+SJL-5.4	44
+SJL-6.4	53
+SJL-7.4	29
+SJL-8.5	24
+SJL-9.4	148
+
+# The rest of Broiler.VM's SJL-17.4 deletion list searched at 44511066bfb38952c12c81557f56a34bd21ee41e (2026-11-16T14:53:43Z), by git reads alone
+# 1. the nested type: a declaration (class, struct, record, enum or interface) of Tailoring in a .cs file outside docs/
+Tailoring	declarations=0
+# 2. the tailoring lookup the core called: a declaration of TailoringNamed, and any call of it, in a .cs file outside docs/
+TailoringNamed	declarations=0
+# 3. NewCollator's tailoring core: each line of NewCollator in src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs that names a tailoring or the collator it builds
+  226:         // decision E11): its UcaCollationData answers them from the tailorings this family's tables carry,
+  227:         // as CollatorKeyData and the choice of a tailoring here did.
+  228:         var data = engine.Intl!.CollationData;
+  239:         var tailoring = data.TailoringFor(LanguageOf(resolved.DataLocale) ?? "en", usage, collationValue);
+  242:         var ignorePunctuation = GetBooleanOption(engine, options, "ignorePunctuation", data.ShiftedByDefault(tailoring)) ?? false;
+  244:         var collator = new UcaCollator(
+  246:             UcaCollatorOptions.FromResolved(sensitivity, ignorePunctuation, caseFirst, numeric, tailoring),
+# 4. what NewCollator calls for the tailoring after SJL-17.4: a declaration of TailoringFor in this repository's .cs files
+TailoringFor	declarations=0

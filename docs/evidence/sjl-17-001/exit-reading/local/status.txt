@@ -1,0 +1,3 @@
+build rc=0
+arch rc=0
+contract rc=0

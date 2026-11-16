@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# deletion-search.sh <commit>: git reads alone, for SJL-17's exit reading. Broiler.VM's SJL-17.4 deletion list, as the
+# milestone's SJL-17.4 and JSD-0084's decision E11 give it (JSD-0086 section 5), searched in the tree of <commit>, by
+# bundle sjl-17-001's two searches of SJL-17.6 run one after the other, unchanged but for the repository they read:
+# deletion-search.sh (the files, the types, the members of types that stay, and rule I5's register rows of SJL-17.4)
+# and deletion-search-tailoring.sh (JsCollationData's nested Tailoring with the lookup NewCollator called on it, and
+# NewCollator's tailoring core).
+cd /home/user/vm-exit17; c=$(git rev-parse "$1")
+echo "# Broiler.VM's SJL-17.4 deletion list searched at $c ($(date -u +%FT%TZ)), by git reads alone"
+echo "# 1. listed files: any path in the tree whose file name is one of them"
+for f in JsCollator.cs JsCollationData.cs; do
+  n=$(git ls-tree -r --name-only "$c" | grep -c "/$f\$"); echo "$f	paths=$n"; git ls-tree -r --name-only "$c" | grep "/$f\$" | sed 's/^/  /'
+done
+echo "# 2. listed types: a declaration (class, struct, record, enum or interface) of the name in a .cs file outside docs/"
+for t in JsCollator JsCaseFirst JsCollationData; do
+  hits=$(git grep -n -E "\b(class|struct|record|enum|interface) +$t\b" "$c" -- '*.cs' ':!docs' | wc -l); echo "$t	declarations=$hits"
+  git grep -n -E "\b(class|struct|record|enum|interface) +$t\b" "$c" -- '*.cs' ':!docs' | sed 's/^/  /'
+done
+echo "# 3. listed members of types that stay: a declaration of the name in the type's own files (JsRealm.*.cs, JsIntlTables.cs)"
+hits=$(git grep -n -E "^\s*(private|internal|public|protected)[^=(]*\bCollatorKeyData\b *\(" "$c" -- 'src/Broiler.VM.Profile.JavaScript/JsRealm*.cs' | wc -l); echo "JsRealm.CollatorKeyData	declarations=$hits"
+hits=$(git grep -n -E "^\s*(private|internal|public|protected|static)[^=(]*\b(Collation|collation)\b *(=|\{|;|=>)" "$c" -- 'src/Broiler.VM.Profile.JavaScript/JsIntlTables.cs' | wc -l); echo "JsIntlTables.Collation and its lazy collation	declarations=$hits"
+git grep -n -E "\bCollatorKeyData\b|\b(Collation|collation)\b *(=|\{|;|=>)" "$c" -- 'src/Broiler.VM.Profile.JavaScript*/*.cs' | cut -c1-200 | sed 's/^/  any mention: /'
+echo "# 4. rule I5's register: the rows of SJL-17.4, and entries by milestone"
+git show "$c:src/tests/Broiler.VM.Architecture.Tests/retired-members.json" | python3 -I -c "import json,sys,collections; r=json.load(sys.stdin)['retired']; [print('row', e['member'], e['milestone'], sep='\t') for e in r if e['milestone']=='SJL-17.4']; [print(k, v, sep='\t') for k, v in sorted(collections.Counter(e['milestone'] for e in r).items())]"
+echo
+cd /home/user/vm-exit17; c=$(git rev-parse "$1")
+F=src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs
+echo "# The rest of Broiler.VM's SJL-17.4 deletion list searched at $c ($(date -u +%FT%TZ)), by git reads alone"
+echo "# 1. the nested type: a declaration (class, struct, record, enum or interface) of Tailoring in a .cs file outside docs/"
+hits=$(git grep -n -E "\b(class|struct|record|enum|interface) +Tailoring\b" "$c" -- '*.cs' ':!docs' | wc -l); echo "Tailoring	declarations=$hits"
+git grep -n -E "\b(class|struct|record|enum|interface) +Tailoring\b" "$c" -- '*.cs' ':!docs' | sed 's/^/  /'
+echo "# 2. the tailoring lookup the core called: a declaration of TailoringNamed, and any call of it, in a .cs file outside docs/"
+hits=$(git grep -n -E "^\s*(private|internal|public|protected)[^=(]*\bTailoringNamed *\(" "$c" -- '*.cs' ':!docs' | wc -l); echo "TailoringNamed	declarations=$hits"
+git grep -n -E "\bTailoringNamed\b" "$c" -- '*.cs' ':!docs' | cut -c1-200 | sed 's/^/  any mention: /'
+echo "# 3. NewCollator's tailoring core: each line of NewCollator in $F that names a tailoring or the collator it builds"
+git show "$c:$F" | awk '/static JsValue NewCollator\(/{on=1} on{print NR": "$0} on && /^    }$/{exit}' \
+  | grep -E "[Tt]ailoring|de-search|und-search|de-phonebk|JsCollator\(|JsCaseFirst|UcaCollator\(|UcaCollatorOptions|Intl!\.Collation" | cut -c1-200 | sed 's/^/  /'
+echo "# 4. what NewCollator calls for the tailoring after SJL-17.4: a declaration of TailoringFor in this repository's .cs files"
+hits=$(git grep -n -E "^\s*(private|internal|public|protected)[^=(]*\bTailoringFor *\(" "$c" -- '*.cs' | wc -l); echo "TailoringFor	declarations=$hits"
