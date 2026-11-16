@@ -29,6 +29,12 @@
   the slice corpus's inputs that move when the slice path parses with the library, in three classes: those hand-offs H23
   and H25 correct (class H), those whose refusal becomes the library's (class R), and the census lines the library's
   parse moves (class C). SJL-D-13 (a), which clause 5 applies, was the owner's own choice.
+  *(Note of 2026-11-16, later: "put to the owner, and not taken" no longer holds. **The owner answered on 2026-11-16,
+  choosing "Admit listed rows"**, alternative (ii) of section "Put to the owner: decision D-census", which records the
+  answer verbatim at its end. D-census is the owner's own decision, not one taken under the owner's direction of
+  2026-10-18. SJL-15's clause 5 is revised before any evidence, and bundle `sjl-15-001`'s rule is revised the same day
+  by a new dated file, so that its part S admits classes H, R and C, each listed by row; every other byte difference
+  still fails part S.)*
 - **SJL-15.0, the start, is a reading of the owner's words of 2026-10-25**, recorded as a reading and not as a decision
   taken under the direction (the programme ledger's SJL-15.0 entry).
 - Nothing in this profile changes with this record. The model is SJL-15.2's, in Broiler.JS; the cut-overs are SJL-15.3's
@@ -293,6 +299,31 @@ and RS4. **It is not taken
 here**: it would revise what the owner's own choice keeps, which the direction of 2026-10-18 does not reach. **Until the
 owner chooses, clause 5 stands as written**, and part S judges it so.
 
+**The owner's answer, 2026-11-16** *(added 2026-11-16, later, closing "put to the owner")*. The question put was:
+"SJL-15 clause 5 requires the slice corpus's outputs to be byte-identical before and after the slice path moves onto the
+shared library. Moving it necessarily changes three kinds of output: the corrections of hand-offs H23 and H25, the
+refusals the library now makes in place of the slice path's own, and census lines its parse moves. How should clause 5
+read?" The options were "Admit listed rows" (recommended) and "Keep as written". **The owner chose "Admit listed
+rows"**, described as: "A dated revision now, before any evidence, admits those three classes, each listed by row.
+Every other byte difference still fails part S." That is alternative (ii) above, for all three classes. It is the
+owner's own decision, not one taken under the owner's direction of 2026-10-18, which this record said does not reach
+it. "Until the owner chooses, clause 5 stands as written" therefore ends, and it is applied as follows, each by a dated
+record that quotes what it replaces:
+- **SJL-15's clause 5** is revised before any evidence, under the ledger's update rule 5, to the words of alternative
+  (ii): "The slice path is rebuilt on the shared model: `SliceParser` is gone, and the slice corpus's census counts, slot
+  order and refusals are byte-identical before and after, but for the corrections the correspondence lists by row before
+  any run (hand-offs H23 and H25), the refusals the library makes in place of the slice path's own, and the census lines
+  the library's parse moves, each input listed with its row and class." The milestone file quotes the clause as it stood.
+- **Bundle `sjl-15-001`'s rule** is revised by a new dated file,
+  [`decision-rule-area-revised-2026-11-16b.md`](../../../../docs/evidence/sjl-15-001/decision-rule-area-revised-2026-11-16b.md),
+  filed before any run of part S, which quotes the rule it revises whole and leaves both earlier files unedited. Part S
+  admits class H (row SL4, hand-offs H23 and H25), class R (rows SL3, DE3 and EE1) and class C (row SL5), each listed by
+  row: class H by its rows now, from the correspondence; classes R and C, whose inputs and lines only a run can show, at
+  the window-2 base run, before the after commit's reports are compared, from the correspondence's rows. A difference
+  outside a listed row, or beyond its class, still fails part S.
+- **SJL-D-13** gains a dated note in `decisions.md` quoting the revised clause, as alternative (ii) said.
+- No evidence of SJL-15 exists, so nothing is re-evaluated.
+
 ---
 
 ## The deletion lists (X6)
@@ -366,6 +397,10 @@ the owner; the records list); the programme roadmap's sections 4, 5 and 11; JSD-
 decide", in one note under that section, which also reads what its section "Names" says of D57 to D66 and leaves nothing
 beside that section; `areas/static-semantics.md`'s status; and the programme ledger's SJL-15.0 and SJL-15.1 entries,
 its SJL-15 row, its Next list and "Last updated".
+*(Note of 2026-11-16, later, on the owner's answer to decision D-census: the milestone file's note above, "clause 5,
+unchanged, with decision D-census put to the owner", is followed by clause 5's dated revision and a note recording the
+answer; bundle `sjl-15-001` gains its rule's revision of the same day, with notes in its README and correspondence;
+SJL-D-13 in `decisions.md` gains a note; the decisions index and the programme ledger record it.)*
 
 ## What this record does not decide
 
@@ -373,7 +408,8 @@ its SJL-15 row, its Next list and "Last updated".
   closure-sensitive suites, filed in its own change.
 - **The model's design in detail**: SJL-15.2's, under JSD-0080's contract.
 - **SJL-D-13's record**: the profile's JSD of SJL-15.4, with its JSC entries, as the milestone's records say.
-- **Decision D-census**: the owner's.
+- **Decision D-census**: the owner's. *(Note of 2026-11-16, later: decided by the owner that day, "Admit listed rows",
+  as section "Put to the owner: decision D-census" records at its end.)*
 - **Each publication** of the shared stream: the owner's (JSD-0083's decision D30).
 - **A speed claim of any kind.**
 
@@ -384,5 +420,9 @@ its SJL-15 row, its Next list and "Last updated".
 - An artifact of window 1 that moves for a reason class P, F, T or S7 does not name.
 - The slice corpus's binding table, refusals or census differing at window 2 outside what the owner's answer to decision
   D-census admits.
+  *(Note of 2026-11-16, later: the owner's answer admits classes H, R and C, each listed by row, as bundle `sjl-15-001`'s
+  rule revision of that day,
+  [`decision-rule-area-revised-2026-11-16b.md`](../../../../docs/evidence/sjl-15-001/decision-rule-area-revised-2026-11-16b.md),
+  lists them.)*
 - A shared-library edge to Broiler.Regex before SJL-11.4 and SJL-11.5 have both landed.
 - The plan's text, if found, giving D57 to D66 a content this record contradicts, which a dated note then records.

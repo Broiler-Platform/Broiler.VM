@@ -1054,4 +1054,16 @@ source corpus. **(c) is admissible only as a recorded refusal**, because it keep
 - **`SliceParser` is deleted.** The slice lowering, with its slot allocation, stays.
 - **Rule N16 is not revised**, because no manifest moves to the wide path.
 
+*(Noted 2026-11-16, at SJL-15.1, on the owner's answer to
+[JSD-0088](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0088-static-semantics-move-to-the-shared-frontend.md)'s
+decision D-census.)* "Its census counts, slot order and refusals stay byte for byte, which the slice corpus shows before
+and after" is read, from that day, as SJL-15's clause 5 reads after its revision before any evidence: "The slice path is
+rebuilt on the shared model: `SliceParser` is gone, and the slice corpus's census counts, slot order and refusals are
+byte-identical before and after, but for the corrections the correspondence lists by row before any run (hand-offs H23
+and H25), the refusals the library makes in place of the slice path's own, and the census lines the library's parse
+moves, each input listed with its row and class." The owner chose it on 2026-11-16 ("Admit listed rows": "A dated
+revision now, before any evidence, admits those three classes, each listed by row. Every other byte difference still
+fails part S."), as the owner's own decision. Choice (a) stands; the slot order, the binding tables, the accepted inputs'
+bytes and every other refusal are still kept byte for byte.
+
 **Recorded by** the profile JSD of SJL-15 (SJL-15.4).
