@@ -42,7 +42,8 @@
   family's in its bundle and Broiler.JS's in its own (Broiler-Platform/Broiler.JS#1119, observed), each on readings
   taken under the owner's standing direction of 2026-10-18. SJL-17's clauses 1 to 9 read met on the bundles, and the
   settling condition reads met on the bundles, as the note under "Settling condition" says. No sub-area's verdict, no
-  row's class and no decision changes, and nothing is accepted.
+  row's class and no decision changes, and nothing is accepted. The bullet above that reads "The cut-overs are
+  SJL-17.4's and SJL-17.5's own changes, and this record is what they apply" is left as written.
 
 **Date:** 2026-11-01.
 
