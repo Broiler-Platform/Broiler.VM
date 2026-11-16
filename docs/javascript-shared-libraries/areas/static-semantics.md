@@ -4,6 +4,12 @@
 [SJL-12](../milestones/sjl-12-frontend-contract.md). **Library:** `Broiler.ECMAScript.Frontend`
 (semantics half). **Status:** design.
 
+*(Noted 2026-11-16, at SJL-15.1.)* "**Status:** design." stands: no model beyond the declarations walk exists. The area's
+verdict is [JSD-0088](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0088-static-semantics-move-to-the-shared-frontend.md),
+this family's half, and section 2's Broiler.VM columns are read again from code at `a86b6f5d` in bundle
+[`sjl-15-001`](../../evidence/sjl-15-001/correspondence.md)'s correspondence, which gives each cell's source as the code
+now holds it; the table below is left as written.
+
 ---
 
 ## 1. Scope

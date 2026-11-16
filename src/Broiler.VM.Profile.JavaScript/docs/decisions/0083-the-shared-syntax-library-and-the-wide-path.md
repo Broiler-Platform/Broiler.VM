@@ -2289,6 +2289,14 @@ condition and the notes above are left as written.
 - **A speed claim of any kind.** Part J of bundle `sjl-13-001`'s rule and part F of `sjl-13-002`'s measure this
   family's compile, and are not gate clauses (decision D24).
 
+*(Noted 2026-11-16, at SJL-15.1, by [JSD-0088](0088-static-semantics-move-to-the-shared-frontend.md).)* Two items above
+are answered there. "The semantic model: SJL-15." - SJL-15.1 files the static-semantics area verdict, JSD-0088, this
+family's half. "The library's package edge to Broiler.Regex: decision D65's, at SJL-15.1." - JSD-0088 records D65 as no
+edge, since SJL-11.4 and SJL-11.5 have not landed, and takes it again by a dated note when both have. The section
+"Names" says D57 to D66 are SJL-15's, "filed by their first work packages"; JSD-0088 records each only as the documents
+quote it, and records D57, D58, D59, D62, D63 and D66 as quoted nowhere. It reads the "(D60)" of hand-offs H13, H23 and
+H25 as the plan's decision and not as the correspondence's row D60. The items and the section are left as written.
+
 ## Falsified if
 
 - A corpus input the classification does not explain at library level.

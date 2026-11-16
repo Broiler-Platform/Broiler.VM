@@ -279,6 +279,12 @@ on, met its gate, at the owner's words of 2026-10-25, "Continue with the remaini
 reading (SJL-13's plan's decision D40). The order above is unchanged, and so is what it gates: SJL-14 may not meet
 its gate before SJL-13 meets SJL-13's, and so not before SJL-12, SJL-3 and SJL-7 meet theirs.)*
 
+*(Added 2026-11-16, at SJL-15's start, as the note of 2026-10-26 asks: SJL-15 started before SJL-13 and SJL-14, which
+it waits on, met their gates, at the owner's words of 2026-10-25, "Continue with the remaining SJL milestones", which the
+[ledger](status.md)'s SJL-15.0 entry quotes and reads the way the SJL-13.0 and SJL-14.0 entries read them, the reading
+recorded as a reading. The order above is unchanged, and so is what it gates: SJL-15 may not meet its gate before
+SJL-13 and SJL-14 meet theirs, and so not before SJL-12, SJL-3 and SJL-7 meet theirs. SJL-16 is not started.)*
+
 **What can start today:**
 
 - SJL-0 in full;
@@ -356,6 +362,13 @@ files no verdict, as the note above reads, and X6's Broiler.JS half is on record
 names, member by member, what SJL-14's cut-over deletes from Broiler.JS and the disposition of every public type of
 `Ast` and `Parser` it empties, from SJL-14's `dispositions.md` in Broiler.JS's bundle `sjl-14-001`, which is observed
 until Broiler.JS's change merges. Section 11's SJL-14 row names the note from this date.
+
+*(Added 2026-11-16, at SJL-15.1, by [JSD-0088](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0088-static-semantics-move-to-the-shared-frontend.md), decision D-verdict.)* SJL-15 files its own verdict, as this section's first
+paragraph says ("The area's first work package files the verdict"): JSD-0088, the static-semantics area verdict, this
+family's half, Broiler.JS's half of its X2 and X6 completed by a dated note on it before any code of SJL-15. The note of
+2026-10-26 above narrows the first paragraph "for SJL-14" alone, as "the second engine's cut-over of the same area", and
+does not reach SJL-15, whose area JSD-0083 says it does not decide ("The semantic model: SJL-15"). Section 11's SJL-15
+row names JSD-0088 from this date.
 
 ---
 
@@ -552,7 +565,7 @@ Broiler.VM rules are in its register. `SL` rules are in the shared libraries' ow
 | SJL-12 | (none) | JSD on the frontend contract (cites JSD-0014 and JSD-0036) | MOD-M2-3, MOD-M2-4 and MOD-M2-5 closed or cross-referenced | (none) |
 | SJL-13 | `docs/compositions.md` rows and the notices for the frontend's admission *(revised 2026-10-26, at SJL-13.1, by [JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md) decision D29; the cell read "(none)")* | Area verdict JSD ([JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md)); the cut-over JSD at step 1, with registry revision 19 and the admission; JSC entries; JS-2 closed under its re-scoped gate *(revised 2026-10-26, at SJL-13.1, by JSD-0083 decision D3; the cell read "Registry revision; JSC entries; JS-2 closed under its re-scoped gate")* *(noted 2026-11-10, at step 1's records: the cut-over JSD is [JSD-0087](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0087-the-wide-path-parses-with-the-shared-syntax-library.md), with JSC-326, and bundle `sjl-13-001` defines exclusion EX-133; of this row's first cell, "`docs/compositions.md` rows and the notices for the frontend's admission", the notices moved at step 1's admission and the `docs/compositions.md` rows are still to move, after step 1's merge, with the closures published at its after commit)* | Area verdict, for both engines' front ends *(revised 2026-10-26, at SJL-13.1, by JSD-0083; the cell read "(none)")* | (none) |
 | SJL-14 | (none) | No verdict JSD: a dated note on [JSD-0083](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0083-the-shared-syntax-library-and-the-wide-path.md) completing X6's Broiler.JS half; a dated note on JSD-0065's literal list *(revised 2026-11-03, at SJL-14.1, by SJL-13's plan's decision D40; the cell read "(none)")* | `public-api.md` for `Ast` and `Parser` (`SJL-D-12`); its shared-libraries plan's SJL-14 section with decisions D40 to D56 and D64, and bundle `sjl-14-001`'s rule, corrections and dispositions, filed at SJL-14.1 *(revised 2026-11-03, at SJL-14.1; the cell read "`public-api.md` for `Ast` and `Parser` (`SJL-D-12`)")* | (none) |
-| SJL-15 | (none) | `SJL-D-13`'s record; JSC entries | Modernization invariant 3 closed | (none) |
+| SJL-15 | (none) | Area verdict JSD ([JSD-0088](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0088-static-semantics-move-to-the-shared-frontend.md)), filed at SJL-15.1; `SJL-D-13`'s record at SJL-15.4; JSC entries *(revised 2026-11-16, at SJL-15.1, by JSD-0088 decision D-verdict; the cell read "`SJL-D-13`'s record; JSC entries")* | Area verdict and Broiler.JS's half of SJL-15.1's records, in its own change; Modernization invariant 3 closed *(revised 2026-11-16, at SJL-15.1; the cell read "Modernization invariant 3 closed")* | (none) |
 | SJL-16 | ADR 0014 revision describing the end state; register rows' final status | Final JSC entries | Final plan and status state | Final roadmap state |
 | SJL-17 | (none) | Area verdict JSD | Area verdict; the host-collation correction | (none) |
 
