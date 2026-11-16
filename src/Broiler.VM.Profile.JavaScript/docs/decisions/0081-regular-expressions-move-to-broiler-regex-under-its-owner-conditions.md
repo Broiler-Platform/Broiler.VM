@@ -1147,8 +1147,8 @@ and left in class (c) the `exec` answers of arm J that differ from the text's on
 of P3, `O06`, whose difference the arbiter cannot reach. The decision below was taken on 2026-11-16 as recommended,
 under the same direction, and is recorded as the owner's decision of that day, with the alternative not taken.
 
-**Decision D-jsexec - Broiler.JS's `exec` answers outside row M8's list are rows M10 to M15 by mechanism, row M8 reads
-with its list, and `O06` is row B1's.** The differences are grouped by Broiler.JS's mechanism, read in arm J's copy of
+**Decision D-jsexec - Broiler.JS's `exec` answers outside row M8's list are rows M10 to M15 where their mechanism is
+read, row M8 reads with its list, and `O06` is row B1's.** The differences are grouped by Broiler.JS's mechanism, read in arm J's copy of
 Broiler.JS at `1f91b8f1`, one row to a mechanism, not by the shape of the answer:
 - **M10**: the translator rewrites the pattern's text before it renames the groups, and its rewrites of `$` (under `m`,
   and beside an inline modifier group) and of a character it case-expands (under `i`, one whose Canonicalize class holds

@@ -69,8 +69,8 @@ are row S14's.)*
 *(Added 2026-11-16, later, under the owner's decision D-jsexec, which JSD-0081 records in the same section.)*
 Broiler.Regex's classifier `@5` (Broiler-Platform/Broiler.Regex#21) read row M8 to its list, so the `exec` answers of arm
 J that differ from the text's on inputs the list does not name went back to class (c), with one input of P3, `O06`, whose
-difference the arbiter cannot reach. Rows M10 to M15 hold those `exec` answers by Broiler.JS's mechanism, one row to a
-mechanism, each read in arm J's copy. Each row says when it takes an input. Rows M11 to M14 take one only where the
+difference the arbiter cannot reach. Rows M10 to M15 hold those of these `exec` answers whose mechanism they read, one
+row to a mechanism, each read in arm J's copy. Each row says when it takes an input. Rows M11 to M14 take one only where the
 arbiter's answer to the pattern, with the row's construct written as .NET reads it (the row's reading, in its
 Broiler.JS cell), is Broiler.JS's, up to row M10's names, and not the text's; each was checked that way, outside this
 repository. Row M10 takes one where the captures are the text's and only the names differ, each by the translator's
