@@ -18,6 +18,16 @@ and `decision-rule-area.md` is not edited. The revision also names two sentences
 this family after step 1 and that it leaves as written: part A's reading of row S9b's file, which step 1's row T33
 corrects, and part A's hold on the evidence workflow, which the owner changed on 2026-10-30.
 
+*(Added 2026-11-16.)* The rule is revised again, before any of its runs, by
+[`decision-rule-area-revised-2026-11-16.md`](decision-rule-area-revised-2026-11-16.md), under the owner's decision
+D-wiv of JSD-0081, taken as recommended under the owner's direction of 2026-10-18. It adds the correspondence's row S8a,
+this family's `\w` as the first operand of a class difference under `iv`, to part A's kind R corrections, and changes
+nothing else; `decision-rule-area.md` and the revision of 2026-11-10 are not edited. It was written after Broiler.Regex's
+reference arms, a run of that repository's rule, found the row, and before any run of this rule. It does not admit the
+owner's workflow change of 2026-10-30 and does not drop row S5, each of which stays the owner's to decide by a further
+dated file before any run. The alternative not taken was no revision, under which a test262 variant that row S8a
+explains would be a finding and a regression; no file at the pin is expected to move for it.
+
 **Records:** [JSD-0081](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0081-regular-expressions-move-to-broiler-regex-under-its-owner-conditions.md),
 the area verdict, which records decision SJL-D-14 as this area applies it and the owner's decisions D1 to D41. Its
 input is [`correspondence.md`](correspondence.md), with every probe and each engine's answers in
@@ -52,6 +62,32 @@ should have moved.)*
 
 Broiler.JS's clauses are judged in Broiler.JS's bundle of the same name, and the component's in Broiler.RegEx's.
 This bundle reads none of their runs.
+
+*(Added 2026-11-16, under the owner's decisions D-wiv and D-jsrows of that day, which JSD-0081 records.)* **The
+reference arms' class (c).** Broiler.RegEx's task 2.13 ran its reference arms, which its own rule judges
+(`reference-arms.md` in its bundle `sjl-11-001`), and its classification, kept outside the repositories as its roadmap's
+records of task 2.13 and of 2026-11-15 say, left differences in class (c) that no row of this bundle's correspondence
+named. This bundle retains none of that run, so it quotes no figure of it (rule H5); the counts are that roadmap's.
+- **This family's**, `\w` as the first operand of a class difference under `iv`: the correspondence's row S8a, a
+  correction of this family, kind R, which the rule's revision of 2026-11-16 lists in part A.
+- **Broiler.JS's**: the correspondence's rows S12 to S15, M8 and M9, corrections of Broiler.JS, grouped by Broiler.JS's
+  answer and by the arbiter's reason, and row M4's own vectors that the arms reached, by that row's widening. They are
+  filed here because Broiler.JS's rule classifies by this bundle's correspondence. Some vectors the arms' classifier
+  left in class (c) rows S7 and S8 already name; its predicates for those rows do not reach them.
+- **The inputs the arbiter cannot reach.** Broiler.RegEx's reduction of 2026-11-15 cut each one's subject to the longest
+  prefix the arbiter reaches. It found inputs no prefix reaches, inputs whose difference does not survive the reduction,
+  and two inputs, `P4-38461-s-03` and `-s-05`, that reduce to another difference, which row S14 holds. Under the
+  reference-arm rule as written, "a difference the arbiter cannot reach in its step cut-off is class (c) until reduced
+  to an input it can", the first set stays class (c); the second meets those words as inputs, each cut to a prefix the
+  arbiter reaches, but not as differences, which no reduced input shows, so it stays class (c) by the rule's "every
+  other difference is class (c)", a reading open for the rule's owner; and the two inputs leave class (c) for row S14's
+  class (a) when the arms' classification reads the reduction and that row. That rule is Broiler.RegEx's, and whether
+  the second set may leave class (c), or a stop of the library at its own ceiling be classed other than (c), is its
+  owner's to decide by a dated file there. Nothing here decides it.
+- **What still keeps class (c) from emptying**: the arms' classifier, Broiler.RegEx's, does not yet read the new rows,
+  nor reach with its predicates for rows S7, S8 and M4 the vectors those rows name, and the unreachable inputs stay
+  class (c) under that rule as written. So the arms' MET, which needs class (c) empty, cannot be read at the candidate
+  reading until both move.
 
 ## 1. SJL-11's area rule and its correspondence (SJL-11.1)
 
@@ -106,6 +142,9 @@ SJL-3 meets SJL-3's.
     would be away from the text, and no variant of test262 at `ccaac100` tries the case. The rule file is unchanged,
     as its "Revisions" requires. The dated rule file this section already asks for, before any base run, is where the
     owner can drop S5 from both lists.
+  - *(Noted 2026-11-16, decision D-wiv.)* The revision of 2026-11-16 adds row S8a to part A's kind R list, so the
+    item above, "kind R, a variant one of rows S5, S10, M4, M7 and T3 explains", reads with S8a among them. It does
+    not drop S5, which stays the owner's.
   - A moved exhaustion verdict, a ceiling stop among them, is admitted under C2 only on a variant that reaches a
     regular expression, and only if the variant passes after, at ten times the allowance where it does not pass at
     the part's. A variant failing at both commits is read by its detail too, so a ceiling stop that becomes a wrong

@@ -213,6 +213,17 @@ non-empty match from a `lastIndex` inside a surrogate pair (M4); a back-referenc
 and `v` (M7); and a raw line terminator copied into `source` (T3). Row M4's empty match is no correction: decision
 D41 classes it implementation-defined until the specification's text is corrected.
 
+*(Noted 2026-11-16, by JSD-0081's decisions D-wiv and D-jsrows of that day.)* The paragraph above reads "**The
+correspondence adds five corrections of this family, each listed** with its row (kind R)". Row S5 left that list on
+2026-11-01 by JSD-0081's decision D-s5, which this file did not note then. The correspondence's row S8a joins it: `\w`
+as the first operand of a class difference under `iv`, whose class this family's matcher builds without folding `\w`,
+found by Broiler.Regex's reference arms. Bundle `sjl-11-001`'s rule lists it in part A's kind R corrections by its
+revision of 2026-11-16, filed before any of its runs. So the correspondence's kind R corrections, which read without S5
+under decision D-s5, are rows S8a, S10, M4, M7 and T3. The rule's part A and part B still list S5 among them, as its
+revision of 2026-11-16 leaves them, until the owner files a dated rule file that drops it. The same day the
+correspondence adds rows S12 to S15, M8 and M9, corrections of Broiler.JS that the arms found, which SJL-11.5 makes. The
+paragraph above is left as written.
+
 **Rules.** N18's vacuity guard currently requires `JsRegExpMatcher.cs` to exist. It is re-pointed,
 and N18 still refuses the platform engine in Broiler.VM's own sources. Rule `I2` refuses it in the
 shared engine.
