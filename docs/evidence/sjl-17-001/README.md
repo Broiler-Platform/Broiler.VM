@@ -43,6 +43,12 @@ is accepted**: review is deferred, these verdicts are not SJL-17's exit reading,
 and they meet no clause by themselves. The "State" line above reads "rule and correspondence only" and "**Nothing here
 is a verdict, and no run of the rule has been taken.**", and the bullet above "A collector joins this bundle when there
 is a run of the rule to take."; each reads as of the day it was written, and is left as written.
+*(Noted 2026-11-16, at SJL-17's exit reading.)* The paragraph above says that these verdicts "are not SJL-17's exit
+reading, which follows Broiler.JS's SJL-17.5, and they meet no clause by themselves". Broiler.JS's SJL-17.5 and
+SJL-17.6 have merged (Broiler-Platform/Broiler.JS#1118 and #1119, observed), and section 11 is this family's half of
+that reading: it reads the milestone's clauses 6 to 9 met on this bundle, and the programme ledger's entry of
+2026-11-16 holds the record over both repositories. That meets no gate, and nothing is accepted. The paragraph above is
+left as written.
 
 Broiler.JS's clauses, and the home's, are judged in Broiler.JS's bundle of the same name. This bundle reads none of
 their runs.
@@ -220,6 +226,12 @@ the folders hold" says: part B's comparison is `after/datasets/`, part A's compa
 `after/parta/`, and the git reads and the scripts `after/commits/` and `after/scripts/`. The closures at the after
 commit and the rule checks there are [`after-closures/`](after-closures/README.md), which the list does not name.
 [`manifest.json`](manifest.json) lists every file of the bundle with its SHA-256. The list is left as written.
+
+*(Noted 2026-11-16, at SJL-17's exit reading.)* [`exit-reading/`](exit-reading/) holds the head's rule checks, the
+deletion searches at the head and the verification of this bundle's hashes and manifest that section 11 reads, with the
+scripts that took them; its own [`hashes.txt`](exit-reading/hashes.txt) holds the SHA-256 of every other file of it,
+which `sha256sum -c` verifies, and `manifest.json`, regenerated after it, lists it. The list and the note above are left
+as written.
 
 *(2026-11-02, at SJL-17.3: [`han-sizing/`](han-sizing/README.md) retains the sizing of Han's radical-stroke order
 that the owner's decision E-o3h rests on, its scripts, inputs named and outputs; section 3 reads it. It is not a run of
@@ -599,3 +611,98 @@ the rows at the after commit, where the architecture suite passes. No row moves.
   `Calculator`, `Workbench`, `WebAssembly.Execution`, `WebAssembly.Harness` and `Ubc.Fixture`, none of them published
   here, and `PolyglotCli`, which is. Whether clause 8's "every root" reaches them is for SJL-17's exit reading, as
   bundles `sjl-9-001` and `sjl-13-002` read the clause for every JavaScript root.
+
+## 11. SJL-17's exit reading, Broiler.VM's half, 2026-11-16
+
+*(Added 2026-11-16, after this bundle's SJL-17.6 evidence merged in Broiler-Platform/Broiler.VM#210 and Broiler.JS's
+SJL-17.5 and SJL-17.6 merged in Broiler-Platform/Broiler.JS#1118 and #1119, observed.)* It reads the milestone's
+clauses 6 to 9, this family's, against this bundle's evidence at the commit each piece was taken. It changes no rule,
+widens none, revises no clause and declares nothing of SJL-17 met. The home's clauses 1 and 2 and Broiler.JS's clauses
+3 to 5 are read in Broiler.JS's bundle `sjl-17-001` (observed). The record over both repositories, each clause 1 to 9
+with its reading and where it is recorded, JSD-0084's settling condition read and the open items, is the programme
+ledger's entry of this date, as that ledger placed SJL-9's and SJL-13's (its entries of 2026-11-12 and of 2026-11-15,
+later still), each bundle reading its own repository's half.
+
+**What it reads.** The milestone's words are
+[`sjl-17-collation.md`](../../javascript-shared-libraries/milestones/sjl-17-collation.md) at the default branch's
+`44511066bfb38952c12c81557f56a34bd21ee41e` (the merge of Broiler-Platform/Broiler.VM#212), the head when this reading
+was taken, with the notes of 2026-11-01 and 2026-11-04 under its SJL-17.4. The evidence is this bundle's:
+- the run of the rule at the base `68cad8b` and the after commit `983d690a` (sections 5 to 8), judged on section 1's
+  readings;
+- the closures and the rule checks at the after commit, [`after-closures/`](after-closures/README.md), read in section
+  10 with that section's notes of SJL-17.6's review;
+- **the head's rule checks**, [`exit-reading/`](exit-reading/), taken for this reading before any change of it, at
+  `44511066`: a clean `git archive` on a tmpfs ([`local/archive.txt`](exit-reading/local/archive.txt)), whose scratch
+  folder is named `base` in the retained records because the checks are this reading's answers before it changed
+  anything, though they hold the head and not the rule's base `68cad8b`; the solution built there in Release with
+  `--disable-build-servers`, with no warning ([`build-solution.out.txt`](exit-reading/local/build-solution.out.txt),
+  [`build-warnings.txt`](exit-reading/local/build-warnings.txt), empty), then the architecture suite and the contract
+  tests with `--no-build`, each passing ([`test-architecture.out.txt`](exit-reading/local/test-architecture.out.txt),
+  [`test-contract.out.txt`](exit-reading/local/test-contract.out.txt)). Each wrote a TRX of every test, which is not
+  retained ([`trx.sha256`](exit-reading/trx.sha256)); the architecture suite's rows for rules I1 to I7, N27 and N28 are
+  [`rules.tsv`](exit-reading/rules.tsv), each `Passed`, by
+  [`rules-from-trx.py.txt`](exit-reading/scripts/rules-from-trx.py.txt). Each step ran under the exclusive lock and
+  behind the hard idle gate of section 5 ([`gate.log`](exit-reading/local/gate.log),
+  [`checks.sh.txt`](exit-reading/scripts/checks.sh.txt) with [`run.sh.txt`](exit-reading/scripts/run.sh.txt) and
+  [`gate.sh.txt`](exit-reading/scripts/gate.sh.txt)), whose `stop-servers` lines name no leftover process, on the
+  machine section 1's reading 1 names (each run's `machine.txt`);
+- [`exit-reading/deletion-search.txt`](exit-reading/deletion-search.txt), git reads alone at `44511066`
+  ([`deletion-search.sh.txt`](exit-reading/scripts/deletion-search.sh.txt)): section 10's two searches of SJL-17.4's
+  deletion list, `deletion-search.sh` and `deletion-search-tailoring.sh`, run one after the other, unchanged but for
+  the repository they read;
+- [`exit-reading/verify-hashes.txt`](exit-reading/verify-hashes.txt): every `hashes.txt` of this bundle checked with
+  `sha256sum -c` in a clean archive of `44511066`, and [`manifest.json`](manifest.json) checked against the tree of the
+  commit it was collected at, all of them verifying ([`verify-hashes.sh.txt`](exit-reading/scripts/verify-hashes.sh.txt),
+  [`verify-manifest.py.txt`](exit-reading/scripts/verify-manifest.py.txt)).
+
+**The head is not the after commit.** It carries the merges after it, SJL-13's step 2 and the shared stream's move to
+`0.1.0-preview.11` of 2026-11-13 among them, so `Broiler.ECMAScript.Intl`, which computes this family's collation, is
+at `0.1.0-preview.11` there where the after commit has `0.1.0-preview.9`. `JsCldrTables.g.cs`,
+`src/tests/cldr/pins/cldr.pin`, `JsRealm.Intl.cs` and `JsIntlTables.cs` keep their blobs from the after commit to the
+head, and rule I5's register keeps SJL-17.4's rows, gaining SJL-13.3's. So each clause below is read at the commit its
+evidence was taken, the after commit for SJL-17.4's state, and the head's checks show that the rules clauses 6 and 9
+name still hold there. The commits that carry this reading change documents and `exit-reading/` alone.
+[`exit-reading/hashes.txt`](exit-reading/hashes.txt) holds the SHA-256 of every other file of that folder, which
+`sha256sum -c` verifies.
+
+| Clause | Its words | Read from, at the commit | Reading, and what it rests on |
+|---|---|---|---|
+| 6 | "Rules `I1` to `I7` hold, and rule `I5` holds the deletion list." | [`after-closures/rules.tsv`](after-closures/rules.tsv), [`deletion-search.txt`](after-closures/deletion-search.txt) and [`deletion-search-tailoring.txt`](after-closures/deletion-search-tailoring.txt) at `983d690a`, with their base searches at `68cad8b`; [`exit-reading/rules.tsv`](exit-reading/rules.tsv) and [`exit-reading/deletion-search.txt`](exit-reading/deletion-search.txt) at `44511066` | **Read met** at `983d690a` and at `44511066`: every test of rules I1 to I7 passes, in a suite that passes whole, at the after commit with the image records in place. SJL-17.4's deletion list, as the milestone's SJL-17.4 and JSD-0086 section 5 give it, is absent at both: no path `JsCollator.cs` or `JsCollationData.cs`; no declaration of `JsCollator`, `JsCaseFirst`, `JsCollationData` or its nested `Tailoring`, nor of `JsRealm.CollatorKeyData` or of `JsIntlTables.Collation` and its lazy; and `NewCollator` takes its tailoring from `data.TailoringFor(...)`, which no file of this repository declares, the library's `UcaCollationData` answering it, where at the base it chose a tailoring by name and built a `JsCollator`. The same searches find each item at the base, which shows they can. Rule I5's register holds a row of SJL-17.4 for each of its types and members, at both commits, and I5's tests, which refuse a registered member declared again and report the witness of one, pass. It rests on no ruling and no revision. It rests on JSD-0084's decision E11, taken on 2026-11-01 under the owner's standing direction of 2026-10-18, which reads the milestone's "the collation core of the `JsRealm.*` Intl files" as `NewCollator`'s tailoring core and `CollatorKeyData`, and on reading 3 below for what rule I5 can hold |
+| 7 | "Whole-suite test262 in both forms, and the `orderings` reference dataset, meet the area rule." | parts A and B of [`decision-rule-area.md`](decision-rule-area.md), at `68cad8b` and `983d690a` (sections 5 to 7) | **Read met.** Part A is MET (section 6): all four hosted runs complete, every changed verdict of either pair in class C4 (c′), its re-runs at both commits agreeing, no row in class C1, and every variant of the `Collator` and `localeCompare` directories the same verdict at both commits. Part B is MET (section 7): every named check passes at both commits with the same line, `intl/i1/german-and-english-orderings-match-icu`, the `orderings` dataset against its retained answer, among them, and no file under `src/tests/cldr/` or `src/tests/temporal/` differs. Part C, the rule's third part, is MET too (section 8). It rests on no ruling and on no revision, the rule having none. It rests on section 1's readings, each taken under the owner's standing direction of 2026-10-18 before any run was read, none the owner's own answer: part A on readings 1 to 6, and **it turns on reading 6**, under whose alternative its rows exhausted on fuel at one commit and on the wall clock at the other would be regressions and part A not met; part B on readings 1, 3, 4 and 8. Under reading 3's or reading 4's alternative every part would be void, and under reading 1's parts B and C would be untaken and part A's (c′) rows unadmitted |
+| 8 | "Every root is published and run in three modes." | [`after-closures/`](after-closures/README.md), at `983d690a` | **Read met** at `983d690a` for every JavaScript root this machine can publish, ExecutionOnly, SliceCompiler, Conformance, Cli and PolyglotCli, each published and run under the JIT, trimming and Native AOT, every publish and run exiting as it should, the collector's last line reading "every root published and run in three modes: True"; every closure, catalog and admitted package's identity is the base's byte for byte, as bundle `sjl-9-001` collected them at `68cad8b`, and every other difference is attributed ([`compare.txt`](after-closures/compare.txt)). It rests on no ruling and no revision, and on an exclusion, EX-126 for the Android root (bundle `sjl-3-001`), as SJL-9's clause 14 and SJL-13's clause 8 did; and on section 1's reading 10, which scoped the run, and reading 1 below, which reads the clause, both taken under the owner's standing direction of 2026-10-18. That the closures were taken in a clean clone and not a clean archive (section 10's notes), as bundle `sjl-9-001`'s were, moves no answer |
+| 9 | "Optionality is unchanged, as rule `I3` shows, and N28's budget holds for the collation tables." | [`after-closures/`](after-closures/README.md)'s rule I3 on the image records and [`rules.tsv`](after-closures/rules.tsv) at `983d690a`; [`exit-reading/rules.tsv`](exit-reading/rules.tsv) at `44511066`; the blob reads of section 5 and above | **Read met.** At the after commit rule I3 holds on the Native AOT images of ExecutionOnly, SliceCompiler, Conformance and Cli as on the project graph, in a suite that passes whole, on reading 2 below: no compiler-free root holds the shared frontend, and no root carries optional data `docs/compositions.md` does not declare. At the head it holds on the graph, with its witnesses, the image half's among them. Every closure is the base's (clause 8), so no root gains or loses an assembly at SJL-17.4. Rule N28's tests pass at both commits, the one that holds the table data under its budget among them, and `JsCldrTables.g.cs` is the same blob at `68cad8b`, `983d690a` and `44511066`, so the collation tables in it, the root, root `search`, and German `phonebook` and `search`, do not move; their size is restated by citation of bundle [`sjl-8-001`](../sjl-8-001/README.md)'s section 12, as section 3 quotes it. It rests on no ruling and no revision |
+
+**The readings this exit reading takes.** Each is taken under the owner's standing direction of 2026-10-18 ("Please do
+all recommended decisions and skip waiting for review") as the recommended choice, recorded as the owner's dated
+decision of 2026-11-16 and not the owner's own answer, with the alternative not taken; the owner may rule otherwise.
+None changes a rule, a clause or a verdict of sections 6 to 8.
+1. **Clause 8's "every root".** The composition register (`docs/compositions.md` section 3) lists roots that are not
+   JavaScript's: `Calculator`, `Workbench`, `WebAssembly.Execution`, `WebAssembly.Harness` and `Ubc.Fixture`, none
+   carrying an assembly of the JavaScript profile, and `PolyglotCli`, which does and was published here. *Taken:* every
+   JavaScript root this machine can publish, each root that carries the JavaScript profile, the Android root being
+   EX-126, as the readings of SJL-3, SJL-8, SJL-10, SJL-9 and SJL-13 took the same words; SJL-17 changes the JavaScript
+   profile alone, and no assembly of the other roots moves at SJL-17.4. *Not taken:* every root the register lists;
+   those five would have to be published and run in three modes at the after commit, and the clause would not be read
+   met until they were.
+2. **Clause 9's "as rule `I3` shows", on the image records.** Section 10's notes say that the records' placement under
+   `src/i3-image-records/` is inferred, not recorded: `closures.sh` wrote the digests of the five records
+   ([`mstat.sha256`](after-closures/closures/mstat.sha256)) and then copied the same folder's records into the tree
+   before the suite ran, with no listing of the destination. *Taken:* rule I3 read the four records whose root it
+   reads, on that script as run, the suite passing whole. *Not taken:* the image half unshown at the after commit, so
+   that the clause rests on rule I3 over the project graph alone, at the after commit and the head, as SJL-9's clause
+   15 read the head; the clause would still read met on that form, or, if the clause asks for the images, not until a
+   run retains a listing and the digests of that folder taken just before the suite.
+3. **Clause 6's "rule `I5` holds the deletion list".** The list holds `NewCollator`'s tailoring core, lines of a
+   member that stays, and `JsCollationData`'s nested `Tailoring`. *Taken:* rule I5 holds the list's types and members,
+   each by its own row, and the tailoring core and the nested type are read by the searches, the core being no member
+   rule I5 can register and the nested type leaving with the type whose row it holds, as JSD-0086 section 5 says.
+   *Not taken:* a row of rule I5 for every item of the list; no row can register lines of a member, so the clause could
+   not be read met as written for the tailoring core, and would stay unmet until the list or the clause were revised.
+
+**So, of this family's clauses 6 to 9:** each reads met on this bundle. Clause 6 rests on JSD-0084's decision E11 and
+on reading 3 above; clause 7 on section 1's readings, part A turning on reading 6; clause 8 on EX-126 for the Android
+root and on reading 1 above, with section 1's reading 10; clause 9 on reading 2 above; each reading taken under the
+owner's standing direction of 2026-10-18 and none the owner's own answer, and no clause on a ruling or a revision.
+This reading meets no gate and accepts nothing: SJL-17 may not meet its gate before SJL-9 meets SJL-9's, and so not
+before SJL-7, SJL-8 and SJL-3 meet theirs, and review is deferred (EX-30). The programme ledger's entry of this date
+gives the record over both repositories, JSD-0084's settling condition read, and the open items.
