@@ -18,6 +18,16 @@ and `decision-rule-area.md` is not edited. The revision also names two sentences
 this family after step 1 and that it leaves as written: part A's reading of row S9b's file, which step 1's row T33
 corrects, and part A's hold on the evidence workflow, which the owner changed on 2026-10-30.
 
+*(Added 2026-11-16.)* The rule is revised again, before any of its runs, by
+[`decision-rule-area-revised-2026-11-16.md`](decision-rule-area-revised-2026-11-16.md), under the owner's decision
+D-wiv of JSD-0081, taken as recommended under the owner's direction of 2026-10-18. It adds the correspondence's row S8a,
+this family's `\w` as the first operand of a class difference under `iv`, to part A's kind R corrections, and changes
+nothing else; `decision-rule-area.md` and the revision of 2026-11-10 are not edited. It was written after Broiler.Regex's
+reference arms, a run of that repository's rule, found the row, and before any run of this rule. It does not admit the
+owner's workflow change of 2026-10-30 and does not drop row S5, each of which stays the owner's to decide by a further
+dated file before any run. The alternative not taken was no revision, under which a test262 variant that row S8a
+explains would be a finding and a regression; no file at the pin is expected to move for it.
+
 **Records:** [JSD-0081](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0081-regular-expressions-move-to-broiler-regex-under-its-owner-conditions.md),
 the area verdict, which records decision SJL-D-14 as this area applies it and the owner's decisions D1 to D41. Its
 input is [`correspondence.md`](correspondence.md), with every probe and each engine's answers in
@@ -106,6 +116,9 @@ SJL-3 meets SJL-3's.
     would be away from the text, and no variant of test262 at `ccaac100` tries the case. The rule file is unchanged,
     as its "Revisions" requires. The dated rule file this section already asks for, before any base run, is where the
     owner can drop S5 from both lists.
+  - *(Noted 2026-11-16, decision D-wiv.)* The revision of 2026-11-16 adds row S8a to part A's kind R list, so the
+    item above, "kind R, a variant one of rows S5, S10, M4, M7 and T3 explains", reads with S8a among them. It does
+    not drop S5, which stays the owner's.
   - A moved exhaustion verdict, a ceiling stop among them, is admitted under C2 only on a variant that reaches a
     regular expression, and only if the variant passes after, at ten times the allowance where it does not pass at
     the part's. A variant failing at both commits is read by its detail too, so a ceiling stop that becomes a wrong
