@@ -58,8 +58,9 @@ first." is read as bundle [`sjl-15-001`](../../evidence/sjl-15-001/decision-rule
 this family's two windows, SJL-15.3's and SJL-15.4's, and Broiler.JS's bundle `sjl-14-001`'s class T applied to this
 family's half by decision D64; Broiler.JS's rule for SJL-15 is filed in its own bundle `sjl-15-001`. "The slice corpus:
 its census counts, its slot order and its refusals ... byte-identical before and after the rebuild" is that rule's part
-S, which admits no difference; what it means for the inputs hand-offs H23 and H25 correct is put to the owner (decision
-D-census), and clause 5 stands as written meanwhile. "Broiler.JS's closure-sensitive suites" are Broiler.JS's rule's;
+S, which admits no difference; what it means for the outputs that parsing with the library moves, in three classes
+(the corrections of hand-offs H23 and H25, the refusals the library makes in place of the slice path's own, and the
+census lines its parse moves), is put to the owner (decision D-census), and clause 5 stands as written meanwhile. "Broiler.JS's closure-sensitive suites" are Broiler.JS's rule's;
 this family's rule names its own as its part H. The text above is left as written.
 
 ### SJL-15.2 — The semantic model
@@ -77,8 +78,8 @@ reports every early error either engine's parser reports at parse time, and expo
 declarations, each function's parameter names and each program's and function's strictness as side tables ordered by
 source position. SJL-15.2 adds the rest of the model to that walk; it does not start a second one.
 
-*(Noted 2026-11-16, at SJL-15.1, by [JSD-0088](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0088-static-semantics-move-to-the-shared-frontend.md), decisions D-pin and D61.)* The text above says where the model grows,
-and not when its code may merge. SJL-15.2's code is Broiler.JS's, in `Broiler.ECMAScript.Frontend`, which Broiler.JS's
+*(Noted 2026-11-16, at SJL-15.1, by [JSD-0088](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0088-static-semantics-move-to-the-shared-frontend.md), decisions D-pin and D61.)* "SJL-15.2 adds the rest of the model
+to that walk; it does not start a second one." says where the model grows, and not when its code may merge. SJL-15.2's code is Broiler.JS's, in `Broiler.ECMAScript.Frontend`, which Broiler.JS's
 engine references by project: until Broiler.JS's SJL-14 cut-over (its window W2), each merge of it is a dark window of
 SJL-14, judged by part B of Broiler.JS's bundle `sjl-14-001` with the switch off, and a change that moves a switch-off
 outcome lands only inside a cut-over window (SJL-13's plan's decision D52: "The same holds for SJL-15's model stages");
@@ -152,7 +153,7 @@ Both engines' full suites under the rules:
 - three modes;
 - each compiler's own measurement.
 
-*(Read 2026-11-16, at SJL-15.1, by [JSD-0088](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0088-static-semantics-move-to-the-shared-frontend.md), decision D-measure.)* "Each compiler's own measurement" is a rule part
+*(Noted 2026-11-16, at SJL-15.1, by [JSD-0088](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0088-static-semantics-move-to-the-shared-frontend.md), decision D-measure.)* "Each compiler's own measurement" is a rule part
 of each bundle (template T5), not a gate clause, as SJL-13 read its own ("The compiler's own measurement under its rule"
 is "a rule part of each bundle (template T5), not a gate clause", the note of 2026-10-26 under SJL-13.6). The exit gate
 below has no measurement clause, and none is added. Bundle [`sjl-15-001`](../../evidence/sjl-15-001/decision-rule-area.md)'s part J is this family's. The text above is left
@@ -183,10 +184,12 @@ as written.
 
 *(Noted 2026-11-16, at SJL-15.1, by [JSD-0088](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0088-static-semantics-move-to-the-shared-frontend.md), decision D-census, which is put to the owner and not taken.)* Clause 5
 is not revised here. Its "the slice corpus's census counts, slot order and refusals are byte-identical before and after"
-admits no difference, and JSD-0083's hand-offs H23 and H25 give SJL-15.4 corrections of the slice path that the shared
-library makes when the slice path parses with it; an input of the slice corpus that reaches one cannot be both. The
-owner chose SJL-D-13 (a) on 2026-10-11, so what the clause means for those inputs is the owner's: (i) as written, or
-(ii) revised before any evidence under update rule 5 to admit the corrections listed by row. Until the owner chooses,
+admits no difference, and parsing the slice path with the shared library (decision D60) moves three classes of the slice
+corpus's outputs: JSD-0083's hand-offs H23 and H25, corrections of the slice path the library makes; the refusals the
+library makes in place of the slice path's own, under its codes and as its first refusal; and the census lines the
+library's parse moves. An input of the slice corpus in any of them cannot be both moved and byte-identical. The owner
+chose SJL-D-13 (a) on 2026-10-11, so what the clause means for those inputs is the owner's: (i) as written, or (ii)
+revised before any evidence under update rule 5 to admit the classes listed by row, each input listed with its class. Until the owner chooses,
 clause 5 stands as written, and bundle [`sjl-15-001`](../../evidence/sjl-15-001/decision-rule-area.md)'s part S judges it so.
 
 **Broiler.JS clauses**
@@ -207,7 +210,8 @@ re-evaluate.)*
 - The profile's JSD for decision `SJL-D-13`, with its JSC entries.
 - Broiler.JS's record closing invariant 3.
 
-*(Noted 2026-11-16, at SJL-15.1.)* The list above names no area verdict. The verdict is [JSD-0088](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0088-static-semantics-move-to-the-shared-frontend.md), filed at SJL-15.1
+*(Noted 2026-11-16, at SJL-15.1.)* "The profile's JSD for decision `SJL-D-13`, with its JSC entries." and the line after
+it name no area verdict. The verdict is [JSD-0088](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0088-static-semantics-move-to-the-shared-frontend.md), filed at SJL-15.1
 (its decision D-verdict); the JSD for decision `SJL-D-13` is still SJL-15.4's. The list is left as written.
 
 ---

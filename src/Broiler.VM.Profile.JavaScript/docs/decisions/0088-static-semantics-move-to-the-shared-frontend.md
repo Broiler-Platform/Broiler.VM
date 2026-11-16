@@ -18,16 +18,17 @@
   Broiler.JS's own change for SJL-15.1, before any code of SJL-15: its column of the correspondence, the class of each
   row across both engines, and its deletion list with the disposition of every public type it empties.
 - **Decisions D57 to D66 are SJL-15's in SJL-13's plan, which is held in no repository.** They are recorded here as the
-  documents quote them, and only so (section "Decisions D57 to D66"): D60, D61 and D65 as JSD-0083 quotes them, D64's
-  second half applied as Broiler.JS's record of D64 leaves it to SJL-15, and D65 as "no edge" while SJL-11.4 and SJL-11.5
-  have not landed. D57, D58, D59, D62, D63 and D66 are quoted nowhere, and this record does not reconstruct them.
+  documents quote them, and only so (section "Decisions D57 to D66"): D60 and D61 as JSD-0083 quotes them, D65 as
+  JSD-0083 and JSD-0081 quote it, D64's second half applied as Broiler.JS's record of D64 leaves it to SJL-15, and D65 as
+  "no edge" while SJL-11.4 and SJL-11.5 have not landed. D57, D58, D59, D62, D63 and D66 are quoted nowhere, and this record does not reconstruct them.
 - **The owner's decisions of 2026-11-16 are recorded**, each taken as recommended under the owner's direction of
   2026-10-18, each with its alternative: D-verdict, D-x2, D-windows, D-pin, D-slicetree, D-handoffs, D-precision,
-  D-measure and D-roots (section "The owner's decisions of 2026-11-16"). They carry names, not numbers, because the plan's
+  D-measure, D-roots and D-tables (section "The owner's decisions of 2026-11-16"). They carry names, not numbers, because the plan's
   numbers D1 to D74 are all assigned (JSD-0083's note on D-asi and D-t24).
 - **Decision D-census is put to the owner**, and not taken: what clause 5's "byte-identical before and after" means for
-  the slice corpus's inputs that hand-offs H23 and H25 correct. SJL-D-13 (a), which clause 5 applies, was the owner's own
-  choice.
+  the slice corpus's inputs that move when the slice path parses with the library, in three classes: those hand-offs H23
+  and H25 correct (class H), those whose refusal becomes the library's (class R), and the census lines the library's
+  parse moves (class C). SJL-D-13 (a), which clause 5 applies, was the owner's own choice.
 - **SJL-15.0, the start, is a reading of the owner's words of 2026-10-25**, recorded as a reading and not as a decision
   taken under the direction (the programme ledger's SJL-15.0 entry).
 - Nothing in this profile changes with this record. The model is SJL-15.2's, in Broiler.JS; the cut-overs are SJL-15.3's
@@ -70,7 +71,9 @@ taken; and the programme proceeds through SJL-15's work packages without pausing
 - `Accepted` still needs review (the ledger's update rule 7), so nothing of SJL-15 is accepted by it.
 - SJL-15 still may not meet its gate before SJL-13 and SJL-14 meet theirs.
 - Rules still come before runs: bundle [`sjl-15-001`](../../../../docs/evidence/sjl-15-001/decision-rule-area.md)'s rule
-  is committed with this record, before any code it judges.
+  is committed with this record, before any code it judges, with its revision of the same day
+  ([`decision-rule-area-revised-2026-11-16.md`](../../../../docs/evidence/sjl-15-001/decision-rule-area-revised-2026-11-16.md)),
+  filed before any run.
 - **Three kinds of entry are not taken under it**: the start, which is a reading of the owner's words; decision
   D-census, which would revise what the owner's own choice SJL-D-13 (a) keeps; and each publication of the shared stream
   (JSD-0083's decision D30).
@@ -119,12 +122,12 @@ which SJL-15 is not. So SJL-15.1 files the verdict (decision D-verdict).
 
 | Condition | This family's half |
 |---|---|
-| **X1. Two implementations** | **Met in merged code for every fact but free names and captures.** This family: `JsBinder` (`src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.cs`, `JsBinder.Walks.cs`, `JsBinder.EarlyErrors.cs`) and the lowering's resolution (`JsCompiler.Names.cs`) on the wide path, and `SliceStaticSemantics` on the slice path, at `a86b6f5d`. Broiler.JS: `FastScope`, `FastFunctionScope`, `FreeNameScan`, `SyntaxValidation`, `DirectEvalSupport` and its compiler's checks, named by `areas/static-semantics.md` section 2 and read at a stated revision in Broiler.JS's half. **Free names and captures** (row FC1) have no producer in this family: every binding lives in an environment record; the model's fact is an adoption for this family, which reads no capture. |
+| **X1. Two implementations** | **This family's half: two producers in merged code at `a86b6f5d`, for every fact but free names and captures**: `JsBinder` (`src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.cs`, `JsBinder.Walks.cs`, `JsBinder.EarlyErrors.cs`) and the lowering's resolution (`JsCompiler.Names.cs`) on the wide path, and `SliceStaticSemantics` on the slice path. **Broiler.JS's producers are named, not read here**: `FastScope`, `FastFunctionScope`, `FreeNameScan`, `SyntaxValidation`, `DirectEvalSupport` and its compiler's checks, as `areas/static-semantics.md` section 2 names them; Broiler.JS's half reads them at a stated revision (decision D-x2), and until its dated note fills the correspondence's column this record does not say X1 holds over both engines. **Free names and captures** (row FC1) have no producer in this family: every binding lives in an environment record; the model's fact is an adoption for this family, which reads no capture. |
 | **X2. Correspondence from code** | **This family's half is written**, in bundle `sjl-15-001`'s `correspondence.md`, read from code at `a86b6f5d` against the model surface at `6fda6ca4`, each row classed against the specification for this family. **Broiler.JS's half completes it** by a dated note on this record and on the correspondence, filed with Broiler.JS's SJL-15.1 change before any SJL-15 code, which gives each row its class across both engines; until then no row's cross-engine class is recorded, and none is unknown in this family's column (decision D-x2). |
 | **X3. Neutral contract** | **Held by the design and checked by the home.** The model is JSD-0080's design: source-ordered collections, no hash order, failure as diagnostics, no engine type; the declarations walk it grows from already meets it (`DeclarationTables`, `DeclarationsWalk`). The home's clauses 1 to 3 judge the implementation (Broiler.JS's bundle `sjl-15-001`). |
 | **X4. No edge between engines, none into Broiler.VM** | **Held.** The library references neither engine. **Decision D65: no package edge to Broiler.Regex** while SJL-11.4 and SJL-11.5 have not landed (section "Decisions D57 to D66"). |
 | **X5. Boundaries hold** | **Held, by rule I3.** The model is in `Broiler.ECMAScript.Frontend`, which this family admits for `Broiler.VM.Profile.JavaScript.Compiler` alone; no compiler-free root reaches it. Bundle `sjl-15-001`'s part D runs rule I3, and its part I lists each root's closure. |
-| **X6. Deletion list** | **This family's half, member by member, below** (section "The deletion lists"). Broiler.JS's half, with the disposition of every public type SJL-15.5 empties (SJL-D-25), is completed by the dated note decision D-x2 names. |
+| **X6. Deletion list** | **This family's half, by type and by member, below** (section "The deletion lists"). Broiler.JS's half, with the disposition of every public type SJL-15.5 empties (SJL-D-25), is completed by the dated note decision D-x2 names. |
 | **X7. Owners accept** | **The owners' decision D-verdict**, under the direction; one person holds every role (EX-30). This is the area verdict roadmap section 5 asks for; it moves no milestone toward `Accepted` (update rule 7). |
 
 **On refusal** the verdict would have named the failed condition and the source-level pointers. No condition fails.
@@ -146,7 +149,7 @@ filed by a dated note.
 | D58 | Nothing | (none) | **Unquoted**; not reconstructed |
 | D59 | Nothing | (none) | **Unquoted**; not reconstructed. JSD-0083's "D59" in its correspondence (`sjl-13-001`'s row D59, EG0007) is a row, not this decision |
 | D60 | "SJL-15.4, which removes `SliceTokenizer` (D60)"; "SJL-15.4, which rebuilds the slice path on the shared library and deletes `SliceParser` and `SliceTokenizer` (D60)"; "the slice path's `SliceTokenizer.IsWhiteSpace` at SJL-15.4 (H3, D60)" | JSD-0083's hand-offs H23, H25 and H13 | **At SJL-15.4 the slice path parses with the shared library, and `SliceParser` and `SliceTokenizer` are deleted.** Applied in X6 and in bundle `sjl-15-001`'s rule. A reading: the bare "D60" in that table is read as the plan's decision, not as `sjl-13-001`'s row D60 (EX0010, an import or export in a Script), which has nothing to do with the slice tokenizer; JSD-0083's own convention would read a bare "Dn" as a row, so the reading is recorded |
-| D61 | "SJL-15's `semantics` vectors follow the same route (decision D61)": the route of the `syntax` vectors, in schema 1, with module-goal and switch-dependent rows left to the parse corpus, and "A revision after each engine's cut-over retires the divergence fields that no longer hold", with this family's pin move | JSD-0083, decision D25 | **The `semantics` vectors follow the `syntax` vectors' route**: added to Broiler.JS's corpus in schema 1 before the shared code lands (SJL-1.6), each engine's divergence fields citing its records, retired by a corpus revision after each engine's cut-over with this family's pin move. Applied by bundle `sjl-15-001`'s pin commit and its part E |
+| D61 | "SJL-15's `semantics` vectors follow the same route (decision D61)"; the route itself is D25's text about the `syntax` vectors, in schema 1, with module-goal and switch-dependent rows left to the parse corpus, and "A revision after each engine's cut-over retires the divergence fields that no longer hold", with this family's pin move | JSD-0083, decision D25 | **The `semantics` vectors follow the `syntax` vectors' route.** Only those words are D61's. A reading, drawn from D25's text about the `syntax` vectors and not quoted as D61's: added to Broiler.JS's corpus in schema 1 before the shared code lands (SJL-1.6), each engine's divergence fields citing its records, retired by a corpus revision after each engine's cut-over with this family's pin move. Applied by bundle `sjl-15-001`'s pin commit and its part E |
 | D62 | Nothing | (none) | **Unquoted**; not reconstructed. `sjl-13-001`'s row D62 (EP0015) is a row |
 | D63 | Nothing | (none) | **Unquoted**; not reconstructed. `sjl-13-001`'s row D63 (`StrictModeValidator`'s `case` clauses) is a row |
 | D64 | "Class T (an error raised before evaluation that the base raised later, or not at all), listed, at SJL-14 for the rows D10 moves into the parse ... and at SJL-15 for the rest. SJL-13's plan numbers it with SJL-15's decisions; it is taken here, with D40 to D56, because its SJL-14 half binds this milestone's rule, and SJL-15's records read its other half" | Broiler.JS's `docs/roadmap/SharedLibraries.md`, SJL-14's decisions table, the owner's decision of 2026-11-03; JSD-0083's decision D45 and its SJL-14.1 note | **Already filed by SJL-14.1; not reconstructed.** Its second half is applied here: **for this family**, class T lists the row whose early error moves before evaluation with the model, eval code's undeclared private name (row PN1, finding F6), admitted in bundle `sjl-15-001`'s rule's parts A and B; **for Broiler.JS**, its rule for SJL-15 lists by row the early errors SJL-15.5 moves from its compiler into the model |
@@ -226,32 +229,67 @@ the JavaScript profile, the Android root being EX-126's**, as the readings of SJ
 SJL-17 took the same words; bundle `sjl-15-001`'s part I judges it. *Not taken:* every root the composition register
 lists, the roots that carry no JavaScript profile among them.
 
+**Decision D-tables - how the tools read the slice path's binding table.** *(Taken 2026-11-16, at SJL-15.1, after a
+review of bundle `sjl-15-001`'s rule before any run; filed by that rule's revision of the same day.)* **The tools commit
+adds one public read-only member to `SliceCompilation`**, in `SliceSourceCompiler.cs`, that answers each binding's name,
+its kind as text and its slot, in slot order, filled from the binding table the slice static semantics answers, as
+strings and integers and no type either window deletes; it changes no artifact byte, diagnostic or census line, and the
+tools commit's path condition names that file for that member alone. SJL-15.4 keeps the member and its meaning and fills
+it from its own allocation over the model, so the report code stays unchanged at window 2. *Not taken:* the window-2
+merge ports the report code, its output held byte-identical by a control. The reason: at `a86b6f5d` the table is
+`SliceStaticSemantics.Validate`'s answer over a `SliceProgram` that only `SliceTokenizer` and `SliceParser` build, inside
+the front end, so tools code that built it itself would name three types window 2 deletes, and bundle `sjl-15-001`'s
+parts B, S and C, which run the tools "unchanged at each after commit", could not be configured at window 2; a port would
+be judged by a comparison it writes itself.
+
 ---
 
 ## Put to the owner: decision D-census
 
 **The question.** Clause 5 reads "the slice corpus's census counts, slot order and refusals are byte-identical before and
 after", applying SJL-D-13 (a), "keeping its census counts, slot order and refusals byte for byte", which was the owner's
-own choice of 2026-10-11 ("Taken 2026-10-11: (a), chosen by the owner"). JSD-0083 hands to SJL-15.4 two defects of the
-slice path, H23 and H25, and the owner's decision "Exempt and record" of 2026-11-09 recorded H25's: the slice tokenizer's
-escape digits, its regular-expression body ending in a backslash, and `SliceParser`'s acceptance of a strict directive
-with `\8` or `\08`. Parsing the slice path with the library, as SJL-15.4 does, corrects each. An input of the slice
-corpus that reaches one of them, the parse corpus's `J000262` and `J001009` among them, cannot be both corrected and
-byte-identical; and the census's parse half is `SliceParser`'s answer, so a file it parsed that the library refuses moves
-the census (findings F4 and F5).
+own choice of 2026-10-11 ("Taken 2026-10-11: (a), chosen by the owner"). Parsing the slice path with the library, as
+SJL-15.4 does (decision D60), moves three classes of the slice corpus's outputs, which bundle `sjl-15-001`'s rule, as
+its revision of 2026-11-16 reads, names before any run:
+- **Class H, the corrections** (row SL4). JSD-0083 hands to SJL-15.4 two defects of the slice path, H23 and H25, and the
+  owner's decision "Exempt and record" of 2026-11-09 recorded H25's: the slice tokenizer's escape digits, its
+  regular-expression body ending in a backslash, and `SliceParser`'s acceptance of a strict directive with `\8` or
+  `\08`. The library corrects each. An input of the slice corpus that reaches one, the parse corpus's `J000262` and
+  `J001009` among them, cannot be both corrected and byte-identical (finding F4).
+- **Class R, the refusals the library makes** (rows SL3, DE3 and EE1). `SliceStaticSemantics` reports every refusal it
+  finds, in walk order, under its own codes; the library reports its first refusal, by place, under its own rows, before
+  any tree reaches the slice static semantics (row EE2). The window-2 deletion list below removes the slice path's checks
+  of rows the library makes, so an input refused at the base by one of them (`ReservedWordAsBinding`,
+  `DuplicateLexicalDeclaration`, `VarAndLexicalCollision`, `LegacyOctalInStrictCode`, `ConstWithoutInitialiser`,
+  `InvalidAssignmentTarget`, and `IllegalBreak` and `IllegalContinue` once the model reports jumps), or refused with more
+  than one diagnostic, can change its code, message, place or list, and so can a program of `SliceSourcePrograms` that
+  pins one.
+- **Class C, the census's parse half** (row SL5, finding F5). The census counts files parsed and parse failures by the
+  first slice diagnostic's code; a file `SliceParser` parsed that the library refuses, a file the library parses that
+  `SliceParser` refused, or a failure counted under the library's code moves a line of it.
 
 **The alternatives.**
-- **(i) Clause 5 stands as written.** Bundle `sjl-15-001`'s part S admits no difference; any input H23 or H25 reaches
+- **(i) Clause 5 stands as written.** Bundle `sjl-15-001`'s part S admits no difference; any input of class H, R or C
   that differs makes it NOT MET, and clause 5 stays unmet until the owner chooses otherwise. SJL-15.4 cannot keep the
-  defects while parsing with the library.
+  defects, or the slice path's own refusals of rows the library makes, while parsing with the library.
 - **(ii) Clause 5 is revised before any evidence, under update rule 5**, to "The slice path is rebuilt on the shared
   model: `SliceParser` is gone, and the slice corpus's census counts, slot order and refusals are byte-identical before
-  and after, but for the corrections the correspondence lists by row before any run (hand-offs H23 and H25), each input
-  listed with its row", with a new dated rule file in bundle `sjl-15-001` that admits them as a class, before any run of
-  part S; SJL-D-13 gains a dated note quoting it.
+  and after, but for the corrections the correspondence lists by row before any run (hand-offs H23 and H25), the
+  refusals the library makes in place of the slice path's own, and the census lines the library's parse moves, each
+  input listed with its row and class", with a new dated rule file in bundle `sjl-15-001` that admits classes H, R and C,
+  each bounded as that file says, before any run of part S; SJL-D-13 gains a dated note quoting it. The owner may admit
+  some of the classes and not others; a class not admitted is judged as in (i).
 
-**Recommended:** (ii), because the corrections are handed to SJL-15.4 by the owner's own decision of 2026-11-09 and the
-byte-identity the owner chose on 2026-10-11 is the rebuild's acceptance check for everything else. **It is not taken
+*Not offered:* SJL-15.4 keeps the slice path's own codes, messages and full walk-order lists, the checks of class R
+taken off the deletion list below. The library refuses before any tree reaches the slice static semantics, so a full
+list would need a tree the library has refused or a parse of the slice path's own, which decision D60 deletes; and the
+kept checks would be a second producer of the library's rows, which JSD-0014's decision 1 does not allow.
+
+**Recommended:** (ii), for all three classes, because the corrections are handed to SJL-15.4 by the owner's own decision
+of 2026-11-09, the refusals of class R and the census lines of class C follow from decision D60, which parses the slice
+path with the library, and the byte-identity the owner chose on 2026-10-11 is the rebuild's acceptance check for
+everything else: the slot order, the binding tables, the accepted inputs' bytes and the admission refusals of rows RS3
+and RS4. **It is not taken
 here**: it would revise what the owner's own choice keeps, which the direction of 2026-10-18 does not reach. **Until the
 owner chooses, clause 5 stands as written**, and part S judges it so.
 
@@ -261,20 +299,24 @@ owner chooses, clause 5 stands as written**, and part S judges it so.
 
 **This family, at window 1** (SJL-15.3): the binder pass, `JsBinder`, whole: `JsBinder.cs`, `JsBinder.Walks.cs` and
 `JsBinder.EarlyErrors.cs`, with its nested types (`Declarations`, `Declaration`, `HoistingScope`, `FunctionFacts`,
-`ModuleDeclaration`, and the walks' `Exit`, `PrivateScope`, `Context` and pending records), each registered in rule I5
-member by member. The lowering's readers of it (`JsCompiler.Hoisting.cs`, `JsCompiler.Statements.cs`,
+`ModuleDeclaration`, and the walks' `Exit`, `PrivateScope`, `Context` and pending records), registered in rule I5 by type,
+`JsBinder` being deleted whole with its nested types and members, which its row refuses with it; the constructors,
+positional record parameters and enumeration members rule I5's reader does not read are named by kind in I5's register
+paragraph and in SJL-15.3's cut-over record (as bundle `sjl-13-001`'s rule revision of 2026-11-10 and bundle
+`sjl-13-002`'s of 2026-11-13 read the same clause). The lowering's readers of it (`JsCompiler.Hoisting.cs`, `JsCompiler.Statements.cs`,
 `JsCompiler.Functions.cs`, `JsCompiler.Eval.cs`, `JsCompiler.Modules.cs`, `JsCompiler.Classes.cs`,
 `JsCompiler.ControlFlow.cs`, `JsCompiler.Exceptions.cs` and `JsCompiler.cs`) read the model instead. **Kept**: the
 lowering's slot and record allocation (`Scope.Declare`), its exit stack for emission, its scope-map rows and its
 `BinderAdmitted` guards, which become guards on the model's answers.
 
 **This family, at window 2** (SJL-15.4): `SliceParser.cs` and `SliceTokenizer.cs` whole (decision D60), and
-`SliceSyntax.cs`'s records (decision D-slicetree), each registered in rule I5; in `SliceStaticSemantics`, its own scope
+`SliceSyntax.cs`'s records (decision D-slicetree), each type deleted whole registered in rule I5 by type, its positional
+parameters named by kind and not registered; in `SliceStaticSemantics`, its own scope
 analysis (`Scope`, `HoistVarBindings`, `VarDeclaratorsWithin`, `DeclareVar`, `DeclareLexicalNames`, `DeclareLexical`,
 `CheckVarLexicalIntersection`, `EnterScope`, `LeaveScope`, `HoistingScope`, `Resolve`'s scope walk) and its checks of
 rows the library makes (`CheckBindingName`, the duplicate and collision checks, the legacy-octal and constant-initialiser
-checks, the assignment-target check), each registered member by member or, where it is lines of a member that stays,
-named by row in SJL-15.4's records. **Kept**: `SliceStaticSemantics` itself, rebuilt over the model, with its admission
+checks, the assignment-target check), each member of a type that stays registered by member, one row per distinct
+name, or, where it is lines of a member that stays, named by row in SJL-15.4's records. **Kept**: `SliceStaticSemantics` itself, rebuilt over the model, with its admission
 refusals (the manifest's constructs, unresolvable identifiers and assignment to a constant, rows RS3 and RS4) and the
 slice lowering's slot allocation; `SliceConstructs.cs` and the census; rule N16's slice manifest on its own path.
 
@@ -320,9 +362,10 @@ decides.
 
 Each beside the text it reads, quoting it: SJL-15's milestone file (the verdict and the rules at SJL-15.1; SJL-15.2's
 model in Broiler.JS before SJL-14's cut-over; SJL-15.6's measurement; clause 5, unchanged, with decision D-census put to
-the owner); the programme roadmap's sections 4, 5 and 11; JSD-0083's "What this record does not decide" and its section
-"Names"; `areas/static-semantics.md`'s status; and the programme ledger's SJL-15.0 and SJL-15.1 entries, its SJL-15 row
-and "Last updated".
+the owner; the records list); the programme roadmap's sections 4, 5 and 11; JSD-0083's "What this record does not
+decide", in one note under that section, which also reads what its section "Names" says of D57 to D66 and leaves nothing
+beside that section; `areas/static-semantics.md`'s status; and the programme ledger's SJL-15.0 and SJL-15.1 entries,
+its SJL-15 row, its Next list and "Last updated".
 
 ## What this record does not decide
 
