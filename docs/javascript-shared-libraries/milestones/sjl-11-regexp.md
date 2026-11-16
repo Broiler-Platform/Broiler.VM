@@ -300,7 +300,7 @@ invalid group names; the culture-dependent case-insensitive matching; `lastIndex
 Broiler.Regex's `0.1.0-preview.4`: the budget's no-match, shortened match, wrong index and flipped look-around (rows B1
 to B3); the stack guard's fallback, to .NET and to no match (row B5); the process aborts of a flat sequence and of deep
 nesting (rows B8 and S3b); and the look-behind back-reference inside a pair (row M7)". On 2026-11-16 Broiler.JS's
-default branch took `cdf5559d` ("Update dependencies", by another contributor), which moved its Broiler.Regex to
+default branch took `cdf5559d` ("Update dependencies"), which moved its Broiler.Regex to
 `0.1.0-preview.6`, whose syntax tree, `RegexParser` and `RegexFlagsParser.Parse` are internal and whose
 `RegexMatch.Groups` is a span, so Broiler.JS's regular-expression adapter no longer compiled. Asked how to fix the
 default branch, with the options "Pin back to preview.5" (recommended), "Adapt to preview.6 now" and "Leave it to the
