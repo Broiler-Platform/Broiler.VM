@@ -4010,9 +4010,10 @@ section "The owner's decisions of 2026-11-16", each with the alternative not tak
   of 2026-10-30 and does not drop row S5; both stay the owner's, by a further dated file before any run.
 - **Broiler.JS's differences no row named (decision D-jsrows).** They are rows S12 to S15, M8 and M9 of the same
   correspondence, corrections of Broiler.JS, grouped by Broiler.JS's answer and by the arbiter's reason, with the two
-  inputs the reduction reached in row S14. They are filed here because Broiler.JS's rule classifies by this
-  correspondence. No test262 file Broiler.JS's bundle `sjl-10-001` fails is explained by them, so no Broiler.JS part A
-  row is known to move; a Broiler.JS rule revision, should one be needed, is Broiler.JS's to file.
+  inputs the reduction reached in row S14; row M4 is widened to its own vectors that the arms reached, and some vectors
+  the arms' classifier left in class (c) rows S7 and S8 already name. They are filed here because Broiler.JS's rule
+  classifies by this correspondence. No test262 file Broiler.JS's bundle `sjl-10-001` fails is explained by them, so no
+  Broiler.JS part A row is known to move; a Broiler.JS rule revision, should one be needed, is Broiler.JS's to file.
 - **The inputs the arbiter cannot reach.** JSD-0081 and the bundle's README record what Broiler.RegEx's reduction of
   2026-11-15 found and which class each set stays in under the reference-arm rule as written. That rule is
   Broiler.RegEx's, so whether the inputs whose difference does not survive the reduction may leave class (c), and
@@ -4032,11 +4033,13 @@ section "The owner's decisions of 2026-11-16", each with the alternative not tak
 **What still keeps the arms' class (c) from emptying**, and so blocks a MET reading of the reference arms at
 Broiler.RegEx's candidate reading (its task 4.2), whose rule needs no class (c) difference to remain:
 - Broiler.RegEx's classifier reads each row of this correspondence by a predicate of its own, and has none yet for rows
-  S8a, S12 to S15, M8 and M9; until a revision of it, made there before the judged run, reads them, their differences
-  stay class (c) in the arms' classification;
-- the inputs the arbiter cannot reach stay class (c) under that rule as written, but for the two that reduce to row
-  S14's difference once the classification reads the reduction and the row; only that rule's owner can read the rest
-  otherwise.
+  S8a, S12 to S15, M8 and M9, and its predicates for rows S7, S8 and M4 do not reach the vectors those rows name; until
+  a revision of it, made there before the judged run, reads them, their differences stay class (c) in the arms'
+  classification;
+- the inputs the arbiter cannot reach stay class (c) under that rule as written (those whose difference does not survive
+  the reduction by its "every other difference is class (c)", a reading open for its owner), but for the two that reduce
+  to row S14's difference once the classification reads the reduction and the row; only that rule's owner can read the
+  rest otherwise.
 
 This change meets no clause, and no other ledger's row moves. SJL-11 stays `In progress`, every clause unmet. Nothing
 is declared met, and nothing is accepted. Next (the entry above's Next list carried, its first item done by
