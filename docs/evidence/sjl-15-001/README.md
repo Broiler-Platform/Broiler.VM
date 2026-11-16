@@ -16,6 +16,15 @@ D-tables); the inputs part S expects to differ at window 2 are named in three cl
 by decision D-census; rule I5 registers each type deleted whole by type and each other member by member; a `--checks`
 row a window deletes is listed with what replaces it; and the precedents' parts are named by their own bundles'
 letters and revisions.
+*(Noted 2026-11-16, after SJL-15.1 merged.)* The rule is revised a second time the same day, before any run, by the
+owner's answer to JSD-0088's decision D-census ("Admit listed rows"), in
+[`decision-rule-area-revised-2026-11-16b.md`](decision-rule-area-revised-2026-11-16b.md), which quotes the rule whole
+and leaves both earlier files unedited; the rule commit is the commit that carries all three files. Part S admits at
+window 2 class H (row SL4, hand-offs H23 and H25), class R (rows SL2, SL3, DE3 and EE1) and class C (row SL5), each
+listed by row: class H now, its inputs completed at the base run, and classes R and C from the window-2 base run's
+reports, the listing committed or retained here with the time it was written before any after run of window 2 is taken;
+every other byte difference still fails part S. SJL-15's clause 5 is
+revised to match, before any evidence.
 
 **Correspondence:** [`correspondence.md`](correspondence.md), this family's half, read from code at Broiler.VM
 `a86b6f5d` and against the model surface at Broiler.JS `6fda6ca4`. Broiler.JS's half fills its column by a dated note in
@@ -44,5 +53,7 @@ another commit, a "before" output at the rule commit among them.
   decision D52, and none during SJL-11.5's hold;
 - the owner's publication of a stream version carrying the model (JSD-0083's decision D30);
 - this family's tools commit and pin commit;
-- the owner's answer to JSD-0088's decision D-census, before any run of part S;
+- the owner's answer to JSD-0088's decision D-census, before any run of part S *(given 2026-11-16, "Admit listed rows",
+  and filed by the rule's revision of that day; read "the owner's answer to JSD-0088's decision D-census, before any run
+  of part S;" until then)*;
 - SJL-15.3's and SJL-15.4's windows, outside SJL-11.4's window, and then this bundle's runs at each base and after commit.

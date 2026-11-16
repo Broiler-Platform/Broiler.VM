@@ -135,6 +135,16 @@ model replaces (the milestone's SJL-15.2 note of 2026-10-26: it "does not start 
 - **F5. The census's parse half is `SliceParser`'s answer** (SL5): a file `SliceParser` parsed and the library refuses at
   the parse (an early error of a `syntax` row, or H25's escape) moves the census's parsed and failure counts. Part S
   judges the census byte for byte; F4's question covers it.
+- *(Noted 2026-11-16, after SJL-15.1 merged, on the owner's answer to JSD-0088's decision D-census.)* F4 read
+  "JSD-0088 puts the reading to the owner (decision D-census)", and rows SL3, SL4, SL5 and DE3 name the decision in
+  their last cells. On 2026-11-16 the owner chose "Admit listed rows": "A dated revision now, before any evidence,
+  admits those three classes, each listed by row. Every other byte difference still fails part S." SJL-15's clause 5 is
+  revised before any evidence, and this bundle's rule revision of the same day,
+  [`decision-rule-area-revised-2026-11-16b.md`](decision-rule-area-revised-2026-11-16b.md), admits at part S the
+  corrections of row SL4 (class H), the refusals of rows SL3, DE3 and EE1, and the single refusals of row SL2's
+  tokenizer and parser but for the manifest's, that the library makes in place of the slice path's own (class R) and the
+  census lines of row SL5 that the library's parse moves (class C), each listed by row. No row's class changes, and
+  every cell above stands as read.
 - **F6. Eval code's undeclared private name is the executor's check** (PN1), by JSD-0083's decision D16, which kept the
   visible private names out of the request at SJL-13. Passing them moves the refusal earlier: decision D64's second half,
   class T, applies to this family for this row.
