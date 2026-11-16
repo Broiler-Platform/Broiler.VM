@@ -663,7 +663,12 @@ head, and rule I5's register keeps SJL-17.4's rows, gaining SJL-13.3's. So each 
 evidence was taken, the after commit for SJL-17.4's state, and the head's checks show that the rules clauses 6 and 9
 name still hold there. The commits that carry this reading change documents and `exit-reading/` alone.
 [`exit-reading/hashes.txt`](exit-reading/hashes.txt) holds the SHA-256 of every other file of that folder, which
-`sha256sum -c` verifies.
+`sha256sum -c` verifies. *(Added 2026-11-16, later, on the same branch.)* The architecture suite also reads documents (rule
+I7 reads bundles), so the same checks were taken again at this change's later head
+`f096dceae0d0df515f3befeebb4c36f06449361b`, which carries the reading's documents, from a clean `git archive` by the
+same scripts, behind the same lock and gate: the solution built with no warning, both suites passed, the rows of rules
+I1 to I7, N27 and N28 are those of [`rules.tsv`](exit-reading/rules.tsv), each `Passed`, and every `hashes.txt` of the
+bundle and its manifest verified. That run is not retained; `exit-reading/` keeps the run at `44511066`.
 
 | Clause | Its words | Read from, at the commit | Reading, and what it rests on |
 |---|---|---|---|
