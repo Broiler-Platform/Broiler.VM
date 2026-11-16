@@ -755,8 +755,8 @@ clause 1, and Broiler.JS's SJL-12 record of decision D23, whose note Broiler.JS'
   - *(added 2026-11-16, later, decision D-jsexec)* the arms' `exec` answers outside row M8's list, by mechanism: a
     rewritten group name (M10), a `?`'s empty iteration (M11), `\p{…}`, `\P{…}` and `\a` in a non-`u` class (M12), a
     class subtraction (M13), `\-` starting no range (M14) and `i` and `I` under `tr-TR` and `lt-LT` (M15); and
-    `/^[a]*$/u` over 10,000,001 `a`, by row B1's widening. No test262 file at `ccaac100` is known to move for any of
-    them, so none names a part A row;
+    `/^[a]*$/u` over a run of `a` one longer than the library's step budget, by row B1's widening. No test262 file at
+    `ccaac100` is known to move for any of them, so none names a part A row;
   - **Removed from the plan's list:** `\0` before a non-ASCII digit, which the correspondence shows is
     Broiler.Regex's alone and not observable in Broiler.JS (row S4); it is a library fix (decision D36). An invalid
     literal read as division stays SJL-14's (row S9).
@@ -1145,9 +1145,10 @@ Broiler.JS at `1f91b8f1`, one row to a mechanism, not by the shape of the answer
 - **M14**: without `u` or `v`, `\-` in a class before `-` reaches .NET, which reads it as starting no range;
 - **M15**: under `i` without `u` or `v`, `i` and `I` under `tr-TR` and `lt-LT`, row M2a's culture casing on the ASCII
   pair, where the invariant culture answers as the text does;
-- **B1**, widened: `/^[a]*$/u` over 10,000,001 `a`, which Broiler.JS answers `null` by the budget's early exit the
-  row's cell reads for `/[a]*/u` and `/^a*$/u`; the arbiter cannot reach it, so the arms' rule keeps it in class (c)
-  whatever row names it, as it keeps the other inputs above whose difference the reduction does not show.
+- **B1**, widened: `/^[a]*$/u` over a run of `a` one longer than the library's step budget, which Broiler.JS answers
+  `null` by the budget's early exit the row's cell reads for `/[a]*/u` and `/^a*$/u`; the arbiter cannot reach it, so
+  the arms' rule keeps it in class (c) whatever row names it, as it keeps the other inputs above whose difference the
+  reduction does not show.
 
 Each row was checked, outside this repository, by asking the arbiter for its answer to each input's pattern with the
 row's construct written as .NET reads it: that answer is Broiler.JS's, up to row M10's names, and not the text's.
