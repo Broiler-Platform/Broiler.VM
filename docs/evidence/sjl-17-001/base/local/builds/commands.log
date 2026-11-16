@@ -1,0 +1,3 @@
+2026-11-15T20:40:44Z build-SliceCompiler-base: cd /dev/shm/s176/base && dotnet build src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj -c Release --disable-build-servers -nologo
+2026-11-15T20:55:51Z build-Cli-base: cd /dev/shm/s176/base && dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj -c Release --disable-build-servers -nologo
+2026-11-15T21:05:52Z build-Conformance-base: cd /dev/shm/s176/base && dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj -c Release --disable-build-servers -nologo

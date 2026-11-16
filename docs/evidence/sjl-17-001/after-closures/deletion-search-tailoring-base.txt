@@ -1,0 +1,18 @@
+# The rest of Broiler.VM's SJL-17.4 deletion list searched at 68cad8baf7403125d44d5007441d30ff07bc4edf (2026-11-15T22:57:52Z), by git reads alone
+# 1. the nested type: a declaration (class, struct, record, enum or interface) of Tailoring in a .cs file outside docs/
+Tailoring	declarations=1
+  68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsCollationData.cs:108:    internal sealed class Tailoring
+# 2. the tailoring lookup the core called: a declaration of TailoringNamed, and any call of it, in a .cs file outside docs/
+TailoringNamed	declarations=1
+  any mention: 68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsCollationData.cs:219:    internal Tailoring? TailoringNamed(string name) => tailorings.TryGetValue(name, out var tailoring)
+  any mention: 68cad8baf7403125d44d5007441d30ff07bc4edf:src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs:219:            tailoringName is null ? null : data.TailoringNamed(tailoringName),
+# 3. NewCollator's tailoring core: each line of NewCollator in src/Broiler.VM.Profile.JavaScript/JsRealm.Intl.cs that names a tailoring or the collator it builds
+  211:         var data = engine.Intl!.Collation;
+  213:         var tailoringName = usage == "search"
+  214:             ? (language == "de" ? "de-search" : "und-search")
+  215:             : collationValue == "phonebk" && language == "de" ? "de-phonebk" : null;
+  217:         var collator = new JsCollator(
+  219:             tailoringName is null ? null : data.TailoringNamed(tailoringName),
+  222:             caseFirst: caseFirst switch { "upper" => JsCaseFirst.Upper, "lower" => JsCaseFirst.Lower, _ => JsCaseFirst.Off },
+# 4. what NewCollator calls for the tailoring after SJL-17.4: a declaration of TailoringFor in this repository's .cs files
+TailoringFor	declarations=0

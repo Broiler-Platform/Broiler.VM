@@ -1,0 +1,4 @@
+Part A's class C4 (e), the wall-clock race, is run only for a (c') row whose re-runs differ (the rule's C4 (e); section
+1's reading 6). Every (c') row's six re-runs, three at each commit, give one verdict and one exhausted dimension
+(rerun/rerun-wide-bytecode.tsv, rerun/rerun-wide-native.tsv; changed-verdicts.tsv), so no row is raced and no race was
+run.

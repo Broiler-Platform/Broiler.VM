@@ -1,0 +1,29 @@
+"""Part B of bundle sjl-17-001 (SJL-17.6): per check the rule names, its verdict at the base against after, from the
+two named-checks.txt; whether each check's whole line is the same; the datasets' files by SHA-256 at both commits; and
+git diff between the commits over src/tests/cldr/ and src/tests/temporal/. Reads files and git; runs nothing.
+usage: part-b-compare.py <bundle> <repo>"""
+import re, subprocess, sys
+B, R = sys.argv[1], sys.argv[2]
+BASE, AFTER = '68cad8baf7403125d44d5007441d30ff07bc4edf', '983d690adac63f6d117ff2cd2d9cca61fc16e3d2'
+def named(side):
+    d = {}
+    for l in open('%s/%s/datasets/named-checks.txt' % (B, side), encoding='utf-8'):
+        m = re.match(r'^(area|guard)\t(\S+)\s+(\S+):', l)
+        if m: d[m.group(3)] = (m.group(1), m.group(2), l.rstrip('\n').split('\t', 1)[1])
+    return d
+b, a = named('base'), named('after')
+out = ['# part B, SJL-17.6: each check the rule names, its verdict at the base and after, and whether its whole printed line is the same (part-b-compare.py)']
+bad = 0
+for n in sorted(set(b) | set(a), key=lambda n: (b.get(n, a.get(n))[0], n)):
+    vb, va = b.get(n, (None, 'ABSENT', ''))[1], a.get(n, (None, 'ABSENT', ''))[1]
+    same = b.get(n, (0, 0, 1))[2] == a.get(n, (0, 0, 2))[2]
+    ok = vb == 'ok' and va == 'ok'
+    bad += not ok
+    out.append('%s\t%s\tbase %s\tafter %s\tline the same: %s' % (b.get(n, a.get(n))[0], n, vb, va, 'yes' if same else 'NO'))
+out.append('named checks: %d; passing at both commits: %d; not: %d' % (len(set(b) | set(a)), len(set(b) | set(a)) - bad, bad))
+fb = open('%s/base/datasets/files.sha256' % B).read(); fa = open('%s/after/datasets/files.sha256' % B).read()
+out.append('files under src/tests/cldr/ and src/tests/temporal/, by SHA-256 (files.sha256): base %d, after %d, the same files and bytes: %s' % (len(fb.splitlines()), len(fa.splitlines()), 'yes' if fb == fa else 'NO'))
+d = subprocess.run(['git', '-C', R, 'diff', '--stat', BASE, AFTER, '--', 'src/tests/cldr/', 'src/tests/temporal/'], capture_output=True, text=True, check=True).stdout
+out.append('git diff --stat %s %s -- src/tests/cldr/ src/tests/temporal/: %s' % (BASE, AFTER, 'no difference' if not d.strip() else '\n' + d))
+open('%s/after/datasets/compare.txt' % B, 'w', newline='\n').write('\n'.join(out) + '\n')
+print('\n'.join(out[-3:]))

@@ -163,6 +163,26 @@ As in SJL-3.6, plus three items:
 - test262's `intl402/Collator` and `String.prototype.localeCompare` directories in both engines;
 - the size of the collation data, restated by citation.
 
+*(Noted 2026-11-15, at SJL-17.6, this family's run of bundle `sjl-17-001`'s area rule.)* Broiler.VM's bundle
+[`sjl-17-001`](../../evidence/sjl-17-001/README.md) takes and judges every part of its rule, `decision-rule-area.md`,
+at the commits the rule names, the after commit `983d690a` (SJL-17.4's merge) and its first parent `68cad8b`, the base:
+part A, whole-suite test262 in both forms by the hosted workflow at both commits, test262's `intl402/Collator` and
+`String.prototype.localeCompare` directories among it; part B, the `orderings` reference dataset with the slice
+compiler's collation checks and every other Intl, tzdb and Temporal check; and part C, the wide twins, the last two
+locally from a clean archive of each commit. Parts A, B and C each read met, on readings the bundle names for the owner,
+taken before any run was read. It also retains, at the after commit and outside the rule, the closures of every root
+published and run in three modes, the architecture suite with rule I3 reading the Native AOT images, rules I1 to I7
+and N28, and the search for SJL-17.4's deletion list, and it defines EX-136 for the collation code that left this
+component's assurance coverage. The collation data's size is restated by citation of bundle `sjl-8-001`'s figures, as
+bundle `sjl-17-001`'s section 3 cites them; the tables do not move (rule N28). Of SJL-3.6's runs for this family, the
+bundle's sections 3, 5 and 10 hold the engine-level vectors, the test262 runs, the twins, the publication and rules I1 to
+I7; it takes no run of the differential harness, the nuspecs or the pristine consumer, which its rule does not name,
+and no measurement, which its rule has no part for (JSD-0084's decision E10). Broiler.JS's half waits on SJL-17.5.
+This meets no clause: SJL-17's exit reading follows SJL-17.5, and nothing is
+accepted. The list above is left as written.
+*(Noted 2026-11-15, at SJL-17.6's review.)* The note above's "sections 3, 5 and 10" reads sections 3 and 5 to
+10: the test262 runs are the bundle's section 6 and the twins its section 8. The note is left as written.
+
 ---
 
 ## Deliverables

@@ -1,0 +1,4 @@
+collect rc=0
+disk after collect: /dev/vda        252G   28G   12G  71% /
+build rc=0
+arch rc=0

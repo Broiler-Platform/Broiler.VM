@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# closures.sh: at the after commit 983d690a, (1) the closures of every JavaScript root, published and run in three
+# modes, by bundle sjl-7-001's collect-area.py --only cutover-closures, run from a clean checkout of the commit with
+# --out outside the tree (bundle sjl-9-001's after-closures/scripts/closures.sh, with this bundle's commit and paths);
+# then the SHA-256 of each Native AOT image record; (2) the solution built in Release with --disable-build-servers, and
+# the architecture suite with the image records placed under src/i3-image-records/ for rule I3's read, with a TRX of
+# every test (its i3-read.sh, with the TRX added); then the records are removed. Each step behind the lock and gate.
+S=/tmp/claude-0/-home-user/0a6f6b61-1da7-5ce6-9020-88003835d4eb/scratchpad/sjl-rest/vm-s176
+C=983d690adac63f6d117ff2cd2d9cca61fc16e3d2
+W=$S/closures; T=$W/tree; O=$W/out; L=$W/logs
+mkdir -p $W $L; [ -e $T ] && { echo "REFUSED: $T exists"; exit 3; }
+git clone -q --no-checkout /home/user/vm-s176 $T && git -C $T checkout -q --detach $C || { echo "checkout failed"; exit 3; }
+{ echo "commit $(git -C $T rev-parse HEAD)"; echo "status-lines $(git -C $T status --porcelain | wc -l)"; echo "cloned $(date -u +%FT%TZ) into <closures>/tree (git clone --no-checkout of the worktree's repository, then checkout --detach)"; } > $L/checkout.txt
+$S/scripts/run.sh collect $L $T -- python3 $T/docs/evidence/sjl-7-001/collect-area.py --tree $T --out $O --only cutover-closures
+echo "collect rc=$?" >> $W/status.txt
+F=$O/cutover/closures
+( cd $F && for m in $(ls | grep '\.mstat$' | sort); do printf '%s  %s\n' "$(sha256sum $m | cut -d' ' -f1)" "$m"; done ) > $F/mstat.sha256
+echo "disk after collect: $(df -h / | tail -1)" >> $W/status.txt
+$S/scripts/run.sh i3-build-solution $L $T -- dotnet build Broiler.VM.slnx -c Release --disable-build-servers -nologo
+echo "build rc=$?" >> $W/status.txt
+grep -E 'warning [A-Z]+[0-9]+' $L/i3-build-solution.out.txt | sort -u > $L/i3-build-warnings.txt
+mkdir -p $T/src/i3-image-records && cp $F/*.mstat $T/src/i3-image-records/
+$S/scripts/run.sh i3-architecture $L $T -- dotnet test src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj -c Release --no-build --disable-build-servers -nologo --logger "trx;LogFileName=architecture.trx" --results-directory $W/trx
+echo "arch rc=$?" >> $W/status.txt
+rm -rf $T/src/i3-image-records
+python3 -I $S/scripts/rules-from-trx.py $W/trx/architecture.trx $C > $W/rules.tsv
+echo DONE > $W/DONE

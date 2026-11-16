@@ -1,0 +1,14 @@
+2026-11-15T21:26:34Z lock build-SliceCompiler-after WAIT
+2026-11-15T21:27:20Z lock build-SliceCompiler-after HELD
+2026-11-15T21:27:21Z gate build-SliceCompiler-after PASS load1=0.90 procs=none checks=0
+2026-11-15T21:27:52Z stop-servers: done, remaining:
+2026-11-15T21:27:52Z lock build-Cli-after WAIT
+2026-11-15T21:29:45Z lock build-Cli-after HELD
+2026-11-15T21:29:45Z gate build-Cli-after PASS load1=0.96 procs=none checks=0
+2026-11-15T21:29:52Z stop-servers: done, remaining:
+2026-11-15T21:29:52Z lock build-Conformance-after WAIT
+2026-11-15T21:35:22Z lock build-Conformance-after HELD
+2026-11-15T21:35:23Z gate build-Conformance-after WAIT load1=2.96 procs=none
+2026-11-15T21:36:24Z gate build-Conformance-after WAIT load1=1.18 procs=none
+2026-11-15T21:36:34Z gate build-Conformance-after PASS load1=1.00 procs=none checks=7
+2026-11-15T21:36:41Z stop-servers: done, remaining:
