@@ -291,6 +291,14 @@ Settled in the change that files it. **This record is reopened only by a new dat
   each moved verdict; they take no charge probe. The bundle also retains the closures and the runs of rules I1 to I7, I3 and N28 at the after commit,
   read and not judged. This note decides nothing of SJL-17: its exit reading waits on Broiler.JS's SJL-17.5, and nothing
   is accepted. The bullet above is left as written.
+  *(Noted 2026-11-16, at SJL-17's exit reading.)* The note above says "its exit reading waits on Broiler.JS's
+  SJL-17.5". SJL-17.5 merged as `2f012739` (Broiler-Platform/Broiler.JS#1118, observed), and bundle `sjl-17-001`'s
+  section 11 reads SJL-17's clauses 6 to 9, this family's, met on that bundle: rules I1 to I7 at the after commit and at
+  the default branch's `44511066`, with this record's section 5 read for what rule I5 can hold; parts A and B; every
+  JavaScript root published and run in three modes; and rule I3 with N28's budget. The programme ledger's entry of
+  2026-11-16, later yet, records SJL-17's clauses 1 to 9 read met on the bundles, the gate waiting on SJL-9's gate, on
+  SJL-3's and SJL-4's measurement clauses and on review (EX-30). This record's status does not move, and nothing is
+  accepted. The bullet and the note above are left as written.
 - **Broiler.JS's cut-over**, SJL-17.5, which its own changelog records with its corrections (JSD-0084's decision item 5).
 - **A move of the test262 pin, the CLDR pin, the vectors pin or this family's tables.** None moves.
 - **Any CJK tailoring**, which waits on a data decision that sizes it (decision E3).
