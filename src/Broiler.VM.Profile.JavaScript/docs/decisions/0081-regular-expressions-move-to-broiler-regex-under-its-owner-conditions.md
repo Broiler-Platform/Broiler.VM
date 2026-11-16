@@ -71,7 +71,13 @@
   reading where the nested class is not the class's last element. No sub-area's verdict changes. On the reading of
   "Falsified if" taken, its first clause now stands only for the inputs of pattern `P4-47050`, whose mechanism is not
   read in full, until a row names them, and the owner's choice is open. `O06`'s reading is the reference-arm rule
-  owner's. The arms' class (c) is still not empty.
+  owner's. The arms' class (c) is still not empty. *(Note of 2026-11-16, after rows M16 to M26 merged: "its first
+  clause now stands only for the inputs of pattern `P4-47050`, whose mechanism is not read in full, until a row names
+  them, and the owner's choice is open" now reads: their mechanism is read, and row M27 names them under decision
+  D-jsrest, below. On the reading of "Falsified if" taken, the clause stands for no difference the arms found once
+  Broiler.Regex's classifier reads row M27, and until then for those inputs. Broiler.Regex's classifier `@8`
+  (Broiler-Platform/Broiler.Regex#24) classes `O06` by row B1 under the reference-arm rule's revision of 2026-11-16c,
+  the owner's ruling. Nothing is declared met.)*
 - Nothing in this profile changes with this record. The cut-overs are SJL-11.4's and SJL-11.5's own changes, and
   this record is what they apply.
 
@@ -328,6 +334,10 @@ risk D10's stop.** Nothing here weakens either.
   modifier group that removes `i`; M26, a class with `\W`, `\p` or `\P` under `i`. M16, M17, M18 and M19
   are **corrections of Broiler.Regex's preview.4** too. Rows M8, M12, M13 and M15 read further inputs of their own by
   dated notes. The inputs of pattern `P4-47050` no row names.
+- *(Noted 2026-11-16, after rows M16 to M26 merged, decision D-jsrest.)* The note above's "The inputs of pattern
+  `P4-47050` no row names" now reads with row M27, a **correction of Broiler.JS**: a loop over `\D`, or over a negated
+  class of ASCII word characters, right before `\b` without `RegexOptions.ECMAScript`, which .NET makes atomic, and
+  greedy where it was lazy. Row M8 keeps the inputs of that construct its list takes.
 
 **X6 - extended.**
 - **This family:** `JsRegExpMatcher.cs` whole: the public `JsRegExpMatcher` and `JsRegExpMatch`, and
@@ -804,6 +814,9 @@ clause 1, and Broiler.JS's SJL-12 record of decision D23, whose note Broiler.JS'
     class under `m` (M23), a back-reference to a group with no capture (M24), a letter expanded inside a modifier group
     that removes `i` (M25) and a class with `\W`, `\p` or `\P` under `i` (M26); and the inputs rows M8, M12, M13 and M15
     read by their notes. No test262 file at `ccaac100` is known to move for any of them, so none names a part A row;
+  - *(added 2026-11-16, after rows M16 to M26 merged, decision D-jsrest)* a loop over `\D`, or over a negated class of
+    ASCII word characters, right before `\b` without `RegexOptions.ECMAScript`, which .NET makes atomic (M27). No
+    test262 file at `ccaac100` is known to move for it, so it names no part A row;
   - **Removed from the plan's list:** `\0` before a non-ASCII digit, which the correspondence shows is
     Broiler.Regex's alone and not observable in Broiler.JS (row S4); it is a library fix (decision D36). An invalid
     literal read as division stays SJL-14's (row S9).
@@ -1338,6 +1351,36 @@ by what is left, as under D-jsexec. `O06` and the other inputs the arbiter canno
 record, as above. How a row-named input the arbiter cannot reach is classed is the reference-arm rule's,
 Broiler.RegEx's, and this record does not decide it.
 
+*(Note of 2026-11-16, after rows M16 to M26 merged.)* Decision D-jsrest's **Not taken** "a row for pattern `P4-47050`,
+whose mechanism is not read in full, ... It stays in class (c)", with that item's note, "how .NET's `\b` differs on the
+input is still not read", and the paragraph above's "The clause now stands only for the inputs of pattern `P4-47050`
+above, until a row names them; this record is not revised for them here, and the owner's choice is open" now read as
+follows. The mechanism is read, and this decision's own rule, one row to a mechanism, gives row M27; no new decision is
+taken.
+- **Row M27**, a correction of Broiler.JS: without `u` or `v`, under `s` or with a modifier group, a quantifier with a
+  minimum of 1 or more and no maximum, lazy or not, over `\D`, or over a negated class of ASCII word characters, right
+  before `\b`. Without `RegexOptions.ECMAScript` .NET parses `\b` as `RegexNodeKind.Boundary`. The translator's `\D` is
+  stored by .NET as the negated range `[^0-9]`, and .NET's test of whether a loop's set lies inside `\w`
+  (`RegexCharClass.IsKnownWordClassSubset`) enumerates its ranges without reading the negation. So `RegexNode` makes the
+  loop atomic, and a lazy one greedy, and `\b` is tried only where the loop ends, where the text tries it after each
+  iteration (RepeatMatcher, 22.2.2.3.1; IsWordChar, 22.2.2.4.1). Read in arm J's copy and in .NET's source at
+  dotnet/runtime `v10.0.15`, the runtime the copy was run on, and checked outside this repository: arm J's copy, run
+  with `\b` written `(?<=\b)`, and with `\D+?` written `(?:(?!\d)[^])+?`, both of which the text reads the same, gives
+  the text's answer in every culture.
+- **How it takes an input:** like rows M16, M21, M23 and M25, only where the arbiter's answer to its reading, each such
+  loop written greedy and followed by `(?!X)`, X its atom, is Broiler.JS's, up to row M10's names, and not the text's.
+  It is read after M26, so row M8 keeps the inputs of the same construct its list takes; on most of them `(?<=\b)`
+  gives the text's answer, so this mechanism is their cause, or part of it.
+- **On the reading of "Falsified if" taken:** once Broiler.Regex's classifier reads row M27, no difference the arms
+  found is named by no row. `O06` is row B1's under the reference-arm rule's revision of 2026-11-16c
+  (Broiler-Platform/Broiler.Regex#24), and the P4 patterns the owner excluded are judged in no class. Until the
+  classifier reads row M27, the clause stands for these inputs. Nothing is declared met, and no sub-area's verdict
+  changes.
+- **Not taken:** a dated note on row M8. Its mechanism, .NET's word set beside a non-ASCII letter, is not this one:
+  the input holds no non-ASCII letter, and `(?<=\b)`, which keeps .NET's word set, gives the text's answer.
+- **Not taken:** a row by its construct alone, read after every other row, as rows M22, M24 and M26 are. `\D+(?!\D)` is
+  ECMAScript text that reads as .NET runs the loop, so the arbiter can answer the reading.
+
 ## What this rejects, and why
 
 - **Porting this family's matcher into the package** (SJL-D-14 (b)): the owner chose (a), and `areas/regexp.md`
@@ -1387,7 +1430,12 @@ decision D23 and the SJL-12 milestone's reading of its clause 1 carry dated note
   says so, and the owner's choice is open.)* *(Note of 2026-11-16, after SJL-15.1 merged: the note above's "The `exec`
   answers no row takes are named by no row" now reads with decision D-jsrest: rows M16 to M26 and the notes on rows M8,
   M12, M13 and M15 name them, but for the inputs of pattern `P4-47050`, whose mechanism is not read in full, for which
-  the clause stands on the reading taken until a row names them, and the owner's choice is open.)*
+  the clause stands on the reading taken until a row names them, and the owner's choice is open.)* *(Note of 2026-11-16,
+  after rows M16 to M26 merged: the note above's "but for the inputs of pattern `P4-47050`, whose mechanism is not read
+  in full, for which the clause stands on the reading taken until a row names them, and the owner's choice is open" now
+  reads: row M27 names them, by decision D-jsrest, so on the reading taken no difference the arms found remains named by
+  no row once Broiler.Regex's classifier reads row M27; until it does, the clause stands for them. Nothing is declared
+  met.)*
 - A requirement that cannot be met by the end of SJL-11.2: the area is then refused (decision D1), and this record
   is revised.
 - This family's exhaustion verdicts moving outside its rule's class C2 population.
