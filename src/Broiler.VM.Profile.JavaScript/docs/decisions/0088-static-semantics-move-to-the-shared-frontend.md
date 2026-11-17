@@ -397,6 +397,10 @@ dated note decision D-x2 names.
 This record is settled when Broiler.JS's half of X2 and X6 is filed by its dated note, and SJL-15's clauses 4 to 9 have
 been judged on bundle `sjl-15-001`, and clauses 1 to 3, 10 and 11 on Broiler.JS's bundle `sjl-15-001`, whatever each
 decides.
+*(Note of 2026-11-17, after Broiler.JS's SJL-15.1 merged: of the condition, "Broiler.JS's half of X2 and X6 is filed
+by its dated note" is filed by the note after the verdict table, with bundle `sjl-15-001`'s correspondence's note of
+the same day, Broiler.JS's change having merged as `e4e45d38` (Broiler-Platform/Broiler.JS#1120, observed). No clause
+of SJL-15 has been judged on either bundle, so the rest of the condition stands, and the record is not settled.)*
 
 ## Dated notes filed with this record
 

@@ -48,7 +48,10 @@ another commit, a "before" output at the rule commit among them.
 
 **What waits, in order**, none of it in this repository but the last three:
 - Broiler.JS's half of SJL-15.1: its records, its `semantics` vectors (decision D61), its rule and its column of the
-  correspondence;
+  correspondence *(merged in Broiler.JS as `e4e45d38`, Broiler-Platform/Broiler.JS#1120, observed 2026-11-17, with
+  its `semantics` vectors at corpus revisions 42 and 43; its column is filed in this bundle's
+  [`correspondence.md`](correspondence.md), and its half of JSD-0088's X2 and X6 completed, by dated notes of that
+  day; this item no longer waits)*;
 - SJL-15.2's model in Broiler.JS, each merge before Broiler.JS's SJL-14 cut-over a dark window of SJL-14 under its
   decision D52, and none during SJL-11.5's hold;
 - the owner's publication of a stream version carrying the model (JSD-0083's decision D30);
