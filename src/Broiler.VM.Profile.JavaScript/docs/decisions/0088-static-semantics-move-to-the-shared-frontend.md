@@ -414,6 +414,11 @@ its SJL-15 row, its Next list and "Last updated".
 above, "clause 5, unchanged, with decision D-census put to the owner", is followed by clause 5's dated revision and a
 note recording the answer; bundle `sjl-15-001` gains its rule's revision of the same day, with notes in its README and
 correspondence; SJL-D-13 in `decisions.md` gains a note; the decisions index and the programme ledger record it.)*
+*(Note of 2026-11-17, after Broiler.JS's SJL-15.1 merged, on Broiler.JS's half of X2 and X6: this record gains the
+note after its verdict table completing X2 and X6, and a note on its settling condition; bundle `sjl-15-001`'s
+correspondence gains its note filling the column "Broiler.JS", and its README notes on its "Correspondence" paragraph
+and on "What waits, in order"; the programme ledger records it in its entry of that day, its SJL-15 row, its Next list
+and "Last updated".)*
 
 ## What this record does not decide
 

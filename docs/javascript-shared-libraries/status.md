@@ -4667,11 +4667,14 @@ records name it:
 **X2 and X6: Broiler.JS's half filed** (JSD-0088's decision D-x2). Bundle `sjl-15-001`'s
 [`correspondence.md`](../evidence/sjl-15-001/correspondence.md) fills its column "Broiler.JS" in rows SC1 to EE2 and in
 SL1 from Broiler.JS's column, each cell shortened and ending with the row's class across both engines, by a dated note
-that quotes the text it replaces; rows SL2 to SL5 keep their cells. Each cell was checked against the column at
-`e4e45d38`; row DE1's names the `HoistingScope`'s site as the column does. JSD-0088 gains one dated note after its
-verdict table, quoting the X2 and X6 cells it completes, and a dated note on its settling condition; the bundle's README
-gains a dated note on "What waits, in order". No cell of this family's columns changes, and no rule file of the bundle
-changes.
+that quotes the text it replaces; rows SL2 to SL5, Broiler.VM's only, keep their cells, each followed by the class
+Broiler.JS's column gives it, row SL4 a correction of Broiler.VM (H23, H25). Each cell was checked against the column at
+`e4e45d38`; row DE1's names the `HoistingScope`'s site as the column does, rows AB1 and EE2 keep the column's qualifiers
+(Annex B implementation-defined; the first refusal can move, by class M of Broiler.JS's rule), and row EE1 names the
+kinds of super-call row Broiler.JS's finding J2 names. JSD-0088 gains one dated note after its verdict table, quoting
+the X2 and X6 cells it completes, a dated note on its settling condition, and a note under "Dated notes filed with this
+record"; the bundle's README gains dated notes on its "Correspondence" paragraph and on "What waits, in order". No cell
+of this family's columns changes, and no rule file of the bundle changes.
 
 **What the vectors' first runs show of this family, recorded and not acted on.** Broiler.JS's stage ran this family on
 corpus revision 42 at this repository's `5e90bfe4`, from a scratch archive of that revision's corpus and a scratch pin:
@@ -4694,10 +4697,12 @@ names exist. Revision 43 classifies each difference as a divergence of Broiler.V
 Nothing here changes the rule, its tables or this family's vectors pin; where row AB1 stands in the rule is not decided
 here.
 
-**The next step of this family, by decision D-pin**, recorded and not taken: this family's vectors pin moves to corpus
-revision 43, which carries the `semantics` vectors, in a pin commit of its own before window 1's base. The bundle's
-rule names the pin commit as the merge that admits the stream version carrying the model, as the owner published it,
-and moves the vectors pin to the corpus revision carrying the `semantics` vectors; no such version exists yet.
+**The next step of this family, by decision D-pin**, recorded and not taken: decision D-pin's pin commit, a merge of its
+own before window 1's base, admits the stream version the owner publishes with SJL-15.2's model (JSD-0083's decision
+D30) and moves this family's vectors pin to the corpus revision carrying the `semantics` vectors, revision 43 or the
+later revision that carries the eval-code inputs above. It is one commit, the pin commit the Next list's SJL-15.2 item
+names, and it waits on that model and on the owner's publication; no such version exists yet, and nothing of it is taken
+now.
 
 **Nothing is accepted, and nothing is declared met.** Review is deferred (update rule 7). SJL-15 stays `In progress`,
 every clause unmet. No other row moves. Next (the Next list of the entry above carried, its first item done, the branch
@@ -4707,8 +4712,6 @@ every clause unmet. No other row moves. Next (the Next list of the entry above c
   merged; and for `sjl-15-1-records` until 2026-11-16, after SJL-15.1 merged)*;
 - the eval-code inputs of probes V029, V030 and V046 in a later corpus revision of Broiler.JS's, classified on both
   engines' runs, before any SJL-15.2 code *(added 2026-11-17, after Broiler.JS's SJL-15.1 merged)*;
-- this family's vectors pin to the `semantics` vectors, by decision D-pin, in a pin commit of its own before window 1's
-  base *(added 2026-11-17, after Broiler.JS's SJL-15.1 merged)*;
 - SJL-15.2's model in Broiler.JS, after both repositories' rules and the vectors, each merge before Broiler.JS's SJL-14
   cut-over a dark window of SJL-14, none during SJL-11.5's hold, and none before this branch merges, by Broiler.JS's
   rule revision of 2026-11-17; then the owner's publication of a stream version carrying it, and this family's tools
