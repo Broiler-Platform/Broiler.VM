@@ -138,6 +138,8 @@ which SJL-15 is not. So SJL-15.1 files the verdict (decision D-verdict).
 
 **On refusal** the verdict would have named the failed condition and the source-level pointers. No condition fails.
 
+*(Noted 2026-11-17, at Broiler.JS's SJL-15.1, by decision D-x2, completing X2 and X6.)* X2's cell above reads "**Broiler.JS's half completes it** by a dated note on this record and on the correspondence, filed with Broiler.JS's SJL-15.1 change before any SJL-15 code, which gives each row its class across both engines; until then no row's cross-engine class is recorded", and X6's reads "Broiler.JS's half, with the disposition of every public type SJL-15.5 empties (SJL-D-25), is completed by the dated note decision D-x2 names." The Broiler.JS paragraph under "The deletion lists (X6)" below says the same ("completed member by member, with the disposition of every public type it empties, by the dated note decision D-x2 names"), and this note is that one. Broiler.JS's SJL-15.1 change has merged as `e4e45d38` (observed), before any SJL-15 code. **X2:** its column of the correspondence, read from code at Broiler.JS `6fda6ca4` with the probes of both engines, is its bundle `sjl-15-001`'s `correspondence-broiler-js.md`, and bundle `sjl-15-001`'s `correspondence.md` here carries it, each row with its class across both engines (rows SL2 to SL5, which are Broiler.VM's only, with the class Broiler.JS's column gives them), by its note of the same date. No row's class is unknown. The rows that differ: corrections of Broiler.JS in rows DE3, FF4, FF5, NE1 and EE1 (in eval code, the super and `arguments` rows its compiler leaves unchecked, each in its rule's class T, and super-call rows refused with an engine error or not answered; as Scripts, `arguments` in a static block and `this` as a for-in target; the other rows of its class T, listed by site before any run, show no difference); corrections of Broiler.VM in rows AB1 (the inputs of probes V028 to V030, one of them the pinned edition against test262 at `ccaac100`, the fact implementation-defined), LB1 (H20), MR2 (H19) and SL4 (H23, H25); every other row the same, or each engine's policy. Free names and captures (row FC1) are an extraction from Broiler.JS's `FreeNameScan` and an adoption here, as X1 says. **X6:** Broiler.JS's deletion list, member by member, and the disposition of every public type SJL-15.5 empties are its bundle `sjl-15-001`'s `dispositions.md`: `FastFunctionScope`, its nested `VariableScope` and `FreeNameScan` obsolete with the removal version `1.0.0`, SJL-D-25 (b), by Broiler.JS's decision D-js-dispositions; `FastScope` and `FastScopeItem` facade-obsolete since SJL-14's W2 (decision D50); `SyntaxValidation` and `FastCompiler.EarlyErrors` deleted whole, internal and private; the checks in `Visit*` and `DirectEvalSupport.Validate` deleted by member, `DirectEvalSupport` itself kept. Both engines' halves of X2 and X6 are then filed; this note meets no clause and moves no gate.
+
 ---
 
 ## Decisions D57 to D66, as the documents quote them
@@ -395,6 +397,10 @@ dated note decision D-x2 names.
 This record is settled when Broiler.JS's half of X2 and X6 is filed by its dated note, and SJL-15's clauses 4 to 9 have
 been judged on bundle `sjl-15-001`, and clauses 1 to 3, 10 and 11 on Broiler.JS's bundle `sjl-15-001`, whatever each
 decides.
+*(Note of 2026-11-17, after Broiler.JS's SJL-15.1 merged: of the condition, "Broiler.JS's half of X2 and X6 is filed
+by its dated note" is filed by the note after the verdict table, with bundle `sjl-15-001`'s correspondence's note of
+the same day, Broiler.JS's change having merged as `e4e45d38` (Broiler-Platform/Broiler.JS#1120, observed). No clause
+of SJL-15 has been judged on either bundle, so the rest of the condition stands, and the record is not settled.)*
 
 ## Dated notes filed with this record
 
@@ -408,6 +414,11 @@ its SJL-15 row, its Next list and "Last updated".
 above, "clause 5, unchanged, with decision D-census put to the owner", is followed by clause 5's dated revision and a
 note recording the answer; bundle `sjl-15-001` gains its rule's revision of the same day, with notes in its README and
 correspondence; SJL-D-13 in `decisions.md` gains a note; the decisions index and the programme ledger record it.)*
+*(Note of 2026-11-17, after Broiler.JS's SJL-15.1 merged, on Broiler.JS's half of X2 and X6: this record gains the
+note after its verdict table completing X2 and X6, and a note on its settling condition; bundle `sjl-15-001`'s
+correspondence gains its note filling the column "Broiler.JS", and its README notes on its "Correspondence" paragraph
+and on "What waits, in order"; the programme ledger records it in its entry of that day, its SJL-15 row, its Next list
+and "Last updated".)*
 
 ## What this record does not decide
 

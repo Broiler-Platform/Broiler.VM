@@ -29,6 +29,11 @@ revised to match, before any evidence.
 **Correspondence:** [`correspondence.md`](correspondence.md), this family's half, read from code at Broiler.VM
 `a86b6f5d` and against the model surface at Broiler.JS `6fda6ca4`. Broiler.JS's half fills its column by a dated note in
 Broiler.JS's own change for SJL-15.1.
+*(Note of 2026-11-17, after Broiler.JS's SJL-15.1 merged: by Broiler.JS's decision D-js-column, Broiler.JS's column is
+held in its own bundle `sjl-15-001` as `correspondence-broiler-js.md`, and the Broiler.VM change that completes
+JSD-0088's X2 and X6 copies it here; it is filled in [`correspondence.md`](correspondence.md) by that file's dated note
+of this day, which carries both halves. The sentence before this note read "Broiler.JS's half fills its column by a
+dated note in Broiler.JS's own change for SJL-15.1" and is left as written.)*
 
 **Records:** [JSD-0088](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0088-static-semantics-move-to-the-shared-frontend.md),
 the area verdict, with decisions D57 to D66 as the documents quote them and the owner's decisions of 2026-11-16.
@@ -48,9 +53,17 @@ another commit, a "before" output at the rule commit among them.
 
 **What waits, in order**, none of it in this repository but the last three:
 - Broiler.JS's half of SJL-15.1: its records, its `semantics` vectors (decision D61), its rule and its column of the
-  correspondence;
+  correspondence *(merged in Broiler.JS as `e4e45d38`, Broiler-Platform/Broiler.JS#1120, observed 2026-11-17, with
+  its `semantics` vectors at corpus revisions 42 and 43; its column is filed in this bundle's
+  [`correspondence.md`](correspondence.md), and its half of JSD-0088's X2 and X6 completed, by dated notes of that
+  day; this item no longer waits)*;
+- Broiler.JS's later corpus revision with the eval-code inputs of probes V029, V030 and V046, classified on both
+  engines' runs, before any SJL-15.2 code *(added 2026-11-17, after Broiler.JS's SJL-15.1 merged, by its decision
+  D-js-revisions' note of that day)*;
 - SJL-15.2's model in Broiler.JS, each merge before Broiler.JS's SJL-14 cut-over a dark window of SJL-14 under its
-  decision D52, and none during SJL-11.5's hold;
+  decision D52, and none during SJL-11.5's hold; and none before the Broiler.VM change that carries Broiler.JS's column
+  and JSD-0088's dated note completing X2 and X6 has merged, by Broiler.JS's rule revision of 2026-11-17 *("; and none
+  before ... 2026-11-17" added 2026-11-17, after Broiler.JS's SJL-15.1 merged)*;
 - the owner's publication of a stream version carrying the model (JSD-0083's decision D30);
 - this family's tools commit and pin commit;
 - the owner's answer to JSD-0088's decision D-census, before any run of part S *(given 2026-11-16, "Admit listed rows",
