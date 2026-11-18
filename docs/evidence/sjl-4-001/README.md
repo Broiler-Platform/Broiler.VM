@@ -182,6 +182,17 @@ is run again, and neither rule is revised. The decision was taken under the owne
 2026-10-18, "Please do all recommended decisions and skip waiting for review.", which changes no
 programme rule.)*
 
+*(Noted 2026-11-18, at that next dated choice: clause 9 is still left unmet, and nothing here
+changes. SJL-D-23's trigger (a) was reached on 2026-11-17, when Broiler.JS recorded the controlled
+lane `win-x64-r7-5800x` (Broiler-Platform/Broiler.JS#1121, `dcab5079`, observed). At it, on
+2026-11-18, the owner was asked "SJL-4 clause 9 is two test262 rows racing between the fuel and
+wall-clock limits; a lane does not affect it. What should happen to it at this trigger?" and chose
+"Leave unmet until (b)": "Nothing changes for clause 9. It waits for trigger (b) with the others."
+Not taken: "Gate revision now": "Revise the clause under SJL-D-23 alternative (b) now." This is the
+owner's own dated choice under SJL-D-23 at its trigger (a), not one taken under the owner's direction
+of 2026-10-18. Clause 9 waits on that decision's trigger (b), as its note of 2026-11-18 reads it.
+Nothing in this bundle is run again, and neither rule is revised.)*
+
 **The exhaustion verdicts** milestone SJL-4.6 requires: every variant exhausted at the base is
 exhausted after, and every variant that completes at the base completes after. The dimension moved on
 the five native (c') rows alone, from the wall clock to fuel, and the two rows above are the ones whose
@@ -301,7 +312,7 @@ Temporal's `ToIntegerWithTruncation`, a truncation plus 0.0. `f617962` makes bot
 | Clause | What it asks | Where | State |
 |---|---|---|---|
 | 8 | Rules I1 to I7 hold, and rule I5 holds the deletion list | section 7, [`after/rules.log`](after/rules.log) | **Met** at `f617962`: 381 of 381, I5 among them |
-| 9 | Whole-suite test262 in both forms meets the area rule | section 4 | **Not met**, under the rule and under its revision: the native pair's (c') row `decodeURI/S15.1.3.1_A2.5_T1.js` [strict], whose re-runs differ and which class (d) does not admit; the bytecode pair meets it *(revised 2026-10-14, later at SJL-4.6; read "**Not met**: the native pair's two (c') rows whose re-runs differ in dimension, a regression as the rule reads it; the bytecode pair meets it")* *(noted 2026-10-20: left unmet by the owner's decision of that date, with no further revision of part A; section 4's note of that date says why)* |
+| 9 | Whole-suite test262 in both forms meets the area rule | section 4 | **Not met**, under the rule and under its revision: the native pair's (c') row `decodeURI/S15.1.3.1_A2.5_T1.js` [strict], whose re-runs differ and which class (d) does not admit; the bytecode pair meets it *(revised 2026-10-14, later at SJL-4.6; read "**Not met**: the native pair's two (c') rows whose re-runs differ in dimension, a regression as the rule reads it; the bytecode pair meets it")* *(noted 2026-10-20: left unmet by the owner's decision of that date, with no further revision of part A; section 4's note of that date says why)* *(noted 2026-11-18: still unmet, by the owner's own choice of that date at SJL-D-23's trigger (a), "Leave unmet until (b)"; section 4's note of that date)* |
 | 10 | The fuel-parity twins and the exhaustion verdicts meet the area rule | sections 4 and 5 | **Met**: part B MET; the exhaustion verdicts hold, but for the dimension of the two rows of clause 9 |
 | 11 | Every root published and run in three modes, its closure declared | section 7 | **Met** for every root this machine can publish, at `f617962`; Android is EX-126 |
 | 12 | Engine-level vectors pass | section 6 | **Met**: 22,634 of 22,634 at corpus revision 9 |
