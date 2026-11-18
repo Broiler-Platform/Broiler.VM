@@ -401,10 +401,10 @@ every line they differ on.
   revision" above stays the record of what the revision of 2026-10-20 allowed.)*
   *(Noted 2026-11-18, later, before any run under that rule. On that date the owner was asked whether the rule should
   allow the program's ".exe" on `win-x64` before the run, since `collect.py` starts it by a name without one, and chose
-  "Allow .exe now", the owner's own dated choice under SJL-D-23. A dated note in item 5 of
-  [`decision-rule-revised-2026-11-18.md`](decision-rule-revised-2026-11-18.md), "Read 2026-11-18, later", quotes the
-  question and both options, and reads the program the collector starts on `win-x64` as the apphost's own file name on
-  that RID, `Broiler.VM.Composition.JavaScript.Cli.exe`, as that rule's item 3 reads "the backend the host arms" as
-  `x86-64-win64` there: the population's own naming on another RID, not a fifth departure. Its four departures and
-  "It departs in nothing else" are unchanged. The note above's "The run is taken in a local session on the lane after
-  that rule merges, and is not taken yet" stands: the run is not taken yet.)*
+  "Allow .exe now", the owner's own dated choice, not one taken under the owner's direction of 2026-10-18. A dated note
+  in item 5 of [`decision-rule-revised-2026-11-18.md`](decision-rule-revised-2026-11-18.md), "Read 2026-11-18, later",
+  quotes the question and both options, and reads the program the collector starts on `win-x64` as the apphost's own
+  file name on that RID, `Broiler.VM.Composition.JavaScript.Cli.exe`, as that rule's item 3 reads "the backend the host
+  arms" as `x86-64-win64` there: the population's own naming on another RID, not a fifth departure. Its four departures
+  and "It departs in nothing else" are unchanged. The note above's "The run is taken in a local session on the lane
+  after that rule merges, and is not taken yet" stands: the run is not taken yet.)*

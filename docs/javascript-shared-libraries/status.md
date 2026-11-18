@@ -4882,16 +4882,21 @@ choice of that date (SJL-3).** On the branch `sjl-3-c13-exe`, not yet merged; it
 file and moves no pin. The entry above's branch `sjl-d23-trigger-a` merged as `06b6f5a3`
 (Broiler-Platform/Broiler.VM#218, observed), which is this branch's first parent.
 
-**The owner's own choice.** Part C's revision of 2026-11-18 lets a lane collector run `collect.py`'s
-`measure-revised` step and depart from it "only in these", four departures, and says "It departs in nothing else".
-That step starts the program by the name the base collector gives it, `Broiler.VM.Composition.JavaScript.Cli`, with
-no extension, which is the apphost's name on `linux-x64` and not on `win-x64`. On 2026-11-18 the owner was asked
-whether the rule should allow ".exe" before the run, so the measurement is not refused partway through, and chose
-"Allow .exe now": "Before any run, I file a dated note on the 2026-11-18 revision. It reads the program's file name on
-win-x64 as carrying ".exe", the RID's own naming, the same way the revision already reads the native backend. The four
-departures and everything else stay as they are, and the note quotes what it reads." The option not taken was "Probe
-first, then decide". It is the owner's own dated choice under SJL-D-23, not one taken under the owner's direction of
-2026-10-18, and the note quotes the question and both options whole.
+**The owner's own choice.** Part C's revision of 2026-11-18 lets a lane collector run `collect.py`'s `measure-revised`
+step and depart from it "only in these", four departures, and says "It departs in nothing else". That step starts the
+program by the name the base collector gives it, `Broiler.VM.Composition.JavaScript.Cli`, with no extension, which is
+the apphost's name on `linux-x64` and not on `win-x64`. On 2026-11-18 the owner was asked: "Broiler.VM's collector
+(collect.py) starts the program as "…\Broiler.VM.Composition.JavaScript.Cli", without ".exe". On Windows the launch will
+probably fail, because ".Cli" reads as a file extension and Windows does not add ".exe" to a full path. Adding ".exe" is
+not one of the four collector departures the 2026-11-18 revision allows. The brief has the local session test this
+first, without running either version, and stop if it fails. Should the rule allow it before your run, so the
+measurement isn't refused partway through?" The owner chose "Allow .exe now": "Before any run, I file a dated note on
+the 2026-11-18 revision. It reads the program's file name on win-x64 as carrying ".exe", the RID's own naming, the same
+way the revision already reads the native backend. The four departures and everything else stay as they are, and the
+note quotes what it reads." The option not taken was "Probe first, then decide": "Nothing changes now. The local session
+tests the launch, and if it fails, it stops and the question comes back to you then." It is the owner's own dated choice
+of 2026-11-18, not one taken under the owner's direction of 2026-10-18, and the note quotes the question and both
+options whole.
 
 **What this repository files**, each a dated note quoting what it reads:
 - bundle [`sjl-3-001`](../evidence/sjl-3-001/README.md)'s rule
