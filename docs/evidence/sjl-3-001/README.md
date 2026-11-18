@@ -28,6 +28,12 @@ at arm A `ebf93cd`: NOT MET again, on its clause 3 alone (section 10). Clause 13
 allows a further measurement of part C. The paragraph's "collection in progress" and its other runs stand
 as written.)*
 
+*(Noted 2026-11-18. "neither rule allows a further measurement of part C" stays true of those two rules. A third,
+[`decision-rule-revised-2026-11-18.md`](decision-rule-revised-2026-11-18.md), written after both measurements were
+seen and so weaker evidence, allows one more, the third and last, on the controlled lane `win-x64-r7-5800x`, by the
+owner's own dated choice of 2026-11-18 under decision SJL-D-23 at its trigger (a) (section 10). It is not taken yet,
+and clause 13 stays open.)*
+
 ## 1. Identity
 
 | | |
@@ -375,3 +381,21 @@ every line they differ on.
   note of 2026-10-20 under [SJL-D-23](../../javascript-shared-libraries/decisions.md#sjl-d-23) names: it is taken when
   a controlled lane exists, or when SJL-3's clause 7, its clause 13 and SJL-4's clause 9 are the only unmet clauses of
   SJL-3 to SJL-15 and SJL-17.
+  *(Noted 2026-11-18. That choice is taken. On 2026-11-17 Broiler.JS recorded a controlled lane, `win-x64-r7-5800x`,
+  one machine and one RID, `win-x64`, in its `docs/evidence/lanes/win-x64-r7-5800x/`
+  (Broiler-Platform/Broiler.JS#1121, `dcab5079`, observed), which is SJL-D-23's trigger (a). At it, on 2026-11-18, the
+  owner was asked "SJL-3 clause 13 (Broiler.VM's measurement) is open after the last measurement its 2026-10-20
+  revision allows. What should happen now that a controlled lane exists?" and chose "Third run on the lane": "You make
+  a new dated revision of the rule whose only change is one more measurement on win-x64-r7-5800x, with the tolerance
+  unchanged. I draft it for your words; the run happens in a local session on your workstation." This is the owner's
+  own dated choice under SJL-D-23, not one taken under the owner's direction of 2026-10-18. **Its rule is
+  [`decision-rule-revised-2026-11-18.md`](decision-rule-revised-2026-11-18.md)**, written after both measurements
+  above were seen, and so weaker evidence. Its only change is the machine: one more measurement of part C, the third
+  and last, on that lane, under the quiet conditions Broiler.JS's run there recorded, at this section's arms B and A,
+  each a clean worktree with the repository's own line endings, into a new sub-bundle,
+  `measurement-win-x64-r7-5800x/`; the tolerance, the protocol and the MET line are unchanged. A NOT MET there leaves
+  clause 13 open until SJL-D-23's trigger (b), as that decision's note of 2026-11-18 reads it, and no fourth
+  measurement follows. The run is taken in a local session on the lane after that rule merges, and is not taken yet.
+  **Clause 13 stays open, and SJL-3 with it.** This section's readings, [`measurement/`](measurement/) and
+  [`measurement-revised/`](measurement-revised/README.md) are unchanged, and "no third measurement under a further
+  revision" above stays the record of what the revision of 2026-10-20 allowed.)*
