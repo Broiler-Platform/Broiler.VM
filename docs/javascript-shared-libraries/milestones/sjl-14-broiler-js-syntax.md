@@ -263,6 +263,30 @@ carries it by a dated note of the same day.
    controlled, and its runs there are retained and recorded void. This is the owner's own dated
    choice, as SJL-D-23's note of 2026-10-20 reserves it, and not one taken under the owner's
    direction of 2026-10-18. Nothing is revised, so nothing is re-evaluated.)*
+   *(Noted 2026-11-18, at SJL-D-23's trigger (a): still not revised. A controlled lane exists,
+   `win-x64-r7-5800x`, one machine and one RID, `win-x64`, recorded in Broiler.JS's
+   `docs/evidence/lanes/win-x64-r7-5800x/` (Broiler-Platform/Broiler.JS#1121, `dcab5079`, observed).
+   On 2026-11-18 the owner was asked "SJL-14 clause 6 (Broiler.JS's parse measurement, part I of the
+   sjl-14-001 rule) was deferred on 2026-11-03 until a controlled lane exists. Now that
+   win-x64-r7-5800x is recorded, what should happen?" and chose "Take it on the lane": "Part I is
+   taken on win-x64-r7-5800x as written, the way part B was. I write a short brief for a local
+   session on your workstation; you run it there." Not taken: "Keep it deferred": "Clause 6 stays
+   unmet. It is still listed under trigger (b), and nothing is run." This is the owner's own dated
+   choice under SJL-D-23 at its trigger (a), and not one taken under the owner's direction of
+   2026-10-18. **Part I of Broiler.JS's bundle `sjl-14-001` rule is taken as written on that lane
+   when it becomes due**, and until then stays as it is: no run of it is taken, and clause 6 stays
+   unmet. **What it waits on.** Part I's arms are "B the base commit's build; A the after commit's"
+   (Broiler.JS `docs/evidence/sjl-14-001/decision-rule.md:193`, at `dcab5079`). The after commit is
+   W2, "the default-branch merge that lands SJL-14.3 to SJL-14.5, one merge", and the base commit is
+   its first parent (the same file, line 59). Neither exists: "W2 and the base commit do not exist
+   yet: W2 is held for SJL-11.5" (the bundle's `README.md:103`), by Broiler.JS's decision D51, "W2
+   after SJL-11.5" (`docs/roadmap/SharedLibraries.md:2994`); this programme's ledger reads SJL-14's
+   window W1 merged in Broiler.JS "and its cut-over, W2, not" (its entry of 2026-11-16 on SJL-15's
+   start). So part I waits on W2 and its base commit, and W2 on SJL-11.5. The note above's "unmet
+   until a controlled lane exists" now reads: unmet until part I is read on that lane; as written,
+   the clause is met only by a MET reading of part I on a controlled lane. Nothing is revised, so
+   nothing is re-evaluated. Broiler.JS records the choice in its own change, in its plan's SJL-14
+   section and bundle `sjl-14-001`'s README.)*
 
 ---
 
