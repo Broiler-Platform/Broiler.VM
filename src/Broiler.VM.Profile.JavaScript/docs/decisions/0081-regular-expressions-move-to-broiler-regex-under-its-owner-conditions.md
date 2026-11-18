@@ -1504,11 +1504,31 @@ decision D23 and the SJL-12 milestone's reading of its clause 1 carry dated note
   in full, for which the clause stands on the reading taken until a row names them, and the owner's choice is open" now
   reads: row M27 names them, `P4-47050-s-05` in arm J's three cultures, by decision D-jsrest, so on the reading taken
   no difference the arms found remains named by no row once Broiler.Regex's classifier reads row M27; until it does,
-  the clause stands for them. Nothing is declared met.)*
+  the clause stands for them. Nothing is declared met.)* *(Note of 2026-11-18, at Broiler.Regex's candidate reading:
+  the note above's "once Broiler.Regex's classifier reads row M27; until it does, the clause stands for them" now
+  reads: its classifier `@9` reads row M27 (Broiler-Platform/Broiler.Regex#25, merged as `fdf8c52c`), and its
+  candidate reading of bundle `sjl-11-001` at `49d7be1f` (Broiler-Platform/Broiler.Regex#28, merged as `662f3499`)
+  classifies the reference arms' differences, under its reference-arm rule as revised, with no class (c), and reads
+  the arms MET on the retained runs. That reading is under option R, which the owner confirmed on 2026-11-17, and the
+  owner's rulings filed as that rule's revisions of 2026-11-16b and 16c, each weaker evidence by its own header. So on
+  the reading of "classifies" taken, the clause stands for no difference the arms found at that reading. The patterns
+  the owner excluded are judged in no class, "A known gap, not a verified agreement" in the words of revision 16b's
+  owner's note, and this clause is read for none of them. Broiler.Regex's reading of class (b)'s vector clause, made
+  after its runs were seen, and class (c)'s unretained pre-fix run are that repository's records, and the owner's
+  answers on them of 2026-11-18 are filed in Broiler.Regex apart from this record. Nothing is declared met.)*
 - A requirement that cannot be met by the end of SJL-11.2: the area is then refused (decision D1), and this record
   is revised.
 - This family's exhaustion verdicts moving outside its rule's class C2 population.
 - The library's nesting maximum not completing on a declared thread under Native AOT.
+  *(Note of 2026-11-18, at Broiler.Regex's candidate reading: this is part of check A-4 of Broiler.Regex's bundle
+  `sjl-11-001` rule, "a pattern at the maximum, and a flat sequence of part C's class F, complete on a thread of the
+  smallest declared stack under the JIT and in the Native AOT probe". The candidate reading at `49d7be1f` reads part A
+  NOT MET, its tests passing and witnesses missing, and part A's second reading at the same commit, under a dated
+  revision of that rule, reads it MET on the retained runs (Broiler-Platform/Broiler.Regex#29, merged as `ba7ac8cf`).
+  That repository's records name the clause's Native AOT half among those read on the closest plant, a pattern at the
+  maximum under the JIT, not on a plant of its own. Neither reading shows the maximum not completing, so the clause
+  does not stand on them; the Native AOT half has no witness of its own, which that repository's records leave to the
+  owner's review of the revision's wording. Nothing is declared met.)*
 - A reading of the specification's text in the correspondence that `regexpref` refutes, until the row is
   reclassified here. *(Note of 2026-11-01: `regexpref` refuted row S5's reading of `\k` in a class, and decision
   D-s5 reclassifies the row. The runs of revision 31 found no other refuted reading, and every vector difference is
