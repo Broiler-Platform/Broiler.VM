@@ -31,7 +31,9 @@
   decision D-jsrows.)* *(Note of 2026-11-16, later, decision D-jsexec: Broiler.JS's gain rows M10 to M15 too, and row
   B1's correction of Broiler.JS gains P3's `O06` by its widening.)* *(Note of 2026-11-16, after SJL-15.1 merged,
   decision D-jsrest: Broiler.JS's gain rows M16 to M26 too, rows M16, M17, M18 and M19 corrections of
-  Broiler.Regex's preview.4 as well.)*
+  Broiler.Regex's preview.4 as well.)* *(Note of 2026-11-18, decision D-jssticky: Broiler.JS's gain row M28 too, the
+  `y` flag on its members that answer without `exec`, whose `IsMatch` and public `Replace` half SJL-11.5 corrects and
+  whose `split` fallback half it does not.)*
 - *(Added 2026-11-01.)* **The owner's decisions D-s5, D-p5, D-widen and D-partd of 2026-11-01 are recorded**, under
   the same direction, in section "The owner's decisions of 2026-11-01". SJL-11.3's first runs of the
   regular-expression vectors found them, on Broiler.JS's corpus revision 31. They are classified at revision 32.
@@ -78,6 +80,13 @@
   no difference the arms found once Broiler.Regex's classifier reads row M27, and until then for those inputs.
   Broiler.Regex's classifier `@8` (Broiler-Platform/Broiler.Regex#24) classes `O06` by row B1 under the reference-arm
   rule's revision of 2026-11-16c, the owner's ruling. Nothing is declared met.)*
+- *(Added 2026-11-18.)* **The owner's decision D-jssticky of 2026-11-18 is recorded**, under the same direction, in
+  section "The owner's decisions of 2026-11-18". Broiler.JS's SJL-11.5 branch changes how three of its members that
+  answer without `exec` read the `y` flag, a change its records name as a finding for this record's correspondence.
+  Row M28 holds it, in section M after row M27, a correction of Broiler.JS in two halves: `IsMatch` and the public
+  `Replace`, which SJL-11.5 corrects, and `String.prototype.split`'s fallback when a RegExp's `@@split` is `undefined`
+  or `null`, which it does not. Both of the row's engine cells are readings of the code. Row M5 is unchanged. No
+  sub-area's verdict changes.
 - Nothing in this profile changes with this record. The cut-overs are SJL-11.4's and SJL-11.5's own changes, and
   this record is what they apply.
 
@@ -338,6 +347,10 @@ risk D10's stop.** Nothing here weakens either.
   `P4-47050` no row names" now reads with row M27, a **correction of Broiler.JS**: a loop over `\D`, or over a negated
   class of ASCII word characters, right before `\b` without `RegexOptions.ECMAScript`, which .NET makes atomic, and
   greedy where it was lazy. Row M8 keeps the inputs of that construct its list takes.
+- *(Noted 2026-11-18, decision D-jssticky.)* **Corrections of Broiler.JS** also: M28, the `y` flag on the members that
+  answer without `exec`, in two halves: `IsMatch` and the public `Replace` on a sticky pattern, which SJL-11.5
+  corrects, and `String.prototype.split`'s fallback to `JSRegExp.Split` when a RegExp's `@@split` is `undefined` or
+  `null`, which SJL-11.5 does not make. M5 stays **same in both**.
 
 **X6 - extended.**
 - **This family:** `JsRegExpMatcher.cs` whole: the public `JsRegExpMatcher` and `JsRegExpMatch`, and
@@ -817,6 +830,11 @@ clause 1, and Broiler.JS's SJL-12 record of decision D23, whose note Broiler.JS'
   - *(added 2026-11-16, after rows M16 to M26 merged, decision D-jsrest)* a loop over `\D`, or over a negated class of
     ASCII word characters, right before `\b` without `RegexOptions.ECMAScript`, which .NET makes atomic (M27). No
     test262 file at `ccaac100` is known to move for it, so it names no part A row;
+  - *(added 2026-11-18, decision D-jssticky)* the `y` flag on `IJSRegExp.IsMatch` and the public `JSRegExp.Replace`,
+    which answer without `exec` and honoured the flag only for a pattern routed to Broiler.Regex (M28, its first
+    half). Its second half, `String.prototype.split`'s fallback to `JSRegExp.Split` when a RegExp's `@@split` is
+    `undefined` or `null`, is a correction of Broiler.JS that SJL-11.5 does not make, and is not on this list. No
+    test262 verdict is read for either half here;
   - **Removed from the plan's list:** `\0` before a non-ASCII digit, which the correspondence shows is
     Broiler.Regex's alone and not observable in Broiler.JS (row S4); it is a library fix (decision D36). An invalid
     literal read as division stays SJL-14's (row S9).
@@ -1380,6 +1398,57 @@ taken.
   the input holds no non-ASCII letter, and `(?<=\b)`, which keeps .NET's word set, gives the text's answer.
 - **Not taken:** a row by its construct alone, read after every other row, as rows M22, M24 and M26 are. `\D+(?!\D)` is
   ECMAScript text that reads as .NET runs the loop, so the arbiter can answer the reading.
+
+### The owner's decisions of 2026-11-18
+
+*(Added 2026-11-18.)* Broiler.JS's branch `sjl-11-5`, its SJL-11.5 cut-over, not merged, changes by its `4e2e00ad` three
+of its members that answer without `RegExpBuiltinExec`: `IJSRegExp.IsMatch`, which its `assert` module's `assert.match`
+calls, the public `JSRegExp.Replace`, and the public `JSRegExp.Split`, which `String.prototype.split` calls when a
+RegExp's `@@split` is `undefined` or `null`. Its bundle `sjl-11-001`'s README, at the branch's head `f690836d`, records
+the change as "a finding for Broiler.VM's correspondence, whose row is Broiler.VM's to add", and its
+`Broiler.JS/CHANGELOG.md` lists it as "A change no row names". No row of the correspondence named it: row M5, the
+sticky row, reads Broiler.JS's `y` through `exec` and the protocols, and is "Same in both". The decision below was taken
+on 2026-11-18 as recommended, under the owner's direction of 2026-10-18 quoted above, "Please do all recommended
+decisions and skip waiting for review.", and is recorded here as the owner's decision of that day, with the
+alternatives not taken. It follows the pattern of decisions D-wiv and D-jsrows in section "The owner's decisions of
+2026-11-16" above, each a row the correspondence lacked, recorded with its place, its class and what it changes. It is
+not one of the owner's own answers of that day, and it changes no sub-area's verdict.
+
+**Decision D-jssticky - the `y` flag on Broiler.JS's members that answer without `exec` is row M28, one row of section M
+in two halves, a correction of Broiler.JS, filed now from a reading of both engines' code.**
+- **Where and what.** Row M28, in section M after row M27, class **correction of Broiler.JS**, one row with two halves:
+  - `IsMatch` and the public `Replace`. At the branch's first parent they honoured `y` only for a pattern routed to
+    Broiler.Regex; SJL-11.5's `4e2e00ad` makes them answer as `exec` (RegExpBuiltinExec, 22.2.7.2) and `@@replace`
+    (22.2.6.11) do, a sticky pattern tried at its start alone. This family has no such member: it answers a match only
+    through `RegExpExec`, row M5's;
+  - the `split` fallback. With a RegExp's `@@split` `undefined` or `null`, `String.prototype.split` (22.1.3.23)
+    converts the separator with ToString and splits on that string, as this family does; Broiler.JS hands the RegExp
+    to `JSRegExp.Split`, which splits by the pattern, with or without `y`. SJL-11.5 does not make this correction:
+    Broiler.JS's `CHANGELOG.md` leaves the fallback "for a later change".
+- **The cells are readings.** Both engine cells are read from code, Broiler.JS's at `f690836d` and this family's at
+  `aaa39fb`, whose `JsRealm.RegExp.cs` is the same at `32b0fad0`, and are marked *(reading)* as the correspondence's
+  "How each column was run" defines it; no cell was run. A probe of the `split` inputs through the correspondence's
+  `run-vm.sh` and `run-js.sh` may be added by a later dated note on the row; until then its class rests on the
+  reading, and a run that answers otherwise reclassifies it by a dated note.
+- **What it changes.** Decision D23's list of Broiler.JS's corrections gains the row's first half, and the sub-area M
+  section a note. This family's list is unchanged, and bundle `sjl-11-001`'s rule, whose part A lists this family's
+  corrections, is not revised. Broiler.JS's rule names its part A corrections by a fixed list of rows; whether and
+  how it lists row M28 is Broiler.JS's to file, and this record files nothing in Broiler.JS.
+- **Not taken:** widening row M5 by a dated note to these members. Its class, "Same in both", would no longer hold for
+  the `split` fallback, whose answers differ between the engines.
+- **Not taken:** a row of section F, flags. The flag is `y`, but what differs is which members read it and how `split`
+  falls back when no `@@split` applies; section M holds matching and the protocols' fallbacks, with row M5, and row
+  M6, `search`'s.
+- **Not taken:** two rows, one for `IsMatch` and `Replace` and one for the `split` fallback. Both halves are one change
+  of Broiler.JS's, the one finding its records name, and both are corrections of Broiler.JS; one row with halves names
+  it once, as row M4 holds halves of its own.
+- **Not taken:** holding the row until its `split` inputs are run in both engines. Filed now from the reading, the row
+  stands in the correspondence before Broiler.JS's rule can be revised to name it and before either cut-over's base is
+  taken; a later run is added by a dated note.
+- The reason: decision D27 keeps Broiler.JS's column in every row, and Broiler.JS's rule classifies by this
+  correspondence ("The correspondence this rule classifies by is Broiler.VM's `docs/evidence/sjl-11-001/correspondence.md`"),
+  so a change of Broiler.JS's that no row names is explained by no row there; and the text decides each half, so the
+  row is a correction, not a policy.
 
 ## What this rejects, and why
 
