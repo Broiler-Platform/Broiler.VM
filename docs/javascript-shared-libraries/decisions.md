@@ -615,8 +615,8 @@ under this decision, as the note of 2026-10-20 reserves it, and none is taken un
   `sjl-14-001` rule is taken as written on `win-x64-r7-5800x` when it becomes due. Its arms are the base commit's
   build and the after commit's, the after commit being W2, the default-branch merge that lands SJL-14.3 to SJL-14.5,
   and the base commit W2's first parent (that rule, "The commits, named before they exist" and part I); neither
-  exists, W2 being held for SJL-11.5 by Broiler.JS's decision D51. Until then part I stays as it is, and clause 6
-  unmet.
+  exists, W2 being held for SJL-11.5, Broiler.JS's decision D51's recommended order. Until then part I stays as it
+  is, and clause 6 unmet.
 - **SJL-3's clause 13.** Asked "SJL-3 clause 13 (Broiler.VM's measurement) is open after the last measurement its
   2026-10-20 revision allows. What should happen now that a controlled lane exists?", the owner chose "Third run on
   the lane": "You make a new dated revision of the rule whose only change is one more measurement on
@@ -636,18 +636,21 @@ under this decision, as the note of 2026-10-20 reserves it, and none is taken un
 
 **What it changes.** Trigger (b) of the note of 2026-10-20, as the note of 2026-11-03 reads it, read "SJL-3's clause
 7, its clause 13 if still open, SJL-4's clause 9 and SJL-14's clause 6 are the only unmet clauses of SJL-3 to SJL-15
-and SJL-17, every other clause being met on its bundles". Broiler.JS's records read SJL-3's clause 7 met, so it
-leaves the list: trigger (b) is now read as "SJL-3's clause 13 if still open, SJL-4's clause 9 and SJL-14's clause 6
-if still unmet are the only unmet clauses of SJL-3 to SJL-15 and SJL-17, every other clause being met on its
-bundles". Should Broiler.JS's records read clause 7 otherwise, it is listed again. **Trigger (a) is spent**: the
-choices it brought are taken. **The next dated choice** under this decision is the one trigger (b) brings, between
-waiting and a gate revision under alternative (b), for the clauses it then lists; neither the third measurement nor
-part I brings one of its own. A MET of the third measurement answers clause 13 as weaker evidence, as its revision
-says, and a NOT MET leaves clause 13 for trigger (b); part I, once read, is read under clause 6 as written. That
-choice will be the owner's own, not one taken under the owner's direction of 2026-10-18. This note revises no clause
-and no exit gate. Broiler.JS records its half in its own change: its `docs/roadmap/SharedLibraries.md`'s SJL-14
-section and its bundle `sjl-14-001`'s README on clause 6, and its SJL-3 status row's note on this repository's third
-measurement.)*
+and SJL-17, every other clause being met on its bundles". Broiler.JS's records read SJL-3's clause 7 met, so it leaves
+the list, and nothing else of the list changes: trigger (b) is now read as "SJL-3's clause 13 if still open, SJL-4's
+clause 9 and SJL-14's clause 6 are the only unmet clauses of SJL-3 to SJL-15 and SJL-17, every other clause being met
+on its bundles". Should Broiler.JS's records read clause 7 otherwise, it is listed again. **Trigger (a) is spent**:
+the choices it brought are taken. **The next dated choice** under this decision is the one trigger (b) brings, for the
+clauses it then lists. Where the note of 2026-10-20 reads "At (b) the choice is between waiting for a lane and a gate
+revision under alternative (b)", and the note of 2026-11-03 "waiting for a lane, or a gate revision under alternative
+(b)", a lane now exists, and the choice at (b) is, in the words of the option "Keep it open" above, "between waiting
+and a gate revision", under alternative (b). Neither the third measurement nor part I brings a choice of its own. A
+MET of the third measurement answers clause 13 as weaker evidence, as its revision says, and a NOT MET leaves clause
+13 for trigger (b); part I, once read, is read under clause 6 as written. That choice will be the owner's own, not one
+taken under the owner's direction of 2026-10-18. This note revises no clause and no exit gate. Broiler.JS records its
+half in its own change: its `docs/roadmap/SharedLibraries.md`'s SJL-3 and SJL-14 sections, its bundle `sjl-14-001`'s
+README on clause 6, and its status file's SJL-3 and SJL-14 rows. That change merged on 2026-11-18 as
+Broiler-Platform/Broiler.JS#1123, `6b235932` (observed), before this note's.)*
 
 <a id="sjl-d-16"></a>
 ### SJL-D-16 — Observable corrections at cut-over
