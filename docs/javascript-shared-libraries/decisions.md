@@ -593,6 +593,62 @@ its runs there are retained and recorded void. This is the owner's own dated cho
 above reserves it, and not one taken under the owner's direction of 2026-10-18. It revises no
 clause. Broiler.JS records it in `docs/roadmap/SharedLibraries.md`, its SJL-14 section.)*
 
+*(Noted 2026-11-18, which reopens nothing. **Trigger (a) of the note of 2026-10-20 is reached**: a controlled lane
+exists, recorded as `Measurement.md` requires. Broiler.JS recorded it on 2026-11-17 in its
+`docs/evidence/lanes/win-x64-r7-5800x/`, merged in Broiler-Platform/Broiler.JS#1121 as `dcab5079`: one machine and
+one RID, `win-x64`, the owner's workstation, which the owner confirmed as the lane, RID included, before any run on
+it. This repository observes that record and does not re-read it. In the same change Broiler.JS took part B of its
+bundle `sjl-3-001`'s rule as written on that lane, its first judged run, and reads it MET (its bundle's section 7,
+and its sub-bundle `measurement-win-x64-r7-5800x/`); its `docs/roadmap/SharedLibraries.md`, in a note of 2026-11-17,
+reads that "Trigger (a) is reached" and that "clause 7's measurement half is met", and keeps SJL-3 `In progress`
+because this repository's clause 13 stays open. Those readings are Broiler.JS's, of its own clause, and are not this
+repository's.
+
+At trigger (a), on 2026-11-18, the owner answered three questions. **Each answer is the owner's own dated choice
+under this decision, as the note of 2026-10-20 reserves it, and none is taken under the owner's direction of
+2026-10-18.**
+- **SJL-14's clause 6.** Asked "SJL-14 clause 6 (Broiler.JS's parse measurement, part I of the sjl-14-001 rule) was
+  deferred on 2026-11-03 until a controlled lane exists. Now that win-x64-r7-5800x is recorded, what should happen?",
+  the owner chose "Take it on the lane": "Part I is taken on win-x64-r7-5800x as written, the way part B was. I write
+  a short brief for a local session on your workstation; you run it there." Not taken: "Keep it deferred": "Clause 6
+  stays unmet. It is still listed under trigger (b), and nothing is run." So part I of Broiler.JS's bundle
+  `sjl-14-001` rule is taken as written on `win-x64-r7-5800x` when it becomes due. Its arms are the base commit's
+  build and the after commit's, the after commit being W2, the default-branch merge that lands SJL-14.3 to SJL-14.5,
+  and the base commit W2's first parent (that rule, "The commits, named before they exist" and part I); neither
+  exists, W2 being held for SJL-11.5 by Broiler.JS's decision D51. Until then part I stays as it is, and clause 6
+  unmet.
+- **SJL-3's clause 13.** Asked "SJL-3 clause 13 (Broiler.VM's measurement) is open after the last measurement its
+  2026-10-20 revision allows. What should happen now that a controlled lane exists?", the owner chose "Third run on
+  the lane": "You make a new dated revision of the rule whose only change is one more measurement on
+  win-x64-r7-5800x, with the tolerance unchanged. I draft it for your words; the run happens in a local session on
+  your workstation." Not taken: "Keep it open": "No revision and no run. Clause 13 stays open until trigger (b),
+  where the choice is between waiting and a gate revision."; and "Gate revision now": "Revise SJL-3's exit gate under
+  SJL-D-23 alternative (b) now, instead of measuring. This would be the first exit-gate revision made after the
+  evidence it concerns." The revision is
+  [`decision-rule-revised-2026-11-18.md`](../evidence/sjl-3-001/decision-rule-revised-2026-11-18.md): one more
+  measurement of part C, the third and last, on `win-x64-r7-5800x`, at the arms of the revision of 2026-10-20, the
+  tolerance unchanged. It is weaker evidence, written after both earlier measurements were seen. A NOT MET there
+  leaves clause 13 open until trigger (b), and no fourth measurement follows. The run is not taken yet.
+- **SJL-4's clause 9.** Asked "SJL-4 clause 9 is two test262 rows racing between the fuel and wall-clock limits; a
+  lane does not affect it. What should happen to it at this trigger?", the owner chose "Leave unmet until (b)":
+  "Nothing changes for clause 9. It waits for trigger (b) with the others." Not taken: "Gate revision now": "Revise
+  the clause under SJL-D-23 alternative (b) now."
+
+**What it changes.** Trigger (b) of the note of 2026-10-20, as the note of 2026-11-03 reads it, read "SJL-3's clause
+7, its clause 13 if still open, SJL-4's clause 9 and SJL-14's clause 6 are the only unmet clauses of SJL-3 to SJL-15
+and SJL-17, every other clause being met on its bundles". Broiler.JS's records read SJL-3's clause 7 met, so it
+leaves the list: trigger (b) is now read as "SJL-3's clause 13 if still open, SJL-4's clause 9 and SJL-14's clause 6
+if still unmet are the only unmet clauses of SJL-3 to SJL-15 and SJL-17, every other clause being met on its
+bundles". Should Broiler.JS's records read clause 7 otherwise, it is listed again. **Trigger (a) is spent**: the
+choices it brought are taken. **The next dated choice** under this decision is the one trigger (b) brings, between
+waiting and a gate revision under alternative (b), for the clauses it then lists; neither the third measurement nor
+part I brings one of its own. A MET of the third measurement answers clause 13 as weaker evidence, as its revision
+says, and a NOT MET leaves clause 13 for trigger (b); part I, once read, is read under clause 6 as written. That
+choice will be the owner's own, not one taken under the owner's direction of 2026-10-18. This note revises no clause
+and no exit gate. Broiler.JS records its half in its own change: its `docs/roadmap/SharedLibraries.md`'s SJL-14
+section and its bundle `sjl-14-001`'s README on clause 6, and its SJL-3 status row's note on this repository's third
+measurement.)*
+
 <a id="sjl-d-16"></a>
 ### SJL-D-16 — Observable corrections at cut-over
 
