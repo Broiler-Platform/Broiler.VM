@@ -133,6 +133,33 @@ measurement on the lane needs, and nothing more.
    departure: `collect.py` and the collector it loads already decode every child's output as UTF-8, a byte that is
    not UTF-8 replaced (and escaped in the paths `git diff` names), and write every file as UTF-8 with LF line endings.
    The collector judges nothing.
+
+   *(Read 2026-11-18, later, after this file merged in `06b6f5a3` and before any run under it; it revises nothing. A
+   reading of this item and of item 3, by the owner's own dated choice of that date under decision SJL-D-23, not one
+   taken under the owner's direction of 2026-10-18. The owner was asked: "Broiler.VM's collector (collect.py) starts
+   the program as "…\Broiler.VM.Composition.JavaScript.Cli", without ".exe". On Windows the launch will probably fail,
+   because ".Cli" reads as a file extension and Windows does not add ".exe" to a full path. Adding ".exe" is not one of
+   the four collector departures the 2026-11-18 revision allows. The brief has the local session test this first,
+   without running either version, and stop if it fails. Should the rule allow it before your run, so the measurement
+   isn't refused partway through?" The owner chose "Allow .exe now": "Before any run, I file a dated note on the
+   2026-11-18 revision. It reads the program's file name on win-x64 as carrying ".exe", the RID's own naming, the same
+   way the revision already reads the native backend. The four departures and everything else stay as they are, and the
+   note quotes what it reads." The option not taken was "Probe first, then decide": "Nothing changes now. The local
+   session tests the launch, and if it fails, it stops and the question comes back to you then." This note is that
+   dated note. It reads this item's "runs that step with `collect.py`'s collector and helpers, and departs from it only
+   in these" and the rule block's "the command-line composition root built in Release under JIT". That step starts
+   every child, in its `revised_runs`, by the path its `measure_revised` builds: the root's build output copied to the
+   collector's scratch as `cli-revised-<arm>`, and in it the program `Broiler.VM.Composition.JavaScript.Cli`, the base
+   collector's `CLI_BINARY` (`docs/evidence/sjl-0-001/collect.py`). That is the apphost's file name on `linux-x64`,
+   where an executable carries no extension. The project names its assembly `Broiler.VM.Composition.JavaScript.Cli`
+   with `OutputType` `Exe`, at both arms, and the SDK names the apphost by the assembly's name with the RID's
+   executable extension, which on `win-x64` is `.exe`. **So on `win-x64` the program the collector starts is read as
+   the apphost's own file name on that RID, `…\cli-revised-<arm>\Broiler.VM.Composition.JavaScript.Cli.exe`**, as item
+   3 reads "the backend the host arms" as `x86-64-win64` on that RID, where it says: "This is the population's own
+   wording on another RID, not a change of it." This is the population's own naming on another RID, **not a fifth
+   departure**. The binaries, their hashes and the manifest's lines that name the program's `.dll` are `collect.py`'s
+   and unchanged; only the file name a child is started by carries the RID's extension. The four departures above and
+   "**It departs in nothing else.**" are unchanged, and so is every other sentence of this file.)*
 6. **The sub-bundle** is a new folder, `measurement-win-x64-r7-5800x/`, with its own `manifest.txt` and `hashes.txt`,
    and a README written after the step. The bundle's `manifest.json` does not hash it, as it hashes neither earlier
    sub-bundle. **`measurement/` and `measurement-revised/` are never touched**: not read by the step, moved or run
