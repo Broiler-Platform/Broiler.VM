@@ -68,10 +68,11 @@ measurement on the lane needs, and nothing more.
    ```
 
    The lane is Broiler.JS's record, read here and not re-read: this repository records no lane of its own, and it
-   reads the lane's README's own words for what is not controlled on it. If the machine has changed since that record
-   (its firmware, microcode, memory, OS build, SDK or runtime), the lane's README asks for "a new dated capture beside
-   the first, never an edit of it"; this run is then taken only on the lane as that new capture records it, and the
-   sub-bundle names the capture it was taken on.
+   reads the lane's README's own words for what is not controlled on it. **The lane's capture is taken again** with
+   that `capture.ps1` at the start of the step's window, and it must match the record's `machine.txt` but for the
+   capture's own time and the last boot time. If it does not, the machine is not the lane this file names: the step
+   refuses before anything is built, no run is taken, and the question goes back to the owner. The capture taken again
+   at the window's end is retained, and any difference in it from the record is recorded in the sub-bundle.
 2. **The quiet conditions**, those Broiler.JS's run on this lane recorded (its sub-bundle's README, "When, and beside
    what"), in place of "no other build, test or run on it while the run is taken", which they keep:
    - the build servers shut down (`dotnet build-server shutdown`) before the step starts, and the step's builds run
@@ -116,22 +117,26 @@ measurement on the lane needs, and nothing more.
    - **the manifest's lane line**: the manifest names this file as the rule that judges the run, beside the rules it
      revises, and names the lane, its record at Broiler.JS `dcab5079d5b0696d6fcc593c848a654d0ab2a107` with the
      SHA-256 of each of the record's files, the machine and the RID;
-   - **the build-server flags and check**: builds run with node reuse, the MSBuild server and the shared compiler off,
-     and the check that no .NET build server or build is running reads the platform's own process list where `/proc`
-     does not exist; the check itself is kept, and the step still refuses when no process list can be read;
-   - **the encoding**: every child's output is decoded as UTF-8, with any byte that is not UTF-8 escaped rather than
-     failing the collection;
-   - **the run window**: recorded as item 2 says, in place of the load average where the platform gives none.
+   - **the build-server check**: the check that no .NET build server or build is running reads the platform's own
+     process list where `/proc` does not exist; the check itself is kept, and the step still refuses when no process
+     list can be read. The builds' flags, node reuse, the MSBuild server and the shared compiler off, are
+     `collect.py`'s own and are kept;
+   - **the run window**: recorded as item 2 says, in place of the load average where the platform gives none, with the
+     capture at its start compared with the lane's record as item 1 says, a refusal of its own before anything is
+     built.
 
    **It departs in nothing else.** The arms and every refusal check of the step but the folder's; the builds and the
    binaries' hashes; the manifest written and made read-only before any check, transcript or lane; every arm's first
    check of every file, in each form, before any lane; the transcripts and their check; the warm-ups, the repetitions
    and the rotation of the arms; the allowances; the answers and what each is held to; the configuration line; the
-   parsing; and the arithmetic of `summary.txt` are `collect.py`'s, line for line. The collector judges nothing.
-6. **The sub-bundle** is a new folder, [`measurement-win-x64-r7-5800x/`](measurement-win-x64-r7-5800x/), with its own
-   `manifest.txt` and `hashes.txt`, and a README written after the step. The bundle's `manifest.json` does not hash it,
-   as it hashes neither earlier sub-bundle. **`measurement/` and `measurement-revised/` are never touched**: not read
-   by the step, moved or run again.
+   parsing; and the arithmetic of `summary.txt` are `collect.py`'s, line for line. So is the encoding, which is not a
+   departure: `collect.py` and the collector it loads already decode every child's output as UTF-8, a byte that is
+   not UTF-8 replaced (and escaped in the paths `git diff` names), and write every file as UTF-8 with LF line endings.
+   The collector judges nothing.
+6. **The sub-bundle** is a new folder, `measurement-win-x64-r7-5800x/`, with its own `manifest.txt` and `hashes.txt`,
+   and a README written after the step. The bundle's `manifest.json` does not hash it, as it hashes neither earlier
+   sub-bundle. **`measurement/` and `measurement-revised/` are never touched**: not read by the step, moved or run
+   again.
 7. **This is the third and last measurement of part C.** A NOT MET here leaves clause 13 open until trigger (b) of
    decision SJL-D-23's note of 2026-10-20, as that decision's note of 2026-11-18 reads it, and no fourth measurement
    follows, under this file or under any further revision. The revision of 2026-10-20's two other readings are kept:
@@ -140,9 +145,9 @@ measurement on the lane needs, and nothing more.
    branch, from that merge or a later default-branch commit's copy of this file. Arm A does not move with that merge.
 
 **Nothing else changed.**
-- **Part C:** its population (but for the lane, item 1, and the backend that lane's host arms, item 3),
-  configuration, configuration check, quantity, noise floor, comparison, attribution, admitted classes and MET line are
-  the revision of 2026-10-20's, which are the original's but for when the first checks are taken.
+- **Part C:** its population (but for the lane, item 1; item 3 reads the backend that lane's host arms, which is not
+  a change), configuration, configuration check, quantity, noise floor, comparison, attribution, admitted classes and
+  MET line are the revision of 2026-10-20's, which are the original's but for when the first checks are taken.
 - **The arms and their inputs:** arm B, arm A and how its sources are fixed, A-again, the workloads as committed with
   the original rule, the transcript program, the checker and the reference, the repetitions and warm-ups, and the
   allowances.
@@ -156,12 +161,12 @@ once taken, is `measurement-win-x64-r7-5800x/` with its README, and the bundle R
 The programme's ledger records clause 13's reading. There is no new decision record, no correction entry and no
 milestone revision.
 
-Part C's block, restated with the lane, the arms and the readings as revised; every other line is the revision of
-2026-10-20's:
+Part C's block, restated with the lane, the arms, the transcript program's pin (as arm A holds it, since the commit
+that adds this file is not arm A) and the readings as revised; every other line is the revision of 2026-10-20's:
 
 ```rule
 evidence class: measurement
-population: the three workloads of src/tests/forms/numbers as committed with decision-rule.md - to-string.js (number to string), to-number.js (string to number) and literals.js (the compiler's literal values) - each with its control, the *.control.js file beside it; each in the bytecode form and in the native form under the backend the host arms; the command-line composition root built in Release under JIT; one machine and one RID, both named in the sub-bundle's manifest: the controlled lane win-x64-r7-5800x, RID win-x64, as Broiler.JS's docs/evidence/lanes/win-x64-r7-5800x/ records it at Broiler.JS dcab5079d5b0696d6fcc593c848a654d0ab2a107, its capture.ps1, machine.txt and README.md named by the SHA-256 this file's item 1 gives, or by a later dated capture beside them; the build servers shut down before the step, no other Claude session, build, test or run on the machine while it runs, and the run window recorded at its start, at its end and before every lane
+population: the three workloads of src/tests/forms/numbers as committed with decision-rule.md - to-string.js (number to string), to-number.js (string to number) and literals.js (the compiler's literal values) - each with its control, the *.control.js file beside it; each in the bytecode form and in the native form under the backend the host arms; the command-line composition root built in Release under JIT; one machine and one RID, both named in the sub-bundle's manifest: the controlled lane win-x64-r7-5800x, RID win-x64, as Broiler.JS's docs/evidence/lanes/win-x64-r7-5800x/ records it at Broiler.JS dcab5079d5b0696d6fcc593c848a654d0ab2a107, its capture.ps1, machine.txt and README.md named by the SHA-256 this file's item 1 gives; the lane's capture, taken again at the step's start, matching that record's machine.txt but for the capture's own time and the last boot time, or the step refuses before anything is built and no run is taken; the build servers shut down before the step, no other Claude session, build, test or run on the machine while it runs, and the run window recorded at its start, at its end and before every lane
 arms: B the base, rebuilt from bundle sjl-0-001's base commit 0087e8d73ae3833200fa263b68f71db15b059a9c; A the commit on the default branch's first-parent history that adds decision-rule-revised-2026-10-20.md, the merge that lands it (its first parent does not carry that file), ebf93cd3e8fba11002f3da563b13b32ca54afe32, whose product sources are those of aaa39fbc2030e1a2554317bea75bcbb56041c696 but for the four paths that file's header names, none of which a build of the command-line root reads; A-again the A arm measured a second time under another lane name, the A/A lane; each arm a clean worktree of its commit with the repository's own line endings; each arm's binaries named by hash in the manifest, which is written and made read-only before any lane runs
 configuration: the core's measurement rules (docs/baselines.md section 1, restated by roadmap.gates.md section 17): for each workload and form, in every repetition, B, A and A-again each run the workload and its control, interleaved inside the repetition; repetitions the count docs/baselines.md rule 4 fixes per lane, every one retained, and warm-up repetitions as eng/compare-forms.py fixes them, retained and named as excluded from Q; fuel and wall allowances ample and the same for every lane; every arm's first check of every file, in each form, taken before any lane runs
 transcript check, for to-string.js only, taken before any lane and retained with its inputs and its output: each arm's binary runs docs/evidence/sjl-3-001/transcript/to-string.transcript.js, as arm A holds it (blob 9a926b538541c7d51c089902507dc10ebd79c4b8), once in each form; the check holds if and only if, in each form, (i) each arm's transcript has as many lines as to-string.control.js answers at arm B's first check in that form; (ii) the lengths of each arm's lines sum to that arm's to-string.js answer at its first check in that form; and (iii) every line of arm A's transcript is one of the texts the specification admits for the value and the conversion that line converts, as Broiler.JS's scripts/conformance/numref.py computes them - number_to_string at the conversion's radix for String and toString, to_fixed, to_exponential and to_precision - the file as Broiler.JS's commit 966140ad694570467ad21975f23047d0d6f0c1ce carries it, with SHA-256 424d557fd6ec5292b80104178f26256a7f98d629ba8f454467b0c901275f56e7, each line's value computed as the program computes it, in IEEE 754 double arithmetic; every line on which the two arms' transcripts differ is listed with its form, its value, its conversion, both texts, and whether arm B's text is one the specification admits
@@ -205,7 +210,8 @@ readings:
   - **Any comparison with Broiler.JS**, whose own measurement is judged by its own rule in its own repository and which
     Broiler.VM's release gate 10 forbids, its part B on this same lane among them.
   - **Anything about another machine or RID**, linux-x64 and the programme's container among them.
-  - **Parts A and B**, the vectors, the closures, the packages, or any other clause of SJL-3.
+  - **Parts A and B**, the vectors, the closures, the packages, or any other clause of SJL-3. Those stand at
+    `49ea00e` as the README reads them.
 
 ## The rule it revises, quoted whole
 
