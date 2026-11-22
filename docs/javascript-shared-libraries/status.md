@@ -5279,9 +5279,11 @@ as Broiler.JS's records quote them; "[…]" marks a figure or a duration left ou
   owner's open items, among them the dated file bundle `sjl-11-001`'s README leaves to the owner for the workflow change
   of 2026-10-30 and row S5, "each of which stays the owner's to decide by a further dated file before any run".
   Nothing here starts it.
-- *SJL-14*: W2 is no longer held for SJL-11.5. By answer 9, W2's hold is on Broiler.JS's default branch; this branch
-  changes no file of Broiler.JS's. Part I of Broiler.JS's bundle `sjl-14-001` rule, which the owner chose on
-  2026-11-18 to take on `win-x64-r7-5800x`, waits on W2's merge.
+- *SJL-14*: W2 is no longer held for SJL-11.5. By answer 9, "The hold then starts at the first base run, and nothing
+  merges to Broiler.JS main until W2 merges"; Broiler.JS's default branch reads "The hold has not started.", and
+  whether it has begun since is not read here, as above. This branch changes no file of Broiler.JS's. Part I of
+  Broiler.JS's bundle `sjl-14-001` rule, which the owner chose on 2026-11-18 to take on `win-x64-r7-5800x`, waits on
+  W2's merge.
 - *SJL-15*: under Broiler.JS's reading B4, W2 merges before any merge of SJL-15.2's model, so none is a dark window of
   SJL-14, as Broiler.JS's plan's note of 2026-11-19 reads it; SJL-15.2's model still waits on the later corpus revision.
 
