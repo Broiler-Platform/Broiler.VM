@@ -147,6 +147,18 @@ run for the row. Broiler.JS is read at `f690836d`, the branch's head, and Broile
 `correspondence-runs/vm/run-vm.sh` and `correspondence-runs/js/run-js.sh`, may be added by a later dated note; until
 then the row's class rests on the reading. Row M5 is not edited.
 
+*(Noted 2026-11-22, when Broiler.JS's merges of SJL-11.5's inputs, of SJL-11.5 and of its after runs are observed; the
+paragraph above and row M28 are left as written.)* The paragraph above reads "Broiler.JS's branch `sjl-11-5` (SJL-11.5,
+not merged)". SJL-11.5 merged into Broiler.JS's default branch as Broiler-Platform/Broiler.JS#1126,
+`b2b226cd3158f0b7d990a3f4fecbe75b259b4fa1`, whose history holds `4e2e00ad` and `f690836d` (observed). Before its base,
+Broiler-Platform/Broiler.JS#1125, `5429c4065e8b273e5c7965598b8a2f5490a8ad98`, landed Broiler.JS's rule revision of
+2026-11-18, which names row M28 in part A's list, "its first half as the cut-over's correction". Broiler.JS's bundle
+`sjl-11-001`, merged in Broiler-Platform/Broiler.JS#1127, `fefb4f9c9331b7d16349ed2a1721285f2fb69fef`, reads of part A
+at the after commit: "No row moves for M28's half for `IsMatch` and the public `Replace`, and **no row moves through
+the `split` fallback**, as row M28 records it or in any other way". That reading reads test262 rows, not this row's
+inputs, so the row's cells stay readings and its class is unchanged; the probe of its `split` inputs this paragraph
+names is still not taken. JSD-0081's section "The owner's decisions of 2026-11-18" carries the same note.
+
 **Read and run at**
 - **Broiler.VM `aaa39fb`** (the default branch after PR #156, the preview.7 re-pin). Every
   regular-expression source is byte-identical at today's `origin/main` `3fa4b39` but
