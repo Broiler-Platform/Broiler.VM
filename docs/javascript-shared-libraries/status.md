@@ -5141,7 +5141,8 @@ observed), which is this branch's first parent.
 
 **Observed in Broiler.JS**, each by its merge commit on that repository's default branch and as its records, its
 `docs/roadmap/SharedLibraries.md`, its `docs/roadmap/SharedLibraries.status.md` and its bundles' READMEs, state it;
-this ledger records no status of that repository's (update rule 6):
+this ledger records no status of that repository's (update rule 6); "[...]" marks words left out of a quote, and "[…]",
+in the owner's answers below, a figure or a duration:
 - Broiler-Platform/Broiler.JS#1124, merged as `aecc5f89092a21f2a40b368162fd91070e7db9da`, records only (SJL-15): its
   bundle `sjl-15-001`'s README and its plan name this repository's change of decision D-x2,
   Broiler-Platform/Broiler.VM#217 (`450c785f`), "which fills the column "Broiler.JS" of Broiler.VM's bundle
@@ -5289,8 +5290,9 @@ as Broiler.JS's records quote them; "[…]" marks a figure or a duration left ou
 
 **What this repository files**, each a dated note quoting what it reads:
 - [JSD-0081](../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0081-regular-expressions-move-to-broiler-regex-under-its-owner-conditions.md):
-  notes on decisions D16 and D35, and a note after decision D-jssticky in its section "The owner's decisions of
-  2026-11-18", on "not merged" and on "whether and how it lists row M28 is Broiler.JS's to file";
+  notes on decisions D14, D16 and D35, a note after decision D-jsrows on "A dated Broiler.JS rule file before SJL-11.5's
+  base would add them to that list should one move", and a note after decision D-jssticky in its section "The owner's
+  decisions of 2026-11-18", on "not merged" and on "whether and how it lists row M28 is Broiler.JS's to file";
 - bundle [`sjl-11-001`](../evidence/sjl-11-001/README.md)'s
   [`correspondence.md`](../evidence/sjl-11-001/correspondence.md): a note after its preamble's paragraph on row M28,
   which reads "(SJL-11.5, not merged)"; row M28 and row M5 are not edited;
@@ -5341,7 +5343,9 @@ anew, one replaced and items added):
   and its after runs", under the owner's answer 9, each merge observed here by its merge commit *(added 2026-11-22)*;
 - SJL-11.5's part B in Broiler.JS, on `win-x64-r7-5800x` by a local session on the owner's workstation, by answers 4
   and 7, its arm B built from `5429c406` and its arm A from the merge with the merge's own `Program.cs`, and its
-  reading in Broiler.JS's bundle `sjl-11-001`, observed here when it merges *(added 2026-11-22)*;
+  reading in Broiler.JS's bundle `sjl-11-001`, observed here when it merges; then Broiler.JS's readings of its clauses
+  of SJL-11, 4 to 7, and its exit reading, of which its plan reads "No clause reading and no exit reading is taken
+  here", each observed here when it merges *(added 2026-11-22)*;
 - the owner's own dated choice at SJL-D-23's trigger (b), when the clauses it lists are the only unmet clauses of SJL-3
   to SJL-15 and SJL-17 *(added 2026-11-18)*;
 - the eval-code inputs of probes V029, V030 and V046 in a later corpus revision of Broiler.JS's, classified on both
@@ -5374,10 +5378,15 @@ anew, one replaced and items added):
   later change": no milestone owns it yet; outside SJL-11.5, it is Broiler.JS's to schedule *(added 2026-11-18, later
   yet)*;
 - Broiler.RegEx's task 4.2, which by its records now waits on "**The scratch branch `sjl-11-2-control-b`'s deletion**,
-  for the owner", and the owner's reading of whether an end reading is owed, which its note "does not decide" and
-  "leaves for the owner" *(added 2026-11-22, in place of "Broiler.RegEx's records of the owner's answers of 2026-11-18
-  on publication (D13) and on the candidate reading's decisions, filed there apart from this record, and what its task
-  4.2 then waits on by its records", done as above)*;
+  for the owner" *(added 2026-11-22, in place of "Broiler.RegEx's records of the owner's answers of 2026-11-18 on
+  publication (D13) and on the candidate reading's decisions, filed there apart from this record, and what its task 4.2
+  then waits on by its records", done as above)*;
+- the owner's reading of whether an end reading is owed, which Broiler.RegEx's note "does not decide it, and leaves it
+  for the owner", and which it reads apart from task 4.2: "an end reading, if one is owed, is not part of task 4.2, the
+  candidate reading" *(added 2026-11-22)*;
+- Broiler.RegEx's later dated record naming the commit of Broiler.JS's default branch its host job runs, decision D14's
+  retained commit now that SJL-11.5 has merged, and its move of the job's pin, which its CI still holds at `f690836d`;
+  Broiler.RegEx's to file, observed here when it merges *(added 2026-11-22)*;
 - the dated rule file the owner may file in bundle `sjl-11-001` for the workflow change of 2026-10-30 and row S5, before
   any base run;
 - SJL-11.4, this family's cut-over, after that dated rule file, on what the entry of 2026-11-18, later yet, names, "its

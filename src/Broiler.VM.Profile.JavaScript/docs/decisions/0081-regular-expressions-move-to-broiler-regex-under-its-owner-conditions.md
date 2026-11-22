@@ -682,6 +682,14 @@ duplicate-named-groups row passing. A host-free library job runs the literal syn
 `property-escapes/generated` and `unicodeSets/generated` under the JIT and through the AOT probe. These are the dated
 readings of R5, R6 and R10's exit criteria. The reason: a library cannot run test262 alone; before SJL-11.5 only the
 cut-over branch exercises every pattern; Broiler.JS needs no committed feed to take a candidate.
+*(Noted 2026-11-22, when Broiler.JS's merge of SJL-11.5 is observed; the decision is left as written.)* The decision
+reads "a retained commit named by a dated roadmap record (SJL-11.5's branch until it merges, then Broiler.JS's default
+branch)". SJL-11.5 merged as Broiler-Platform/Broiler.JS#1126, `b2b226cd3158f0b7d990a3f4fecbe75b259b4fa1`, so the
+decision's "then Broiler.JS's default branch" now applies. Broiler.RegEx's roadmap on its default branch (observed at
+`b288182a65ba323c5031b4160215e689780f2e01`) reads "When it merges, D14's retained commit becomes Broiler.JS's default
+branch, and a later dated record names that commit and moves the job's pin.", and its CI's host job there still pins
+`BROILER_JS_COMMIT: f690836dba19ded358aacc4b6edb9c8107a53ccf` (`.github/workflows/ci.yml`), a commit of the branch
+`sjl-11-5` that `b2b226cd` merged. That record and that move are Broiler.RegEx's to file, and nothing here files them.
 
 ### This family's cut-over
 
@@ -713,9 +721,9 @@ taken at main's head."), at `5429c406`, the default branch's head". The merge's 
 `ce908940`, in that order. So Broiler.JS's bases are where this decision places them, at the after merge's first
 parent, and none is void by it. Part B, which runs its two arms interleaved, is not taken at the base: by the owner's
 answer of 2026-11-19 those records quote ("On your lane after merge"), it is taken after the merge on the lane
-`win-x64-r7-5800x`, its arm B built from `5429c406`, and Broiler.JS's bundle `sjl-11-001` reads that arm "as an arm
-built from the base commit, revising no rule line". This family's half of the decision, its bases at the admission
-commit, is SJL-11.4's, and nothing here moves it.
+`win-x64-r7-5800x`, its arm B built from `5429c406`, and Broiler.JS's bundle `sjl-11-001`'s README reads that arm,
+"for part B's arm B, as **an arm built from the base commit**, not as a run taken before the merge". This family's
+half of the decision, its bases at the admission commit, is SJL-11.4's, and nothing here moves it.
 
 **Decision D17 - where the inputs live.** Each engine's adversarial programs and workloads under its bundle's
 `inputs/`, committed with its rule; Broiler.JS's benchmark class in a later inputs commit, after SJL-12's corpus
@@ -1189,7 +1197,13 @@ the arbiter's but where rows S1 and M4 name this family's corrections.
   test262 file that Broiler.JS's bundle `sjl-10-001` after run fails, the run that rule names its files from, is
   explained by any of the six rows, so none is known to move a Broiler.JS part A row. A dated Broiler.JS rule file
   before SJL-11.5's base would add them to that list should one move; that is Broiler.JS's to file, and this record
-  files none.
+  files none. *(Noted 2026-11-22, when Broiler.JS's merge of SJL-11.5's inputs is observed; the bullet is left as
+  written.)* Broiler.JS filed it: its rule's revision `decision-rule-revised-2026-11-17.md`
+  (`189d65ffc84c3943338a5fab5be5e178fc4d3092`), whose title reads "part A's list of this engine's corrections names
+  rows S12 to S15 and M8 to M27 of the correspondence", landed on its default branch before SJL-11.5's base, in
+  Broiler-Platform/Broiler.JS#1125 (`5429c4065e8b273e5c7965598b8a2f5490a8ad98`). Its bundle `sjl-11-001`'s README,
+  reading part A at the after commit, reads "**Rows S12 to S15, M8 to M27 and row M28** (the revisions of 2026-11-17
+  and 2026-11-18) explain no row: no row other than the table's changed." This record still files none.
 - **Two inputs the reduction reached.** Broiler.Regex's reduction of 2026-11-15 reduced two inputs the arbiter could not
   reach, `P4-38461-s-03` and `-s-05`, to prefixes it reaches, where S and the arbiter answer `null` and Broiler.JS
   refuses the pattern, which B.1.2 admits. It refuses it only under `s`: without `u` or `v` it accepts the same pattern
