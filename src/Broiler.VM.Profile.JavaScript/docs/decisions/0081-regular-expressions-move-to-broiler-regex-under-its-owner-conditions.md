@@ -682,6 +682,14 @@ duplicate-named-groups row passing. A host-free library job runs the literal syn
 `property-escapes/generated` and `unicodeSets/generated` under the JIT and through the AOT probe. These are the dated
 readings of R5, R6 and R10's exit criteria. The reason: a library cannot run test262 alone; before SJL-11.5 only the
 cut-over branch exercises every pattern; Broiler.JS needs no committed feed to take a candidate.
+*(Noted 2026-11-22, when Broiler.JS's merge of SJL-11.5 is observed; the decision is left as written.)* The decision
+reads "a retained commit named by a dated roadmap record (SJL-11.5's branch until it merges, then Broiler.JS's default
+branch)". SJL-11.5 merged as Broiler-Platform/Broiler.JS#1126, `b2b226cd3158f0b7d990a3f4fecbe75b259b4fa1`, so the
+decision's "then Broiler.JS's default branch" now applies. Broiler.RegEx's roadmap on its default branch (observed at
+`b288182a65ba323c5031b4160215e689780f2e01`) reads "When it merges, D14's retained commit becomes Broiler.JS's default
+branch, and a later dated record names that commit and moves the job's pin.", and its CI's host job there still pins
+`BROILER_JS_COMMIT: f690836dba19ded358aacc4b6edb9c8107a53ccf` (`.github/workflows/ci.yml`), a commit of the branch
+`sjl-11-5` that `b2b226cd` merged. That record and that move are Broiler.RegEx's to file, and nothing here files them.
 
 ### This family's cut-over
 
@@ -699,6 +707,23 @@ in one report only, so an admission at the cut-over would drop the files from pa
 being its parent; Broiler.JS's at the after merge's first parent, under a hold. A base whose commit is not the after
 merge's first parent, or the admission commit on it, is void and is taken again. The reason: a base at the rule
 commit would attribute SJL-12's, SJL-9's and SJL-17's changes to SJL-11 (validation principle 4, read on 2026-10-20).
+*(Noted 2026-11-22, when Broiler.JS's merge of SJL-11.5 is observed; the decision is left as written.)* The decision
+reads "Broiler.JS's at the after merge's first parent, under a hold. A base whose commit is not the after merge's first
+parent, or the admission commit on it, is void and is taken again." Broiler.JS's plan on its default branch
+(`docs/roadmap/SharedLibraries.md`, SJL-11's note of 2026-11-19, after SJL-11.5's merge; observed at
+`69a8a13bc446a1714d3c8be9be3cfd742aebee6e`) reads: "SJL-11.5 merged to the default branch on 2026-11-19 as
+Broiler-Platform/Broiler.JS#1126, `b2b226cd3158f0b7d990a3f4fecbe75b259b4fa1`, a merge commit whose first parent is the
+base commit `5429c4065e8b273e5c7965598b8a2f5490a8ad98` and whose second is `ce908940`, the head of `sjl-11-5`. It is
+the rule's after commit, `5429c406` is its base commit, and the base runs taken there stand. The hold of decision D16
+ended with that merge." Its status record reads of the base commit, the merge of Broiler-Platform/Broiler.JS#1125, that
+"the hold of decision D16 started there the same day, by the owner's order ("Then the hold starts and the base runs are
+taken at main's head."), at `5429c406`, the default branch's head". The merge's parents, read here, are `5429c406` and
+`ce908940`, in that order. So Broiler.JS's bases are where this decision places them, at the after merge's first
+parent, and none is void by it. Part B, which runs its two arms interleaved, is not taken at the base: by the owner's
+answer of 2026-11-19 those records quote ("On your lane after merge"), it is taken after the merge on the lane
+`win-x64-r7-5800x`, its arm B built from `5429c406`, and Broiler.JS's bundle `sjl-11-001`'s README reads that arm,
+"for part B's arm B, as **an arm built from the base commit**, not as a run taken before the merge". This family's
+half of the decision, its bases at the admission commit, is SJL-11.4's, and nothing here moves it.
 
 **Decision D17 - where the inputs live.** Each engine's adversarial programs and workloads under its bundle's
 `inputs/`, committed with its rule; Broiler.JS's benchmark class in a later inputs commit, after SJL-12's corpus
@@ -918,7 +943,20 @@ clause 4 judgeable without claiming more than the area.
 
 **Decision D35 - the order of the cut-overs.** Both after SJL-12's after runs and after the candidate reading;
 either first; both in one release train; SJL-11.5's branch exists early for decision D14. The reason: risk D10's
-stop, and processes that host both engines.
+stop, and processes that host both engines. *(Noted 2026-11-22, when Broiler.JS's merge of SJL-11.5 is observed; the
+decision is left as written.)* The ledger's entry of 2026-11-18, later yet, reads "whether D35 asks more of it while
+Broiler.RegEx's task 4.2 is still open is not read here". The owner answered that question for SJL-11.5's merge on
+2026-11-19, by an answer of the owner's own, not one taken under the owner's direction of 2026-10-18, which Broiler.JS's
+status record and plan quote verbatim (observed): Asked: "Decision D35 orders both cut-overs "after SJL-12's after runs
+and after the candidate reading". The candidate reading is taken and merged (Broiler.Regex #28, #29, #30), but Regex
+task 4.2 stays open until the scratch branch sjl-11-2-control-b is deleted. Is D35 met for SJL-11.5's merge?" Chosen:
+"Yes, the reading is taken" — "D35 asks only that the candidate reading come first, and it has. SJL-11.5 may merge once
+its PR's CI is green and the hold still holds." Not taken: "No, close task 4.2 first" — "SJL-11.5 waits until you
+delete the scratch branch and task 4.2 is recorded closed. The hold stays on meanwhile." SJL-11.5 then merged, as
+Broiler-Platform/Broiler.JS#1126, `b2b226cd3158f0b7d990a3f4fecbe75b259b4fa1` (observed), so it is the first of the two
+cut-overs, which "either first" admits. Those records read "Answer 6 does not name D35's "both in one release train",
+and nothing here reads it"; nothing here reads it either. The answer is asked of SJL-11.5's merge, and nothing here
+reads it for SJL-11.4's.
 
 **Decision D36 - the small fixes in SJL-11.2.** `\0`'s lookahead ASCII (row S4); `\k` refused by the parser (S5);
 group-name escapes and surrogates, and the duplicate check after decoding (S2, S2a); a lone lead escape before a
@@ -1159,7 +1197,13 @@ the arbiter's but where rows S1 and M4 name this family's corrections.
   test262 file that Broiler.JS's bundle `sjl-10-001` after run fails, the run that rule names its files from, is
   explained by any of the six rows, so none is known to move a Broiler.JS part A row. A dated Broiler.JS rule file
   before SJL-11.5's base would add them to that list should one move; that is Broiler.JS's to file, and this record
-  files none.
+  files none. *(Noted 2026-11-22, when Broiler.JS's merge of SJL-11.5's inputs is observed; the bullet is left as
+  written.)* Broiler.JS filed it: its rule's revision `decision-rule-revised-2026-11-17.md`
+  (`189d65ffc84c3943338a5fab5be5e178fc4d3092`), whose title reads "part A's list of this engine's corrections names
+  rows S12 to S15 and M8 to M27 of the correspondence", landed on its default branch before SJL-11.5's base, in
+  Broiler-Platform/Broiler.JS#1125 (`5429c4065e8b273e5c7965598b8a2f5490a8ad98`). Its bundle `sjl-11-001`'s README,
+  reading part A at the after commit, reads "**Rows S12 to S15, M8 to M27 and row M28** (the revisions of 2026-11-17
+  and 2026-11-18) explain no row: no row other than the table's changed." This record still files none.
 - **Two inputs the reduction reached.** Broiler.Regex's reduction of 2026-11-15 reduced two inputs the arbiter could not
   reach, `P4-38461-s-03` and `-s-05`, to prefixes it reaches, where S and the arbiter answer `null` and Broiler.JS
   refuses the pattern, which B.1.2 admits. It refuses it only under `s`: without `u` or `v` it accepts the same pattern
@@ -1468,6 +1512,27 @@ in two halves, a correction of Broiler.JS, filed now from a reading of both engi
   so a change of Broiler.JS's that no row names is explained by no row there. The text decides the `split` half, and
   Broiler.JS's own contract, which says `IsMatch` and `Replace` answer as `exec` does, decides the first; so the row is
   a correction, not a policy, an implementation-defined answer or an engine parameter.
+
+*(Noted 2026-11-22, when Broiler.JS's merges of SJL-11.5's inputs, of SJL-11.5 and of its after runs are observed; the
+section above is left as written.)* The section reads "Broiler.JS's branch `sjl-11-5`, its SJL-11.5 cut-over, not
+merged" and, under "What it changes", "whether and how it lists row M28 is Broiler.JS's to file, and this record files
+nothing in Broiler.JS". On Broiler.JS's default branch (observed):
+- Broiler.JS filed it in its bundle `sjl-11-001`'s `decision-rule-revised-2026-11-18.md`, whose title reads "part A's
+  list names row M28, its first half as the cut-over's correction, and part A's runs are taken by the evidence workflow
+  as the default branch carries it at the base commit", landed with the inputs commit before SJL-11.5's base by
+  Broiler-Platform/Broiler.JS#1125, `5429c4065e8b273e5c7965598b8a2f5490a8ad98`, under the owner's answer of 2026-11-18,
+  "Allow both", which the ledger's entry of 2026-11-22 quotes;
+- SJL-11.5 merged as Broiler-Platform/Broiler.JS#1126, `b2b226cd3158f0b7d990a3f4fecbe75b259b4fa1`, whose history
+  holds `4e2e00ad` and `f690836d`, so it is no longer "not merged";
+- its bundle's reading of part A at that after commit, merged in Broiler-Platform/Broiler.JS#1127,
+  `fefb4f9c9331b7d16349ed2a1721285f2fb69fef`, reads "No row moves for M28's half for `IsMatch` and the public
+  `Replace`, and **no row moves through the `split` fallback**, as row M28 records it or in any other way, so the
+  revision of 2026-11-18's reading of that half is not reached", and reads part A MET on the retained runs, Broiler.JS's
+  per-part reading of its own bundle, which meets no clause here.
+
+Decision D-jssticky, row M28's class and its two halves do not change, and its cells stay readings of the code at
+`f690836d`, no cell run. The `split` half stays outside SJL-11.5: Broiler.JS's `CHANGELOG.md` on its default branch
+still leaves the fallback "for a later change", and no milestone owns it.
 
 ## What this rejects, and why
 
