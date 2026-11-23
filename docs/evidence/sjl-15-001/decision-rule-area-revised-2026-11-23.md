@@ -28,8 +28,10 @@ section "The owner's decisions of 2026-11-23", as a decision of 2026-11-23 taken
 direction of 2026-10-18 ("Please do all recommended decisions and skip waiting for review"), with its alternatives not
 taken, and not as the owner's own dated answer. JSD-0088 names three kinds of entry not taken under that direction (the
 start, decision D-census and each publication of the shared stream); this is none of them. **It is the session's
-decision, and the owner may overturn it** by a further dated file in this directory, filed before any run of part A or
-part B; until then this revision stands.
+decision, and the owner may overturn it** by a further dated file in this directory, at any time. Filed before any run
+of part A or part B, that file is not weaker evidence; filed after one, it is, as the rule's section "Revisions" reads
+("A rule revised after any run it judges has been seen is a new dated file in this directory. It quotes this one whole
+and says it was written afterwards, and its decision is then weaker evidence."). Until then this revision stands.
 
 **What was seen, and where.** Read at Broiler.VM `a1d881b7` and, for Broiler.JS's records, at Broiler.JS's default
 branch `69a8a13b`, read-only:
@@ -48,10 +50,13 @@ branch `69a8a13b`, read-only:
    earlier edition's reading; the vector follows the pinned edition." That file is in part A's population and in the
    directories part H names (`test/annexB/language`). So a window 1 that follows the pinned edition for row AB1 moves
    that file's verdict from pass to fail. Part A reads "every other difference is a regression, a verdict that moves
-   from pass to fail among them", and its class C1 admits only "a variant whose verdict moves from fail to pass", and
-   only "for the reason of one of the rows LB1 (H20), MR2 (H19) or the dynamic function's goals"; template T1 of the
-   programme's validation document admits no pass-to-fail move outside class C2 ("no variant passing at base fails, is
-   exhausted or is unsupported after, except under C2"), and this rule admits no C2.
+   from pass to fail among them". Its class C1 has two halves. Its correction half admits only "a variant whose verdict
+   moves from fail to pass", and only "for the reason of one of the rows LB1 (H20), MR2 (H19) or the dynamic function's
+   goals"; its other half, (T), is row PN1's timing alone, "a variant whose verdict moves because eval code's
+   undeclared private name is refused when the eval code is compiled rather than by the executor (row PN1, decision
+   D64's second half)", which names no direction and no other row. Template T1 of the programme's validation document
+   admits no pass-to-fail move outside class C2 ("no variant passing at base fails, is exhausted or is unsupported
+   after, except under C2"), and this rule admits no C2.
 3. **Its part B move is a byte difference of an accepted input.** Row AB1 changes what a block function's declaration
    does when it is evaluated, not whether the input is accepted: an input of the parse corpus that reaches it is
    accepted at both commits, and its artifact differs. Part B's class F admits "an input whose outcome or first
@@ -110,14 +115,31 @@ branch `69a8a13b`, read-only:
   input is listed with row AB1 and the difference is of the class named: in part A, class ED; in part B, class F's row
   AB1. A move for any other reason, or of a variant or input not listed, is judged as the rule judged it.
 - **How class ED differs from class C1.** C1 is template T1's "Correction", "The verdict improves because the shared
-  implementation follows the specification where the engine did not": it admits a move from fail to pass alone, for the
-  rows it names. Class ED is not C1 widened. Its part (i) admits, for the variants of one named file, a move from
-  **pass to fail**, a verdict that worsens, because the pinned suite asserts an earlier edition's reading and the
-  window follows the pinned edition; template T1 admits no such move outside C2, so for those listed variants this rule
-  departs from the template, named here before any run. Its part (ii) admits, for row AB1's reason alone, a move in
-  either direction, a move from pass to fail only for a variant that, like the named file, asserts the base's answer
-  against the pinned edition's text, quoted with it. No other row gains a pass-to-fail class, and C1's words are
-  unchanged.
+  implementation follows the specification where the engine did not": its correction half (LB1, MR2 and the dynamic
+  function's goals) admits a move from fail to pass alone, for the rows it names, and its (T) half is row PN1's timing,
+  for that row alone, and is unchanged. Class ED is not C1 widened. Its part (i) admits, for the variants of one named
+  file, a move from **pass to fail**, a verdict that worsens, because the pinned suite asserts an earlier edition's
+  reading and the window follows the pinned edition; template T1 admits no such move outside C2, so for those listed
+  variants this rule departs from the template, named here before any run. Its part (ii) admits, for row AB1's reason
+  alone, a move in either direction, a move from pass to fail only for a variant that, like the named file, asserts the
+  base's answer against the pinned edition's text, quoted with it. This revision gives a class to no row but AB1, and
+  C1's words, its (T) half among them, are unchanged.
+- **Class ED is outside the validation document's class vocabulary.** Section 4 of the programme's
+  [validation document](../../javascript-shared-libraries/validation.md) reads "The difference classes they admit come
+  from this vocabulary:", the classes C1 to C5, and template T1's MET line reads "every changed verdict falls in C1 to
+  C5 and is listed". Class ED is none of C1 to C5, so it is a second departure from the template, beside the first
+  (T1's "no variant passing at base fails, is exhausted or is unsupported after, except under C2"), and is named here
+  before any run. The nearest class is C3, "Implementation-defined", "The verdict changes in an area the specification
+  leaves to the implementation, and the area's vectors classify it", since the correspondence's row AB1 reads "the
+  whole fact implementation-defined (Annex B), on in both engines' requests". C3 is not used: with Annex B on in both
+  engines' requests, which block function it aliases is the pinned edition's text, not the implementation's choice,
+  and the row's column "Class (this half)" reads "Specification"; this rule reads "no C2, no C3 and no C5", and
+  admitting C3 would admit it for every row, not row AB1's listed variants alone; and template T1 admits a move from
+  pass to fail only under C2, so C3 would depart from T1's line on such moves as class ED does.
+- **The sub-bullet's opening parenthesis now names part A's class.** Change 2 also rewrites the sub-bullet's opening
+  "(part A's and part B's class F)" as "(part A's class C1 and part B's class F)": part A has no class F, and its class
+  for LB1, MR2 and the dynamic function's goals is C1, which its rule block already names. For those three rows it names
+  the class they already had and admits nothing new; row AB1's own clause names its part A class, ED.
 - **Part B reads row AB1 as a byte difference.** Row AB1 moves no outcome and no diagnostic, so class F's row AB1 is
   bounded as class P is, by the decoded difference, and a difference row AB1 names that the decoded bytes do not show is
   a regression, as the rule's "How it is read" says of class P.
@@ -151,8 +173,10 @@ and J; window 2; "What this file does not decide"; JSD-0088's deletion lists and
   to fail) and of part B (an accepted input's bytes outside P), so either part is NOT MET for the correction the
   correspondence names, and JSD-0088's falsifier, "An artifact of window 1 that moves for a reason class P, F, T or S7
   does not name", holds; a revision written after the runs were seen would then be weaker evidence.
-- **Stretching class C1 to row AB1.** C1 admits a verdict that improves; the named file's verdict worsens, and reading
-  C1 to admit it would change what C1 means for the rows it already lists.
+- **Stretching class C1 to row AB1.** C1's correction half admits a verdict that improves, and its (T) half row PN1's
+  timing alone; the named file's verdict worsens, and reading C1 to admit it would change what C1 means for the rows it
+  already lists.
+- **Class C3 for row AB1.** This rule reads "no C2, no C3 and no C5"; the reasons are under "How it reads" above.
 
 ## The rule it revises, quoted whole
 
