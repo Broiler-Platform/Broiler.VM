@@ -25,6 +25,18 @@ listed by row: class H now, its inputs completed at the base run, and classes R 
 reports, the listing committed or retained here with the time it was written before any after run of window 2 is taken;
 every other byte difference still fails part S. SJL-15's clause 5 is
 revised to match, before any evidence.
+*(Noted 2026-11-23, by JSD-0088's decision D-ab1.)* The rule is revised a third time, before any run, by
+[`decision-rule-area-revised-2026-11-23.md`](decision-rule-area-revised-2026-11-23.md), which quotes the rule whole and
+leaves the rule and both revisions of 2026-11-16 unedited; the rule commit is from then on the commit that carries all
+four files, and the note of 2026-11-16 above's "the rule commit is the commit that carries all three files" reads as of
+2026-11-16 until 2026-11-23 and is left as written. At window 1 only, it lists row AB1, Annex B.3.3's block-function
+aliases, a correction of Broiler.VM across both engines: part A gains class ED, the variants of test262's
+`annexB/language/function-code/block-decl-func-skip-arguments.js` whose verdict moves from pass to fail because SJL-15.3
+follows the pinned edition, the file at `ccaac100` asserting an earlier edition's reading, and any other variant that
+moves for row AB1's reason, each listed with the row; and part B's class F gains row AB1, an accepted input's artifact
+bytes moving for that reason alone, listed with the decoded difference. Every other line of the rule and of its
+revisions stands. Decision D-ab1 is the session's, taken under the owner's direction of 2026-10-18, and the owner may
+overturn it. It waits on no item of "What waits, in order" below and changes none.
 
 **Correspondence:** [`correspondence.md`](correspondence.md), this family's half, read from code at Broiler.VM
 `a86b6f5d` and against the model surface at Broiler.JS `6fda6ca4`. Broiler.JS's half fills its column by a dated note in
@@ -70,3 +82,17 @@ another commit, a "before" output at the rule commit among them.
   and filed by the rule's revision of that day; read "the owner's answer to JSD-0088's decision D-census, before any run
   of part S;" until then)*;
 - SJL-15.3's and SJL-15.4's windows, outside SJL-11.4's window, and then this bundle's runs at each base and after commit.
+
+*(Noted 2026-11-23, after SJL-11.5's merge in Broiler.JS, observed; the list above is left as written.)* Its third
+item reads "and none during SJL-11.5's hold". On Broiler.JS's default branch, at `69a8a13b`: SJL-11.5 merged as
+Broiler-Platform/Broiler.JS#1126, `b2b226cd3158f0b7d990a3f4fecbe75b259b4fa1`, whose first parent is its base commit
+`5429c406`, and "The hold of decision D16 ended with that merge" (Broiler.JS's `docs/roadmap/SharedLibraries.md`,
+SJL-11); its after records merged as Broiler-Platform/Broiler.JS#1127, `fefb4f9c9331b7d16349ed2a1721285f2fb69fef`.
+That plan reads "That hold ended with SJL-11.5's merge", and, under Broiler.JS's reading B4 of SJL-14, "W2 merges before
+any SJL-15.2 model merge, so none is such a dark window"; from W2's first base run until W2 merges nothing merges to its
+default branch, by the owner's answer 9 of 2026-11-19, "Allow the W2 hold", the owner's own: "The hold then starts at
+the first base run, and nothing merges to Broiler.JS main until W2 merges". W2 is not merged there. So the third item
+now waits, as Broiler.JS's records state it, on W2's merge, with none of SJL-15.2's model merging during W2's hold, and
+on the later corpus revision of the second item, which that branch does not yet hold; its "each merge before
+Broiler.JS's SJL-14 cut-over a dark window of SJL-14 under its decision D52" has no subject under reading B4. No other
+item changes.

@@ -652,6 +652,21 @@ half in its own change: its `docs/roadmap/SharedLibraries.md`'s SJL-3 and SJL-14
 README on clause 6, and its status file's SJL-3 and SJL-14 rows. That change merged on 2026-11-18 as
 Broiler-Platform/Broiler.JS#1123, `6b235932` (observed), before this note's.)*
 
+*(Noted 2026-11-23, after SJL-11.5's merge in Broiler.JS, observed; the note of 2026-11-18 above is left as written,
+and this note reopens nothing.)* That note reads, of part I's arms, "neither exists, W2 being held for SJL-11.5,
+Broiler.JS's decision D51's recommended order". On Broiler.JS's default branch, at `69a8a13b`: SJL-11.5 merged as
+Broiler-Platform/Broiler.JS#1126, `b2b226cd3158f0b7d990a3f4fecbe75b259b4fa1`, "a merge commit whose first parent is
+the base commit `5429c4065e8b273e5c7965598b8a2f5490a8ad98`", and "The hold of decision D16 ended with that merge"
+(Broiler.JS's `docs/roadmap/SharedLibraries.md`, SJL-11); its after runs and per-part readings merged as
+Broiler-Platform/Broiler.JS#1127, `fefb4f9c9331b7d16349ed2a1721285f2fb69fef`, with part B still to be taken on the
+lane; and Broiler.JS's plan reads "W2 is no longer held for SJL-11.5; it still does not exist, and neither does its
+base commit, so part I is still not taken on the lane before W2 merges, and clause 6 is unmet". W2 is not merged
+there. W2's own hold is the owner's answer 9 of 2026-11-19, "Allow the W2 hold", the owner's own, which reads "The hold
+then starts at the first base run, and nothing merges to Broiler.JS main until W2 merges"; Broiler.JS's default branch
+reads "The hold has not started.", and whether it has begun since is not read here. So "W2 being held for SJL-11.5"
+no longer holds: part I's arms still do not exist because W2 does not, and part I is taken on the lane after W2
+merges. Nothing else of the note of 2026-11-18 changes, and no clause or exit gate is revised.
+
 <a id="sjl-d-16"></a>
 ### SJL-D-16 — Observable corrections at cut-over
 

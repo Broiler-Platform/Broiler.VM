@@ -35,6 +35,10 @@
   direction of 2026-10-18. SJL-15's clause 5 is revised before any evidence, and bundle `sjl-15-001`'s rule is revised
   the same day by a new dated file, so that its part S admits classes H, R and C, each listed by row; every other byte
   difference still fails part S.)*
+- *(Added 2026-11-23.)* **Decision D-ab1 of 2026-11-23 is recorded**, taken as recommended under the owner's direction
+  of 2026-10-18, with its alternatives, in section "The owner's decisions of 2026-11-23": row AB1 is listed at window 1,
+  in part A of bundle `sjl-15-001`'s rule by a class of its own, ED, and in its part B's class F, by that rule's
+  revision of 2026-11-23, filed before any run. It is the session's decision, which the owner may overturn.
 - **SJL-15.0, the start, is a reading of the owner's words of 2026-10-25**, recorded as a reading and not as a decision
   taken under the direction (the programme ledger's SJL-15.0 entry).
 - Nothing in this profile changes with this record. The model is SJL-15.2's, in Broiler.JS; the cut-overs are SJL-15.3's
@@ -250,6 +254,62 @@ the front end, so tools code that built it itself would name three types window 
 parts B, S and C, which run the tools "unchanged at each after commit", could not be configured at window 2; a port would
 be judged by a comparison it writes itself.
 
+## The owner's decisions of 2026-11-23
+
+*(Added 2026-11-23.)* The programme ledger's entry of 2026-11-17 records what the `semantics` vectors' first runs show
+of this family, among them row AB1, and ends "where row AB1 stands in the rule is not decided here". The decision below
+was taken on 2026-11-23 as recommended, under the owner's direction of 2026-10-18 quoted above, "Please do all
+recommended decisions and skip waiting for review.", and is recorded here, as the decisions of 2026-11-16 were, under
+the owner's direction, with the alternatives not taken. It follows the pattern of decision D-tables above, a matter of
+bundle `sjl-15-001`'s rule found before any run and filed by a revision of that rule. It is not one of the owner's own
+answers, and it is none of the three kinds of entry this record names as not taken under the direction. **It is the
+session's decision, and the owner may overturn it**, at any time, by a further dated rule file in bundle `sjl-15-001`;
+filed before any run of part A or part B, that file is not weaker evidence, and filed after one, it is, as the rule's
+section "Revisions" reads.
+
+**Decision D-ab1 - where row AB1 stands in bundle `sjl-15-001`'s rule.** **(a) Row AB1 is listed at window 1, by a dated
+revision of the rule filed before any run**,
+[`decision-rule-area-revised-2026-11-23.md`](../../../../docs/evidence/sjl-15-001/decision-rule-area-revised-2026-11-23.md),
+which quotes the rule whole and leaves it and both revisions of 2026-11-16 unedited. **Part A gains class ED**, window 1
+only, which admits (i) the variants of test262's `annexB/language/function-code/block-decl-func-skip-arguments.js` whose
+verdict moves from pass to fail because SJL-15.3 follows the pinned edition, the file at `ccaac100` asserting this
+family's answer, an earlier edition's reading, and (ii) any other variant whose verdict moves for row AB1's reason, a
+move from pass to fail only where the variant asserts the base's answer against the pinned edition's text, each listed
+with the row. **Part B's class F gains row AB1**, window 1 only, beside LB1, MR2 and the dynamic function's goals,
+bounded by the decoded difference as class P is, because row AB1 moves an accepted input's bytes and no outcome or
+diagnostic. Class ED is not class C1 widened: C1's correction half (LB1, MR2 and the dynamic function's goals) admits
+only a move from fail to pass, and its (T) half is row PN1's timing and is unchanged. Class ED departs from template T1
+of the programme's validation document twice, for its listed variants alone, both named in the revision before any run:
+its part (i) is a move from pass to fail, which T1 admits only under C2 ("no variant passing at base fails, is exhausted
+or is unsupported after, except under C2"), and class ED is none of the classes C1 to C5 of that document's section 4
+("The difference classes they admit come from this vocabulary:"), outside T1's "every changed verdict falls in C1 to C5
+and is listed". Every other line of the rule and of its revisions stands, parts G and J among them: part G's twins and
+part J's workloads name part B's class P alone, so a twin or a workload whose artifact moves for row AB1 is read under
+those parts as written. The rule commit is from then on the commit that carries all four files; the words of section
+"Put to the owner: decision D-census" below, on the owner's answer, "the rule commit is from then on the commit that
+carries all three files", read as of 2026-11-16 until 2026-11-23, and are left as written.
+- *Not taken:* (b) **SJL-15.3 keeps Broiler.VM's current answer for `semantics/annex-b/ab1/0005`**, row AB1 staying a
+  known divergence and the rule unrevised. The reason: the correspondence classes row AB1 a correction of Broiler.VM
+  across both engines, and its last cell has SJL-15.3 read the model's alias decision, `ScanAnnexB` gone; keeping the
+  base's answer would keep in the lowering a computation of the alias against the model's fact, which decision
+  D-precision rejects for the binder's approximations.
+- *Not taken:* (c) **the rule left as it is.** The reason: a move of row AB1 at window 1 is then a regression of part A,
+  the named file's verdict moving from pass to fail, and of part B, an accepted input's bytes moving outside class P, so
+  either part reads NOT MET for the correction the correspondence names, and this record's falsifier, "An artifact of
+  window 1 that moves for a reason class P, F, T or S7 does not name", holds; a revision written after the runs were
+  seen would be weaker evidence.
+- *Not taken:* class C1 stretched to row AB1. C1's correction half admits a verdict that improves, and its (T) half row
+  PN1's timing alone; reading it to admit one that worsens would change what it means for the rows it already lists.
+- *Not taken:* class C3, "Implementation-defined", the nearest of the validation document's classes, as the
+  correspondence's row AB1 reads "the whole fact implementation-defined (Annex B), on in both engines' requests". The
+  reason: with Annex B on in both engines' requests, which block function it aliases is the pinned edition's text, the
+  row's class "Specification"; the rule reads "no C2, no C3 and no C5", and C3 admitted would be admitted for every row;
+  and T1 admits a move from pass to fail only under C2, so C3 would depart from T1 as class ED does.
+
+**What it changes:** bundle `sjl-15-001`'s rule, by that revision; the bundle's README, by dated notes; this record's
+falsifier, by a dated note; the programme ledger. No condition of the verdict, no deletion list, no hand-off and no
+code changes.
+
 ---
 
 ## Put to the owner: decision D-census
@@ -419,6 +479,10 @@ note after its verdict table completing X2 and X6, and a note on its settling co
 correspondence gains its note filling the column "Broiler.JS", and its README notes on its "Correspondence" paragraph
 and on "What waits, in order"; the programme ledger records it in its entry of that day, its SJL-15 row, its Next list
 and "Last updated".)*
+*(Note of 2026-11-23, decision D-ab1: this record gains a bullet under its status, section "The owner's decisions of
+2026-11-23" and a note on its falsifier; bundle `sjl-15-001` gains its rule's revision of that day, with dated notes in
+its README; the programme ledger records it in its entry of that day, with a note on its entry of 2026-11-17's
+sentence on row AB1, its Next list and "Last updated".)*
 
 ## What this record does not decide
 
@@ -436,6 +500,16 @@ and "Last updated".)*
 - A fact SJL-15.3's lowering reads from the model that the correspondence does not name, or a fact it names that the
   lowering still computes for itself after window 1.
 - An artifact of window 1 that moves for a reason class P, F, T or S7 does not name.
+  *(Note of 2026-11-23, decision D-ab1: class F of bundle `sjl-15-001`'s rule names row AB1 at window 1 from that day,
+  by the rule's revision
+  [`decision-rule-area-revised-2026-11-23.md`](../../../../docs/evidence/sjl-15-001/decision-rule-area-revised-2026-11-23.md),
+  filed before any run. An artifact of window 1 that moves only because the lowering reads the model's Annex B.3.3
+  alias decision as the pinned edition gives it, listed as class F's row AB1 lists it (the row, the function's place,
+  the decoded difference, and the input's verdict in part A unchanged or in part A's class ED), is now a move for a
+  reason class F names, and does not falsify this record; one that moves for row AB1 unlisted, or beyond what its
+  decoded difference shows, still does. A test262 verdict that moves for row AB1 is that rule's part A's, read under
+  its class ED, and this item does not read it. This reading is the session's decision, which the owner may
+  overturn.)*
 - The slice corpus's binding table, refusals or census differing at window 2 outside what the owner's answer to decision
   D-census admits.
   *(Note of 2026-11-16, after SJL-15.1 merged: the owner's answer admits classes H, R and C, each listed by row, as
