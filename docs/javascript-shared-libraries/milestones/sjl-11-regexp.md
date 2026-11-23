@@ -341,9 +341,9 @@ Broiler-Platform/Broiler.JS#1127, `fefb4f9c9331b7d16349ed2a1721285f2fb69fef`, it
 A, C (a second time, under its revision for case N05), D and E MET on the retained runs, its first reading of part C,
 NOT MET, on record beside it, and part B still to be taken on `win-x64-r7-5800x` by the owner's answer 4 of
 2026-11-19. Those are Broiler.JS's per-part readings of its own bundle; its plan reads "No clause reading and no exit
-reading is taken here", so none of Broiler.JS's clauses 4 to 7 above is read, here or there, and whether the deletion
-list above is met is clause 4's, read in Broiler.JS. SJL-11.4, this family's cut-over, is not affected and has not
-started. Nothing is revised.
+reading is taken here", so none of Broiler.JS's clauses 4 to 7 in the exit gate below is read, here or there, and
+whether the deletion list above is met is clause 4's, read in Broiler.JS. SJL-11.4, this family's cut-over, is not
+affected and has not started. Nothing is revised.
 
 ### SJL-11.6 — Evidence
 
