@@ -290,6 +290,19 @@ carries it by a dated note of the same day.
    re-evaluated. Broiler.JS records the choice in its own change, in its plan's SJL-14 section and
    bundle `sjl-14-001`'s README, merged on 2026-11-18 as Broiler-Platform/Broiler.JS#1123 (`6b235932`,
    observed).)*
+   *(Noted 2026-11-23, after SJL-11.5's merge in Broiler.JS, observed; the note above is left as written.)* The note
+   above reads "W2 is held for SJL-11.5, decision D51's recommended order", and quotes Broiler.JS's bundle
+   `sjl-14-001`'s README, "W2 and the base commit do not exist yet: W2 is held for SJL-11.5". On Broiler.JS's default
+   branch, at `69a8a13b`: SJL-11.5 merged as Broiler-Platform/Broiler.JS#1126,
+   `b2b226cd3158f0b7d990a3f4fecbe75b259b4fa1`, and "The hold of decision D16 ended with that merge" (Broiler.JS's
+   `docs/roadmap/SharedLibraries.md`, SJL-11); its after records merged as Broiler-Platform/Broiler.JS#1127,
+   `fefb4f9c9331b7d16349ed2a1721285f2fb69fef`. That README's note of 2026-11-19, on its bullet that read "W2 is held
+   for SJL-11.5 (decision D51's recommended order", reads "That merge is the end of what held W2: W2 is no longer held for SJL-11.5", and "W2 and the base commit still do not
+   exist". W2 is not merged there. From the first base run until W2 merges, Broiler.JS's default branch is held for W2
+   by the owner's answer 9 of 2026-11-19, "Allow the W2 hold", the owner's own: "The hold then starts at the first base
+   run, and nothing merges to Broiler.JS main until W2 merges"; that branch reads "The hold has not started.", and
+   whether it has begun since is not read here. So part I still waits on W2 and its base commit, and is taken on
+   `win-x64-r7-5800x` after W2 merges; clause 6 stays unmet. Nothing is revised.
 
 ---
 

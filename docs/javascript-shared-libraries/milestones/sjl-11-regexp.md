@@ -329,6 +329,22 @@ port merged with `cdf5559d` in Broiler-Platform/Broiler.JS#1119 as `6fda6ca4`, a
 
 The list above is left as written.
 
+*(Noted 2026-11-23, after SJL-11.5's merge in Broiler.JS, observed; the note of 2026-11-16 above and the lists above
+are left as written.)* That note reads SJL-11.5 as still to come: "SJL-11.5's base, the first parent of the merge that
+lands it (SJL-11.6's "The bases"), will already pin `0.1.0-preview.6`", "reading them on `0.1.0-preview.6` is
+SJL-11.5's", and "SJL-11.5 still deletes them". On Broiler.JS's default branch, at `69a8a13b`, as its records state
+it: SJL-11.5's inputs commit and its rule's revisions of 2026-11-17 and 2026-11-18 landed as
+Broiler-Platform/Broiler.JS#1125, `5429c4065e8b273e5c7965598b8a2f5490a8ad98`, the base commit; SJL-11.5 merged as
+Broiler-Platform/Broiler.JS#1126, `b2b226cd3158f0b7d990a3f4fecbe75b259b4fa1`, "a merge commit whose first parent is
+the base commit", and "The hold of decision D16 ended with that merge"; and its after runs merged as
+Broiler-Platform/Broiler.JS#1127, `fefb4f9c9331b7d16349ed2a1721285f2fb69fef`, its bundle `sjl-11-001` reading parts
+A, C (a second time, under its revision for case N05), D and E MET on the retained runs, its first reading of part C,
+NOT MET, on record beside it, and part B still to be taken on `win-x64-r7-5800x` by the owner's answer 4 of
+2026-11-19. Those are Broiler.JS's per-part readings of its own bundle; its plan reads "No clause reading and no exit
+reading is taken here", so none of Broiler.JS's clauses 4 to 7 above is read, here or there, and whether the deletion
+list above is met is clause 4's, read in Broiler.JS. SJL-11.4, this family's cut-over, is not affected and has not
+started. Nothing is revised.
+
 ### SJL-11.6 — Evidence
 
 The same as SJL-3.6, plus the adversarial resource corpus in both engines. **Broiler.VM's

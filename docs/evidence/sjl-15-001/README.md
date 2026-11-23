@@ -81,3 +81,17 @@ another commit, a "before" output at the rule commit among them.
   and filed by the rule's revision of that day; read "the owner's answer to JSD-0088's decision D-census, before any run
   of part S;" until then)*;
 - SJL-15.3's and SJL-15.4's windows, outside SJL-11.4's window, and then this bundle's runs at each base and after commit.
+
+*(Noted 2026-11-23, after SJL-11.5's merge in Broiler.JS, observed; the list above is left as written.)* Its third
+item reads "and none during SJL-11.5's hold". On Broiler.JS's default branch, at `69a8a13b`: SJL-11.5 merged as
+Broiler-Platform/Broiler.JS#1126, `b2b226cd3158f0b7d990a3f4fecbe75b259b4fa1`, whose first parent is its base commit
+`5429c406`, and "The hold of decision D16 ended with that merge" (Broiler.JS's `docs/roadmap/SharedLibraries.md`,
+SJL-11); its after records merged as Broiler-Platform/Broiler.JS#1127, `fefb4f9c9331b7d16349ed2a1721285f2fb69fef`.
+That plan reads "That hold ended with SJL-11.5's merge", and, under Broiler.JS's reading B4 of SJL-14, "W2 merges before
+any SJL-15.2 model merge, so none is such a dark window"; from W2's first base run until W2 merges nothing merges to its
+default branch, by the owner's answer 9 of 2026-11-19, "Allow the W2 hold", the owner's own: "The hold then starts at
+the first base run, and nothing merges to Broiler.JS main until W2 merges". W2 is not merged there. So the third item
+now waits, as Broiler.JS's records state it, on W2's merge, with none of SJL-15.2's model merging during W2's hold, and
+on the later corpus revision of the second item, which that branch does not yet hold; its "each merge before
+Broiler.JS's SJL-14 cut-over a dark window of SJL-14 under its decision D52" has no subject under reading B4. No other
+item changes.

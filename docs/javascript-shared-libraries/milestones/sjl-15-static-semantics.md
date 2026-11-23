@@ -93,6 +93,20 @@ none merges while SJL-11.5's bases are held. The `semantics` vectors land in Bro
 decision D61), and it comes after both repositories' SJL-15.1 rules. This family reads the model only from a stream
 version the owner publishes (JSD-0083's decision D30), admitted by a pin commit of its own before SJL-15.3's base. The
 text above is left as written.
+*(Noted 2026-11-23, after SJL-11.5's merge in Broiler.JS, observed; the note above is left as written.)* The note
+above reads "none merges while SJL-11.5's bases are held". On Broiler.JS's default branch, at `69a8a13b`: SJL-11.5
+merged as Broiler-Platform/Broiler.JS#1126, `b2b226cd3158f0b7d990a3f4fecbe75b259b4fa1`, whose first parent is its
+base commit `5429c406`, and "The hold of decision D16 ended with that merge" (Broiler.JS's
+`docs/roadmap/SharedLibraries.md`, SJL-11); its after records merged as Broiler-Platform/Broiler.JS#1127,
+`fefb4f9c9331b7d16349ed2a1721285f2fb69fef`. That plan's note of 2026-11-19 on its SJL-15 list reads "That hold ended
+with SJL-11.5's merge (Broiler-Platform/Broiler.JS#1126, `b2b226cd`)"; that under Broiler.JS's reading B4 of SJL-14 "W2
+merges before any SJL-15.2 model merge, so none is such a dark window", and from W2's first base run until W2 merges
+nothing merges to its default branch, by the owner's answer 9 of 2026-11-19, "Allow the W2 hold", the owner's own:
+"The hold then starts at the first base run, and nothing merges to Broiler.JS main until W2 merges"; and that
+"SJL-15.2's model still waits on the later corpus revision this note names", the one with the eval-code inputs of
+probes V029, V030 and V046, which that branch names next and does not yet hold. W2 is not merged there. So no merge of
+SJL-15.2's model is held for SJL-11.5 any longer: none comes before W2, none during W2's hold, and none before that
+corpus revision. Nothing is revised.
 
 ### SJL-15.3 — Broiler.VM's lowering consumes it
 
