@@ -25,6 +25,17 @@ listed by row: class H now, its inputs completed at the base run, and classes R 
 reports, the listing committed or retained here with the time it was written before any after run of window 2 is taken;
 every other byte difference still fails part S. SJL-15's clause 5 is
 revised to match, before any evidence.
+*(Noted 2026-11-23, by JSD-0088's decision D-ab1.)* The rule is revised a third time, before any run, by
+[`decision-rule-area-revised-2026-11-23.md`](decision-rule-area-revised-2026-11-23.md), which quotes the rule whole and
+leaves the rule and both revisions of 2026-11-16 unedited; the rule commit is from then on the commit that carries all
+four files. At window 1 only, it lists row AB1, Annex B.3.3's block-function aliases, a correction of Broiler.VM across
+both engines: part A gains class ED, the variants of test262's
+`annexB/language/function-code/block-decl-func-skip-arguments.js` whose verdict moves from pass to fail because
+SJL-15.3 follows the pinned edition, the file at `ccaac100` asserting an earlier edition's reading, and any other
+variant that moves for row AB1's reason, each listed with the row; and part B's class F gains row AB1, an accepted
+input's artifact bytes moving for that reason alone, listed with the decoded difference. Every other line of the rule
+and of its revisions stands. Decision D-ab1 is the session's, taken under the owner's direction of 2026-10-18, and the
+owner may overturn it. It waits on no item of "What waits, in order" below and changes none.
 
 **Correspondence:** [`correspondence.md`](correspondence.md), this family's half, read from code at Broiler.VM
 `a86b6f5d` and against the model surface at Broiler.JS `6fda6ca4`. Broiler.JS's half fills its column by a dated note in
