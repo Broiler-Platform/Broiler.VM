@@ -304,6 +304,19 @@ carries it by a dated note of the same day.
    that branch reads "The hold has not started.", and whether it has begun since is not read here. So part I still waits
    on W2 and its base commit, and is taken on `win-x64-r7-5800x` after W2 merges; clause 6 stays unmet. Nothing is
    revised.
+   *(Noted 2026-11-24, after W2's merge in Broiler.JS, observed; the notes above are left as written.)* The note
+   above reads "W2 is not merged there", "whether it has begun since is not read here" and "So part I still waits on
+   W2 and its base commit, and is taken on `win-x64-r7-5800x` after W2 merges; clause 6 stays unmet." On Broiler.JS's
+   default branch, at `4f697339`, its bundle `sjl-14-001`'s README reads "**The hold of the owner's answer 9 started
+   on 2026-11-19, with the first base run.**"; W2 merged as Broiler-Platform/Broiler.JS#1129,
+   `83a9bd82a5d258d3001468095ebf43f9efc3e9a7`, "its first parent the base commit
+   `69a8a13bc446a1714d3c8be9be3cfd742aebee6e`", and "**The hold of the owner's answer 9 ended** with that merge"; so
+   the after commit is `83a9bd82` and the base commit `69a8a13b`. Its after records merged as
+   Broiler-Platform/Broiler.JS#1130, `4f697339d2b360b422d4c0e32898cefca3423d95`, with Broiler.JS's per-part readings
+   of the bundle's other parts at the after commit, which this programme's ledger observes in its entry of 2026-11-24
+   and which meet no clause here; of part I its README reads "**Pending on the owner's lane.**" So part I no longer
+   waits on W2: it is due on `win-x64-r7-5800x`, and clause 6 stays unmet until part I is read there. Nothing is
+   revised.
 
 ---
 

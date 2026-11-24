@@ -107,6 +107,15 @@ nothing merges to its default branch, by the owner's answer 9 of 2026-11-19, "Al
 probes V029, V030 and V046, which that branch names next and does not yet hold. W2 is not merged there. So no merge of
 SJL-15.2's model is held for SJL-11.5 any longer: none comes before W2, none during W2's hold, and none before that
 corpus revision. Nothing is revised.
+*(Noted 2026-11-24, after W2's merge in Broiler.JS, observed; the notes above are left as written.)* The note above
+reads "W2 is not merged there" and "none comes before W2, none during W2's hold, and none before that corpus revision".
+W2, Broiler.JS's SJL-14 cut-over, merged as Broiler-Platform/Broiler.JS#1129,
+`83a9bd82a5d258d3001468095ebf43f9efc3e9a7`, and "**The hold of the owner's answer 9 ended** with that merge"
+(Broiler.JS's bundle `sjl-14-001`'s README, at `4f697339d2b360b422d4c0e32898cefca3423d95`, the merge of
+Broiler-Platform/Broiler.JS#1130). So of the three, only that corpus revision is still to come before any merge of
+SJL-15.2's model; Broiler.JS's default branch, at `4f697339`, does not hold it yet, its
+`conformance/vectors/REVISIONS.md` listing revision 43 last. The first note's "until Broiler.JS's SJL-14 cut-over (its
+window W2), each merge of it is a dark window of SJL-14" has no subject from W2's merge on. Nothing is revised.
 
 ### SJL-15.3 — Broiler.VM's lowering consumes it
 

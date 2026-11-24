@@ -450,6 +450,33 @@ Broiler-Platform/Broiler.JS#1066): at Broiler.JS's `33d3093b`, `Portable.Compile
 the frontend and `Portable`, and `Expressions` only if it uses a non-tree type that moves there, and no longer `Ast`
 or `Parser`; Broiler.JS's SJL-14 rule takes a closure listing at the cut-over (its part E).
 
+*(Noted 2026-11-24, at SJL-14's cut-over in Broiler.JS, by SJL-13's plan's decision D53, which asks for "a dated note on
+Broiler.VM's `architecture.md` section 6.2"; the paragraph and the note above are left as written.)* The note above
+reads "**After SJL-14's cut-over** it references the frontend and `Portable`, and `Expressions` only if it uses a
+non-tree type that moves there, and no longer `Ast` or `Parser`; Broiler.JS's SJL-14 rule takes a closure listing at the
+cut-over (its part E)", a prediction this note observes at the cut-over's merge commit. That cut-over, W2, merged in
+Broiler.JS as `83a9bd82a5d258d3001468095ebf43f9efc3e9a7` (Broiler-Platform/Broiler.JS#1129, observed), its first parent
+the base commit `69a8a13b`. **At that commit**, the project file
+`Broiler.JS/Broiler.JavaScript.Portable.Compiler/Broiler.JavaScript.Portable.Compiler.csproj`, blob
+`b7f7358b0371007fc5b087c196d65e13e123b3b8` (the same blob at Broiler.JS's `4f697339`), has the project references
+`Broiler.ECMAScript.Frontend`, `Broiler.JavaScript.Expressions` and `Broiler.JavaScript.Portable`, and the package
+reference `Broiler.Regex` (`PrivateAssets="compile"`), and references neither `Ast` nor `Parser`, which the base
+commit's blob of the file, `e9717148d5f890653fe78cf6786ad3936d04ea31`, references beside `Portable`. The file's own
+comment gives the reasons: "it references the library and Portable, and Expressions for the one non-tree part that
+moved there, this engine's Unicode tables, with CompilationStack, whose stack the parse runs on (decision D47 (a)); and
+Broiler.Regex, whose validate entry checks a regular-expression literal as the engine's parse does. It no longer
+references Ast or Parser." That `Expressions` is referenced for a part that moved there is that comment's reading,
+Broiler.JS's, and is not read further here; the package reference to `Broiler.Regex` is one that neither decision D53
+nor the note above names. **Part E** of Broiler.JS's bundle `sjl-14-001`, in its after records merged as
+`4f697339d2b360b422d4c0e32898cefca3423d95` (Broiler-Platform/Broiler.JS#1130, observed), retains the local runs at
+the after commit in `after/local/`: `phase5/`, the collector `scripts/performance/collect_phase5.py --rid linux-x64`,
+run locally with no dispatch, as decision D53 reads, and `closure/`, the closure listing of
+`Broiler.JavaScript.Portable.Compiler`, whose `dotnet-list-reference.txt` names the same project references. The
+bundle's README reads "**The closure** of `Broiler.JavaScript.Portable.Compiler` at the after commit (its project and
+package references, transitive, and its publish output) names no `Broiler.JavaScript.Runtime` and no
+`Broiler.JavaScript.Storage`" and "**Part E: read MET on the retained runs**", a per-part reading of Broiler.JS's own
+bundle, which meets no clause of this programme's ledger (its update rule 3).
+
 **Native AOT.** `Portable.Compiler` runs offline under JIT. Broiler.JS's Native AOT image is its
 portable interpreter, published by `samples/Broiler.JavaScript.NativeAotSample`, which no shared
 library reaches. Its main engine emits IL at run time and is not a Native AOT target; the
