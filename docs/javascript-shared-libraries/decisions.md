@@ -667,6 +667,20 @@ reads "The hold has not started.", and whether it has begun since is not read he
 no longer holds: part I's arms still do not exist because W2 does not, and part I is taken on the lane after W2
 merges. Nothing else of the note of 2026-11-18 changes, and no clause or exit gate is revised.
 
+*(Noted 2026-11-24, after W2's merge in Broiler.JS, observed; the notes above are left as written, and this note
+reopens nothing.)* The note of 2026-11-23 reads "W2 is not merged there", "whether it has begun since is not read
+here" and "part I's arms still do not exist because W2 does not, and part I is taken on the lane after W2 merges". On
+Broiler.JS's default branch, at `4f697339`, its bundle `sjl-14-001`'s README reads "**The hold of the owner's answer 9
+started on 2026-11-19, with the first base run.**"; W2 merged as Broiler-Platform/Broiler.JS#1129,
+`83a9bd82a5d258d3001468095ebf43f9efc3e9a7`, "its first parent the base commit
+`69a8a13bc446a1714d3c8be9be3cfd742aebee6e`", and "**The hold of the owner's answer 9 ended** with that merge"; and
+its after records merged as Broiler-Platform/Broiler.JS#1130, `4f697339d2b360b422d4c0e32898cefca3423d95`, whose
+README reads of part I "Not taken: part I is the owner's run on the controlled lane `win-x64-r7-5800x`, arm B built
+from the base commit and arms A and A-again from the after commit, under reading B10's protocol" and "**Pending on the
+owner's lane.**" So part I's arms now exist, and part I is due on the lane, as the owner's choice of 2026-11-18 at
+trigger (a) takes it; clause 6 stays unmet until part I is read there. Nothing else of the notes above changes,
+trigger (b)'s list is unchanged, and no clause or exit gate is revised.
+
 <a id="sjl-d-16"></a>
 ### SJL-D-16 — Observable corrections at cut-over
 
