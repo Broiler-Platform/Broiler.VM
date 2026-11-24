@@ -102,6 +102,6 @@ note above reads "W2 is not merged there. So the third item now waits, as Broile
 with none of SJL-15.2's model merging during W2's hold, and on the later corpus revision of the second item, which that
 branch does not yet hold". W2 merged as Broiler-Platform/Broiler.JS#1129, `83a9bd82a5d258d3001468095ebf43f9efc3e9a7`,
 and "**The hold of the owner's answer 9 ended** with that merge" (Broiler.JS's bundle `sjl-14-001`'s README, at
-`4f697339`, the merge of Broiler-Platform/Broiler.JS#1130). So of what that note names, the third item now waits only
-on the second item's corpus revision, which Broiler.JS's default branch, at `4f697339`, does not yet hold: its
-`conformance/vectors/REVISIONS.md` lists revision 43 last. No other item changes.
+`4f697339d2b360b422d4c0e32898cefca3423d95`, the merge of Broiler-Platform/Broiler.JS#1130). So of what that note names,
+the third item now waits only on the second item's corpus revision, which Broiler.JS's default branch, at `4f697339`,
+does not yet hold: its `conformance/vectors/REVISIONS.md` lists revision 43 last. No other item changes.

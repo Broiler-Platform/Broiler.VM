@@ -452,10 +452,11 @@ or `Parser`; Broiler.JS's SJL-14 rule takes a closure listing at the cut-over (i
 
 *(Noted 2026-11-24, at SJL-14's cut-over in Broiler.JS, by SJL-13's plan's decision D53, which asks for "a dated note on
 Broiler.VM's `architecture.md` section 6.2"; the paragraph and the note above are left as written.)* The note above
-reads "it references the frontend and `Portable`, and `Expressions` only if it uses a non-tree type that moves there,
-and no longer `Ast` or `Parser`; Broiler.JS's SJL-14 rule takes a closure listing at the cut-over (its part E)". That
-cut-over, W2, merged in Broiler.JS as `83a9bd82a5d258d3001468095ebf43f9efc3e9a7` (Broiler-Platform/Broiler.JS#1129,
-observed), its first parent the base commit `69a8a13b`. **At that commit**, the project file
+reads "**After SJL-14's cut-over** it references the frontend and `Portable`, and `Expressions` only if it uses a
+non-tree type that moves there, and no longer `Ast` or `Parser`; Broiler.JS's SJL-14 rule takes a closure listing at the
+cut-over (its part E)", a prediction this note observes at the cut-over's merge commit. That cut-over, W2, merged in
+Broiler.JS as `83a9bd82a5d258d3001468095ebf43f9efc3e9a7` (Broiler-Platform/Broiler.JS#1129, observed), its first parent
+the base commit `69a8a13b`. **At that commit**, the project file
 `Broiler.JS/Broiler.JavaScript.Portable.Compiler/Broiler.JavaScript.Portable.Compiler.csproj`, blob
 `b7f7358b0371007fc5b087c196d65e13e123b3b8` (the same blob at Broiler.JS's `4f697339`), has the project references
 `Broiler.ECMAScript.Frontend`, `Broiler.JavaScript.Expressions` and `Broiler.JavaScript.Portable`, and the package
