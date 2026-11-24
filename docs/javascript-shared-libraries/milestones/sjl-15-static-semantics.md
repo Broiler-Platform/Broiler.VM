@@ -116,6 +116,15 @@ Broiler-Platform/Broiler.JS#1130). So of the three, only that corpus revision is
 SJL-15.2's model; Broiler.JS's default branch, at `4f697339`, does not hold it yet, its
 `conformance/vectors/REVISIONS.md` listing revision 43 last. The first note's "until Broiler.JS's SJL-14 cut-over (its
 window W2), each merge of it is a dark window of SJL-14" has no subject from W2's merge on. Nothing is revised.
+*(Noted 2026-11-24, later, at Broiler.JS's corpus revision 44, observed; the notes above are left as written.)* The
+note above reads "only that corpus revision is still to come before any merge of SJL-15.2's model; Broiler.JS's default
+branch, at `4f697339`, does not hold it yet". It merged as Broiler-Platform/Broiler.JS#1131,
+`8b1fa311da6af71baac6378e8b4f8597a99c1312`: corpus revision 44, the eval-code inputs of probes V029, V030 and V046 as
+`DirectEval` vectors, classified on both engines' runs (Broiler.JS's `conformance/vectors/REVISIONS.md`, row 44). So
+nothing that note names is still to come, and Broiler.JS's records name SJL-15.2's model next: "so SJL-15.2's model comes
+next, then SJL-15.5, then the evidence" (its `docs/roadmap/SharedLibraries.md`, the note of 2026-11-24 on "The order of
+SJL-15's Broiler.JS work"). This family still reads the model only from a stream version the owner publishes, admitted
+by its pin commit before SJL-15.3's base. Nothing is revised.
 
 ### SJL-15.3 — Broiler.VM's lowering consumes it
 
