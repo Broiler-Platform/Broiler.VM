@@ -5630,14 +5630,18 @@ and "[…]" a figure left out (update rule 8):
 
 **What rests on revisions written after the runs were seen.** Of the parts Broiler.JS reads MET at the after commit,
 four, A, D, J and K, read MET only under dated revisions written after the runs they judge were seen, which the rule's
-section "Revisions" calls weaker evidence: parts A, D and J under
-`decision-rule-revised-2026-11-24.md`, part K under it and `decision-rule-revised-2026-11-24-k.md`, and part D also
-under `decision-rule-revised-2026-11-23.md`, which changes parts C and D and was itself written after part C's base
-runs were seen; part J's reading
-is, besides, on a session corrected after the first session's findings were seen; and part G's base side for
-Broiler.JSeal was taken after the after runs. Each such file is in Broiler.JS's `docs/evidence/sjl-14-001/`. The first
-readings, NOT MET, stay on record there beside them. Part C, judged at W2's base, stays read NOT MET on record under the
-revision of 2026-11-23; Broiler.JS's records name no further reading of it.
+section "Revisions" calls weaker evidence. Each is named as Broiler.JS's reading of it names it: part A, read again
+"Under the rule and both revisions", `decision-rule-revised-2026-11-23.md` and `decision-rule-revised-2026-11-24.md`,
+its two admitted rows being in rev-for-of and rev-minifier, classes the first defines; part D, read again "Under the
+rule and both revisions", the same two files; part J, read again "under the revision of 2026-11-24",
+`decision-rule-revised-2026-11-24.md`; and part K, read a third time "Under the rule and its three revisions", "under
+the revision of 2026-11-24-k with the revisions of 2026-11-23 and 2026-11-24", all three,
+`decision-rule-revised-2026-11-23.md`, `decision-rule-revised-2026-11-24.md` and
+`decision-rule-revised-2026-11-24-k.md`. The revision of 2026-11-23 changes parts C and D and was itself written after
+part C's base runs were seen; part J's reading is, besides, on a session corrected after the first session's findings
+were seen; and part G's base side for Broiler.JSeal was taken after the after runs. Each such file is in Broiler.JS's
+`docs/evidence/sjl-14-001/`. The first readings, NOT MET, stay on record there beside them. Part C, judged at W2's base,
+stays read NOT MET on record under the revision of 2026-11-23; Broiler.JS's records name no further reading of it.
 
 Broiler.JS's default branch is at `4f697339` when this entry is written. Nothing else has merged to it since the
 entry above read it at `69a8a13b`, and nothing has merged to Broiler.RegEx's since the entry of 2026-11-22 observed its
@@ -5689,14 +5693,14 @@ not taken; their questions, which hold figures, are quoted whole there, answers 
   merged.
 
 **What this repository files**, each a dated note quoting what it reads:
-- [`architecture.md`](architecture.md) section 6.2: decision D53's note, quoting the note of 2026-11-03's "it
-  references the frontend and `Portable`, and `Expressions` only if it uses a non-tree type that moves there, and no
-  longer `Ast` or `Parser`; Broiler.JS's SJL-14 rule takes a closure listing at the cut-over (its part E)", stating the
-  references of `Broiler.JS/Broiler.JavaScript.Portable.Compiler/Broiler.JavaScript.Portable.Compiler.csproj` at the
-  after commit, blob `b7f7358b0371007fc5b087c196d65e13e123b3b8` (the project references `Broiler.ECMAScript.Frontend`,
+- [`architecture.md`](architecture.md) section 6.2: decision D53's note, quoting the note of 2026-11-03's "**After
+  SJL-14's cut-over** it references the frontend and `Portable`, and `Expressions` only if it uses a non-tree type that
+  moves there, and no longer `Ast` or `Parser`; Broiler.JS's SJL-14 rule takes a closure listing at the cut-over (its
+  part E)", stating the references of
+  `Broiler.JS/Broiler.JavaScript.Portable.Compiler/Broiler.JavaScript.Portable.Compiler.csproj` at the after commit,
+  blob `b7f7358b0371007fc5b087c196d65e13e123b3b8` (the project references `Broiler.ECMAScript.Frontend`,
   `Broiler.JavaScript.Expressions` and `Broiler.JavaScript.Portable`, the package reference `Broiler.Regex`, neither
-  `Ast` nor `Parser`), and citing part E's closure listing and its reading, "**Part E: read MET on the retained
-  runs**";
+  `Ast` nor `Parser`), and citing part E's closure listing and its reading, "**Part E: read MET on the retained runs**";
 - [`decisions.md`](decisions.md), SJL-D-23: a note on its note of 2026-11-23, which reads "W2 is not merged there";
 - [SJL-14's milestone file](milestones/sjl-14-broiler-js-syntax.md), under clause 6: a note on its note of 2026-11-23,
   which reads "So part I still waits on W2 and its base commit, and is taken on `win-x64-r7-5800x` after W2 merges";
@@ -5711,10 +5715,12 @@ changed from here.
 **Next items done**, each quoted as the entry above's Next list reads it:
 - "this branch's review, then its merge", for `vm-ab1-2026-11-23`: merged as `258e8596`
   (Broiler-Platform/Broiler.VM#222);
-- "W2 in Broiler.JS, as its records list it, "W2 written, part C's runs at W1, W2's base runs under the hold, W2's
-  merge and its after runs", under the owner's answer 9, each merge observed here by its merge commit": W2's base runs
-  under the hold and W2's merge, Broiler-Platform/Broiler.JS#1129 (`83a9bd82`), which ended the hold; its after runs
-  and their per-part readings, all but part I's, Broiler-Platform/Broiler.JS#1130 (`4f697339`); both observed above.
+- "W2 in Broiler.JS, as its records list it, "W2 written, part C's runs at W1, W2's base runs under the hold, W2's merge
+  and its after runs", under the owner's answer 9, each merge observed here by its merge commit": W2 written, and part
+  C's runs at W1, retained in the bundle's `side-by-side/w1/tests-and-test262/` and read, not judged, both carried by
+  W2's merge; W2's base runs under the hold and W2's merge, Broiler-Platform/Broiler.JS#1129 (`83a9bd82`), which ended
+  the hold; its after runs and their per-part readings, all but part I's, Broiler-Platform/Broiler.JS#1130 (`4f697339`);
+  both observed above.
 
 The items that read W2 as still to merge are read anew below, each with a dated note: part I's, SJL-15.2's model's,
 whose "none during W2's hold" is spent with the hold's end, and SJL-15.5's; the eval-code inputs' item names the
@@ -5760,16 +5766,17 @@ items read anew and one added):
   here", each observed here when it merges *(added 2026-11-22)*;
 - the owner's own dated choice at SJL-D-23's trigger (b), when the clauses it lists are the only unmet clauses of SJL-3
   to SJL-15 and SJL-17 *(added 2026-11-18)*;
-- the eval-code inputs of probes V029, V030 and V046 in a later corpus revision of Broiler.JS's, revision 44 by its
-  `conformance/vectors/REVISIONS.md`, whose default branch lists revision 43 last, classified on both engines' runs,
-  before any SJL-15.2 code, observed here when it merges *(", revision 44 by ... observed here when it merges" added
-  2026-11-24)* *(added 2026-11-17, after Broiler.JS's SJL-15.1 merged)*;
-- SJL-15.2's model in Broiler.JS, after both repositories' rules and the vectors and after corpus revision 44 of the
-  item above; W2, which Broiler.JS's reading B4 of SJL-14 puts first, "W2 before any merge of SJL-15.2's model", has
-  merged as `83a9bd82`, and W2's hold of the owner's answer 9 ended with it; and none before the branch
-  `sjl-15-1-js-half` merged, as it now has, by Broiler.JS's rule revision of 2026-11-17 *(2026-11-24; read "and after
-  W2, by Broiler.JS's reading B4 of SJL-14, "W2 before any merge of SJL-15.2's model", none during W2's hold, by the
-  owner's answer 9," until W2 merged in Broiler.JS as `83a9bd82`, ending that hold)* *(2026-11-22;
+- the eval-code inputs of probes V029, V030 and V046 in a later corpus revision of Broiler.JS's, which would be revision
+  44, since its `conformance/vectors/REVISIONS.md` on its default branch lists revision 43 last, classified on both
+  engines' runs, before any SJL-15.2 code, observed here when it merges *(", which would be revision 44, ... observed
+  here when it merges" added 2026-11-24)* *(added 2026-11-17, after Broiler.JS's SJL-15.1 merged)*;
+- SJL-15.2's model in Broiler.JS, after both repositories' rules and the vectors and after the later corpus revision of
+  the item above, which would be revision 44; W2, which Broiler.JS's reading B4 of SJL-14 puts first, "W2 before any
+  merge of SJL-15.2's model", has merged as `83a9bd82`, and W2's hold of the owner's answer 9 ended with it; and none
+  before the branch `sjl-15-1-js-half` merged, as it now has, by Broiler.JS's rule revision of 2026-11-17 *(2026-11-24;
+  read "and after W2, by Broiler.JS's reading B4 of SJL-14, "W2 before any merge of SJL-15.2's model", none during W2's
+  hold, by the owner's answer 9," until W2 merged in Broiler.JS as `83a9bd82`, ending that hold; "and after the later
+  corpus revision of the item above, which would be revision 44" added 2026-11-24)* *(2026-11-22;
   read "each merge before Broiler.JS's SJL-14 cut-over a dark window of SJL-14, none during SJL-11.5's hold" until
   Broiler.JS's records before W2 merged as `69a8a13b`)* *(2026-11-18; read "none before this branch merges", of that
   branch)*; then the owner's publication of a stream version carrying it, and this family's tools commit and pin commit
