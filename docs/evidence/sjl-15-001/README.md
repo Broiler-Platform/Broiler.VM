@@ -113,16 +113,18 @@ default branch, at `4f697339`, does not yet hold". That revision has merged: Bro
 `conformance/vectors/REVISIONS.md` reads, "[…]" marking a figure left out, "Adds […] `DirectEval` vectors, `since: 44`,
 the eval-code inputs of probes V029, V030 and V046 of Broiler.JS's bundle `docs/evidence/sjl-15-001/probes/`, which
 revision 43 did not carry", and classifies both engines' runs on them in
-`scripts/conformance/semantics-divergences.txt`, Broiler.VM's taken at its origin/main `90e4cd24` from scratch archives
-of the corpus, as drafted and as committed, and scratch pins. So the second item is done, and the third, SJL-15.2's
-model, waits on none of the items before it; Broiler.JS's records name it next, "so SJL-15.2's model comes next, then
-SJL-15.5, then the evidence" (its `docs/roadmap/SharedLibraries.md`, the note of 2026-11-24 on "The order of SJL-15's
-Broiler.JS work"). The fourth and fifth items, the owner's publication and this family's tools commit and pin commit,
-still wait on the model. Of this family, row 44 reads: "none of the […] vectors differs, so these vectors do not show
-the answer row AB1 records for Broiler.VM on probes V029 and V030, whose sources ran as an indirect eval's code, and
-nothing is classified for them". The answer [`correspondence.md`](correspondence.md)'s row AB1 records for this family
-on those probes was given as an indirect eval's code, and the vectors are `DirectEval`, eval code a direct eval at a
-Script's top level evaluates; nothing is classified for them, no row's class changes, and a later corpus revision could
-add the indirect form. These runs are Broiler.JS's, retained in its bundle `sjl-15-001`'s `engine/`; they are no run of
-this bundle's rule, which takes none before the bases it names exist, and this family's vectors pin does not move. No
-other item changes.
+`scripts/conformance/semantics-divergences.txt`. Of Broiler.VM's, row 44 reads "run at its origin/main `90e4cd24`
+(Broiler-Platform/Broiler.VM#223) from a scratch archive of revision 44's corpus as drafted and a scratch pin", and
+Broiler.JS's bundle `sjl-15-001`'s `engine/commands.txt` records Broiler.VM's run on the corpus as committed too, by the
+pin `broiler-vm-revision-44.pin`. So the second item is done, and the third, SJL-15.2's model, waits on none of the items
+before it; Broiler.JS's records name it next, "so SJL-15.2's model comes next, then SJL-15.5, then the evidence" (its
+`docs/roadmap/SharedLibraries.md`, the note of 2026-11-24 on "The order of SJL-15's Broiler.JS work"). The fourth and
+fifth items, the owner's publication and this family's tools commit and pin commit, still wait on the model. Of this
+family, row 44 reads: "none of the […] vectors differs, so these vectors do not show the answer row AB1 records for
+Broiler.VM on probes V029 and V030, whose sources ran as an indirect eval's code, and nothing is classified for them".
+The answer [`correspondence.md`](correspondence.md)'s row AB1 records for this family on those probes was given as an
+indirect eval's code, and the vectors are `DirectEval`, "as eval code a direct eval at a Script's top level evaluates"
+(row 44); nothing is classified for them, no row's class changes, and a later corpus revision could add the indirect
+form. These runs are Broiler.JS's, retained in its bundle `sjl-15-001`'s `engine/`; they are no run of this bundle's
+rule, which takes none before the bases it names exist, and this family's vectors pin does not move. No other item
+changes.

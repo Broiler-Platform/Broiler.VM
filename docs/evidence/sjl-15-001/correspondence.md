@@ -114,8 +114,8 @@ model replaces (the milestone's SJL-15.2 note of 2026-10-26: it "does not start 
 | SL4 | The slice tokenizer's defects | Not applicable | `ST`'s .NET `HexNumber` parses (`ST:956`, `:972`, `:1501`) admit white space and `_` in an escape's digits (`sjl-13-001`'s T13, hand-off H23); a regular-expression body ending in a backslash at the end of the text throws (`sjl-13-001`'s T33, H25); a strict directive with `\8` or `\08` is kept with no early error (EE0004, H25) | The library refuses each | (none); **across both engines:** Correction of Broiler.VM (H23, H25) | **Correction of Broiler.VM** (H23, H25) | SJL-15.4 parses with the library, which corrects each; part S lists the inputs; decision D-census |
 | SL5 | The construct census | Not applicable | `SliceConstructCensus.Take` (`VC/SliceConstructCensus.cs:90`): files read, parsed, compiled and faulted, occurrences and files per construct kind, and parse failures by the first slice diagnostic's code | Not applicable | (none); **across both engines:** Engine policy (a tool of Broiler.VM's) | Engine policy (a tool of this family) | SJL-15.4 takes the census over the shared parse; part S judges its output byte for byte; a file the library refuses that `SliceParser` parsed would move it (decision D-census) |
 
-*(Noted 2026-11-24, at Broiler.JS's corpus revision 44, observed; every cell above is left as written.)* Row AB1's
-column "Broiler.JS" reads "no vector holds V029's or V030's eval-code input yet", and row DE3's, of probe V046, "no
+*(Noted 2026-11-24, later, at Broiler.JS's corpus revision 44, observed; every cell above is left as written.)* Row
+AB1's column "Broiler.JS" reads "no vector holds V029's or V030's eval-code input yet", and row DE3's, of probe V046, "no
 vector holds it yet". Broiler-Platform/Broiler.JS#1131, merged as `8b1fa311da6af71baac6378e8b4f8597a99c1312`, adds
 corpus revision 44, which holds them as `DirectEval` vectors, "as eval code a direct eval at a Script's top level
 evaluates, whose variable and lexical environments are those of the probes' indirect eval" (its
