@@ -5639,9 +5639,9 @@ Broiler.JSeal was taken after the after runs. Each such file is in Broiler.JS's 
 readings, NOT MET, stay on record there beside them. Part C, judged at W2's base, stays read NOT MET on record under the
 revision of 2026-11-23; Broiler.JS's records name no further reading of it.
 
-Broiler.JS's default branch is at `4f697339` when this entry is written. Nothing else has merged to it, or to
-Broiler.RegEx's, whose head is still `b288182a` (Broiler-Platform/Broiler.Regex#30, observed in the entry of
-2026-11-22), since the entry above read them. The entry of 2026-11-22 reads "whether W2's hold has begun is not
+Broiler.JS's default branch is at `4f697339` when this entry is written. Nothing else has merged to it since the
+entry above read it at `69a8a13b`, and nothing has merged to Broiler.RegEx's since the entry of 2026-11-22 observed its
+head, `b288182a` (Broiler-Platform/Broiler.Regex#30). The entry of 2026-11-22 reads "whether W2's hold has begun is not
 recorded on that branch, and is not read here"; that branch now records the hold's start and its end, as above.
 
 **The owner's answers**, each the owner's own, not one taken under the owner's direction of 2026-10-18, quoted as
