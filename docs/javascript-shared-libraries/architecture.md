@@ -471,7 +471,7 @@ nor the note above names. **Part E** of Broiler.JS's bundle `sjl-14-001`, in its
 the after commit in `after/local/`: `phase5/`, the collector `scripts/performance/collect_phase5.py --rid linux-x64`,
 run locally with no dispatch, as decision D53 reads, and `closure/`, the closure listing of
 `Broiler.JavaScript.Portable.Compiler`, whose `dotnet-list-reference.txt` names the same project references. The
-bundle's README reads "The closure of `Broiler.JavaScript.Portable.Compiler` at the after commit (its project and
+bundle's README reads "**The closure** of `Broiler.JavaScript.Portable.Compiler` at the after commit (its project and
 package references, transitive, and its publish output) names no `Broiler.JavaScript.Runtime` and no
 `Broiler.JavaScript.Storage`" and "**Part E: read MET on the retained runs**", a per-part reading of Broiler.JS's own
 bundle, which meets no clause of this programme's ledger (its update rule 3).
