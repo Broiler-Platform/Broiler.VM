@@ -164,6 +164,44 @@ specification makes and changes the first error". Row EE1's last cell asks that 
 checks, keep each code and place or list it by row; these places are noted here for that, and nothing is classified for
 them here: no cell and no row's class changes, and this family's code reads none of the model before SJL-15.3.
 
+*(Noted 2026-11-25, later yet, at Broiler.JS's SJL-15.2 stage 3, observed; every cell above is left as written.)* Row
+LB1's column "Broiler.VM, wide path (`a86b6f5d`)" names "`Target` and the exit stack (`JBW:1364-1389`, `:70-133`), the
+lowering's reading of a label; one reader, the binder's own refusal (`JB:280-298`)", its class reads "**Correction of
+Broiler.VM** for `continue` naming an outer label of a loop's label set (`sjl-13-001`'s D30, hand-off H20); otherwise
+specification", and its last cell "SJL-15.2 adds the jump-target fact; SJL-15.3 reads it, correcting H20 (class F)". Row
+EE1's column "Broiler.VM, wide path (`a86b6f5d`)" names "`sjl-13-001`'s B01, B02 (jumps, `JBW:675-702`)", and its last
+cell reads "SJL-15.2 reports them from the model; SJL-15.3 deletes the binder's checks, each code and place kept or
+listed by row". Stage 3 merged as Broiler-Platform/Broiler.JS#1137, `d87044c9db5fe2a26841782308bd53e2f9294656`, the
+third model commit: with `ParseRequest.BuildSemanticModel` on, `SemanticModel.TargetOf` answers "a jump's target, never
+null, one instance per target statement; a `continue` naming any label of an iteration statement's label set targets
+that statement (hand-off H20, by the specification), and a labelled `break` the labelled item, never the
+`LabelledStatement`", and "the parse also reports the jump rows, each at its jump" (Broiler.JS's
+`Broiler.ECMAScript/CHANGELOG.md`). Broiler.JS's decision D-js-jump-targets of 2026-11-25 did not take "(b) The
+`LabelledStatement` as a labelled `break`'s target, where LabelledEvaluation catches it and where Broiler.VM's binder
+names it: a loop's labels and a block's would be read two ways" or "(c) Only the label written directly on a loop, as
+Broiler.VM's exit stack carries it: that is H20", and its decision D-js-adapter-groups has its adapter answer the
+vectors of "`lb1`, row LB1, on EE0082 and EE0166, `ScriptEvaluation` only". Its plan, `VMC/` being "Broiler.VM's
+`src/Broiler.VM.Profile.JavaScript.Compiler/`", names, among "The places where the library differs from either engine,
+named for SJL-15.3", these of this family's binder:
+
+- in what it refuses: "Broiler.VM's binder refuses `continue` to the outer label of a loop's label set (its `Target`, in
+  `VMC/JsBinder.Walks.cs`, where `VMC/` is Broiler.VM's `src/Broiler.VM.Profile.JavaScript.Compiler/` as in stage 2's
+  note; Broiler.VM pins it in its `BinderChecks.cs`, "continue to the outer label of a label set stays refused"), a
+  correction of Broiler.VM, class F, row LB1";
+- in the target's mapping: "Broiler.VM's `JumpTarget` names the `LabelledStatement` for a `break` to any label not
+  written directly on the loop or `switch` it labels, both a target that is no loop or `switch` and an outer label of a
+  loop's or a `switch`'s label set (`A: B: while (1) break A;`), and carries only the label written directly on a loop
+  or `switch` (`VMC/JsBinder.Walks.cs`, `VMC/JsBinder.cs`), where the library names the labelled item with its whole
+  label set; a difference of mapping for SJL-15.3 to read, not of fact but for H20 (an inference)";
+- in places: "none known, both engines placing every jump refusal at the jump, as the library does."
+
+Broiler.JS's records read "None of it is accepted: no second holder exists to review it." The first is the correction
+row LB1 already records, class F, which its last cell has SJL-15.3 make when it reads the jump-target fact; the second
+is, as Broiler.JS's plan words it, "a difference of mapping for SJL-15.3 to read, not of fact but for H20 (an
+inference)", which SJL-15.3 reads where the lowering reads a label; the third names no place of row EE1's jump rows
+where the library differs. These places are noted here for that, and nothing is classified for
+them here: no cell and no row's class changes, and this family's code reads none of the model before SJL-15.3.
+
 ---
 
 ## What the rows find against the plan and the records
