@@ -168,6 +168,15 @@ Broiler.JS's, retained in its bundle `sjl-15-001`'s `engine/`, and are no run of
 - **F7. The model has no kind for a `with` scope, eval code's scope, a class body or a separate var environment**
   (SC2), which `areas/static-semantics.md` section 1 lists among the shared facts. SJL-15.2's records say how each is
   carried.
+- *(Noted 2026-11-25, at Broiler.JS's SJL-15.2 stage 1, observed; F7 is left as written.)* F7 reads "SJL-15.2's records
+  say how each is carried". Stage 1 merged as Broiler-Platform/Broiler.JS#1132,
+  `be6c4a5c3e389c7eb2aff71c34e31bdae5efe276`, with Broiler.JS's decision D-js-kinds of 2026-11-24 in its
+  `docs/roadmap/SharedLibraries.md`, section "Shared static semantics (SJL-15)": "**`ScopeKind` gains `With`,
+  `ClassBody`, `FunctionName` and `Parameters`; eval code is `FunctionKind.EvalCode` on the program's facts, its scope
+  still a `Script` scope; the separate variable environment is a function fact (row FF4), stage 5a's.** This is the
+  answer to Broiler.VM's finding F7 ("SJL-15.2's records say how each is carried")". The separate variable environment's
+  fact is still to come, at that stage. No cell and no row's class changes, and this family's code reads none of it
+  before SJL-15.3.
 
 ## Hand-offs this file reads
 

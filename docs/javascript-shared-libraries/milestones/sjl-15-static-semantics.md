@@ -126,6 +126,30 @@ SJL-15.2's model next: "so SJL-15.2's model comes next, then SJL-15.5, then the 
 `docs/roadmap/SharedLibraries.md`, the note of 2026-11-24 on "The order of SJL-15's Broiler.JS work"). This family still
 reads the model only from a stream version the owner publishes, admitted by its pin commit before SJL-15.3's base.
 Nothing is revised.
+*(Noted 2026-11-25, at Broiler.JS's SJL-15.2 stage 1 and its part B, observed; the notes above are left as written.)*
+The note above reads "Broiler.JS's records name SJL-15.2's model next". Its stage 1, "the model's foundation", merged as
+Broiler-Platform/Broiler.JS#1132, `be6c4a5c3e389c7eb2aff71c34e31bdae5efe276`, whose first parent is `8b1fa311`, the
+merge of corpus revision 44; Broiler.JS's bundle `sjl-15-001`'s README names it the first model commit. Broiler.JS's
+plan reads that "SJL-15.2's model lands in stages", each "judged by its part B against its own first parent", by its
+decision D-js-stages, "**Stages 1, 2, 3, 4, 5a, 5b, 5c, 6, 7 and 8, one merge each, in that order**, part B taken for
+each before the next merges", and that "No stage carries any part of SJL-15.5: no compiler reads the model and no bridge
+sets the request member before it." Of this file's "it does not start a second one", Broiler.JS's
+`Broiler.ECMAScript/CHANGELOG.md` reads "The declarations walk builds the model in the same visit when the request asks
+for it, and only then", and its decision D-js-entry leaves out "`SemanticModel.Build(ParseResult)`: a second walk, where
+the milestone says the model grows from the walk and "does not start a second one"". Of the first note's "a change that
+moves a switch-off outcome lands only inside a cut-over window (SJL-13's plan's decision D52: "The same holds for
+SJL-15's model stages")", its decision D-js-o4 is "**A reading of decision D52's "The same holds for SJL-15's model
+stages" after W2**: part B of bundle `sjl-15-001`'s rule is the identity check that replaces the window of the
+programme's working-order rule 1 (O-4) for each model merge, as D52's part B did before W2". Part B at stage 1's merge
+is read in Broiler-Platform/Broiler.JS#1133, `2545e1818e246cad506c7b67a3d6c470c0a43375`, as Broiler.JS's reading of its
+own bundle, "limited to them", the model commits taken so far, and "flagged for the owner". The request member that
+builds the model, `ParseRequest.BuildSemanticModel`, is "**Off by default through SJL-15.2; each engine sets it at its
+own cut-over.**" (decision D-js-default-off), and the changelog reads "No observable change: no engine sets the member,
+and with it off nothing moves." This family still reads the model only from a stream version the owner publishes, which
+Broiler.JS's decision D-js-packable has the owner asked about "only after stage 8 and stage 9's listing", admitted by
+its pin commit before SJL-15.3's base. Broiler.VM's records observe each model commit after it merges, which is this
+repository's convention and no condition of a model merge (bundle `sjl-15-001`'s README, its note of 2026-11-25).
+Nothing is revised.
 
 ### SJL-15.3 — Broiler.VM's lowering consumes it
 

@@ -128,3 +128,36 @@ indirect eval's code, and the vectors are `DirectEval`, "as eval code a direct e
 form. These runs are Broiler.JS's, retained in its bundle `sjl-15-001`'s `engine/`; they are no run of this bundle's
 rule, which takes none before the bases it names exist, and this family's vectors pin does not move. No other item
 changes.
+
+*(Noted 2026-11-25, at Broiler.JS's SJL-15.2 stage 1 and its part B, observed; the list and the notes above are left as
+written.)* The note above reads "So the second item is done, and the third, SJL-15.2's model, waits on none of the items
+before it". The third item's model has begun to land. SJL-15.2's stage 1, "the model's foundation", merged as
+Broiler-Platform/Broiler.JS#1132, `be6c4a5c3e389c7eb2aff71c34e31bdae5efe276`, whose first parent is `8b1fa311`, the
+merge of corpus revision 44; Broiler.JS's bundle `sjl-15-001`'s README names it its first model commit, having read
+before the merge that "It lands after Broiler-Platform/Broiler.VM#214 and #217, each named above with its commit, and
+after corpus revision 44". Part B of that bundle's rule was taken at it and at its first parent, and read in
+Broiler-Platform/Broiler.JS#1133, `2545e1818e246cad506c7b67a3d6c470c0a43375`, records only: "part B read MET on the
+retained runs at the model commits taken so far (`be6c4a5c3e389c7eb2aff71c34e31bdae5efe276`), limited to them; the
+part's verdict waits for the last model commit before the base", taken as recommended under the owner's direction and
+"flagged for the owner", the alternatives not taken being "to read part B NOT MET at `be6c4a5c` because that run's first
+attempt concluded `failure`, as bundle `sjl-13-001`'s third revision of 2026-11-03 [...] reads its own part D on a push
+run's first attempt ("its first attempt decides, and every attempt is retained"), a precedent this reading does not
+follow; or a dated revision of the clause saying which attempt of a run it reads, which would be the owner's, since the
+runs have been seen". That is Broiler.JS's reading of its own bundle, not a run of this bundle's rule, and judges
+nothing here. The rest of the model is still to come, by Broiler.JS's decision D-js-stages, "**Stages 1, 2, 3, 4, 5a,
+5b, 5c, 6, 7 and 8, one merge each, in that order**, part B taken for each before the next merges".
+Broiler-Platform/Broiler.JS#1134, `2259fd4a1860aefc68d49b8f6f9f0200fcb6cc4d`, a change to that repository's CI that
+changes no file of `Broiler.ECMAScript/`, is no model commit, and its note reads "None of it is part of part B's
+reading."
+
+This bundle's list and this repository's ledger observe each model commit after it merges. That is a convention of this
+repository's records, and no precondition of a model merge: of Broiler.VM's merges, Broiler.JS's rule revision of
+2026-11-17, its bundle `sjl-15-001`'s `decision-rule-revised-2026-11-17.md`, lines 37 to 43, conditions a model commit
+only on "Broiler.VM's SJL-15.1 rule has merged (Broiler-Platform/Broiler.VM#214, `0ddc146f`, observed) **and after**
+the Broiler.VM change that carries this engine's column and JSD-0088's dated note completing X2 and X6 has merged
+(decision D-x2), each merge observed and named, with its commit, in this bundle's README before any run at the model
+commit is taken", that README being Broiler.JS's, and the change of decision D-x2 being Broiler-Platform/Broiler.VM#217
+(`450c785f`). A model commit that lands before this repository observes the one before it fails none of those
+conditions. The fourth and fifth items, the owner's publication and this family's tools commit and pin commit, still
+wait on the model; Broiler.JS's decision D-js-packable has the owner asked about a publication "only after stage 8 and
+stage 9's listing". No other item changes.
