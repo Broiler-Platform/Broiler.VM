@@ -161,3 +161,29 @@ commit is taken", that README being Broiler.JS's, and the change of decision D-x
 conditions. The fourth and fifth items, the owner's publication and this family's tools commit and pin commit, still
 wait on the model; Broiler.JS's decision D-js-packable has the owner asked about a publication "only after stage 8 and
 stage 9's listing". No other item changes.
+
+*(Noted 2026-11-25, later, at Broiler.JS's SJL-15.2 stage 2 and its part B, observed; the list and the notes above are
+left as written.)* The note of 2026-11-25 above reads "The rest of the model is still to come". SJL-15.2's stage 2, "the
+early-error channel and the function-context rows", merged as Broiler-Platform/Broiler.JS#1135, and Broiler.JS's bundle
+`sjl-15-001`'s README, having read before the merge that "This branch's merge will be the second model commit", names it
+after: "**The second model commit is `6c61879bce81b1a7badf987e16c7b0531030258d`**, the merge of
+Broiler-Platform/Broiler.JS#1135 (head `8b0c233c`), whose first parent is `2259fd4a1860aefc68d49b8f6f9f0200fcb6cc4d`
+(Broiler-Platform/Broiler.JS#1134, ci.yml's Test step)", and "Its first parent is no model commit: nothing from
+`be6c4a5c` to `2259fd4a` changes a path under `Broiler.ECMAScript/Broiler.ECMAScript.Frontend*`." Part B of that
+bundle's rule was taken at it and at its first parent, and read in Broiler-Platform/Broiler.JS#1136,
+`77fe27aa4bc6e0a8a0819b32a2b1b1158a9fe913`, records only, taken as recommended under the owner's direction: "**part B
+read MET on the retained runs at the model commits taken so far (`be6c4a5c3e389c7eb2aff71c34e31bdae5efe276`,
+`6c61879bce81b1a7badf987e16c7b0531030258d`), limited to them; the part's verdict waits for the last model commit before
+the base.**" "At `6c61879b` the rule's "the commit's CI run of every test project passed" is read on both workflows'
+push runs as they concluded, each in its first attempt, so the question of which attempt decides, flagged for the owner
+at the first model commit, does not arise here. The reading at `be6c4a5c`, its basis and its flag, in the note of
+2026-11-24 above, stay as written. A NOT MET at any later model commit makes part B NOT MET." That is Broiler.JS's
+reading of its own bundle, not a run of this bundle's rule, and judges nothing here. Broiler.JS's note of 2026-11-25 at
+stage 2 also reads its own rule's part F, "every vector the adapter answers matches", at the parse: "a reading of the
+session's, taken before any run of part F, which the owner ruled on 2026-11-25 to keep ("Keep the reading at the parse
+(Recommended)")", the owner's own answer; that part is Broiler.JS's, and this bundle's rule has none like it. The rest
+of the model is still to come, from "**Next:** SJL-15.2 stage 3, jump targets and labels, the third model commit", by
+Broiler.JS's decision D-js-stages, each stage with part B at its merge. The note above's convention holds for this merge
+too: this bundle's list and this repository's ledger observe each model commit after it merges, and that is no
+precondition of a model merge. The fourth and fifth items, the owner's publication and this family's tools commit and
+pin commit, still wait on the model. No other item changes.

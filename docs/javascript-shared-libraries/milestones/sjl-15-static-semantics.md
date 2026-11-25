@@ -150,6 +150,29 @@ Broiler.JS's decision D-js-packable has the owner asked about "only after stage 
 its pin commit before SJL-15.3's base. Broiler.VM's records observe each model commit after it merges, which is this
 repository's convention and no condition of a model merge (bundle `sjl-15-001`'s README, its note of 2026-11-25).
 Nothing is revised.
+*(Noted 2026-11-25, later, at Broiler.JS's SJL-15.2 stage 2 and its part B, observed; the notes above are left as
+written.)* The note above reads "Broiler.VM's records observe each model commit after it merges". Stage 2, "the
+early-error channel and the function-context rows", merged as Broiler-Platform/Broiler.JS#1135,
+`6c61879bce81b1a7badf987e16c7b0531030258d`, whose first parent is `2259fd4a`, the merge of
+Broiler-Platform/Broiler.JS#1134, no model commit; Broiler.JS's bundle `sjl-15-001`'s README names it the second model
+commit. Of this file's "every early error" among the model's facts, Broiler.JS's `Broiler.ECMAScript/CHANGELOG.md` reads
+"With `ParseRequest.BuildSemanticModel` on, the parse also reports the model's `semantics` rows among its diagnostics,
+in decision D11's order, and refuses on them, so that a refused source has no model", and its decision D-js-channel is
+"**With `BuildSemanticModel` on, the model's `semantics` rows join `ParseResult.Diagnostics` in decision D11's order.**"
+Of "it does not start a second one", each of those rows is reported, by that decision, "through the walk's one `Report`
+and its one sequence". Part B at stage 2's merge is read in Broiler-Platform/Broiler.JS#1136,
+`77fe27aa4bc6e0a8a0819b32a2b1b1158a9fe913`, as Broiler.JS's reading of its own bundle: "part B read MET on the retained
+runs at the model commits taken so far (`be6c4a5c3e389c7eb2aff71c34e31bdae5efe276`,
+`6c61879bce81b1a7badf987e16c7b0531030258d`), limited to them; the part's verdict waits for the last model commit before
+the base", both workflows' push runs at `6c61879b` read "each as it concluded in its first attempt". The request member
+is still off by default (decision D-js-default-off), and "with it off nothing moves" (the changelog). Broiler.JS's
+records name stage 3 next: "Next: SJL-15.2 stage 3, jump targets and labels, the third model commit, judged by its part
+B against its own first parent." The places where the library differs from this family's binder, which Broiler.JS's plan
+names for SJL-15.3, are quoted in bundle `sjl-15-001`'s correspondence, its note of 2026-11-25, later, on row EE1. This
+family still reads the model only from a stream version the owner publishes, which Broiler.JS's decision D-js-packable
+has the owner asked about "only after stage 8 and stage 9's listing", admitted by its pin commit before SJL-15.3's base.
+Broiler.VM's records observe each model commit after it merges, which is this repository's convention and no condition
+of a model merge. Nothing is revised.
 
 ### SJL-15.3 — Broiler.VM's lowering consumes it
 
