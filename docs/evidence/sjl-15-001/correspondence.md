@@ -148,8 +148,12 @@ library differs from either engine, named for SJL-15.3":
 - "Broiler.VM reports only the innermost member when members nest, because its search does not enter a class body
   (`VMC/JsCompiler.Walk.cs`), where the library reports every enclosing member once";
 - "the library reports EA0005 at a real place, each `arguments` reference, where the stage table's row reads "the binder
-  reports it at 0:0 (N14); from SJL-15 the model's place is real"";
-- and "Broiler.VM drops EA0005 when the eval code itself declares `arguments` (`VMC/JsBinder.Walks.cs`,
+  reports it at 0:0 (N14); from SJL-15 the model's place is real"".
+
+It names one more among the places where "The library also differs from either engine in what it refuses, named for
+SJL-15.3 too":
+
+- "Broiler.VM drops EA0005 when the eval code itself declares `arguments` (`VMC/JsBinder.Walks.cs`,
   `VMC/JsBinder.EarlyErrors.cs`), where ContainsArguments, and so the library, reads every reference; that shows only in
   sources already refused, since eval code in a field initialiser is strict and a strict binding of `arguments` is
   refused".
