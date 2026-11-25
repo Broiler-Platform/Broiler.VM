@@ -129,6 +129,37 @@ and the vectors are `DirectEval`. Nothing is classified for them, no row's class
 both engines, a correction of Broiler.VM; a later corpus revision could add the indirect form. These runs are
 Broiler.JS's, retained in its bundle `sjl-15-001`'s `engine/`, and are no run of this bundle's rule.
 
+*(Noted 2026-11-25, later, at Broiler.JS's SJL-15.2 stage 2, observed; every cell above is left as written.)* Row EE1's
+column "Broiler.VM, wide path (`a86b6f5d`)" names "B08, B09 (`super`, `JBW:855-895`)" and "B22, B24 (`arguments` in an
+initialiser, `JBE:185-275`)", and its last cell reads "SJL-15.2 reports them from the model; SJL-15.3 deletes the
+binder's checks, each code and place kept or listed by row". Stage 2 merged as Broiler-Platform/Broiler.JS#1135,
+`6c61879bce81b1a7badf987e16c7b0531030258d`, the second model commit: with `ParseRequest.BuildSemanticModel` on, "the
+parse also reports the model's `semantics` rows among its diagnostics, in decision D11's order, and refuses on them"
+(Broiler.JS's `Broiler.ECMAScript/CHANGELOG.md`), the super group, "ContainsArguments of a field initialiser (EE0130)
+and of a static block (EE0138), at the member" and "eval code's from the caller's `InheritedContext`, PerformEval's
+steps 11.f to 11.h (EA0003, EA0004, EA0005)" among them. Broiler.JS's decision D-js-channel of 2026-11-25 reads "Each
+row is placed where Broiler.VM's binder names it (design.md section 3), except EA0005, which takes the library's own
+place, and ContainsArguments, which reports at every enclosing member", and its plan, `VMC/` being "Broiler.VM's
+`src/Broiler.VM.Profile.JavaScript.Compiler/`", names these, of this family's binder, among "The places where the
+library differs from either engine, named for SJL-15.3":
+
+- "Broiler.VM does not search an arrow's parameters for `arguments` (its remark in `VMC/JsBinder.EarlyErrors.cs`), which
+  the specification's ContainsArguments does (an inference)";
+- "Broiler.VM reports only the innermost member when members nest, because its search does not enter a class body
+  (`VMC/JsCompiler.Walk.cs`), where the library reports every enclosing member once";
+- "the library reports EA0005 at a real place, each `arguments` reference, where the stage table's row reads "the binder
+  reports it at 0:0 (N14); from SJL-15 the model's place is real"";
+- and "Broiler.VM drops EA0005 when the eval code itself declares `arguments` (`VMC/JsBinder.Walks.cs`,
+  `VMC/JsBinder.EarlyErrors.cs`), where ContainsArguments, and so the library, reads every reference; that shows only in
+  sources already refused, since eval code in a field initialiser is strict and a strict binding of `arguments` is
+  refused".
+
+Broiler.JS's records read "None of it is accepted: no second holder exists to review it." Its decision D-js-channel did
+not take "(e) Only the innermost member for ContainsArguments, as Broiler.VM reports: it leaves out a refusal the
+specification makes and changes the first error". Row EE1's last cell asks that SJL-15.3, when it deletes the binder's
+checks, keep each code and place or list it by row; these places are noted here for that, and nothing is classified for
+them here: no cell and no row's class changes, and this family's code reads none of the model before SJL-15.3.
+
 ---
 
 ## What the rows find against the plan and the records
