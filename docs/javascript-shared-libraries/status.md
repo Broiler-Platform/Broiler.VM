@@ -6629,8 +6629,9 @@ third model commit and for every later one, and this entry's date moves nothing 
   the jump rows from the model, with the request member on, each at its jump, and Broiler.JS's plan names, for SJL-15.3,
   where the library differs from this family's binder: `continue` to the outer label of a loop's label set, which this
   family's binder refuses and the library accepts, row LB1's correction, class F, as the row already reads it; and its
-  `JumpTarget`, which names the `LabelledStatement` where the library names the labelled item, a difference of mapping,
-  not of fact; in places, none known. The correspondence's dated note quotes them in Broiler.JS's words; nothing is
+  `JumpTarget`, which names the `LabelledStatement` for a `break` to a label not written directly on the loop or
+  `switch` it labels, where the library names the labelled item, "a difference of mapping for SJL-15.3 to read, not of
+  fact but for H20 (an inference)", as Broiler.JS's plan words it; in places, none known. The correspondence's dated note quotes them in Broiler.JS's words; nothing is
   classified, and no cell and no row's class changes.
 - *The vectors pin*: this family's `src/tests/vectors/pins/vectors.pin` is at corpus revision 39, Broiler.JS `e4b6b49e`,
   and does not move; no record of this repository asks it to move at a model commit, and the move stays the pin

@@ -208,8 +208,9 @@ MET." That is Broiler.JS's reading of its own bundle, not a run of this bundle's
 Broiler.JS's note of 2026-11-25 at stage 3 also reads that its library-level adapter answers, by its decision
 D-js-adapter-groups, the vectors of "correspondence group `lb1`, row LB1, which rest on EE0082 and EE0166: the
 acceptances that show hand-off H20 read by the specification", each "read at the parse, the reading the owner ruled on
-2026-11-25 to keep ("Keep the reading at the parse (Recommended)")"; that part is Broiler.JS's, and this bundle's rule
-has none like it. The places where the library differs from this family's binder, which Broiler.JS's plan names for
+2026-11-25 to keep ("Keep the reading at the parse (Recommended)")"; that adapter, and the part F of Broiler.JS's rule
+it answers for, "every vector the adapter answers matches", are Broiler.JS's, and this bundle's rule has none like them.
+The places where the library differs from this family's binder, which Broiler.JS's plan names for
 SJL-15.3, are quoted in this bundle's correspondence, its note of 2026-11-25, later yet, on rows LB1 and EE1. The rest
 of the model is still to come, from "**Next:** SJL-15.2 stage 4, private-name environments, the fourth model commit", by
 Broiler.JS's decision D-js-stages, each stage with part B at its merge. The convention of the note of 2026-11-25 holds

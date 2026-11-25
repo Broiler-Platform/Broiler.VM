@@ -197,8 +197,9 @@ named for SJL-15.3", these of this family's binder:
 
 Broiler.JS's records read "None of it is accepted: no second holder exists to review it." The first is the correction
 row LB1 already records, class F, which its last cell has SJL-15.3 make when it reads the jump-target fact; the second
-is a difference of mapping, not of fact, for SJL-15.3 to read where the lowering reads a label; the third names no place
-of row EE1's jump rows where the library differs. These places are noted here for that, and nothing is classified for
+is, as Broiler.JS's plan words it, "a difference of mapping for SJL-15.3 to read, not of fact but for H20 (an
+inference)", which SJL-15.3 reads where the lowering reads a label; the third names no place of row EE1's jump rows
+where the library differs. These places are noted here for that, and nothing is classified for
 them here: no cell and no row's class changes, and this family's code reads none of the model before SJL-15.3.
 
 ---
