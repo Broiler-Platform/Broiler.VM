@@ -251,6 +251,85 @@ eval code's refusal moves to the compile of the eval code and when, by row EE1's
 or listed by row. These places are noted here for that, and nothing is classified for them here: no cell and no row's
 class changes, and this family's code reads none of the model before SJL-15.3.
 
+*(Noted 2026-11-26, later, at Broiler.JS's SJL-15.2 stage 5a, observed; every cell above is left as written.)* Row FF3's
+column "Broiler.VM, wide path (`a86b6f5d`)" names "`UsesArguments` (`JBW:2159-2195`): not an arrow, no parameter binds
+it, and its own code or an arrow's in it mentions `arguments` **or `eval`** (`JB:544-556`)", its class reads
+"**Approximation**: any mention of `eval`, a direct call or not, materialises the object", and its last cell "SJL-15.3
+reads the model's precise need, as the milestone asks ("precise instead of an over-approximation"); artifacts move by
+class P". Row FF4's class reads "**Approximation**: the specification separates the environment whenever the list has
+parameter expressions (FunctionDeclarationInstantiation step 28); this family skips it where no closure or eval can
+observe it", and its last cell "SJL-15.3 reads the model's fact, and the lowering may keep its skip as engine policy
+only if no artifact moves; else class P". Row FF5's column "Broiler.VM, wide path (`a86b6f5d`)" names "`BodyMayEvaluate`
+and `ParametersMayEvaluate` (`JB:564`, `:580`; computed at `JBW:332` and `:337`): sloppy, and a **mention** of `eval`
+(`JBW:2324-2342`, `:2197-2218`)", its class reads "**Approximation**: a mention that is not a direct call contaminates",
+and its last cell "SJL-15.3 reads the model's direct-eval facts; class P". Rows RS1 to RS4's last cells read "SJL-15.3
+reads the model's resolution, and keeps (hops, slot) as the lowering's (the milestone: "Slot allocation stays in the
+lowering")", "SJL-15.3 reads the model's `Dynamic(reason)`", "SJL-15.4: the refusal becomes a slice admission rule over
+the model's resolution (`Global`), with the same code, message and place" and "SJL-15.4: kept as an admission rule over
+the model's resolution, byte for byte (SJL-D-13 (a))". Finding F2 below reads of rows FF3, FF4 and FF5 "Their precise
+facts move artifact bytes", and JSD-0088's decision D-precision "**Window 1 reads the model's precise facts** for
+`arguments`, a separate variable environment and direct-`eval` contamination (rows FF3, FF4 and FF5), and the artifacts
+that move for those reasons only are bundle `sjl-15-001`'s part B class P". Row EE1's last cell reads "SJL-15.2 reports
+them from the model; SJL-15.3 deletes the binder's checks, each code and place kept or listed by row". Stage 5a merged
+as Broiler-Platform/Broiler.JS#1141, `4d8aa93ad5023017b66534feb248c4c16f59bf6e`, the fifth model commit: with
+`ParseRequest.BuildSemanticModel` on, `SemanticModel.Resolve` answers "every reference's and every binding identifier's
+resolution, never null: static, to the scope whose environment holds the binding and the name's first declaration there;
+dynamic, where a `with` object or a sloppy direct `eval` may bind the name at run time; global; or, for eval code,
+inherited", `SemanticModel.EnvironmentOf` answers "the environment facts of the nodes `FactsOf` accepts", and
+`FunctionFacts.HasSeparateVariableEnvironment` is "computed from the parameter expressions, and for eval code from
+strictness, so the same with the member on or off"; "No row is added and no vector is newly answered: the value vectors
+of groups `ff3`, `ff4`, `ff5` and `rs2` stay not implemented" (Broiler.JS's `Broiler.ECMAScript/CHANGELOG.md`): stage 5a
+adds no row, so nothing new answers row EE1's last cell at this stage. Broiler.JS's plan reads "Broiler.VM's decision
+D-precision ("Window 1 reads the model's precise facts", JSD-0088) is the reason the facts are precise; it is
+Broiler.VM's, not among the decisions that bind this repository above, and is not taken here." and "The members that
+answer each row, for Broiler.VM's class P listing to cite: FF3, `EnvironmentFacts.ArgumentsNeeded` and
+`ArgumentsMapped`; FF4, `FunctionFacts.HasSeparateVariableEnvironment`; FF5, `EnvironmentFacts.DirectEvalInParameters`
+and `DirectEvalInBody`; RS1 to RS3, `Resolve`; RS4, `Resolve` with `Declaration.IsMutable`." Its decision
+D-js-environment-facts did not take "(a) FunctionDeclarationInstantiation's literal flag for the need: wider than
+Broiler.VM's base for almost every function, so its window's moves would fall outside class P (an inference)" nor "(b) A
+mention of `eval`: Broiler.VM's approximation, which the model replaces". Its bundle `sjl-15-001`'s README reads "As a
+proposal, the model's FF4 and FF5 facts (`FunctionFacts.HasSeparateVariableEnvironment`,
+`EnvironmentFacts.DirectEvalInParameters` and `DirectEvalInBody`) are the specification's answers that the corrections
+C1's rows FF4 and FF5 name (`corrections/corrections.tsv`); SJL-15.5 applies them, and `corrections.md` and its tables
+are unchanged."; the rows' column "Broiler.JS" above reads "Correction of Broiler.JS (V010)" for FF4 and "Correction of
+Broiler.JS (V015)" for FF5. Its plan, `VMC/` being "Broiler.VM's `src/Broiler.VM.Profile.JavaScript.Compiler/`", names,
+among "The places where the library differs from either engine, named for SJL-15.3 and SJL-15.5", these of this family's
+binder:
+
+- row FF4: "Broiler.VM's body environment is narrower than FunctionDeclarationInstantiation's step 30
+  (`VMC/JsBinder.Walks.cs`), its cell allowing the skip "only if no artifact moves; else class P" (Broiler.VM's
+  `docs/evidence/sjl-15-001/correspondence.md`)";
+- row FF5: "Broiler.VM counts a mention of `eval`, arrows included (`VMC/JsBinder.cs`), which also covers the reach of
+  an arrow's `eval` to the enclosing function's names that the model leaves to stage 7, so that FF5 moves for Broiler.VM
+  where an arrow's direct call stands and class P's "a mention of eval that is not a direct call" does not cover it (an
+  inference)";
+- row FF3: "Broiler.VM's need is a mention of `arguments` or `eval` (`VMC/JsBinder.cs`), wider than the model's for `let
+  arguments` and `function arguments(){}`, which is Broiler.VM's to judge against class P's examples (an inference); and
+  Broiler.VM's search does not enter an arrow's parameters (`VMC/JsCompiler.Walk.cs`), where the model's need is wider,
+  for an `arguments` reference and for an `eval` candidate (an inference, not probed)";
+- rows RS1 to RS4: "both engines are the same (`correspondence-broiler-js.md`; Broiler.VM's `correspondence.md`),
+  Broiler.VM's slice refusals of RS3 and RS4 being its admission policy; eval code's free names are inherited, beyond
+  JSD-0080's three forms";
+- and of row FF4's class: "The correspondence files' "FunctionDeclarationInstantiation's step 28"
+  (`correspondence-broiler-js.md`, row FF4, and Broiler.VM's `correspondence.md`, row FF4) is step 30 in the pinned
+  ES2026; neither file is edited here."
+
+Its `Broiler.ECMAScript/docs/frontend/design.md`, section 10.7, adds of the need "Broiler.VM's decision D-precision
+reads the model's precise facts in its window 1, and its class P admits only moves where the model's fact is narrower
+than the base's approximation (an inference)", and of Annex B.3.3's aliases, which the model answers "as the scopes
+alone answer it until stage 5b", "Nothing reads `Resolve` before stage 5b (an inference: no engine reads the model or
+sets the member, and publication is stage 8's)".
+
+Broiler.JS's records read "None of it is accepted: no second holder exists to review it." The members are the facts that
+rows FF3, FF4 and FF5's last cells have SJL-15.3 read, and the ones class P's listing would cite with each row; the
+places are Broiler.JS's readings, several of them inferences, of where this family's approximations and the model's
+facts part: for FF3 and FF5, moves whose fit with class P's words Broiler.JS leaves to this family, "Broiler.VM's to
+judge against class P's examples"; for FF4, the skip row FF4's last cell already conditions; for RS1 to RS4, nothing
+beyond the admission policy rows RS3 and RS4 already name. The step number in row FF4's class is left as written. These
+are noted here for SJL-15.3 to read before window 1's base, and nothing is classified for them here: no cell and no
+row's class changes, class P's words are not read against them here and no rule is revised, and this family's code reads
+none of the model before SJL-15.3.
+
 ---
 
 ## What the rows find against the plan and the records
@@ -299,6 +378,17 @@ class changes, and this family's code reads none of the model before SJL-15.3.
   answer to Broiler.VM's finding F7 ("SJL-15.2's records say how each is carried")". The separate variable environment's
   fact is still to come, at that stage. No cell and no row's class changes, and this family's code reads none of it
   before SJL-15.3.
+- *(Noted 2026-11-26, later, at Broiler.JS's SJL-15.2 stage 5a, observed; F7 and its note above are left as written.)*
+  F7's note of 2026-11-25 reads "The separate variable environment's fact is still to come, at that stage." Stage 5a
+  merged as Broiler-Platform/Broiler.JS#1141, `4d8aa93ad5023017b66534feb248c4c16f59bf6e`, with
+  `FunctionFacts.HasSeparateVariableEnvironment`, "computed from the parameter expressions, and for eval code from
+  strictness, so the same with the member on or off" (Broiler.JS's `Broiler.ECMAScript/CHANGELOG.md`), and Broiler.JS's
+  plan reads that it "fulfils decision D-js-kinds' "the separate variable environment is a function fact (row FF4),
+  stage 5a's", and Broiler.VM's finding F7, whose note reads "The separate variable environment's fact is still to come,
+  at that stage"", and "A sloppy function's one `Function` scope stands for its lexical environment over its variable
+  environment, its declarations' `IsLexical` saying which, the variable environment being also the parameters' where it
+  is not separate; a strict function's is one environment; for resolution the split cannot be observed." No cell and no
+  row's class changes, and this family's code reads none of it before SJL-15.3.
 
 ## Hand-offs this file reads
 
