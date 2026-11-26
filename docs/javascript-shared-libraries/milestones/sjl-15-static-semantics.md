@@ -197,6 +197,34 @@ only from a stream version the owner publishes, which Broiler.JS's decision D-js
 "only after stage 8 and stage 9's listing", admitted by its pin commit before SJL-15.3's base. Broiler.VM's records
 observe each model commit after it merges, which is this repository's convention and no condition of a model merge.
 Nothing is revised.
+*(Noted 2026-11-26, at Broiler.JS's SJL-15.2 stage 4 and its part B, observed; the notes above are left as written.)*
+The note above reads "Broiler.JS's records name stage 4 next". Stage 4, "private-name environments", merged as
+Broiler-Platform/Broiler.JS#1139, `56272150fe23725a0e70978fb18e3c25f2548548`, whose first parent is `9ae6aee0`, the
+merge of Broiler-Platform/Broiler.JS#1138, no model commit; Broiler.JS's bundle `sjl-15-001`'s README names it the
+fourth model commit. Of this file's "private-name environments" among the model's facts, Broiler.JS's
+`Broiler.ECMAScript/CHANGELOG.md` reads that `SemanticModel.PrivateEnvironmentOf` answers "every class's private
+environment, empty or not, whose outer one is the environment the class is evaluated in, so that a class's heritage is
+resolved in the environment around the class", that `SemanticModel.Resolve`, for a `PrivateIdentifier`, answers "the
+binding a class element's key declares or a reference names, in the innermost class that declares it, whatever the
+placement", and that "With `ParseRequest.BuildSemanticModel` on, the parse also reports the private-name rows, each at
+its member or `in` expression, once per undeclared reference"; of "every early error", its decision D-js-private-rows is
+"**The private-name rows in `SemanticRows`**". Part B at stage 4's merge is read in Broiler-Platform/Broiler.JS#1140,
+`746591d22142a25dd68c2a9d132930b1008cd9dd`, as Broiler.JS's reading of its own bundle: "part B read MET on the retained
+runs at the model commits taken so far (`be6c4a5c3e389c7eb2aff71c34e31bdae5efe276`,
+`6c61879bce81b1a7badf987e16c7b0531030258d`, `d87044c9db5fe2a26841782308bd53e2f9294656`,
+`56272150fe23725a0e70978fb18e3c25f2548548`), limited to them; the part's verdict waits for the last model commit before
+the base", both workflows' push runs at `56272150` read "each as it concluded in its first attempt". The request member
+is still off by default (decision D-js-default-off), and "with it off nothing moves" (the changelog). Broiler.JS's
+records name stage 5a next: "Next: SJL-15.2 stage 5a, resolution and the function environment facts, the fifth model
+commit, judged by its part B against its own first parent." Of SJL-15.3's "**private names**" below, the places where
+the library differs from this family's binder and executor, which Broiler.JS's plan names for SJL-15.3, the refusal of
+eval code's undeclared private name, which this family's executor makes at run time and the library at the eval code's
+parse when the request carries the visible names (row PN1's class T, finding F6), and the order of codes under first
+error, are quoted in bundle `sjl-15-001`'s correspondence, its note of 2026-11-26, on rows PN1 and EE1. This family
+still reads the model only from a stream version the owner publishes, which Broiler.JS's decision D-js-packable has the
+owner asked about "only after stage 8 and stage 9's listing", admitted by its pin commit before SJL-15.3's base.
+Broiler.VM's records observe each model commit after it merges, which is this repository's convention and no condition
+of a model merge. Nothing is revised.
 
 ### SJL-15.3 — Broiler.VM's lowering consumes it
 

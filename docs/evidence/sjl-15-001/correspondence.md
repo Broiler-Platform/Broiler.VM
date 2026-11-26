@@ -202,6 +202,55 @@ inference)", which SJL-15.3 reads where the lowering reads a label; the third na
 where the library differs. These places are noted here for that, and nothing is classified for
 them here: no cell and no row's class changes, and this family's code reads none of the model before SJL-15.3.
 
+*(Noted 2026-11-26, at Broiler.JS's SJL-15.2 stage 4, observed; every cell above is left as written.)* Row PN1's column
+"Broiler.VM, wide path (`a86b6f5d`)" names "`PrivateNamesOf` per class (`JBW:1911-1934`), `ResolvePrivate`
+(`JBE:222-259`), refusing a name no enclosing class declares; **eval code whose caller is in a class is not checked
+here**: the executor checks it at run time (JSD-0083's decision D16)", its class reads "Specification for direct code;
+for eval code a **timing** difference, the check run by the executor", and its last cell "SJL-15.3 passes the visible
+private names in the inherited context, so eval code's refusal moves to the compile of the eval code; class T (decision
+D64's second half, JSD-0088)"; finding F6 below reads "Passing them moves the refusal earlier: decision D64's second
+half, class T, applies to this family for this row." Row EE1's column "Broiler.VM, wide path (`a86b6f5d`)" names "B23
+(`JBE:222-259`)", the binder's refusal of a private name no class declares, and its last cell reads "SJL-15.2 reports
+them from the model; SJL-15.3 deletes the binder's checks, each code and place kept or listed by row". Stage 4 merged as
+Broiler-Platform/Broiler.JS#1139, `56272150fe23725a0e70978fb18e3c25f2548548`, the fourth model commit: with
+`ParseRequest.BuildSemanticModel` on, `SemanticModel.Resolve` answers, for a `PrivateIdentifier`, "the binding a class
+element's key declares or a reference names, in the innermost class that declares it, whatever the placement", and "the
+parse also reports the private-name rows, each at its member or `in` expression, once per undeclared reference",
+AllPrivateIdentifiersValid "of eval code against the private names its caller sees (EA0009), only where the request's
+`InheritedContext.VisiblePrivateNames` gives them" among them (Broiler.JS's `Broiler.ECMAScript/CHANGELOG.md`).
+Broiler.JS's decision D-js-private-rows of 2026-11-25 places each row "at the member or `in` expression Broiler.VM's
+binder names, once per undeclared reference", and did not take "(e) The rows at the private name, where Broiler.JS
+throws: it departs from the binder's place"; its decision D-js-adapter-visible-names reads "**Group `pn1` stays not
+implemented**: `pn1/0004` and `pn1/0005` expect a value the Script computes after catching the eval code's refusal,
+which a reading at the parse cannot match". Its plan, `VMC/` being "Broiler.VM's
+`src/Broiler.VM.Profile.JavaScript.Compiler/`", names, among "The places where the library differs from either engine,
+named for SJL-15.3 and SJL-15.5", these of this family's binder and executor:
+
+- in places: "for a member form Broiler.JS throws at the private name
+  (`Broiler.JS/Broiler.JavaScript.Compiler/SyntaxValidation.cs`, `VisitMemberExpression`), where the library reports at
+  the member, as Broiler.VM's binder does; for `#x in o` the places coincide";
+- in timing: "class T: Broiler.VM's binder skips eval code whose caller is in a class body (`ResolvePrivate`, in
+  `VMC/JsBinder.EarlyErrors.cs`) and its executor refuses at run time
+  (`src/Broiler.VM.Profile.JavaScript/JsEngine.Eval.cs` in Broiler.VM), where the library refuses at the eval code's
+  parse when the request carries the names; that is Broiler.VM's finding F6 and class T for row PN1 at Broiler.VM's
+  window (its `docs/evidence/sjl-15-001/correspondence.md` and `decision-rule-area.md`), and Broiler.JS's class T row is
+  EA0009" (Broiler.JS's bundle `sjl-15-001`'s `corrections/class-t.tsv`);
+- in codes: "under first error the library can name EA0009 before a row the specification raises first, an early error
+  of ParseText placed later in the eval code or a PerformEval row, and Broiler.VM's executor also checks private names
+  before EvalDeclarationInstantiation's conflicts."
+
+The same paragraph reads "The probes T112 to T114, T117 and V034 to V038 all agree (the bundle's `probes/answers.tsv`),
+and show neither the binder's place nor the timing", the bundle being Broiler.JS's `sjl-15-001`.
+
+Broiler.JS's records read "None of it is accepted: no second holder exists to review it." The first names the member as
+the place of the library's rows, where this family's binder places them; the second is the timing difference that row
+PN1 already records, class T, as finding F6 reads it, which row PN1's last cell has SJL-15.3 make when it passes the
+visible private names in the inherited context; the third is an order of codes under first error in eval code, where
+this family's executor checks private names before EvalDeclarationInstantiation's conflicts, for SJL-15.3 to read when
+eval code's refusal moves to the compile of the eval code and when, by row EE1's last cell, each code and place is kept
+or listed by row. These places are noted here for that, and nothing is classified for them here: no cell and no row's
+class changes, and this family's code reads none of the model before SJL-15.3.
+
 ---
 
 ## What the rows find against the plan and the records
