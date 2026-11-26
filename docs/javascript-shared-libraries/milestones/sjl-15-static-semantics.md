@@ -252,12 +252,12 @@ off nothing moves" (the changelog). Broiler.JS's records name stage 5b next: "Ne
 block-function aliases, the sixth model commit, judged by its part B against its own first parent." Of SJL-15.3's
 "**resolution:**", "**`arguments` need**, which is precise instead of an over-approximation" and "**direct-eval
 contamination**" below, the members Broiler.JS's plan names "for Broiler.VM's class P listing to cite" for rows FF3, FF4
-and FF5, and the places where it names the library differing from this family's binder for those rows and for rows RS1
-to RS4, are quoted in bundle `sjl-15-001`'s correspondence, its note of 2026-11-26, later, on rows FF3, FF4, FF5, RS1 to
-RS4 and EE1. This family still reads the model only from a stream version the owner publishes, which Broiler.JS's
-decision D-js-packable has the owner asked about "only after stage 8 and stage 9's listing", admitted by its pin commit
-before SJL-15.3's base. Broiler.VM's records observe each model commit after it merges, which is this repository's
-convention and no condition of a model merge. Nothing is revised.
+and FF5, and the places where it names the library differing from this family's binder for those rows, and its reading
+of rows RS1 to RS4, "both engines are the same", are quoted in bundle `sjl-15-001`'s correspondence, its note of
+2026-11-26, later, on rows FF3, FF4, FF5, RS1 to RS4 and EE1. This family still reads the model only from a stream
+version the owner publishes, which Broiler.JS's decision D-js-packable has the owner asked about "only after stage 8 and
+stage 9's listing", admitted by its pin commit before SJL-15.3's base. Broiler.VM's records observe each model commit
+after it merges, which is this repository's convention and no condition of a model merge. Nothing is revised.
 
 ### SJL-15.3 — Broiler.VM's lowering consumes it
 
