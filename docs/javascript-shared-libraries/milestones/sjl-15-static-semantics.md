@@ -225,6 +225,39 @@ still reads the model only from a stream version the owner publishes, which Broi
 owner asked about "only after stage 8 and stage 9's listing", admitted by its pin commit before SJL-15.3's base.
 Broiler.VM's records observe each model commit after it merges, which is this repository's convention and no condition
 of a model merge. Nothing is revised.
+*(Noted 2026-11-26, later, at Broiler.JS's SJL-15.2 stage 5a and its part B, observed; the notes above are left as
+written.)* The note above reads "Broiler.JS's records name stage 5a next". Stage 5a, "resolution and the function
+environment facts", merged as Broiler-Platform/Broiler.JS#1141, `4d8aa93ad5023017b66534feb248c4c16f59bf6e`, whose first
+parent is `746591d2`, the merge of Broiler-Platform/Broiler.JS#1140, no model commit; Broiler.JS's bundle `sjl-15-001`'s
+README names it the fifth model commit. Of this file's "per-function flags" and "reference resolution with dynamic
+markers" among the model's facts, Broiler.JS's `Broiler.ECMAScript/CHANGELOG.md` reads that `SemanticModel.Resolve`
+answers "every reference's and every binding identifier's resolution, never null: static, to the scope whose environment
+holds the binding and the name's first declaration there; dynamic, where a `with` object or a sloppy direct `eval` may
+bind the name at run time; global; or, for eval code, inherited", that `SemanticModel.EnvironmentOf` answers "the
+environment facts of the nodes `FactsOf` accepts", among them "the `arguments` binding, none for an arrow or a field
+initialiser; its observable need and its mapping; direct `eval` in the node's own parameters and body, an arrow's call
+being the arrow's; and `with` in its own code", and that `FunctionFacts.HasSeparateVariableEnvironment` is "computed
+from the parameter expressions, and for eval code from strictness, so the same with the member on or off"; it reads
+"Until stage 5b a name only an Annex B.3.3 alias binds is answered as the scopes alone answer it" and "No row is added
+and no vector is newly answered". Broiler.JS's plan reads "Broiler.VM's decision D-precision ("Window 1 reads the
+model's precise facts", JSD-0088) is the reason the facts are precise; it is Broiler.VM's, not among the decisions that
+bind this repository above, and is not taken here." Part B at stage 5a's merge is read in
+Broiler-Platform/Broiler.JS#1142, `d3e64b4df2c35acf706fca91707c3f198b53e6cd`, as Broiler.JS's reading of its own bundle:
+"part B read MET on the retained runs at the model commits taken so far (`be6c4a5c3e389c7eb2aff71c34e31bdae5efe276`,
+`6c61879bce81b1a7badf987e16c7b0531030258d`, `d87044c9db5fe2a26841782308bd53e2f9294656`,
+`56272150fe23725a0e70978fb18e3c25f2548548`, `4d8aa93ad5023017b66534feb248c4c16f59bf6e`), limited to them; the part's
+verdict waits for the last model commit before the base", both workflows' push runs at `4d8aa93a` read "each as it
+concluded in its first attempt". The request member is still off by default (decision D-js-default-off), and "with it
+off nothing moves" (the changelog). Broiler.JS's records name stage 5b next: "Next: SJL-15.2 stage 5b, Annex B
+block-function aliases, the sixth model commit, judged by its part B against its own first parent." Of SJL-15.3's
+"**resolution:**", "**`arguments` need**, which is precise instead of an over-approximation" and "**direct-eval
+contamination**" below, the members Broiler.JS's plan names "for Broiler.VM's class P listing to cite" for rows FF3, FF4
+and FF5, and the places where it names the library differing from this family's binder for those rows, and its reading
+of rows RS1 to RS4, "both engines are the same", are quoted in bundle `sjl-15-001`'s correspondence, its note of
+2026-11-26, later, on rows FF3, FF4, FF5, RS1 to RS4 and EE1. This family still reads the model only from a stream
+version the owner publishes, which Broiler.JS's decision D-js-packable has the owner asked about "only after stage 8 and
+stage 9's listing", admitted by its pin commit before SJL-15.3's base. Broiler.VM's records observe each model commit
+after it merges, which is this repository's convention and no condition of a model merge. Nothing is revised.
 
 ### SJL-15.3 — Broiler.VM's lowering consumes it
 
