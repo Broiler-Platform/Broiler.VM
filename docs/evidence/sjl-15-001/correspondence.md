@@ -239,6 +239,9 @@ named for SJL-15.3 and SJL-15.5", these of this family's binder and executor:
   of ParseText placed later in the eval code or a PerformEval row, and Broiler.VM's executor also checks private names
   before EvalDeclarationInstantiation's conflicts."
 
+The same paragraph reads "The probes T112 to T114, T117 and V034 to V038 all agree (the bundle's `probes/answers.tsv`),
+and show neither the binder's place nor the timing", the bundle being Broiler.JS's `sjl-15-001`.
+
 Broiler.JS's records read "None of it is accepted: no second holder exists to review it." The first names the member as
 the place of the library's rows, where this family's binder places them; the second is the timing difference that row
 PN1 already records, class T, as finding F6 reads it, which row PN1's last cell has SJL-15.3 make when it passes the

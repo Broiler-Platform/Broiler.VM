@@ -6861,8 +6861,8 @@ status of that repository's (update rule 6); "[...]" marks words left out of a q
     request carries the names; that is Broiler.VM's finding F6 and class T for row PN1 at Broiler.VM's window", in
     places, the member, where the library reports "as Broiler.VM's binder does", and, in codes, that "Broiler.VM's
     executor also checks private names before EvalDeclarationInstantiation's conflicts", which this repository's
-    correspondence quotes by a dated note on its rows PN1 and EE1, and reads "None of it is accepted: no second holder
-    exists to review it."
+    correspondence quotes by a dated note on its rows PN1 and EE1; it adds that its probes "show neither the binder's
+    place nor the timing", and reads "None of it is accepted: no second holder exists to review it."
   - Its `Broiler.ECMAScript/CHANGELOG.md` entry adds, "as rule SL6's `PublicAPI.txt` lists them",
     `SemanticModel.PrivateEnvironmentOf`, `SemanticModel.Resolve` for a `PrivateIdentifier`, the sealed classes
     `PrivateEnvironment` and `PrivateNameBinding` and the enum `PrivateNameKind`, and reads "With
