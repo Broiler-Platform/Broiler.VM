@@ -342,6 +342,82 @@ These are noted here for SJL-15.3 to read before window 1's base, and nothing is
 no row's class changes, class P's words are not read against them here and no rule is revised, and this family's code
 reads none of the model before SJL-15.3.
 
+*(Noted 2026-11-26, later yet, at Broiler.JS's SJL-15.2 stage 5b, observed; every cell above is left as written.)* Row
+AB1's column "Broiler.VM, wide path (`a86b6f5d`)" names "`ScanAnnexB` (`JBW:1708-1854`), membership by declaration, not
+by name (`JB:247-267`), none in strict code; blocking sets from parameter names, `arguments` and the body's lexical
+names (`JBW:323-362`)", its column "The model surface (`6fda6ca4`)" reads "no alias decision: which block function Annex
+B admits is not a model fact yet", its column "Broiler.JS" reads, across both engines, "Correction of Broiler.VM for
+V028 (a block function named `arguments`, the pinned edition against test262 at `ccaac100`, which the Script vector
+`semantics/annex-b/ab1/0005` also shows), and in eval code for V029 (an intermediate `let`) and V030 (strict eval
+code)", its class reads "Specification", and its last cell "SJL-15.2 adds the alias decision by declaration; SJL-15.3
+reads it, and `ScanAnnexB` goes". JSD-0088's decision D-ab1 lists the row at window 1, in part A by class ED and in part
+B's class F, and the rule's revision of 2026-11-23 names in class ED the cases where the alias decision gives the pinned
+edition's answer and the base's `ScanAnnexB` did not, "(a block function named arguments; in eval code, a block function
+under an intermediate lexical declaration of its name, or in strict eval code)". Row EE1's last cell reads "SJL-15.2
+reports them from the model; SJL-15.3 deletes the binder's checks, each code and place kept or listed by row". Stage 5b
+merged as Broiler-Platform/Broiler.JS#1143, `84d84cc3f68e3120299eb9faa44c6b9f0f2e7b8b`, the sixth model commit: with
+`ParseRequest.BuildSemanticModel` on, `SemanticModel.AnnexBAlias(Declaration)` answers, "for a block function the pinned
+edition gives a var-scoped binding (FunctionDeclarationInstantiation step 32.a, GlobalDeclarationInstantiation step 12,
+EvalDeclarationInstantiation step 13), the declaration naming the binding its evaluation sets: an existing `var` or
+top-level function of the name, the function's `arguments` binding, or a model-only alias", and `Resolve` answers "a
+function's reference to a name only an alias binds with that alias, and sloppy eval code's with `Inherited` carrying it;
+a Script's reference stays global"; "No row is added and no vector is newly answered: the value vectors of group `ab1`
+stay not implemented" (Broiler.JS's `Broiler.ECMAScript/CHANGELOG.md`): stage 5b adds no row, so nothing new answers row
+EE1's last cell at this stage. Its `Broiler.ECMAScript/docs/frontend/design.md`, section 10.8, reads "The answer is per
+declaration, so a caller iterating `Scope.Declarations` needs no node lookup." Broiler.JS's plan reads "Broiler.VM's
+decision D-ab1 (JSD-0088) is Broiler.VM's, not among the decisions that bind this repository above, and is cited, not
+taken, here." Its decision D-js-annexb-aliases reads "The readings: duplicate block functions of a name in a block are
+each aliased, as the syntax vectors record; a labelled block function is aliased", and did not take "(a) Null for a
+block function named `arguments`, as the plan words it: the pinned edition's evaluation step still sets the variable
+environment's binding, which Broiler.VM's decision D-ab1 reads." Of the number, it reads "The pinned ES2026 numbers the
+feature Annex B.3.2, whose steps stand in the main text, each marked normative-optional
+(FunctionDeclarationInstantiation step 32.a, GlobalDeclarationInstantiation step 12, EvalDeclarationInstantiation step
+13, and BlockDeclarationInstantiation steps 3.a.ii.1 and 3.b.iii)", and that "row AB1's "Annex B.3.3", like the rule's
+"Annex B.3.3 aliases" above and in bundle [...]'s rule, is an earlier edition's number for the same feature, quoted as
+written". Its plan, `VMC/` being "Broiler.VM's `src/Broiler.VM.Profile.JavaScript.Compiler/`", names, among "The places
+where the library differs from either engine, named for SJL-15.3 and SJL-15.5", these on this family's binder and row
+AB1:
+
+- this family's membership and inputs: "Broiler.VM decides membership by declaration (`VMC/JsBinder.Walks.cs`, its
+  `ScanAnnexB`, where `VMC/` is Broiler.VM's `src/Broiler.VM.Profile.JavaScript.Compiler/`) and differs from the model
+  on the inputs its decision D-ab1 names (Broiler.VM's `docs/evidence/sjl-15-001/correspondence.md`, row AB1; the
+  bundle's `probes/answers.tsv`): on probe V028, a block function named `arguments`, it keeps the arguments object, its
+  blocking set always taking `arguments` for an earlier edition's reason, that FunctionDeclarationInstantiation appends
+  it to parameterNames, where the pinned edition appends it to parameterBindings (step 22.f); and on probes V029 and
+  V030 in eval code, a block function under an intermediate lexical declaration of its name and one in strict eval code,
+  which it aliases; the revision-44 `DirectEval` vectors show neither, because the probes ran as indirect-eval code (the
+  bundle's README; Broiler.VM's `correspondence.md`).";
+- an arrow's block function: "An arrow's block function named `arguments` falls under D-ab1's "a block function named
+  arguments" (an inference).";
+- the model against decision D-ab1: "The model meets each case D-ab1 names: the `arguments` case by the `arguments`
+  binding it answers, the intermediate-lexical case by the scopes between, and the strict-eval case by strictness (an
+  inference); D-ab1 is Broiler.VM's and is not reserved.";
+- and test262 at the pin: "test262 at `ccaac100` asserts an earlier edition's reading for
+  `block-decl-func-skip-arguments.js` (`docs/compliance/known-gaps.md`; the semantics vector `ab1/0005`); the model
+  follows the pinned edition there, as both correspondence files and D-ab1 do."
+
+Its `Broiler.ECMAScript/docs/frontend/design.md`, section 10.8, adds "Broiler.VM's decision D-ab1 is Broiler.VM's, cited
+and unchanged: the model meets its `arguments` case by the `Arguments` answer, its intermediate-lexical case by the null
+list's scopes between, and its strict-eval case by strictness (an inference).", and both its plan and that section read
+"What remains: the interim, eval code's alias conditional on its caller's environments until stage 5c describes them;
+and the run-time conditions, which no stage closes: a Script's alias depends on GlobalDeclarationInstantiation's checks,
+and eval code with a global variable environment on GlobalDeclarationInstantiation-like checks." Its bundle
+`sjl-15-001`'s README reads "Row AB1 has no row in the corrections' C1: Broiler.JS gives the specification's answers on
+the probes ([...], row AB1), and `corrections.md` and its tables are unchanged."
+
+Broiler.JS's records read "None of it is accepted: no second holder exists to review it." The member and `Resolve`'s
+answers for the names the aliases bind are the alias decision that row AB1's last cell has SJL-15.2 add and SJL-15.3
+read, answered per declaration as section 10.8 reads it; the places are Broiler.JS's readings of where this family's
+`ScanAnnexB` and the model part, on the inputs row AB1's column "Broiler.JS" names (V028, and in eval code V029 and
+V030), and its reading that the model meets each case decision D-ab1 names, a reading that ends "(an inference)". Where
+Broiler.JS's own rule may differ from the pinned text, which its plan names "for SJL-15.5", is Broiler.JS's.
+Broiler.JS's plan reads row AB1's "Annex B.3.3" as an earlier edition's number for the pinned edition's Annex B.3.2; row
+AB1's fact above, "Annex B.3.3 block-function aliases", and every other text of this repository's records that cites
+"Annex B.3.3" are left as written. These are noted here for SJL-15.3 to read before window 1's base, and nothing is
+classified for them here: no cell and no row's class changes, decision D-ab1 is not revised, the words of class ED and
+class F are not read against them here and no rule is revised, and this family's code reads none of the model before
+SJL-15.3.
+
 ---
 
 ## What the rows find against the plan and the records
