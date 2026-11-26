@@ -258,6 +258,44 @@ of rows RS1 to RS4, "both engines are the same", are quoted in bundle `sjl-15-00
 version the owner publishes, which Broiler.JS's decision D-js-packable has the owner asked about "only after stage 8 and
 stage 9's listing", admitted by its pin commit before SJL-15.3's base. Broiler.VM's records observe each model commit
 after it merges, which is this repository's convention and no condition of a model merge. Nothing is revised.
+*(Noted 2026-11-26, later yet, at Broiler.JS's SJL-15.2 stage 5b and its part B, observed; the notes above are left as
+written.)* The note above reads "Broiler.JS's records name stage 5b next". Stage 5b, "Annex B's block-function aliases",
+merged as Broiler-Platform/Broiler.JS#1143, `84d84cc3f68e3120299eb9faa44c6b9f0f2e7b8b`, whose first parent is
+`d3e64b4d`, the merge of Broiler-Platform/Broiler.JS#1142, no model commit; Broiler.JS's bundle `sjl-15-001`'s README
+names it the sixth model commit. Of this file's "Annex B.3.3 aliases" among the model's facts, Broiler.JS's
+`Broiler.ECMAScript/CHANGELOG.md` reads that `SemanticModel.AnnexBAlias` answers, "for a block function the pinned
+edition gives a var-scoped binding (FunctionDeclarationInstantiation step 32.a, GlobalDeclarationInstantiation step 12,
+EvalDeclarationInstantiation step 13), the declaration naming the binding its evaluation sets: an existing `var` or
+top-level function of the name, the function's `arguments` binding, or a model-only alias", that `Resolve` answers "a
+function's reference to a name only an alias binds with that alias, and sloppy eval code's with `Inherited` carrying it;
+a Script's reference stays global", that "The interim that stage 5a's entry above states, "Until stage 5b a name only an
+Annex B.3.3 alias binds is answered as the scopes alone answer it", is closed", and "What remains: the interim, eval
+code's alias conditional on its caller's environments until stage 5c describes them; and the run-time conditions, which
+no stage closes: a Script's alias depends on GlobalDeclarationInstantiation's checks, and eval code with a global
+variable environment on GlobalDeclarationInstantiation-like checks." It reads "No row is added and no vector is newly
+answered". Broiler.JS's plan reads "The pinned ES2026 numbers the feature Annex B.3.2, whose steps stand in the main
+text, each marked normative-optional (FunctionDeclarationInstantiation step 32.a, GlobalDeclarationInstantiation step
+12, EvalDeclarationInstantiation step 13, and BlockDeclarationInstantiation steps 3.a.ii.1 and 3.b.iii)", and that "row
+AB1's "Annex B.3.3", like the rule's "Annex B.3.3 aliases" above and in bundle [...]'s rule, is an earlier edition's
+number for the same feature, quoted as written"; this file's "Annex B.3.3 aliases" is left as written. It reads
+"Broiler.VM's decision D-ab1 (JSD-0088) is Broiler.VM's, not among the decisions that bind this repository above, and is
+cited, not taken, here." Part B at stage 5b's merge is read in Broiler-Platform/Broiler.JS#1144,
+`4e27f13d3dc1bd3c38c5f29ea28ff4391ec8771b`, as Broiler.JS's reading of its own bundle: "part B read MET on the retained
+runs at the model commits taken so far (`be6c4a5c3e389c7eb2aff71c34e31bdae5efe276`,
+`6c61879bce81b1a7badf987e16c7b0531030258d`, `d87044c9db5fe2a26841782308bd53e2f9294656`,
+`56272150fe23725a0e70978fb18e3c25f2548548`, `4d8aa93ad5023017b66534feb248c4c16f59bf6e`,
+`84d84cc3f68e3120299eb9faa44c6b9f0f2e7b8b`), limited to them; the part's verdict waits for the last model commit before
+the base", both workflows' push runs at `84d84cc3` read "each as it concluded in its first attempt". The request member
+is still off by default (decision D-js-default-off), and "with it off nothing moves" (the changelog). Broiler.JS's
+records name stage 5c next: "Next: SJL-15.2 stage 5c, the caller's names in the inherited context, the seventh model
+commit, judged by its part B against its own first parent." Of SJL-15.3's "**Annex B aliases**" below, the places where
+Broiler.JS's plan names the library differing from this family's binder for row AB1, on the inputs this family's
+decision D-ab1 names, and its reading that "The model meets each case D-ab1 names", a reading that ends "(an
+inference)", are quoted in bundle `sjl-15-001`'s correspondence, its note of 2026-11-26, later yet, on rows AB1 and EE1.
+This family still reads the model only from a stream version the owner publishes, which Broiler.JS's decision
+D-js-packable has the owner asked about "only after stage 8 and stage 9's listing", admitted by its pin commit before
+SJL-15.3's base. Broiler.VM's records observe each model commit after it merges, which is this repository's convention
+and no condition of a model merge. Nothing is revised.
 
 ### SJL-15.3 — Broiler.VM's lowering consumes it
 
