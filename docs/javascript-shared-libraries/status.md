@@ -7532,9 +7532,9 @@ status of that repository's (update rule 6); "[...]" marks words left out of a q
     names", on probes V028, V029 and V030, and reads "The model meets each case D-ab1 names: the `arguments` case by the
     `arguments` binding it answers, the intermediate-lexical case by the scopes between, and the strict-eval case by
     strictness (an inference); D-ab1 is Broiler.VM's and is not reserved.", which this repository's correspondence
-    quotes by a dated note on its rows AB1 and EE1; of Broiler.JS's own rule it names where it "may differ from the
-    pinned text, each an inference not probed on Broiler.JS, for SJL-15.5"; and it reads "None of it is accepted: no
-    second holder exists to review it."
+    quotes by a dated note on its rows AB1 and EE1; it names where Broiler.JS's own membership rule, by name, "may
+    differ from the pinned text, each an inference not probed on Broiler.JS, for SJL-15.5"; and it reads "None of it is
+    accepted: no second holder exists to review it."
   - Its `Broiler.ECMAScript/CHANGELOG.md` entry adds, "as rule SL6's `PublicAPI.txt` lists them",
     `SemanticModel.AnnexBAlias(Declaration)`, `BindingKind.BlockFunctionAlias` and `DynamicReason.BlockFunction`, and
     reads that "The interim that stage 5a's entry above states, "Until stage 5b a name only an Annex B.3.3 alias binds
@@ -7622,7 +7622,8 @@ sixth model commit and for every later one, and this entry's date moves nothing 
 - its [`correspondence.md`](../evidence/sjl-15-001/correspondence.md): a note after its table on rows AB1 and EE1,
   quoting the alias answers stage 5b adds, the places where Broiler.JS's plan names the library differing from this
   family's binder for row AB1, on the inputs decision D-ab1 names, for SJL-15.3, its reading that the model meets each
-  case D-ab1 names, and its reading of the number "Annex B.3.3"; no cell changes;
+  case D-ab1 names, and its reading of the number "Annex B.3.3", and saying that the section 10.7 paragraph the note of
+  2026-11-26, later, quotes is revised, that note left as written; no cell changes;
 - [SJL-15's milestone file](milestones/sjl-15-static-semantics.md): a note on its note of 2026-11-26, later, which reads
   "Broiler.JS's records name stage 5b next";
 - this ledger: this entry, the SJL-15 row and "Last updated".
@@ -7752,12 +7753,12 @@ item done as above, one item read anew and four items gaining a dated note):
 - SJL-15.5 in Broiler.JS, its compiler on the model, after SJL-15.2's model and after W2 (decision D41), which has
   merged as `83a9bd82`; then Broiler.JS's evidence for SJL-15; in that order, as Broiler.JS's records give it, "then
   SJL-15.2's model, then SJL-15.5, then the evidence", each observed here when it merges *(2026-11-26, later yet:
-  Broiler.JS's records name, of row AB1, where Broiler.JS's own rule may differ from the pinned text, "each an inference
-  not probed on Broiler.JS, for SJL-15.5", and read "Row AB1 has no row in the corrections' C1"; the item is left as
-  written)* *(2026-11-26, later: Broiler.JS's records read that the model's FF4 and FF5 facts are, "As a proposal", "the
-  specification's answers that the corrections C1's rows FF4 and FF5 name (`corrections/corrections.tsv`); SJL-15.5
-  applies them", corrections of Broiler.JS as bundle `sjl-15-001`'s correspondence reads those rows; the item is left as
-  written)* *(added 2026-11-24, later)*;
+  Broiler.JS's records name, of row AB1, where Broiler.JS's own membership rule, by name, may differ from the pinned
+  text, "each an inference not probed on Broiler.JS, for SJL-15.5", and read "Row AB1 has no row in the corrections'
+  C1"; the item is left as written)* *(2026-11-26, later: Broiler.JS's records read that the model's FF4 and FF5 facts
+  are, "As a proposal", "the specification's answers that the corrections C1's rows FF4 and FF5 name
+  (`corrections/corrections.tsv`); SJL-15.5 applies them", corrections of Broiler.JS as bundle `sjl-15-001`'s
+  correspondence reads those rows; the item is left as written)* *(added 2026-11-24, later)*;
 - the owner's publication of a stream version carrying SJL-15.2's model (JSD-0083's decision D30), which Broiler.JS's
   decision D-js-packable has the owner asked about "only after stage 8 and stage 9's listing"; then this family's tools
   commit and pin commit, the pin commit by JSD-0088's decision D-pin "a merge of its own before window 1's base", which

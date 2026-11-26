@@ -417,13 +417,13 @@ answers for the names the aliases bind are the alias decision that row AB1's las
 read, answered per declaration as section 10.8 reads it; the places are Broiler.JS's readings of where this family's
 `ScanAnnexB` and the model part, on the inputs row AB1's column "Broiler.JS" names (V028, and in eval code V029 and
 V030), and its reading that the model meets each case decision D-ab1 names, a reading that ends "(an inference)". Where
-Broiler.JS's own rule may differ from the pinned text, which its plan names "for SJL-15.5", is Broiler.JS's.
-Broiler.JS's plan reads row AB1's "Annex B.3.3" as an earlier edition's number for the pinned edition's Annex B.3.2; row
-AB1's fact above, "Annex B.3.3 block-function aliases", and every other text of this repository's records that cites
-"Annex B.3.3" are left as written. These are noted here for SJL-15.3 to read before window 1's base, and nothing is
-classified for them here: no cell and no row's class changes, decision D-ab1 is not revised, the words of class ED and
-class F are not read against them here and no rule is revised, and this family's code reads none of the model before
-SJL-15.3.
+Broiler.JS's own membership rule, by name, may differ from the pinned text, which its plan names "for SJL-15.5", is
+Broiler.JS's. Broiler.JS's plan reads row AB1's "Annex B.3.3" as an earlier edition's number for the pinned edition's
+Annex B.3.2; row AB1's fact above, "Annex B.3.3 block-function aliases", and every other text of this repository's
+records that cites "Annex B.3.3" are left as written. These are noted here for SJL-15.3 to read before window 1's base,
+and nothing is classified for them here: no cell and no row's class changes, decision D-ab1 is not revised, the words of
+class ED and class F are not read against them here and no rule is revised, and this family's code reads none of the
+model before SJL-15.3.
 
 ---
 
