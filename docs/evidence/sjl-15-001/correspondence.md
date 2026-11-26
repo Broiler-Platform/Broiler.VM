@@ -293,8 +293,8 @@ proposal, the model's FF4 and FF5 facts (`FunctionFacts.HasSeparateVariableEnvir
 C1's rows FF4 and FF5 name (`corrections/corrections.tsv`); SJL-15.5 applies them, and `corrections.md` and its tables
 are unchanged."; the rows' column "Broiler.JS" above reads "Correction of Broiler.JS (V010)" for FF4 and "Correction of
 Broiler.JS (V015)" for FF5. Its plan, `VMC/` being "Broiler.VM's `src/Broiler.VM.Profile.JavaScript.Compiler/`", names,
-among "The places where the library differs from either engine, named for SJL-15.3 and SJL-15.5", these of this family's
-binder:
+among "The places where the library differs from either engine, named for SJL-15.3 and SJL-15.5", these on this family's
+binder and its rows:
 
 - row FF4: "Broiler.VM's body environment is narrower than FunctionDeclarationInstantiation's step 30
   (`VMC/JsBinder.Walks.cs`), its cell allowing the skip "only if no artifact moves; else class P" (Broiler.VM's
@@ -320,15 +320,27 @@ than the base's approximation (an inference)", and of Annex B.3.3's aliases, whi
 alone answer it until stage 5b", "Nothing reads `Resolve` before stage 5b (an inference: no engine reads the model or
 sets the member, and publication is stage 8's)".
 
+Of the resolution that rows RS1 to RS4's last cells have SJL-15.3 and SJL-15.4 read, Broiler.JS's plan reads "Where this
+departs from JSD-0080's resolution forms ("static, to a scope and declaration; dynamic, with its reason ...; or
+global"), named for Broiler.VM's catch-up as an inference: the inherited form, for eval code, and the
+`BindingIdentifier` overload.", and its `Broiler.ECMAScript/docs/frontend/design.md`, section 10.7, under "Against the
+sketch", reads "JSD-0080's resolution forms are not among the decisions that bind this repository, and these go beyond
+them.", "this repository" being Broiler.JS. JSD-0080 is not revised here.
+
 Broiler.JS's records read "None of it is accepted: no second holder exists to review it." The members are the facts that
 rows FF3, FF4 and FF5's last cells have SJL-15.3 read, and the ones class P's listing would cite with each row; the
 places are Broiler.JS's readings, several of them inferences, of where this family's approximations and the model's
-facts part: for FF3 and FF5, moves whose fit with class P's words Broiler.JS leaves to this family, "Broiler.VM's to
-judge against class P's examples"; for FF4, the skip row FF4's last cell already conditions; for RS1 to RS4, nothing
-beyond the admission policy rows RS3 and RS4 already name. The step number in row FF4's class is left as written. These
-are noted here for SJL-15.3 to read before window 1's base, and nothing is classified for them here: no cell and no
-row's class changes, class P's words are not read against them here and no rule is revised, and this family's code reads
-none of the model before SJL-15.3.
+facts part: for FF3, the `let arguments` and `function arguments(){}` cases it leaves "Broiler.VM's to judge against
+class P's examples (an inference)", and an arrow's parameters, "where the model's need is wider", "(an inference, not
+probed)"; for FF4, the skip row FF4's last cell already conditions; for FF5, a move where an arrow's direct call stands,
+which it reads "(an inference)" as one that class P's "a mention of eval that is not a direct call" does not cover; and
+for RS1 to RS4, no difference from this family's binder: "both engines are the same", this family's slice refusals of
+rows RS3 and RS4 being its admission policy, and eval code's free names inherited, "beyond JSD-0080's three forms". The
+step number in row FF4's class is left as written; row FF4's class reads "FunctionDeclarationInstantiation step 28", so
+the inner quote in Broiler.JS's sentence on it above is exact against Broiler.JS's `correspondence-broiler-js.md` alone.
+These are noted here for SJL-15.3 to read before window 1's base, and nothing is classified for them here: no cell and
+no row's class changes, class P's words are not read against them here and no rule is revised, and this family's code
+reads none of the model before SJL-15.3.
 
 ---
 
@@ -383,12 +395,12 @@ none of the model before SJL-15.3.
   merged as Broiler-Platform/Broiler.JS#1141, `4d8aa93ad5023017b66534feb248c4c16f59bf6e`, with
   `FunctionFacts.HasSeparateVariableEnvironment`, "computed from the parameter expressions, and for eval code from
   strictness, so the same with the member on or off" (Broiler.JS's `Broiler.ECMAScript/CHANGELOG.md`), and Broiler.JS's
-  plan reads that it "fulfils decision D-js-kinds' "the separate variable environment is a function fact (row FF4),
-  stage 5a's", and Broiler.VM's finding F7, whose note reads "The separate variable environment's fact is still to come,
-  at that stage"", and "A sloppy function's one `Function` scope stands for its lexical environment over its variable
-  environment, its declarations' `IsLexical` saying which, the variable environment being also the parameters' where it
-  is not separate; a strict function's is one environment; for resolution the split cannot be observed." No cell and no
-  row's class changes, and this family's code reads none of it before SJL-15.3.
+  plan reads that stage 5a "fulfils decision D-js-kinds' "the separate variable environment is a function fact (row
+  FF4), stage 5a's", and Broiler.VM's finding F7, whose note reads "The separate variable environment's fact is still to
+  come, at that stage"", and "A sloppy function's one `Function` scope stands for its lexical environment over its
+  variable environment, its declarations' `IsLexical` saying which, the variable environment being also the parameters'
+  where it is not separate; a strict function's is one environment; for resolution the split cannot be observed." No
+  cell and no row's class changes, and this family's code reads none of it before SJL-15.3.
 
 ## Hand-offs this file reads
 
