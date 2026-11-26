@@ -405,6 +405,13 @@ and eval code with a global variable environment on GlobalDeclarationInstantiati
 `sjl-15-001`'s README reads "Row AB1 has no row in the corrections' C1: Broiler.JS gives the specification's answers on
 the probes ([...], row AB1), and `corrections.md` and its tables are unchanged."
 
+The note of 2026-11-26, later, above quotes that section 10.7, of Annex B.3.3's aliases, has the model answer them "as
+the scopes alone answer it until stage 5b", and "Nothing reads `Resolve` before stage 5b (an inference: no engine reads
+the model or sets the member, and publication is stage 8's)". At stage 5b that paragraph of section 10.7 is revised: it
+now begins "**Annex B's block-function aliases.**", and its earlier words, those two among them, stand in its dated
+revision, "Revised 2026-11-26, at SJL-15.2 stage 5b, when the aliases joined the model". The note above is left as
+written.
+
 Broiler.JS's records read "None of it is accepted: no second holder exists to review it." The member and `Resolve`'s
 answers for the names the aliases bind are the alias decision that row AB1's last cell has SJL-15.2 add and SJL-15.3
 read, answered per declaration as section 10.8 reads it; the places are Broiler.JS's readings of where this family's
