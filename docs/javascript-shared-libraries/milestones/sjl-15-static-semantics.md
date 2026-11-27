@@ -325,7 +325,7 @@ concluded in its first attempt". The request member is still off by default (dec
 off nothing moves" (the changelog). Broiler.JS's records name stage 6 next: "Next: SJL-15.2 stage 6, the module records
 (correspondence rows MR1 and MR2, hand-off H19), the eighth model commit, judged by its part B against its own first
 parent." The places where Broiler.JS's plan names the library differing from this family's executor for the caller's
-records, among them that "Broiler.VM checks when the eval runs, through its eval map", several of them inferences, are
+records, among them that "Broiler.VM checks when the eval runs, through its eval map", each marked an inference, are
 quoted in bundle `sjl-15-001`'s correspondence, its note of 2026-11-27 on rows DE3 and EE1. This family still reads the
 model only from a stream version the owner publishes, which Broiler.JS's decision D-js-packable has the owner asked
 about "only after stage 8 and stage 9's listing", admitted by its pin commit before SJL-15.3's base. Broiler.VM's

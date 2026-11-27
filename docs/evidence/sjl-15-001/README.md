@@ -360,8 +360,8 @@ Broiler.JS for V046 (C1's row EA0007, in eval code)", the vector `semantics/scop
 the note of 2026-11-24, later, there records. Broiler.JS's plan reads "`CallerScopes` is the member Broiler.VM's
 decision D16 leaves until SJL-15's model", D16 being JSD-0083's decision D16, and "D16, D44 and JSD-0080 are
 Broiler.VM's and left as written"; that reading, and the places where it names the library differing from this family's
-executor for the caller's records, among them that "Broiler.VM checks when the eval runs, through its eval map", several
-of them inferences, are quoted in this bundle's correspondence, its note of 2026-11-27 on rows DE3 and EE1. The rest of
+executor for the caller's records, among them that "Broiler.VM checks when the eval runs, through its eval map", each
+marked an inference, are quoted in this bundle's correspondence, its note of 2026-11-27 on rows DE3 and EE1. The rest of
 the model is still to come, from "**Next:** SJL-15.2 stage 6, the module records (correspondence rows MR1 and MR2,
 hand-off H19), the eighth model commit", by Broiler.JS's decision D-js-stages, each stage with part B at its merge. The
 convention of the note of 2026-11-25 holds for this merge too: this bundle's list and this repository's ledger observe

@@ -7892,17 +7892,18 @@ status of that repository's (update rule 6); "[...]" marks words left out of a q
     reaches, as the bundle's rule allows", and "Stages 5a's and 5b's eval-code interims are closed." and "The run-time
     conditions stay as stage 5b words them, with a caller's `with` object of the name, a property that exists only when
     the code runs." It reads "`CallerScopes` is the member Broiler.VM's decision D16 leaves until SJL-15's model",
-    quoting JSD-0083's decision D16 whole, and "D16, D44 and JSD-0080 are Broiler.VM's and left as written; "the home's
-    rule", `docs/evidence/sjl-13-001/decision-rule.md` and `docs/evidence/sjl-13-001/tools/contract_check.py`, is frozen
-    and untouched; and whether the member meets JSD-0080's input row is part F's question at stage 8, whose checklist
-    (decision D-js-part-f-checklist) will map "the caller's lexical names" to the new member." Its decisions of that day
-    are "each taken as recommended under the owner's direction and recorded as the owner's decision of 2026-11-26":
-    D-js-caller-scopes, "**`InheritedContext.CallerScopes` describes a direct eval's caller: the declarative Environment
-    Records from the caller's running lexical environment out to, and not including, its variable environment, innermost
-    first, each a new `CallerScope` holding every name its record binds and whether it is a Catch clause's record**",
-    which reads "The eval-code interims of D-js-resolution and D-js-annexb-aliases are closed by this; a global variable
-    environment's checks and a caller's `with` object stay run-time conditions." and "The shape goes beyond JSD-0080's
-    words "the caller's lexical names", as D-js-resolution's inherited form goes beyond its resolution forms.";
+    quoting the sentence of JSD-0083's decision D16 on the caller's lexical names, and "D16, D44 and JSD-0080 are
+    Broiler.VM's and left as written; "the home's rule", `docs/evidence/sjl-13-001/decision-rule.md` and
+    `docs/evidence/sjl-13-001/tools/contract_check.py`, is frozen and untouched; and whether the member meets JSD-0080's
+    input row is part F's question at stage 8, whose checklist (decision D-js-part-f-checklist) will map "the caller's
+    lexical names" to the new member." Its decisions of that day are "each taken as recommended under the owner's
+    direction and recorded as the owner's decision of 2026-11-26": D-js-caller-scopes,
+    "**`InheritedContext.CallerScopes` describes a direct eval's caller: the declarative Environment Records from the
+    caller's running lexical environment out to, and not including, its variable environment, innermost first, each a
+    new `CallerScope` holding every name its record binds and whether it is a Catch clause's record**", which reads "The
+    eval-code interims of D-js-resolution and D-js-annexb-aliases are closed by this; a global variable environment's
+    checks and a caller's `with` object stay run-time conditions." and "The shape goes beyond JSD-0080's words "the
+    caller's lexical names", as D-js-resolution's inherited form goes beyond its resolution forms.";
     D-js-caller-scope-rows, "**EA0007 and EA0008 join `SemanticRows`**" and "**EA0006 stays a row only a run reaches**";
     and D-js-adapter-caller-scopes, "**The adapter passes every `DirectEval` request the caller's records from
     `CallerScopesOf` on the Script's model, and follows a direct eval the eval code itself holds**"; and "Decisions
@@ -7910,9 +7911,9 @@ status of that repository's (update rule 6); "[...]" marks words left out of a q
     notes of 2026-11-26, and each cell is left as written." Among "The places where the library differs from either
     engine, named for SJL-15.3 and SJL-15.5", it names, of this family's executor, that "Broiler.VM checks when the eval
     runs, through its eval map" and "it checks private names before the declarations, the reverse of
-    EvalDeclarationInstantiation's order", and of Broiler.JS's own check that "it misses the nested eval of probe V046",
-    which this repository's correspondence quotes by a dated note on its rows DE3 and EE1; and it reads "None of it is
-    accepted: no second holder exists to review it."
+    EvalDeclarationInstantiation's order", each marked an inference, and of Broiler.JS's own check that "it misses the
+    nested eval of probe V046", which this repository's correspondence quotes by a dated note on its rows DE3 and EE1;
+    and it reads "None of it is accepted: no second holder exists to review it."
   - Its `Broiler.ECMAScript/CHANGELOG.md` entry adds, "as rule SL6's `PublicAPI.txt` lists them",
     `SemanticModel.CallerScopesOf(CallExpression)`, `SemanticModel.DirectEvalCalls`, the type `CallerScope` with `Names`
     and `IsCatch`, and `InheritedContext.CallerScopes`, and reads "EA0007 for a record that is not a Catch clause's with
@@ -8010,8 +8011,9 @@ seventh model commit and for every later one, and this entry's date moves nothin
   quoting this repository's own records on the caller's lexical names (JSD-0080's request row, JSD-0083's decisions D16
   and D44, bundle `sjl-13-001`'s row R28), the members and rows stage 5c adds, Broiler.JS's reading of the member
   against D16, D44 and JSD-0080, and the places where its plan names the library differing from this family's executor
-  for SJL-15.3, and saying that the sentence of design sections 10.8 and 10.7 the note of 2026-11-26, later yet, quotes
-  is revised, that note left as written; no cell changes;
+  for SJL-15.3, and saying that the "What remains" sentence the note of 2026-11-26, later yet, quotes from Broiler.JS's
+  plan and its design's section 10.8 is revised in design sections 10.8 and 10.7, that note left as written; no cell
+  changes;
 - [SJL-15's milestone file](milestones/sjl-15-static-semantics.md): a note on its note of 2026-11-26, later yet, which
   reads "Broiler.JS's records name stage 5c next";
 - this ledger: this entry, the SJL-15 row and "Last updated".
