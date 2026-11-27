@@ -296,6 +296,41 @@ This family still reads the model only from a stream version the owner publishes
 D-js-packable has the owner asked about "only after stage 8 and stage 9's listing", admitted by its pin commit before
 SJL-15.3's base. Broiler.VM's records observe each model commit after it merges, which is this repository's convention
 and no condition of a model merge. Nothing is revised.
+*(Noted 2026-11-27, at Broiler.JS's SJL-15.2 stage 5c and its part B, observed; the notes above are left as written.)*
+The note above reads "Broiler.JS's records name stage 5c next". Stage 5c, the caller's names in the inherited context,
+merged as Broiler-Platform/Broiler.JS#1145, `30af0dad83f73d2a5cf5495b2d4e3716cc7ed0df`, whose first parent is
+`4e27f13d`, the merge of Broiler-Platform/Broiler.JS#1144, no model commit; Broiler.JS's bundle `sjl-15-001`'s README
+names it the seventh model commit. Of this file's "declarations and conflicts" and "every early error" among the model's
+facts, Broiler.JS's `Broiler.ECMAScript/CHANGELOG.md` reads that `InheritedContext.CallerScopes` holds "the caller's
+records, null by default and on `TopLevel`, copied, a null element refused; read only with the member on", that "The
+rows EA0007 and EA0008 (EvalDeclarationInstantiation step 3.d.i.2.a.i.1 and step 3.d.i.2.a.ii.1) are reported with the
+member on, for sloppy eval code whose request gives the caller's records, at each colliding var-declared name's first
+declaration", that "EA0006 stays a row only a run reaches", and that "The interim stage 5b's entry above states, "What
+remains: the interim, eval code's alias conditional on its caller's environments until stage 5c describes them", is
+closed: with the records given the library decides, and without them the request does not describe the caller and the
+eval body's answer is the member's contract." The run-time conditions the note above quotes from stage 5b's entry stay,
+"as that entry words them", "with a caller's `with` object of the name"; stage 5b's entry is left as written there, and
+the note above is left as written here. Broiler.JS's plan reads "`CallerScopes` is the member Broiler.VM's decision D16
+leaves until SJL-15's model", D16 being JSD-0083's decision D16, and "D16, D44 and JSD-0080 are Broiler.VM's and left as
+written"; its decision D-js-caller-scopes reads "The shape goes beyond JSD-0080's words "the caller's lexical names", as
+D-js-resolution's inherited form goes beyond its resolution forms."; and "whether the member meets JSD-0080's input row
+is part F's question at stage 8". Part B at stage 5c's merge is read in Broiler-Platform/Broiler.JS#1146,
+`59ccb11cc1279fe2a6f015acbccd7f6dbff185f2`, as Broiler.JS's reading of its own bundle: "part B read MET on the retained
+runs at the model commits taken so far (`be6c4a5c3e389c7eb2aff71c34e31bdae5efe276`,
+`6c61879bce81b1a7badf987e16c7b0531030258d`, `d87044c9db5fe2a26841782308bd53e2f9294656`,
+`56272150fe23725a0e70978fb18e3c25f2548548`, `4d8aa93ad5023017b66534feb248c4c16f59bf6e`,
+`84d84cc3f68e3120299eb9faa44c6b9f0f2e7b8b`, `30af0dad83f73d2a5cf5495b2d4e3716cc7ed0df`), limited to them; the part's
+verdict waits for the last model commit before the base", both workflows' push runs at `30af0dad` read "each as it
+concluded in its first attempt". The request member is still off by default (decision D-js-default-off), and "with it
+off nothing moves" (the changelog). Broiler.JS's records name stage 6 next: "Next: SJL-15.2 stage 6, the module records
+(correspondence rows MR1 and MR2, hand-off H19), the eighth model commit, judged by its part B against its own first
+parent." The places where Broiler.JS's plan names the library differing from this family's executor for the caller's
+records, among them that "Broiler.VM checks when the eval runs, through its eval map", each marked an inference, are
+quoted in bundle `sjl-15-001`'s correspondence, its note of 2026-11-27 on rows DE3 and EE1. This family still reads the
+model only from a stream version the owner publishes, which Broiler.JS's decision D-js-packable has the owner asked
+about "only after stage 8 and stage 9's listing", admitted by its pin commit before SJL-15.3's base. Broiler.VM's
+records observe each model commit after it merges, which is this repository's convention and no condition of a model
+merge. Nothing is revised.
 
 ### SJL-15.3 — Broiler.VM's lowering consumes it
 
