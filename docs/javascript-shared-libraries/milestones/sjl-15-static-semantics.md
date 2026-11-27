@@ -356,16 +356,17 @@ the base", both workflows' push runs at `2c48beb1` read "each as it concluded in
 is still off by default (decision D-js-default-off), and "with it off nothing moves" (the changelog). Broiler.JS's
 records name stage 7 next: "Next: SJL-15.2 stage 7, the ninth model commit", "**stage 7**, named evaluation, free names
 and captures", "judged by its part B against its own first parent". The places where Broiler.JS's plan names the library
-differing from this family's binder for the module record, among them that this family's `CheckModule` "reports every
-repeat of an exported name and skips the undeclared check on each specifier it so reports", several marked inferences,
-and its report of the correspondence's rows MR1 and MR2 among its "Stale cells, reported and not edited", are quoted in
-bundle `sjl-15-001`'s correspondence, its note of 2026-11-27, later, on rows MR1, MR2 and EE1. This family still reads
-the model only from a stream version the owner publishes, which Broiler.JS's decision D-js-packable has the owner asked
-about "only after stage 8 and stage 9's listing", admitted by its pin commit before SJL-15.3's base; the owner's answer
-of 2026-11-27, the owner's own, "All publish-decisions can be done and run. So if a publish yes/no is the question, do
-the publish, wait for the nuget-package-availability and continue", answers that question "publish", as this
-repository's ledger notes on its Next list. Broiler.VM's records observe each model commit after it merges, which is
-this repository's convention and no condition of a model merge. Nothing is revised.
+differing from this family's binder and compiler for the module record, among them that this family's `CheckModule`
+"reports every repeat of an exported name and skips the undeclared check on each specifier it so reports", several
+marked inferences, and its report of the correspondence's rows MR1 and MR2 among its "Stale cells, reported and not
+edited", are quoted in bundle `sjl-15-001`'s correspondence, its note of 2026-11-27, later, on rows MR1, MR2 and EE1.
+This family still reads the model only from a stream version the owner publishes, which Broiler.JS's decision
+D-js-packable has the owner asked about "only after stage 8 and stage 9's listing", admitted by its pin commit before
+SJL-15.3's base; the owner's answer of 2026-11-27, the owner's own, "All publish-decisions can be done and run. So if a
+publish yes/no is the question, do the publish, wait for the nuget-package-availability and continue", answers that
+question in its words "do the publish", as this repository's ledger notes on its Next list. Broiler.VM's records observe
+each model commit after it merges, which is this repository's convention and no condition of a model merge. Nothing is
+revised.
 
 ### SJL-15.3 — Broiler.VM's lowering consumes it
 

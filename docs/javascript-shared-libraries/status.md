@@ -8415,10 +8415,10 @@ eighth model commit and for every later one, and this entry's date moves nothing
   taken here." The owner's answer of 2026-11-27, given in chat, unasked, the owner's own and not one taken under the
   direction of 2026-10-18, reads "All publish-decisions can be done and run. So if a publish yes/no is the question, do
   the publish, wait for the nuget-package-availability and continue". It answers the question D30 leaves to the owner
-  for the publication of a stream version carrying SJL-15.2's model, "publish": that publication is now to be taken
-  after stage 9's listing without a further question to the owner, as the owner's own answer. D30's check of the
-  frontend's syntax half, "At SJL-15's re-pin the same check covers the frontend's syntax half", is still read as the
-  records require, and no decision's text changes; the Next list's item gains a dated note.
+  for the publication of a stream version carrying SJL-15.2's model in its words "do the publish": that publication is
+  now to be taken after stage 9's listing without a further question to the owner, as the owner's own answer. D30's
+  check of the frontend's syntax half, "**At SJL-15's re-pin the same check covers the frontend's syntax half**", is
+  still read as the records require, and no decision's text changes; the Next list's item gains a dated note.
 
 **What this repository files**, each a dated note quoting what it reads:
 - bundle [`sjl-15-001`](../evidence/sjl-15-001/README.md)'s README: a note on its note of 2026-11-27, which reads "The
@@ -8598,13 +8598,13 @@ item done as above, one item read anew and four items gaining a dated note):
   change of its own with its runs, and no record of this repository asks for it before then *(2026-11-27, later: the
   owner's answer of 2026-11-27, given in chat, unasked, the owner's own and not one taken under the direction of
   2026-10-18, reads "All publish-decisions can be done and run. So if a publish yes/no is the question, do the publish,
-  wait for the nuget-package-availability and continue"; it answers this publication "publish", so the publication is
-  now to be taken after stage 9's listing without a further question to the owner, as the owner's own answer, D30's
-  check of the frontend's syntax half still read as the records require; the item is left as written)* *(", which
-  Broiler.JS's decision D-js-packable has the owner asked about "only after stage 8 and stage 9's listing"" added
-  2026-11-25)* *(added 2026-11-24, later, from the words "then the owner's publication of a stream version carrying it,
-  and this family's tools commit and pin commit", which closed the item before the one above from 2026-11-16, at
-  SJL-15.1, until 2026-11-24, later)*;
+  wait for the nuget-package-availability and continue"; it answers this publication in its words "do the publish", so
+  the publication is now to be taken after stage 9's listing without a further question to the owner, as the owner's own
+  answer, D30's check of the frontend's syntax half still read as the records require; the item is left as written)*
+  *(", which Broiler.JS's decision D-js-packable has the owner asked about "only after stage 8 and stage 9's listing""
+  added 2026-11-25)* *(added 2026-11-24, later, from the words "then the owner's publication of a stream version
+  carrying it, and this family's tools commit and pin commit", which closed the item before the one above from
+  2026-11-16, at SJL-15.1, until 2026-11-24, later)*;
 - SJL-15.3's and SJL-15.4's windows, outside SJL-11.4's window, and bundle `sjl-15-001`'s runs at each window's base and
   after commit, part S's classes R and C listed from the window-2 base run's reports before any after run of window 2;
   SJL-15.5 waits on Broiler.JS's SJL-14 cut-over *(2026-11-27, later: Broiler.JS's records name, for SJL-15.3, the

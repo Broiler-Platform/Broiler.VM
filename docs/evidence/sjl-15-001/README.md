@@ -397,14 +397,14 @@ them; the corrections' classes E and T are Broiler.JS's, and this bundle's corre
 specification's, by code". Broiler.JS's plan reads "H19's correction is Broiler.VM's, read at SJL-15.3, as JSD-0088's
 decision D-handoffs routes it; nothing here declares it met, and neither correspondence row is edited", and lists this
 bundle's rows MR1 and MR2 among its "Stale cells, reported and not edited"; that report, and the places where it names
-the library differing from this family's binder for the module record, among them that this family's `CheckModule`
-"reports every repeat of an exported name and skips the undeclared check on each specifier it so reports", several
-marked inferences, are quoted in this bundle's correspondence, its note of 2026-11-27, later, on rows MR1, MR2 and EE1.
-The rest of the model is still to come, from "**Next:** SJL-15.2 stage 7, the ninth model commit", by Broiler.JS's
-decision D-js-stages, each stage with part B at its merge. The convention of the note of 2026-11-25 holds for this merge
-too: this bundle's list and this repository's ledger observe each model commit after it merges, and that is no
-precondition of a model merge. The fourth and fifth items, the owner's publication and this family's tools commit and
-pin commit, still wait on the model. Of the fourth, the owner's answer of 2026-11-27, the owner's own and not one taken
-under the direction, reads "All publish-decisions can be done and run. So if a publish yes/no is the question, do the
-publish, wait for the nuget-package-availability and continue"; this repository's ledger notes it on its Next list's
+the library differing from this family's binder and compiler for the module record, among them that this family's
+`CheckModule` "reports every repeat of an exported name and skips the undeclared check on each specifier it so reports",
+several marked inferences, are quoted in this bundle's correspondence, its note of 2026-11-27, later, on rows MR1, MR2
+and EE1. The rest of the model is still to come, from "**Next:** SJL-15.2 stage 7, the ninth model commit", by
+Broiler.JS's decision D-js-stages, each stage with part B at its merge. The convention of the note of 2026-11-25 holds
+for this merge too: this bundle's list and this repository's ledger observe each model commit after it merges, and that
+is no precondition of a model merge. The fourth and fifth items, the owner's publication and this family's tools commit
+and pin commit, still wait on the model. Of the fourth, the owner's answer of 2026-11-27, the owner's own and not one
+taken under the direction, reads "All publish-decisions can be done and run. So if a publish yes/no is the question, do
+the publish, wait for the nuget-package-availability and continue"; this repository's ledger notes it on its Next list's
 item on that publication. No other item changes.
