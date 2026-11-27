@@ -499,11 +499,12 @@ reads "Stages 5a's and 5b's eval-code interims are closed." and "Its first part 
 carried declarations are decided when the request carries the caller's records, a Catch clause's record exempt, and
 without them the request does not describe the caller and the eval body's answer is the member's contract.", and "The
 run-time conditions stay as stage 5b words them, with a caller's `with` object of the name, a property that exists only
-when the code runs." That sentence is revised in section 10.8, its paragraph "**What stays conditional.**", by a dated
-revision, "Revised 2026-11-26, at SJL-15.2 stage 5c, closing the interim", and in section 10.7's paragraph "**Annex B's
-block-function aliases.**", by "Revised 2026-11-26, at SJL-15.2 stage 5c, when the caller's records joined the request,
-closing the interim"; each quotes the words it replaces, and the run-time conditions after them "stay as written". The
-plan's note at stage 5b is unchanged, and the note above is left as written.
+when the code runs." The "What remains" sentence the note above quotes is revised in Broiler.JS's design, in section
+10.8, its paragraph "**What stays conditional.**", by a dated revision, "Revised 2026-11-26, at SJL-15.2 stage 5c,
+closing the interim", and in section 10.7's paragraph "**Annex B's block-function aliases.**", by "Revised 2026-11-26,
+at SJL-15.2 stage 5c, when the caller's records joined the request, closing the interim"; each quotes the words it
+replaces, and the run-time conditions after them "stay as written". The plan's note at stage 5b is unchanged, and the
+note above is left as written.
 
 Broiler.JS's records read "None of it is accepted: no second holder exists to review it." The member is the one
 JSD-0083's decision D16 leaves out of the request "until SJL-15's model"; Broiler.JS's records read its shape as going
