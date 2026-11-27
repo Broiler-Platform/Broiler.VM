@@ -367,6 +367,45 @@ publish yes/no is the question, do the publish, wait for the nuget-package-avail
 question in its words "do the publish", as this repository's ledger notes on its Next list. Broiler.VM's records observe
 each model commit after it merges, which is this repository's convention and no condition of a model merge. Nothing is
 revised.
+*(Noted 2026-11-27, later yet, at Broiler.JS's SJL-15.2 stage 7 and its part B, observed; the notes above are left as
+written.)* The note above reads "Broiler.JS's records name stage 7 next". Stage 7, named evaluation, free names and
+captures, merged as Broiler-Platform/Broiler.JS#1149, `950bea8f315aa5f10d4b251a7d39ed7658912512`, whose first parent is
+`26c6d6ec`, the merge of Broiler-Platform/Broiler.JS#1148, no model commit; Broiler.JS's bundle `sjl-15-001`'s README
+names it the ninth model commit. Of this file's "named-evaluation names" and "free names and captures" among the model's
+facts, Broiler.JS's `Broiler.ECMAScript/CHANGELOG.md` reads that `SemanticModel.NamedEvaluationName` gives "the name an
+anonymous function or class definition's named evaluation passes, where the source fixes it, and "default" for the
+anonymous default declarations", `NamedEvaluationKey` "the computed key whose run-time value names an anonymous function
+or class definition", `FreeNames` "the names a facts node's code and the code nested in it use that no scope of its own
+binds, in the order of their first such reference", and `Captured` "the declarations a facts node's free names resolve
+to, in their order, a global or inherited name captured by none", and that "No row is added and no vector is newly
+answered". Broiler.JS's plan reads "The members that answer each correspondence row, for Broiler.VM's catch-up: NE1,
+`NamedEvaluationName` and `NamedEvaluationKey`; FC1, `FreeNames`, `Captured` and `EnvironmentFacts`'
+`DirectEvalOrWithWithin` and `FunctionNameReferenced`."; its decision D-js-named-evaluation-vectors reads "**The value
+vectors of row NE1 (group `ne1`) stay not implemented**". Part B at stage 7's merge is read in
+Broiler-Platform/Broiler.JS#1150, `b92ef028327b7420d4f489cb805ef5270623e760`, as Broiler.JS's reading of its own bundle:
+"part B read MET on the retained runs at the model commits taken so far (`be6c4a5c3e389c7eb2aff71c34e31bdae5efe276`,
+`6c61879bce81b1a7badf987e16c7b0531030258d`, `d87044c9db5fe2a26841782308bd53e2f9294656`,
+`56272150fe23725a0e70978fb18e3c25f2548548`, `4d8aa93ad5023017b66534feb248c4c16f59bf6e`,
+`84d84cc3f68e3120299eb9faa44c6b9f0f2e7b8b`, `30af0dad83f73d2a5cf5495b2d4e3716cc7ed0df`,
+`2c48beb1e332dd7c9fa1577705ed5458b5686c1f`, `950bea8f315aa5f10d4b251a7d39ed7658912512`), limited to them; the part's
+verdict waits for the last model commit before the base", both workflows' push runs at `950bea8f` read "each as it
+concluded in its first attempt". The request member is still off by default (decision D-js-default-off), and "with it
+off nothing moves" (the changelog). Broiler.JS's records name stage 8 next: "Next: SJL-15.2 stage 8, the tenth model
+commit", "**stage 8**, the library's last model commit", "judged by its part B against its own first parent". Of this
+file's SJL-15.3, whose list after "The lowering reads:" names resolution, the `arguments` need, direct-eval
+contamination, Annex B aliases, private names and labels, Broiler.JS's plan reads "its milestone's SJL-15.3 list does
+not name the names, which its row NE1's last cell says SJL-15.3 reads (an inference)"; that list and the
+correspondence's row NE1, whose last cell reads "SJL-15.3 reads the model's name", are left as written, and the gap
+between them is recorded for the owner as an observation. The places where Broiler.JS's plan names the library differing
+from this family for rows NE1 and FC1, among them that "its rule admits no NE class at that window (an inference)", so
+that two accepted inputs it names "would read as a regression in its part B", are quoted in bundle `sjl-15-001`'s
+correspondence, its note of 2026-11-27, later yet, on rows NE1 and FC1, and recorded there for the owner as
+observations: a class for those inputs at window 1 would need a dated revision of that bundle's rule before any run,
+which is the owner's, and none is made here. This family still reads the model only from a stream version the owner
+publishes, which Broiler.JS's decision D-js-packable has the owner asked about "only after stage 8 and stage 9's
+listing", admitted by its pin commit before SJL-15.3's base; the note above of 2026-11-27, later, on the owner's answer
+of 2026-11-27 to that question is left as written. Broiler.VM's records observe each model commit after it merges, which
+is this repository's convention and no condition of a model merge. Nothing is revised.
 
 ### SJL-15.3 — Broiler.VM's lowering consumes it
 

@@ -408,3 +408,45 @@ and pin commit, still wait on the model. Of the fourth, the owner's answer of 20
 taken under the direction, reads "All publish-decisions can be done and run. So if a publish yes/no is the question, do
 the publish, wait for the nuget-package-availability and continue"; this repository's ledger notes it on its Next list's
 item on that publication. No other item changes.
+
+*(Noted 2026-11-27, later yet, at Broiler.JS's SJL-15.2 stage 7 and its part B, observed; the list and the notes above
+are left as written.)* The note of 2026-11-27, later, above reads "The rest of the model is still to come". SJL-15.2's
+stage 7, named evaluation, free names and captures, merged as Broiler-Platform/Broiler.JS#1149, and Broiler.JS's bundle
+`sjl-15-001`'s README, having read before the merge that "This branch's merge will be the ninth model commit", names it
+after: "**The ninth model commit is `950bea8f315aa5f10d4b251a7d39ed7658912512`**, the merge of
+Broiler-Platform/Broiler.JS#1149 (head `2dad6084`), whose first parent is `26c6d6ecc0b071a47267daa1b504f7ff04a6a854`
+(Broiler-Platform/Broiler.JS#1148, stage 6's part B records)", and "Its first parent is no model commit: nothing from
+`2c48beb1` to `26c6d6ec` changes a path under `Broiler.ECMAScript/Broiler.ECMAScript.Frontend*`." Part B of that
+bundle's rule was taken at it and at its first parent, and read in Broiler-Platform/Broiler.JS#1150,
+`b92ef028327b7420d4f489cb805ef5270623e760`, records only, taken as recommended under the owner's direction: "**part B
+read MET on the retained runs at the model commits taken so far (`be6c4a5c3e389c7eb2aff71c34e31bdae5efe276`,
+`6c61879bce81b1a7badf987e16c7b0531030258d`, `d87044c9db5fe2a26841782308bd53e2f9294656`,
+`56272150fe23725a0e70978fb18e3c25f2548548`, `4d8aa93ad5023017b66534feb248c4c16f59bf6e`,
+`84d84cc3f68e3120299eb9faa44c6b9f0f2e7b8b`, `30af0dad83f73d2a5cf5495b2d4e3716cc7ed0df`,
+`2c48beb1e332dd7c9fa1577705ed5458b5686c1f`, `950bea8f315aa5f10d4b251a7d39ed7658912512`), limited to them; the part's
+verdict waits for the last model commit before the base.**" "At `950bea8f` the rule's "the commit's CI run of every test
+project passed" is read on both workflows' push runs as they concluded, each in its first attempt, so the question of
+which attempt decides, flagged for the owner at the first model commit, does not arise here. The readings at `be6c4a5c`,
+at `6c61879b`, at `d87044c9`, at `56272150`, at `4d8aa93a`, at `84d84cc3`, at `30af0dad` and at `2c48beb1`, and the
+first one's flag, in the notes above of 2026-11-24, 2026-11-25, 2026-11-26 and 2026-11-27, stay as written. A NOT MET at
+any later model commit makes part B NOT MET." That is Broiler.JS's reading of its own bundle, not a run of this bundle's
+rule, and judges nothing here. Broiler.JS's note of 2026-11-27 at stage 7 also reads that its library-level adapter
+"answers no new vector: by decision D-js-named-evaluation-vectors group `ne1` stays not implemented, since it names no
+catalogue row and each of its vectors would match by acceptance alone when read at the parse", and "As a proposal, the
+model's names are the specification's answers that C1's row NE1 names ([...]); SJL-15.5 applies them". That adapter and
+its vectors are Broiler.JS's, and this bundle's rule has none like them; this bundle's correspondence reads row NE1's
+column "Broiler.JS", across both engines, "Correction of Broiler.JS in indirect-eval code (V039, V041, V042); same
+otherwise", its class "Specification" and its last cell "SJL-15.3 reads the model's name", and row FC1's class "No
+producer: the model's captures are an adoption for this family, which this family need not read". The places where
+Broiler.JS's plan names the library differing from this family for those rows, among them that "its rule admits no NE
+class at that window (an inference)", so that two accepted inputs it names, an anonymous class with a static element at
+a computed key (JSC-238) and a parenthesised destructuring target, "would read as a regression in its part B", and that
+"its milestone's SJL-15.3 list does not name the names, which its row NE1's last cell says SJL-15.3 reads (an
+inference)", are quoted in this bundle's correspondence, its note of 2026-11-27, later yet, on rows NE1 and FC1, and
+recorded there for the owner as observations: a class for those inputs at window 1 would need a dated revision of this
+bundle's rule before any run, which is the owner's, and none is made here. The rest of the model is still to come, from
+"**Next:** SJL-15.2 stage 8, the tenth model commit", "**stage 8**, the library's last model commit", by Broiler.JS's
+decision D-js-stages, with part B at its merge. The convention of the note of 2026-11-25 holds for this merge too: this
+bundle's list and this repository's ledger observe each model commit after it merges, and that is no precondition of a
+model merge. The fourth and fifth items, the owner's publication and this family's tools commit and pin commit, still
+wait on the model; the note above of 2026-11-27, later, on the fourth is left as written. No other item changes.
