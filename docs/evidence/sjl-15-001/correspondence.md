@@ -627,9 +627,13 @@ repaired.", "An anonymous class with a static element, at a computed key, keeps 
 while the class is defined, so naming it afterwards could be observed, and a static `name` member must not be
 overwritten."; and this bundle's rule, as its revision of 2026-11-23 words it, lists part B's "admitted difference
 classes, window 1, in B1, B2, B3 and B5 only" as "P precision (correspondence rows FF3, FF4, FF5)", "F a correction of
-this family by one of the rows LB1, MR2 and the dynamic function's goals (H20, H19, H18)", "T timing (row PN1)" and "S7
-first refusal", and reads "every other difference is a regression: any byte difference of an input accepted at both
-commits outside P; [...] an outcome that moves outside F and T; a diagnostic difference outside F, T and S7".
+this family by one of the rows LB1, MR2 and the dynamic function's goals (H20, H19, H18) - an input whose outcome or
+first diagnostic moves for that row's reason; each listed with its row; and by row AB1 (JSD-0088's decision D-ab1) - an
+input accepted at both commits, the same outcome, whose artifact differs only because the lowering reads the model's
+Annex B.3.3 alias decision, which follows the pinned edition where the base's ScanAnnexB did not [...]", "T timing (row
+PN1)" and "S7 first refusal", and its regression line reads "every other difference is a regression: [...] an outcome
+that moves outside F and T; a diagnostic difference outside F, T and S7", whose first clause that revision words "any
+byte difference of an input accepted at both commits outside P and class F's row AB1".
 
 Stage 7 merged as Broiler-Platform/Broiler.JS#1149, `950bea8f315aa5f10d4b251a7d39ed7658912512`, the ninth model commit:
 with `ParseRequest.BuildSemanticModel` on, "the semantic model answers, for an anonymous function or class definition's
@@ -681,15 +685,15 @@ member on, the model holds the names and the captures, as Broiler.JS's records a
 Broiler.JS's records read "None of it is accepted: no second holder exists to review it." The names are the fact row
 NE1's last cell has SJL-15.3 read, and the captures the fact row FC1's class reads as an adoption this family need not
 read. The places are Broiler.JS's readings of where this family's lowering and binder and the model part on the names
-and the captures, each of the first three marked "an inference" and the parenthesised target "not probed". Two of them
-are recorded here for the owner, as observations and not classified: the gap Broiler.JS's records name between two of
-this repository's records, row NE1's last cell and the milestone's SJL-15.3 list, which is left as written; and the two
-inputs, JSC-238's anonymous class and the parenthesised destructuring target, neither probed here, which those records
-read "would read as a regression in its part B"; the part B classes quoted above name no row NE1. A class for them at
-window 1 would need a dated revision of this bundle's rule before any run, which is the owner's, and none is made here.
-These are noted here for SJL-15.3 to read before window 1's base, and nothing is classified for them here: no cell and
-no row's class changes, no decision is revised and no rule is revised, and this family's code reads none of the model
-before SJL-15.3.
+and the captures, each of the first three marked "an inference" and the parenthesised target's naming "an inference, not
+probed". Two of them are recorded here for the owner, as observations and not classified: the gap Broiler.JS's records
+name between two of this repository's records, row NE1's last cell and the milestone's SJL-15.3 list, which is left as
+written; and the two inputs, JSC-238's anonymous class and the parenthesised destructuring target, neither probed here,
+which those records read "would read as a regression in its part B"; the part B classes quoted above name no row NE1. A
+class for them at window 1 would need a dated revision of this bundle's rule before any run, which is the owner's, and
+none is made here. These are noted here for SJL-15.3 to read before window 1's base, and nothing is classified for them
+here: no cell and no row's class changes, no decision is revised and no rule is revised, and this family's code reads
+none of the model before SJL-15.3.
 
 ---
 
