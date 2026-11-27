@@ -331,6 +331,42 @@ model only from a stream version the owner publishes, which Broiler.JS's decisio
 about "only after stage 8 and stage 9's listing", admitted by its pin commit before SJL-15.3's base. Broiler.VM's
 records observe each model commit after it merges, which is this repository's convention and no condition of a model
 merge. Nothing is revised.
+*(Noted 2026-11-27, later, at Broiler.JS's SJL-15.2 stage 6 and its part B, observed; the notes above are left as
+written.)* The note above reads "Broiler.JS's records name stage 6 next". Stage 6, module records, merged as
+Broiler-Platform/Broiler.JS#1147, `2c48beb1e332dd7c9fa1577705ed5458b5686c1f`, whose first parent is `59ccb11c`, the
+merge of Broiler-Platform/Broiler.JS#1146, no model commit; Broiler.JS's bundle `sjl-15-001`'s README names it the
+eighth model commit. Of this file's "module records" and "every early error" among the model's facts, Broiler.JS's
+`Broiler.ECMAScript/CHANGELOG.md` reads that `SemanticModel.Module` is "a Module's record, null for every other goal;
+with the member on only", `ModuleRecord` "a Module's record, ParseModule's lists of the Source Text Module Record", and
+its `HasTopLevelAwait` "[[HasTLA]], the tree's `ProgramNode.HasTopLevelAwait`, read and not recomputed", and that "The
+rows EE0170 (ExportedNames contains a duplicate entry) and EE0171 (an ExportedBindings element is not declared),
+ModuleBody's early errors, are reported with the member on by the full walk only, after its visit, the whole module
+deciding them". Broiler.JS's plan reads "It is the fact correspondence row MR2 and hand-off H19 route to the model's
+module record" and "H19's correction is Broiler.VM's, read at SJL-15.3, as JSD-0088's decision D-handoffs routes it;
+nothing here declares it met, and neither correspondence row is edited."; its decision D-js-module-record reads "The
+specification sorts the attributes by key; the record keeps source order, as JSD-0080 orders every collection, and says
+how to sort them". Part B at stage 6's merge is read in Broiler-Platform/Broiler.JS#1148,
+`26c6d6ecc0b071a47267daa1b504f7ff04a6a854`, as Broiler.JS's reading of its own bundle: "part B read MET on the retained
+runs at the model commits taken so far (`be6c4a5c3e389c7eb2aff71c34e31bdae5efe276`,
+`6c61879bce81b1a7badf987e16c7b0531030258d`, `d87044c9db5fe2a26841782308bd53e2f9294656`,
+`56272150fe23725a0e70978fb18e3c25f2548548`, `4d8aa93ad5023017b66534feb248c4c16f59bf6e`,
+`84d84cc3f68e3120299eb9faa44c6b9f0f2e7b8b`, `30af0dad83f73d2a5cf5495b2d4e3716cc7ed0df`,
+`2c48beb1e332dd7c9fa1577705ed5458b5686c1f`), limited to them; the part's verdict waits for the last model commit before
+the base", both workflows' push runs at `2c48beb1` read "each as it concluded in its first attempt". The request member
+is still off by default (decision D-js-default-off), and "with it off nothing moves" (the changelog). Broiler.JS's
+records name stage 7 next: "Next: SJL-15.2 stage 7, the ninth model commit", "**stage 7**, named evaluation, free names
+and captures", "judged by its part B against its own first parent". The places where Broiler.JS's plan names the library
+differing from this family's binder and compiler for the module record, among them that this family's `CheckModule`
+"reports every repeat of an exported name and skips the undeclared check on each specifier it so reports", several
+marked inferences, and its report of the correspondence's rows MR1 and MR2 among its "Stale cells, reported and not
+edited", are quoted in bundle `sjl-15-001`'s correspondence, its note of 2026-11-27, later, on rows MR1, MR2 and EE1.
+This family still reads the model only from a stream version the owner publishes, which Broiler.JS's decision
+D-js-packable has the owner asked about "only after stage 8 and stage 9's listing", admitted by its pin commit before
+SJL-15.3's base; the owner's answer of 2026-11-27, the owner's own, "All publish-decisions can be done and run. So if a
+publish yes/no is the question, do the publish, wait for the nuget-package-availability and continue", answers that
+question in its words "do the publish", as this repository's ledger notes on its Next list. Broiler.VM's records observe
+each model commit after it merges, which is this repository's convention and no condition of a model merge. Nothing is
+revised.
 
 ### SJL-15.3 — Broiler.VM's lowering consumes it
 

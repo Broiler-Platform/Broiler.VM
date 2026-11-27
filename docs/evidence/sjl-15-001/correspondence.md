@@ -516,6 +516,97 @@ These are noted here for SJL-15.3 to read before window 1's base, and nothing is
 no row's class changes, no decision is revised and no rule is revised, and this family's code reads none of the model
 before SJL-15.3.
 
+*(Noted 2026-11-27, later, at Broiler.JS's SJL-15.2 stage 6, observed; every cell above is left as written.)* Row MR1's
+column "Broiler.VM, wide path (`a86b6f5d`)" names "`ModuleDeclarationsOf` (`JBW:1994-2034`); `CheckModule`
+(`JBE:503-591`): an export name given twice (2402) and an export of no declared binding (2403); requests from
+`JsCompiler.Requests`", its column "The model surface (`6fda6ca4`)" reads "`ScopeKind.Module`, `BindingKind.Import` and
+`ExportDefault` (`DT:26-90`); no module record", its column "Broiler.JS" reads, across both engines, "Same, by code",
+and its last cell "SJL-15.2 adds the module record; SJL-15.3 reads it". Row MR2's column "Broiler.VM, wide path
+(`a86b6f5d`)" reads "`SawTopLevelAwait`, counted with `functionDepth == 0` (`VC/JsAdmissionWalk.cs:99`, `:228`, `:335`),
+which counts an `await` in an async arrow at a module's top level", its column "The model surface (`6fda6ca4`)" "The
+parse's [Await] parameter only (`DW:43`)", its class "**Correction of Broiler.VM** (`sjl-13-001`'s P32 item 10, hand-off
+H19)", and its last cell "SJL-15.2's module record carries top-level `await`; SJL-15.3 reads it (class F)". Row EE1's
+column "Broiler.VM, wide path (`a86b6f5d`)" names `sjl-13-001`'s "B32, B33 (`JBE:503-591`)", and its last cell reads
+"SJL-15.2 reports them from the model; SJL-15.3 deletes the binder's checks, each code and place kept or listed by row".
+This repository's records read the module record and its errors thus: JSD-0080's request lists "**The module record**:
+requests with attributes, top-level `await`, import and export entries, and their errors."; bundle `sjl-13-001`'s
+correspondence row B32 names "an export name given twice", row EE0170, and row B33 "an export clause naming no declared
+binding", rows "EE0171 **and** EE0182 (a reserved word is never declared)", deciding "**keep the site** for EE0171; the
+library refuses EE0182 first"; its hand-off H19 reads "Broiler.VM counts an `await` inside an async arrow at a module's
+top level as a top-level `await`, which changes evaluation order", for "SJL-15's model (stage e, module records and
+top-level `await`)", and its probe PR06 answers "the run: yes, `a,tick,b` against `a,b,tick` (F12)"; JSD-0088's decision
+D-handoffs reads that "**H19** (row MR2, the top-level-`await` reading) and **H20** (row LB1, `continue` to an outer
+label of a label set) are corrections of window 1, from the model's module record and jump-target fact", its table
+routing H19 to "The model's module record (SJL-15.2); window 1, class F (row MR2)"; and this bundle's rule's class F, as
+its revision of 2026-11-23 words it, reads for rows LB1, MR2 and the dynamic function's goals "an input whose outcome or
+first diagnostic moves for that row's reason".
+
+Stage 6 merged as Broiler-Platform/Broiler.JS#1147, `2c48beb1e332dd7c9fa1577705ed5458b5686c1f`, the eighth model commit:
+with `ParseRequest.BuildSemanticModel` on, "a Module's semantic model holds its record: `SemanticModel.Module` answers a
+`ModuleRecord`, a new public type, with ParseModule's requested modules, its import entries, its local, indirect and
+star export entries, and whether the module awaits at its top level, and answers null for every other goal", and "EE0170
+(ExportedNames' duplicates) and EE0171 (ExportedBindings not declared) join `SemanticRows`, reported with the member on
+by the full walk only, after its visit, since the whole module decides them" (Broiler.JS's plan, its note of 2026-11-27
+at stage 6). Its `Broiler.ECMAScript/CHANGELOG.md` reads EE0170 "at a repeated exported name's second occurrence, EE0171
+at an export clause's specifier without a FromClause whose local name the module neither declares nor imports, not on a
+specifier another row already refuses", and that the adapter "lists both rows and newly answers no vector, since no
+`semantics` vector reaches the Module goal". Of row MR2 and hand-off H19 its plan reads "The record's top-level `await`
+is the tree's fact, `ProgramNode.HasTopLevelAwait`, read and not recomputed: an `await` in a top-level async arrow does
+not set it, as Contains does not look into an arrow. It is the fact correspondence row MR2 and hand-off H19 route to the
+model's module record", and "H19's correction is Broiler.VM's, read at SJL-15.3, as JSD-0088's decision D-handoffs
+routes it; nothing here declares it met, and neither correspondence row is edited." Its decision D-js-module-rows reads
+"Each is placed where Broiler.VM's binder names it: the specifier, the exported declaration, or the default export. For
+`export * as` it is placed at the exported name, where the binder names the `as` token, which the tree has no node
+for.", and did not take "(c) Every repeat of an exported name, as Broiler.VM reports: the library's form for conflicts
+names each repeated name at its second occurrence." Its `Broiler.ECMAScript/docs/frontend/design.md`'s new section
+10.10, "Module records", reads "Slot naming stays each engine's: the record's `*default*` local name is the
+specification's." Its plan names, among "The places where the library differs from either engine, named for SJL-15.3 and
+SJL-15.5", these of this family's binder and compiler:
+
+- the repeats: "Broiler.VM's `CheckModule` (`src/Broiler.VM.Profile.JavaScript.Compiler/JsBinder.EarlyErrors.cs`)
+  reports every repeat of an exported name and skips the undeclared check on each specifier it so reports, where the
+  library, reporting a repeated name at its second occurrence only, skips it there alone";
+- the place of `export * as`: "its place for `export * as` is the `as` token (`JsTreeFacts.Exports`)";
+- the anonymous default: "it names an anonymous default declaration's binding `default`, where the specification's local
+  name is `*default*`, and its evaluation scope map writes that slot (an inference)";
+- the requests: "its request key is a typed specifier, only `type: "json"` being read and any other attribute refused or
+  dropped (`JsCompiler.Modules.cs`, `JsCompiler.Requests`, an inference), where the library's record carries every
+  attribute as written and EX0020 and EX0021 stay the engines' refusals", and "it reads `from ""` as no `from`
+  (`JsTreeFacts.SourceOrNone`, an inference), where the library's record carries a `from ""` request like any other, and
+  whether that case is ever reached is unknown";
+- top-level `await`: "its top-level `await` counts an async arrow's `await` (`JsAdmissionWalk`), which is row MR2 and
+  hand-off H19, Broiler.VM's correction at its window";
+- and, as "Observations for its catch-up, inferences and not classified": "turning MR2's flag would change a module body
+  unit's flags, an artifact byte difference for an input accepted at both commits, which class F as worded admits only
+  where an outcome or a first diagnostic moves; and a requests path that turned the member on would refuse inputs it
+  accepts today."
+
+Of Broiler.JS's own checks the same paragraph reads that "Broiler.JS's `SyntaxValidation` module checks throw at the
+`export` statement's start and skip names bound by destructuring (the catalogue's note on EE0170)" and that "its
+top-level `await` reading is the specification's (the bundle's `correspondence-broiler-js.md`, row MR2)", the bundle
+being Broiler.JS's `sjl-15-001`, and of the order "Under first error the library orders by place, so that a second
+default export, which the off path refuses at the module's close, is refused first by EE0170 at it."
+
+Among its "Stale cells, reported and not edited" the same paragraph lists "Broiler.VM's row MR1, whose model cell reads
+"no module record", which the model's record now makes stale; Broiler.VM's row MR2, whose model cell does not name
+`ProgramNode.HasTopLevelAwait`". Row MR1's cell in the column "The model surface (`6fda6ca4`)" and row MR2's, quoted
+above, are the model surface at `6fda6ca4`, as the column's heading reads, and so is this file's "The model surface
+today", which reads that the walk "records no resolution, no function flag but strictness, no private-name environment,
+no module record, no named-evaluation name and no capture"; each is left as written. At `2c48beb1`, with the request
+member on, the model holds a Module's record, and its top-level `await` is the tree's `ProgramNode.HasTopLevelAwait`, as
+Broiler.JS's records above read it.
+
+Broiler.JS's records read "None of it is accepted: no second holder exists to review it." The record is the one row
+MR1's last cell has SJL-15.2 add and SJL-15.3 read, and its top-level `await` the fact row MR2's last cell has
+SJL-15.2's module record carry; H19 stays this family's correction at window 1, class F, as JSD-0088's decision
+D-handoffs routes it, and nothing here declares it met. EE0170 and EE0171 are the rows bundle `sjl-13-001`'s B32 and B33
+name, the binder's checks row EE1's last cell has SJL-15.3 delete, each code and place kept or listed by row; the places
+are Broiler.JS's readings of where this family's binder and compiler and the model part on the module record, several of
+them marked "an inference", and its observation on class F is one of its inferences, left unclassified: class F's words
+quoted above are not read against it here. These are noted here for SJL-15.3 to read before window 1's base, and nothing
+is classified for them here: no cell and no row's class changes, no decision is revised and no rule is revised, and this
+family's code reads none of the model before SJL-15.3.
+
 ---
 
 ## What the rows find against the plan and the records
