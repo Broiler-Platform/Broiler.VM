@@ -607,6 +607,90 @@ quoted above are not read against it here. These are noted here for SJL-15.3 to 
 is classified for them here: no cell and no row's class changes, no decision is revised and no rule is revised, and this
 family's code reads none of the model before SJL-15.3.
 
+*(Noted 2026-11-27, later yet, at Broiler.JS's SJL-15.2 stage 7, observed; every cell above is left as written.)* Row
+NE1's column "Broiler.VM, wide path (`a86b6f5d`)" names "`CompileNamedValue` (`VC/JsCompiler.Literals.cs:56`) and its
+callers, the name passed by the lowering; `export default`'s `default` (`JB:150-170`)", its column "The model surface
+(`6fda6ca4`)" reads "Not a fact", its column "Broiler.JS" reads, across both engines, "Correction of Broiler.JS in
+indirect-eval code (V039, V041, V042); same otherwise", its class "Specification", and its last cell "SJL-15.3 reads the
+model's name". Row FC1's column "Broiler.VM, wide path (`a86b6f5d`)" reads "**No producer**: every binding lives in an
+environment record (`areas/static-semantics.md` section 2)", its column "The model surface (`6fda6ca4`)" "Not a fact",
+its column "Broiler.JS" reads, across both engines, "No producer in Broiler.VM: an extraction from Broiler.JS, an
+adoption for Broiler.VM", its class "No producer: the model's captures are an adoption for this family, which this
+family need not read", and its last cell "SJL-15.3 reads no capture; recorded so that X1 reads it as an adoption". This
+repository's records read these facts thus: SJL-15's milestone file lists "named-evaluation names" and "free names and
+captures" among the model's facts, and its SJL-15.3 reads "The binder pass of SJL-12 is replaced by the shared model,
+and is deleted. The lowering reads:", listing "**resolution:**", "**`arguments` need**", "**direct-eval
+contamination**", "**Annex B aliases**", "**private names**" and "**labels**", and no named-evaluation name; JSD-0088
+reads "It is an extraction for every fact but free names and captures, which this family does not compute: for this
+family that fact is an adoption (X1)."; the profile's correction JSC-238 reads, under "What must not be read as
+repaired.", "An anonymous class with a static element, at a computed key, keeps the empty name. A static element runs
+while the class is defined, so naming it afterwards could be observed, and a static `name` member must not be
+overwritten."; and this bundle's rule, as its revision of 2026-11-23 words it, lists part B's "admitted difference
+classes, window 1, in B1, B2, B3 and B5 only" as "P precision (correspondence rows FF3, FF4, FF5)", "F a correction of
+this family by one of the rows LB1, MR2 and the dynamic function's goals (H20, H19, H18)", "T timing (row PN1)" and "S7
+first refusal", and reads "every other difference is a regression: any byte difference of an input accepted at both
+commits outside P; [...] an outcome that moves outside F and T; a diagnostic difference outside F, T and S7".
+
+Stage 7 merged as Broiler-Platform/Broiler.JS#1149, `950bea8f315aa5f10d4b251a7d39ed7658912512`, the ninth model commit:
+with `ParseRequest.BuildSemanticModel` on, "the semantic model answers, for an anonymous function or class definition's
+node, the name its named evaluation passes where the source fixes it (`SemanticModel.NamedEvaluationName`) or the
+computed key whose value names it at run time (`SemanticModel.NamedEvaluationKey`), and for the program, every function,
+every static block and every initialised field, its free names in source order (`SemanticModel.FreeNames`) and the
+declarations they resolve to (`SemanticModel.Captured`)", and "No type and no row is added, and no vector is newly
+answered" (Broiler.JS's plan, its note of 2026-11-27 at stage 7). The same note reads "The members that answer each
+correspondence row, for Broiler.VM's catch-up: NE1, `NamedEvaluationName` and `NamedEvaluationKey`; FC1, `FreeNames`,
+`Captured` and `EnvironmentFacts`' `DirectEvalOrWithWithin` and `FunctionNameReferenced`." Its decision
+D-js-named-evaluation reads "The name is a binding's or a reference's StringValue, a literal key's property name, a
+private name's description, or "default"; the anonymous default declarations, which the specification names by
+SetFunctionName, answer "default" too", "compound assignment, a parenthesised or member target, and a comma expression
+give none", and "The answer is the argument, not the final `name` property, which a static `name` member overrides.";
+its decision D-js-named-evaluation-vectors reads "**The value vectors of row NE1 (group `ne1`) stay not implemented**";
+and of row FC1 its records read that "That free names and captures are, in this section's words, "**and an adoption for
+Broiler.VM**, which computes none" ([...]; Broiler.VM's `docs/evidence/sjl-15-001/correspondence.md`, row FC1) is
+Broiler.VM's position, not among the decisions that bind this repository above, and is not taken here." Its
+`Broiler.ECMAScript/CHANGELOG.md` reads "No row is added and no vector is newly answered: the library-level adapter
+(`runners/AlgorithmsLibrary.Semantics.cs`) leaves group `ne1`, the value vectors of row NE1, not implemented." Its
+`Broiler.ECMAScript/docs/frontend/design.md`'s new section 10.11, "Named evaluation, free names and captures", reads
+"**The anonymous default declarations**, [...] answer "default" too: the specification names them by SetFunctionName,
+not by NamedEvaluation, and their binding is `*default*`, which the module record carries.", "a class's name is set
+before its static elements are defined, so a static `name` member overrides it", and "Broiler.VM names in its lowering
+and binder, and its rule admits no NE class at its window (an inference)" and "Broiler.VM computes no capture." Its plan
+names, among "The places where the library differs from either engine, named for SJL-15.3 and SJL-15.5", these of this
+family's:
+
+- the naming: "Broiler.VM names in its lowering's `CompileNamedValue` and gives an anonymous default declaration
+  "default" in its binder (its correspondence row NE1), naming that leaves the binder at its window (an inference)";
+- the rule and two inputs: "its rule admits no NE class at that window (an inference), so that an accepted input where
+  the model's name differs from its naming today, such as an anonymous class with a static element at a computed key,
+  which keeps the empty name (JSC-238), or a parenthesised destructuring target, `[(a) = function () {}] = []`, which it
+  names "a" and the specification does not (an inference, not probed), would read as a regression in its part B";
+- the milestone: "its milestone's SJL-15.3 list does not name the names, which its row NE1's last cell says SJL-15.3
+  reads (an inference)";
+- and the captures: "Broiler.VM has no producer and reads no capture (its row FC1)".
+
+Of Broiler.JS's own the same paragraph reads that "Broiler.JS names at lowering (the bundle's
+`correspondence-broiler-js.md`, row NE1), and in indirect-eval code its answers to probes V039, V041 and V042 give no
+name where the specification names each" and "the model's names are the specification's answers that C1's row NE1 names,
+and SJL-15.5 applies the correction", and that "Broiler.JS's `FreeNameScan` is the only producer (the bundle's row
+FC1)", the bundle being Broiler.JS's `sjl-15-001`. Its records at this stage list no stale cell of this bundle's. Rows
+NE1's and FC1's cells in the column "The model surface (`6fda6ca4`)", quoted above, are the model surface at `6fda6ca4`,
+as the column's heading reads, and so is this file's "The model surface today", which reads that "it records no
+resolution, [...] no named-evaluation name and no capture"; each is left as written. At `950bea8f`, with the request
+member on, the model holds the names and the captures, as Broiler.JS's records above read them.
+
+Broiler.JS's records read "None of it is accepted: no second holder exists to review it." The names are the fact row
+NE1's last cell has SJL-15.3 read, and the captures the fact row FC1's class reads as an adoption this family need not
+read. The places are Broiler.JS's readings of where this family's lowering and binder and the model part on the names
+and the captures, each of the first three marked "an inference" and the parenthesised target "not probed". Two of them
+are recorded here for the owner, as observations and not classified: the gap Broiler.JS's records name between two of
+this repository's records, row NE1's last cell and the milestone's SJL-15.3 list, which is left as written; and the two
+inputs, JSC-238's anonymous class and the parenthesised destructuring target, neither probed here, which those records
+read "would read as a regression in its part B"; the part B classes quoted above name no row NE1. A class for them at
+window 1 would need a dated revision of this bundle's rule before any run, which is the owner's, and none is made here.
+These are noted here for SJL-15.3 to read before window 1's base, and nothing is classified for them here: no cell and
+no row's class changes, no decision is revised and no rule is revised, and this family's code reads none of the model
+before SJL-15.3.
+
 ---
 
 ## What the rows find against the plan and the records
