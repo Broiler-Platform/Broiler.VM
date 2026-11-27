@@ -327,3 +327,43 @@ inherited context, the seventh model commit", by Broiler.JS's decision D-js-stag
 The convention of the note of 2026-11-25 holds for this merge too: this bundle's list and this repository's ledger
 observe each model commit after it merges, and that is no precondition of a model merge. The fourth and fifth items, the
 owner's publication and this family's tools commit and pin commit, still wait on the model. No other item changes.
+
+*(Noted 2026-11-27, at Broiler.JS's SJL-15.2 stage 5c and its part B, observed; the list and the notes above are left as
+written.)* The note of 2026-11-26, later yet, above reads "The rest of the model is still to come". SJL-15.2's stage 5c,
+the caller's names in the inherited context, merged as Broiler-Platform/Broiler.JS#1145, and Broiler.JS's bundle
+`sjl-15-001`'s README, having read before the merge that "This branch's merge will be the seventh model commit", names
+it after: "**The seventh model commit is `30af0dad83f73d2a5cf5495b2d4e3716cc7ed0df`**, the merge of
+Broiler-Platform/Broiler.JS#1145 (head `628f4b38`), whose first parent is `4e27f13d3dc1bd3c38c5f29ea28ff4391ec8771b`
+(Broiler-Platform/Broiler.JS#1144, stage 5b's part B records)", and "Its first parent is no model commit: nothing from
+`84d84cc3` to `4e27f13d` changes a path under `Broiler.ECMAScript/Broiler.ECMAScript.Frontend*`." Part B of that
+bundle's rule was taken at it and at its first parent, and read in Broiler-Platform/Broiler.JS#1146,
+`59ccb11cc1279fe2a6f015acbccd7f6dbff185f2`, records only, taken as recommended under the owner's direction: "**part B
+read MET on the retained runs at the model commits taken so far (`be6c4a5c3e389c7eb2aff71c34e31bdae5efe276`,
+`6c61879bce81b1a7badf987e16c7b0531030258d`, `d87044c9db5fe2a26841782308bd53e2f9294656`,
+`56272150fe23725a0e70978fb18e3c25f2548548`, `4d8aa93ad5023017b66534feb248c4c16f59bf6e`,
+`84d84cc3f68e3120299eb9faa44c6b9f0f2e7b8b`, `30af0dad83f73d2a5cf5495b2d4e3716cc7ed0df`), limited to them; the part's
+verdict waits for the last model commit before the base.**" "At `30af0dad` the rule's "the commit's CI run of every test
+project passed" is read on both workflows' push runs as they concluded, each in its first attempt, so the question of
+which attempt decides, flagged for the owner at the first model commit, does not arise here. The readings at `be6c4a5c`,
+at `6c61879b`, at `d87044c9`, at `56272150`, at `4d8aa93a` and at `84d84cc3`, and the first one's flag, in the notes
+above of 2026-11-24, 2026-11-25 and 2026-11-26, stay as written. A NOT MET at any later model commit makes part B NOT
+MET." That is Broiler.JS's reading of its own bundle, not a run of this bundle's rule, and judges nothing here.
+Broiler.JS's note of 2026-11-26 at stage 5c also reads that its library-level adapter "newly answers the vectors of
+EA0007, read at the parse, the reading the owner ruled on 2026-11-25 to keep ("Keep the reading at the parse
+(Recommended)"), as the note above at SJL-15.2 stage 2 records it, the nested parse of `ea0007/0005` included: a refusal
+at any level is the answer", that "The vectors of EA0006 stay not implemented, and no EA0008 vector exists", and that
+"EA0007's rows in the corrections, C1's ([...]) and E's and T's ([...]), are unchanged, and `corrections.md` and its
+tables are unchanged." That adapter, and the part F of Broiler.JS's rule it answers for, "every vector the adapter
+answers matches", are Broiler.JS's, and this bundle's rule has none like them; the corrections' C1 is Broiler.JS's, and
+this bundle's correspondence reads row DE3's column "Broiler.JS", across both engines, "Same, but a correction of
+Broiler.JS for V046 (C1's row EA0007, in eval code)", the vector `semantics/scopes/ea0007/0005` holding V046's input, as
+the note of 2026-11-24, later, there records. Broiler.JS's plan reads "`CallerScopes` is the member Broiler.VM's
+decision D16 leaves until SJL-15's model", D16 being JSD-0083's decision D16, and "D16, D44 and JSD-0080 are
+Broiler.VM's and left as written"; that reading, and the places where it names the library differing from this family's
+executor for the caller's records, among them that "Broiler.VM checks when the eval runs, through its eval map", several
+of them inferences, are quoted in this bundle's correspondence, its note of 2026-11-27 on rows DE3 and EE1. The rest of
+the model is still to come, from "**Next:** SJL-15.2 stage 6, the module records (correspondence rows MR1 and MR2,
+hand-off H19), the eighth model commit", by Broiler.JS's decision D-js-stages, each stage with part B at its merge. The
+convention of the note of 2026-11-25 holds for this merge too: this bundle's list and this repository's ledger observe
+each model commit after it merges, and that is no precondition of a model merge. The fourth and fifth items, the owner's
+publication and this family's tools commit and pin commit, still wait on the model. No other item changes.

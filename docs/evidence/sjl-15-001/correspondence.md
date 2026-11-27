@@ -425,6 +425,96 @@ and nothing is classified for them here: no cell and no row's class changes, dec
 class ED and class F are not read against them here and no rule is revised, and this family's code reads none of the
 model before SJL-15.3.
 
+*(Noted 2026-11-27, at Broiler.JS's SJL-15.2 stage 5c, observed; every cell above is left as written.)* Row DE3's column
+"Broiler.VM, wide path (`a86b6f5d`)" reads "The library's since SJL-13's step 1 (`sjl-13-001`'s B28 to B31 and B34,
+deleted); the binder keeps none", its column "Broiler.JS" names "a direct eval's `var` against the caller's lexical
+names given to `SyntaxValidation.ContainsDirectEvalVarConflict` (`C/SyntaxValidation.cs:454`);
+EvalDeclarationInstantiation's at run time; probe V046, eval code, accepts a `var` of eval code against the calling eval
+code's `let` (row EA0007's step)" and reads, across both engines, "Same, but a correction of Broiler.JS for V046 (C1's
+row EA0007, in eval code)", and the note of 2026-11-24, later, above names its vector, "row DE3's
+`semantics/scopes/ea0007/0005` (V046)". Row EE1's last cell reads "SJL-15.2 reports them from the model; SJL-15.3
+deletes the binder's checks, each code and place kept or listed by row". This repository's records read the caller's
+lexical names thus: JSD-0080's request row "**Inherited evaluation context**" lists "the visible private names, and the
+caller's lexical names, which Broiler.JS needs for direct `eval` (decision D41)"; JSD-0083's decision D16 reads "**The
+caller's lexical names**, which JSD-0080's request lists for Broiler.JS's direct `eval`, are left out of the request at
+SJL-13 and SJL-14: the conflict they serve is EvalDeclarationInstantiation's, a run-time SyntaxError each engine raises
+today (row R28), until SJL-15's model; the home's rule lists the field as absent with this reason", and its decision D44
+"the caller's lexical names absent, as at SJL-13 (decision D16)"; and bundle `sjl-13-001`'s correspondence row R28, "the
+caller's lexical names (EA0006, EA0007)", names this family's check "at run time: `EvalDeclarationInstantiation`'s walk
+by the executor (`VMP/JsEngine.EvalDeclarations.cs:69`, `:83-152`)".
+
+Stage 5c merged as Broiler-Platform/Broiler.JS#1145, `30af0dad83f73d2a5cf5495b2d4e3716cc7ed0df`, the seventh model
+commit: with `ParseRequest.BuildSemanticModel` on, "`InheritedContext.CallerScopes` lists the declarative Environment
+Records from a direct eval's caller's running lexical environment out to, and not including, its variable environment,
+innermost first, each a `CallerScope`, a new public type holding every name its record binds and whether it is a Catch
+clause's record", "`SemanticModel.DirectEvalCalls` lists the calls that may be direct evals and
+`SemanticModel.CallerScopesOf` answers the records a direct eval at one of them receives", and "the declarations walk
+reports EvalDeclarationInstantiation step 3.d's rows for sloppy eval code whose request gives the records" (Broiler.JS's
+plan, its note of 2026-11-26 at stage 5c). Its `Broiler.ECMAScript/CHANGELOG.md` reads "EA0007 for a record that is not
+a Catch clause's with Annex B on, EA0008 for any record with it off. EA0006 stays a row only a run reaches.", and its
+decision D-js-caller-scope-rows "**EA0006 stays a row only a run reaches**, named as the rule allows: the realm's global
+lexical declarations are not an input of a parse". Its library-level adapter "newly answers the vectors of EA0007,
+`semantics/scopes/ea0007/0001` to `ea0007/0005`, read at the parse as the owner ruled on 2026-11-25 ("Keep the reading
+at the parse (Recommended)"), the nested parse of `ea0007/0005` included", row DE3's vector among them, and its bundle
+`sjl-15-001`'s README reads "EA0007's rows in the corrections, C1's ([...]) and E's and T's ([...]), are unchanged, and
+`corrections.md` and its tables are unchanged." Of this repository's decisions its plan reads "`CallerScopes` is the
+member Broiler.VM's decision D16 leaves until SJL-15's model", D16 being JSD-0083's decision D16 quoted above, that
+"D16, D44 and JSD-0080 are Broiler.VM's and left as written; "the home's rule",
+`docs/evidence/sjl-13-001/decision-rule.md` and `docs/evidence/sjl-13-001/tools/contract_check.py`, is frozen and
+untouched; and whether the member meets JSD-0080's input row is part F's question at stage 8, whose checklist (decision
+D-js-part-f-checklist) will map "the caller's lexical names" to the new member", and "With the member off nothing moves:
+Broiler.JS's bridge passes no caller records (`Broiler.JS/Broiler.JavaScript.Parser/Bridge/SharedSyntaxBridge.cs`), and
+D44 reads "the caller's lexical names absent, as at SJL-13 (decision D16)"." Its decision D-js-caller-scopes reads "The
+shape goes beyond JSD-0080's words "the caller's lexical names", as D-js-resolution's inherited form goes beyond its
+resolution forms.", and its `Broiler.ECMAScript/docs/frontend/design.md`'s new section 10.9, "The caller's records in
+eval code's inherited context", reads "The member is the one Broiler.VM's decision D16 leaves "until SJL-15's model";
+D16, D44 and JSD-0080 are Broiler.VM's and left as written, and part F reads the member against JSD-0080's input row at
+stage 8." Its plan names, among "The places where the library differs from either engine, named for SJL-15.3 and
+SJL-15.5", these of this family's executor and of the order of the rows:
+
+- the check: "Broiler.VM checks when the eval runs, through its eval map, skipping `with` rows and continuing through an
+  enclosing evaluation (`src/Broiler.VM.Profile.JavaScript/JsEngine.EvalDeclarations.cs`, an inference); its map marks a
+  Catch clause's record per record, whatever the parameter's form (JSD-0026, an inference); it checks private names
+  before the declarations, the reverse of EvalDeclarationInstantiation's order
+  (`src/Broiler.VM.Profile.JavaScript/JsEngine.Eval.cs`, an inference); and passing the records would change its eval
+  request's format (an inference).";
+- the row with Annex B off: "EA0008's catalogue status is `neither`: a library site with Annex B off is a refusal
+  neither engine makes, both engines asking with Annex B on.";
+- and the order: "the library orders by place, so under first error it can name EA0009 at an earlier place before
+  EA0007, EA0007 before a later-placed early error of the parse or a later-placed EA0003, EA0004 or EA0005, which the
+  specification raises first, or another name than the specification would; and under all errors the partial walk adds
+  EA0007 or EA0008 over its finished statements before the grammar's refusal, where the specification never reaches
+  EvalDeclarationInstantiation."
+
+Of Broiler.JS's own check the same paragraph reads that "it misses the nested eval of probe V046 (C1's row EA0007; the
+bundle's `correspondence-broiler-js.md`, row DE3)", the bundle being Broiler.JS's `sjl-15-001`, and section 10.9 reads
+"Stage 4's note on EA0009 against EA0006 to EA0008 meets EA0007 here: Broiler.VM checks private names before the
+declarations, the reverse of the specification's order, and Broiler.JS raises in the specification's order."
+
+The note of 2026-11-26, later yet, above quotes that both Broiler.JS's plan and its design's section 10.8 read "What
+remains: the interim, eval code's alias conditional on its caller's environments until stage 5c describes them; and the
+run-time conditions, which no stage closes: a Script's alias depends on GlobalDeclarationInstantiation's checks, and
+eval code with a global variable environment on GlobalDeclarationInstantiation-like checks." At stage 5c the plan's note
+reads "Stages 5a's and 5b's eval-code interims are closed." and "Its first part is closed: eval code's alias and its
+carried declarations are decided when the request carries the caller's records, a Catch clause's record exempt, and
+without them the request does not describe the caller and the eval body's answer is the member's contract.", and "The
+run-time conditions stay as stage 5b words them, with a caller's `with` object of the name, a property that exists only
+when the code runs." That sentence is revised in section 10.8, its paragraph "**What stays conditional.**", by a dated
+revision, "Revised 2026-11-26, at SJL-15.2 stage 5c, closing the interim", and in section 10.7's paragraph "**Annex B's
+block-function aliases.**", by "Revised 2026-11-26, at SJL-15.2 stage 5c, when the caller's records joined the request,
+closing the interim"; each quotes the words it replaces, and the run-time conditions after them "stay as written". The
+plan's note at stage 5b is unchanged, and the note above is left as written.
+
+Broiler.JS's records read "None of it is accepted: no second holder exists to review it." The member is the one
+JSD-0083's decision D16 leaves out of the request "until SJL-15's model"; Broiler.JS's records read its shape as going
+beyond JSD-0080's words and leave whether it meets JSD-0080's input row to their part F at stage 8, and D16, D44 and
+JSD-0080 are this repository's and are not revised here. Of the rows the model now reports, EA0007 is one that row R28
+names, which this family's executor checks at run time; the places are Broiler.JS's readings of where this family's
+executor and the model part on the caller's records and on the order of the rows, several of them marked "an inference".
+These are noted here for SJL-15.3 to read before window 1's base, and nothing is classified for them here: no cell and
+no row's class changes, no decision is revised and no rule is revised, and this family's code reads none of the model
+before SJL-15.3.
+
 ---
 
 ## What the rows find against the plan and the records
