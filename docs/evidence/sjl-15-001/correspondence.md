@@ -706,7 +706,8 @@ reports them from the model; SJL-15.3 deletes the binder's checks, each code and
 "`arguments` through eval in a field", its catalogue rows "EA0005 (EE0130)" and its reach "live (VB B3 E6 2206:0:0)";
 its row R25, "the field-initialiser context: `arguments` (EA0005)", reads, in its column "Probe or baseline", "probes
 RE22-RE26; baseline B3 `T028769` (E6 refused 2206:0:0; the others accepted)"; and its row N14 names "`arguments` in eval
-code inside a field initialiser (EA0005)" among the binder's diagnostics at no position.
+code inside a field initialiser (EA0005)" among the binder's diagnostics at no position, and its column "Probe or
+baseline" reads, first, "baselines: VB B3 E6 2206:0:0 (e.g. T028763, T028765, T029604)".
 
 Stage 8 merged as Broiler-Platform/Broiler.JS#1151, `159fd811f74d0f43e7ed7327081267a96f8f1196`, the tenth model commit,
 "the library's last model commit" in Broiler.JS's stage list; it "adds no public member and no row, and answers no new
@@ -758,8 +759,13 @@ Broiler.JS's records read "None of it is accepted: no second holder exists to re
 here for the owner as an observation and not classified: Broiler.JS's classification gives the seven E6 lines
 `accepted`, with reason `eval-vm`, which the question put to the owner on 2026-11-27, quoted above as Broiler.JS's
 records give it, words as "Broiler.VM's E6 result", and the model refuses them by EA0005, a row this bundle's row EE1
-has SJL-15.2 report from the model; this repository's row B24 reads EA0005 live in its E6 baseline and its row R25 one
-E6 input refused at 0:0 and "the others accepted", and neither names any of the seven. None of the seven is probed here,
+has SJL-15.2 report from the model. This repository's row B24 reads EA0005 live in its E6 baseline; its row R25 reads
+input `T028769`'s E6 variant refused at 0:0 and its other variants accepted ("E6 refused 2206:0:0; the others
+accepted"); and its row N14 reads E6 refusals at 0:0 in its baseline of other inputs ("VB B3 E6 2206:0:0 (e.g. T028763,
+T028765, T029604)"). None of the three names any of the seven. So the rows here record this family's E6 baseline
+refusing, by 2206 at 0:0 (the code at row B24's site for its EA0005 check), inputs that are not the seven, and record no
+E6 result of this family's for any of the seven, accepted or refused: no row here supports, for the seven, the words
+"Broiler.VM's E6 result" in the question put to the owner, and none contradicts them. None of the seven is probed here,
 and whether this family accepts each of them today is not read here. Row EE1's last cell asks that SJL-15.3, when it
 deletes the binder's checks, keep each code and place or list it by row; the seven are noted here for SJL-15.3 to read
 before window 1's base. The checklist's pin is noted for the same reason: it reads this repository's milestone file and

@@ -9318,10 +9318,14 @@ tenth model commit and for any later one, and this entry's date moves nothing in
   records read that its check 3b's E6 eval requests, refused by EA0005, "differ from bundle `sjl-13-001`'s
   classification, which gives them `accepted`, with reason `eval-vm`", that bundle being Broiler.JS's, and the question
   put to the owner on 2026-11-27, as Broiler.JS's records quote it, words that classification as "Broiler.VM's E6
-  result". Bundle `sjl-15-001`'s correspondence quotes the lines and the owner's answer by a dated note on row EE1 and
-  records the difference for the owner as an observation. None of the lines is probed here, and nothing is classified
-  for them; no rule is revised, and nothing in either repository's bundle `sjl-13-001` is revised from here. It is
-  recorded for the owner on the Next list's item on SJL-15.3's and SJL-15.4's windows.
+  result". Bundle `sjl-13-001`'s row R25 reads input `T028769`'s E6 variant refused at 0:0 and its other variants
+  accepted ("E6 refused 2206:0:0; the others accepted"), and its row N14 reads E6 refusals at 0:0 of other inputs ("VB
+  B3 E6 2206:0:0 (e.g. T028763, T028765, T029604)"); none of rows B24, R25 and N14 names any of the E6 lines, so no row
+  here records an E6 result of this family's for any of them. Bundle `sjl-15-001`'s correspondence quotes the lines and
+  the owner's answer by a dated note on row EE1 and records the difference for the owner as an observation. None of the
+  lines is probed here, and nothing is classified for them; no rule is revised, and nothing in either repository's
+  bundle `sjl-13-001` is revised from here. It is recorded for the owner on the Next list's item on SJL-15.3's and
+  SJL-15.4's windows.
 - *Stage 8's readings, flagged in Broiler.JS*: the readings Broiler.JS's decisions of 2026-11-27 record for its own
   bundle's parts F and G, EP0017's and EP0018's "the most contestable", are Broiler.JS's and flagged for the owner
   there; this repository rules on none of them and records them only as observed.
