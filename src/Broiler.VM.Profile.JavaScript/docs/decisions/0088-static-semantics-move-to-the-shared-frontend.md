@@ -253,6 +253,26 @@ merge ports the report code, its output held byte-identical by a control. The re
 the front end, so tools code that built it itself would name three types window 2 deletes, and bundle `sjl-15-001`'s
 parts B, S and C, which run the tools "unchanged at each after commit", could not be configured at window 2; a port would
 be judged by a comparison it writes itself.
+*(Note of 2026-11-28, before the tools commit exists; the decision above is not edited.)* It reads "the tools commit's
+path condition names that file for that member alone". The member also changes the profile family's API baseline,
+`src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt`, which rule N10 holds to the family's public surface, and
+which that condition, as bundle `sjl-15-001`'s rule reads it with its revision of 2026-11-16, does not name: the
+baseline is neither under the repository's top-level `docs/` nor an assurance artefact. That rule is revised a fourth
+time, before any run, by
+[`decision-rule-area-revised-2026-11-28.md`](../../../../docs/evidence/sjl-15-001/decision-rule-area-revised-2026-11-28.md),
+which quotes the rule whole and leaves it and its three revisions unedited: the tools commit's second condition also
+names that baseline, "for the lines of that member alone (rule N10)", and nothing else in the rule changes. The rule
+commit is from then on the commit that carries all five files. The revision was taken on 2026-11-28 as recommended,
+under the owner's direction of 2026-10-18 quoted above, "Please do all recommended decisions and skip waiting for
+review.", and is recorded here, as the section "The owner's decisions of 2026-11-23" below records decision D-ab1,
+under the owner's direction, with the alternative not taken. It is not one of the owner's own answers, and it is none
+of the three kinds of entry this record names as not taken under the direction. **It is the session's decision, and
+the owner may overturn it**, at any time, by a further dated rule file in bundle `sjl-15-001`; filed before any run of
+the part it revises, that file is not weaker evidence, and filed after one, it is, as the rule's section "Revisions"
+reads. *Not taken:* asking the owner first, as bundle `sjl-13-001`'s revision of 2026-11-08, which admitted the same
+baseline to its registry commit's list "for the members `SliceSourceDiagnosticCode` gains, as rule N10 requires, and
+nothing else", followed the owner's own choice ("Revise rule + rebuild"). The member, its meaning and the alternative
+not taken above are unchanged. This choice is flagged for the owner.
 
 ## The owner's decisions of 2026-11-23
 
@@ -483,6 +503,10 @@ and "Last updated".)*
 2026-11-23" and a note on its falsifier; bundle `sjl-15-001` gains its rule's revision of that day, with dated notes in
 its README; the programme ledger records it in its entry of that day, with a note on its entry of 2026-11-17's
 sentence on row AB1, its Next list and "Last updated".)*
+*(Note of 2026-11-28, the rule's revision of that day on the tools commit's path condition: this record gains a note
+on decision D-tables; bundle `sjl-15-001` gains its rule's revision of that day, with a dated note in its README after
+"What waits, in order"; the programme ledger records it in its entry of that day, later, with a note on its Next list's
+item on the tools commit and the pin commit, and "Last updated".)*
 
 ## What this record does not decide
 
