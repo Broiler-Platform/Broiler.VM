@@ -37,6 +37,17 @@ moves for row AB1's reason, each listed with the row; and part B's class F gains
 bytes moving for that reason alone, listed with the decoded difference. Every other line of the rule and of its
 revisions stands. Decision D-ab1 is the session's, taken under the owner's direction of 2026-10-18, and the owner may
 overturn it. It waits on no item of "What waits, in order" below and changes none.
+*(Noted 2026-11-28, later, before the tools commit exists, by the dated note of that day on JSD-0088's decision
+D-tables.)* The rule is revised a fourth time, before any run, by
+[`decision-rule-area-revised-2026-11-28.md`](decision-rule-area-revised-2026-11-28.md), which quotes the rule whole and
+leaves the rule and its three revisions unedited; the rule commit is from then on the commit that carries all five
+files, and the note of 2026-11-23 above's "the rule commit is from then on the commit that carries all four files"
+reads as of 2026-11-23 until 2026-11-28 and is left as written. The tools commit's second condition, as the revision of
+2026-11-16 reads it, also names the profile's API baseline, `src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt`,
+"for the lines of that member alone (rule N10)", the member being the one decision D-tables names. Every other line of
+the rule and of its revisions stands. The revision is the session's decision, taken as recommended under the owner's
+direction of 2026-10-18, which the owner may overturn, and it is flagged for the owner. The note of the same day after
+"What waits, in order" below records it there too.
 
 **Correspondence:** [`correspondence.md`](correspondence.md), this family's half, read from code at Broiler.VM
 `a86b6f5d` and against the model surface at Broiler.JS `6fda6ca4`. Broiler.JS's half fills its column by a dated note in
@@ -506,3 +517,27 @@ commit if no model commit lands before the base commit; then stage 9's listing".
 merges, and that is no precondition of a model merge. The fourth and fifth items, the owner's publication and this
 family's tools commit and pin commit, still wait on the model; the note above of 2026-11-27, later, on the fourth is
 left as written. No other item changes.
+
+*(Noted 2026-11-28, later, at the publication of the stream version carrying the model, observed, and at the rule's
+revision of that day; the list and the notes above are left as written.)* The list's fourth item reads "the owner's
+publication of a stream version carrying the model (JSD-0083's decision D30)", and the note above reads "The fourth and
+fifth items, the owner's publication and this family's tools commit and pin commit, still wait on the model". **The
+publication is done**: Broiler.JS's run 46133866748 of its workflow "Publish shared libraries" published
+`Broiler.ECMAScript.*` `0.1.0-preview.13` from Broiler.JS `cc69a455` on 2026-11-28, tagged
+`ecmascript-v0.1.0-preview.13`, and nuget.org lists the version. It was taken on the owner's answer of 2026-11-27, the
+owner's own and not one taken under the direction, given in chat, unasked: "All publish-decisions can be done and run.
+So if a publish yes/no is the question, do the publish, wait for the nuget-package-availability and continue". So the
+fourth item is done, and the fifth, this family's tools commit and pin commit, no longer waits on it. Of the third
+item, SJL-15.2's model, the note above's "The rest of the SJL-15.2 item is still to come" is left as written; it is
+read again when this repository's records observe Broiler.JS's merges after Broiler-Platform/Broiler.JS#1152. This
+family admits no version until its pin commit does (JSD-0088's decision D-pin), and the tools commit merges before
+the pin commit, by the session's decision recorded in the programme ledger's entry of 2026-11-28, later. Before the
+tools commit exists, the rule is revised a fourth time, before any run, by
+[`decision-rule-area-revised-2026-11-28.md`](decision-rule-area-revised-2026-11-28.md): the tools commit's second
+condition, as the revision of 2026-11-16 reads it, also names the profile's API baseline,
+`src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt`, "for the lines of that member alone (rule N10)", the member
+being the one JSD-0088's decision D-tables names; nothing else in the rule changes, and the rule commit is from then on
+the commit that carries all five files. It is the session's decision, taken as recommended under the owner's direction
+of 2026-10-18 and recorded by a dated note on decision D-tables, which the owner may overturn, and it is flagged for the
+owner. Broiler.JS's merges after Broiler-Platform/Broiler.JS#1152 and their records are not observed here; this note
+names of them only the publication's commit and tag. No other item changes.
