@@ -406,6 +406,45 @@ publishes, which Broiler.JS's decision D-js-packable has the owner asked about "
 listing", admitted by its pin commit before SJL-15.3's base; the note above of 2026-11-27, later, on the owner's answer
 of 2026-11-27 to that question is left as written. Broiler.VM's records observe each model commit after it merges, which
 is this repository's convention and no condition of a model merge. Nothing is revised.
+*(Noted 2026-11-28, at Broiler.JS's SJL-15.2 stage 8 and its part B, observed; the notes above are left as written.)*
+The note above reads "Broiler.JS's records name stage 8 next". Stage 8, "the library's last model commit", merged as
+Broiler-Platform/Broiler.JS#1151, `159fd811f74d0f43e7ed7327081267a96f8f1196`, whose first parent is `b92ef028`, the
+merge of Broiler-Platform/Broiler.JS#1150, no model commit; Broiler.JS's bundle `sjl-15-001`'s README names it the tenth
+model commit and reads "Whether `159fd811` is the library commit is read only once the base commit exists (decision
+D-js-library-readings)." Broiler.JS's plan reads that it "adds no public member and no row, and answers no new vector",
+and its `Broiler.ECMAScript/CHANGELOG.md` that "The Frontend tests hold the internal rows table equal to the stage
+table's `semantics` rows but EA0006, and the canonical dump to every member of the model" and "No observable change: no
+published version carries the member, and with it off nothing moves". Of this file's list of the model's facts, after
+"The facts are:", Broiler.JS's decision D-js-part-f-tools reads "**Its listing of the milestone's facts and its listing
+of engine types decide part F, with the rule's part F control**", its checklist reading this file and JSD-0080 at this
+repository's `c1b33a71`, which Broiler.JS's bundle `sjl-15-001`'s README names as "the Broiler.VM commit whose JSD-0080
+and milestone file the checklist reads, `c1b33a71db0e91494e8e588a6ad48c2f11dd4c22` (Broiler-Platform/Broiler.VM#232)",
+pinned by SHA-256; Broiler-Platform/Broiler.JS#1151's description reads that this repository's default branch "has since
+moved to `510c7c94` (Broiler-Platform/Broiler.VM#233), which adds a note at the end of the milestone file only; JSD-0080
+is unchanged, and the milestone's facts lines read word for word as at `c1b33a71`", and "Later stages read the inputs at
+`c1b33a71`." This note, like the one above, changes no line of that list. Design section 10.12 of Broiler.JS's
+`Broiler.ECMAScript/docs/frontend/design.md`, "Stage 8: the rows table, the dump mode and part F's map", maps each of
+the list's facts onto the model's members and "decides nothing". Part B at stage 8's merge is read in
+Broiler-Platform/Broiler.JS#1152, `2e4a3c9ece1d7dda129cad95a25f40524355e250`, as Broiler.JS's reading of its own bundle:
+"part B read MET on the retained runs at the model commits taken so far (`be6c4a5c3e389c7eb2aff71c34e31bdae5efe276`,
+`6c61879bce81b1a7badf987e16c7b0531030258d`, `d87044c9db5fe2a26841782308bd53e2f9294656`,
+`56272150fe23725a0e70978fb18e3c25f2548548`, `4d8aa93ad5023017b66534feb248c4c16f59bf6e`,
+`84d84cc3f68e3120299eb9faa44c6b9f0f2e7b8b`, `30af0dad83f73d2a5cf5495b2d4e3716cc7ed0df`,
+`2c48beb1e332dd7c9fa1577705ed5458b5686c1f`, `950bea8f315aa5f10d4b251a7d39ed7658912512`,
+`159fd811f74d0f43e7ed7327081267a96f8f1196`), limited to them; the part's verdict waits for the last model commit before
+the base", both workflows' push runs at `159fd811` read "each as it concluded in its first attempt", and "Even now the
+verdict waits for the base: the library commit is fixed only at SJL-15.5's merge." Broiler.JS's stage 8 records also
+name, from its check 3b, a rehearsal that decides nothing, E6 eval requests the model refuses by row EA0005, which
+"differ from bundle `sjl-13-001`'s classification, which gives them `accepted`, with reason `eval-vm`; nothing in bundle
+`sjl-13-001` is revised here", that bundle being Broiler.JS's; the owner's answer of 2026-11-27 on that check, the
+owner's own, chose "Acknowledge, merge (Recommended)". That difference is quoted in bundle `sjl-15-001`'s
+correspondence, its note of 2026-11-28 on row EE1, and recorded there for the owner as an observation; nothing is
+classified for it. Broiler.JS's records name next "parts F and G and bundle `sjl-13-001`'s part E at the tenth model
+commit (decision D-js-library-runs), read at stage 8's commit, the library commit if no model commit lands before the
+base commit; then stage 9's listing". This family still reads the model only from a stream version the owner publishes,
+admitted by its pin commit before SJL-15.3's base; the note above of 2026-11-27, later, on the owner's answer of
+2026-11-27 to that question is left as written. Broiler.VM's records observe each model commit after it merges, which is
+this repository's convention and no condition of a model merge. Nothing is revised.
 
 ### SJL-15.3 — Broiler.VM's lowering consumes it
 
