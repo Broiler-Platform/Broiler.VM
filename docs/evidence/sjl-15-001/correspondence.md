@@ -756,16 +756,16 @@ written after the rehearsal was seen", and "Nothing is declared met or accepted 
 
 Broiler.JS's records read "None of it is accepted: no second holder exists to review it." The E6 difference is recorded
 here for the owner as an observation and not classified: Broiler.JS's classification gives the seven E6 lines
-`accepted`, with reason `eval-vm`, which the owner's question reads as "Broiler.VM's E6 result", and the model refuses
-them by EA0005, a row this bundle's row EE1 has SJL-15.2 report from the model; this repository's row B24 reads EA0005
-live in its E6 baseline and its row R25 one E6 input refused at 0:0 and "the others accepted", and neither names any of
-the seven. None of the seven is probed here, and whether this family accepts each of them today is not read here. Row
-EE1's last cell asks that SJL-15.3, when it deletes the binder's checks, keep each code and place or list it by row; the
-seven are noted here for SJL-15.3 to read before window 1's base. The checklist's pin is noted for the same reason: it
-reads this repository's milestone file and JSD-0080 at `c1b33a71`, and a later change to either is not read by it.
-Nothing is classified for them here: no cell and no row's class changes, no decision is revised and no rule is revised,
-nothing in either repository's bundle `sjl-13-001` is revised from here, and this family's code reads none of the model
-before SJL-15.3.
+`accepted`, with reason `eval-vm`, which the question put to the owner on 2026-11-27, quoted above as Broiler.JS's
+records give it, words as "Broiler.VM's E6 result", and the model refuses them by EA0005, a row this bundle's row EE1
+has SJL-15.2 report from the model; this repository's row B24 reads EA0005 live in its E6 baseline and its row R25 one
+E6 input refused at 0:0 and "the others accepted", and neither names any of the seven. None of the seven is probed here,
+and whether this family accepts each of them today is not read here. Row EE1's last cell asks that SJL-15.3, when it
+deletes the binder's checks, keep each code and place or list it by row; the seven are noted here for SJL-15.3 to read
+before window 1's base. The checklist's pin is noted for the same reason: it reads this repository's milestone file and
+JSD-0080 at `c1b33a71`, and a later change to either is not read by it. Nothing is classified for them here: no cell and
+no row's class changes, no decision is revised and no rule is revised, nothing in either repository's bundle
+`sjl-13-001` is revised from here, and this family's code reads none of the model before SJL-15.3.
 
 ---
 

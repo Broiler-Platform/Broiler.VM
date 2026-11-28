@@ -9316,12 +9316,12 @@ tenth model commit and for any later one, and this entry's date moves nothing in
   SJL-15.3 deletes the binder's checks, each code and place kept or listed by row"; bundle `sjl-13-001`'s
   correspondence, this repository's, keeps row B24 for EA0005, its reach "live (VB B3 E6 2206:0:0)". Broiler.JS's
   records read that its check 3b's E6 eval requests, refused by EA0005, "differ from bundle `sjl-13-001`'s
-  classification, which gives them `accepted`, with reason `eval-vm`", that bundle being Broiler.JS's, and the owner's
-  question reads that classification as "Broiler.VM's E6 result". Bundle `sjl-15-001`'s correspondence quotes the lines
-  and the owner's answer by a dated note on row EE1 and records the difference for the owner as an observation. None of
-  the lines is probed here, and nothing is classified for them; no rule is revised, and nothing in either repository's
-  bundle `sjl-13-001` is revised from here. It is recorded for the owner on the Next list's item on SJL-15.3's and
-  SJL-15.4's windows.
+  classification, which gives them `accepted`, with reason `eval-vm`", that bundle being Broiler.JS's, and the question
+  put to the owner on 2026-11-27, as Broiler.JS's records quote it, words that classification as "Broiler.VM's E6
+  result". Bundle `sjl-15-001`'s correspondence quotes the lines and the owner's answer by a dated note on row EE1 and
+  records the difference for the owner as an observation. None of the lines is probed here, and nothing is classified
+  for them; no rule is revised, and nothing in either repository's bundle `sjl-13-001` is revised from here. It is
+  recorded for the owner on the Next list's item on SJL-15.3's and SJL-15.4's windows.
 - *Stage 8's readings, flagged in Broiler.JS*: the readings Broiler.JS's decisions of 2026-11-27 record for its own
   bundle's parts F and G, EP0017's and EP0018's "the most contestable", are Broiler.JS's and flagged for the owner
   there; this repository rules on none of them and records them only as observed.
@@ -9548,13 +9548,14 @@ item done as above, one item read anew and three items gaining a dated note):
   SJL-15.5 waits on Broiler.JS's SJL-14 cut-over *(2026-11-28: Broiler.JS's records name, from its stage 8's check 3b, a
   rehearsal that decides nothing, E6 eval requests the model refuses by row EA0005, which "differ from bundle
   `sjl-13-001`'s classification, which gives them `accepted`, with reason `eval-vm`; nothing in bundle `sjl-13-001` is
-  revised here", that bundle being Broiler.JS's, whose classification the owner's question of 2026-11-27 reads as
-  "Broiler.VM's E6 result"; bundle `sjl-15-001`'s correspondence quotes them by a dated note on row EE1, whose last cell
-  reads "SJL-15.2 reports them from the model; SJL-15.3 deletes the binder's checks, each code and place kept or listed
-  by row", and records the difference for the owner as an observation, the E6 lines not probed here; its part F
-  checklist reads this repository's JSD-0080 and SJL-15 milestone file at `c1b33a71`, pinned by SHA-256, and
-  Broiler-Platform/Broiler.JS#1151's description reads "Later stages read the inputs at `c1b33a71`."; nothing is
-  classified for them, and no rule is revised; the item is left as written)* *(2026-11-27, later yet: Broiler.JS's
+  revised here", that bundle being Broiler.JS's, whose classification the question put to the owner on 2026-11-27, as
+  Broiler.JS's records quote it, words as "Broiler.VM's E6 result"; bundle `sjl-15-001`'s correspondence quotes them by
+  a dated note on row EE1, whose last cell reads "SJL-15.2 reports them from the model; SJL-15.3 deletes the binder's
+  checks, each code and place kept or listed by row", and records the difference for the owner as an observation, the E6
+  lines not probed here; its part F checklist reads this repository's JSD-0080 and SJL-15 milestone file at `c1b33a71`,
+  pinned by SHA-256, and Broiler-Platform/Broiler.JS#1151's description reads "Later stages read the inputs at
+  `c1b33a71`."; nothing is classified for them, and no rule is revised; the item is left as written)*
+  *(2026-11-27, later yet: Broiler.JS's
   records name, for SJL-15.3, the places where the library differs from this family for rows NE1 and FC1, among them
   that "Broiler.VM names in its lowering's `CompileNamedValue` and gives an anonymous default declaration "default" in
   its binder (its correspondence row NE1), naming that leaves the binder at its window (an inference)", that "its rule
