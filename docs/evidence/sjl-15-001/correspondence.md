@@ -725,7 +725,7 @@ branch that files this note adds a note to the milestone file's SJL-15.2 and cha
 JSD-0080, so the milestone file differs again from the digest pinned at `c1b33a71`, and its facts lines still read as
 they did there.
 
-Its check 3b, "a rehearsal that decides nothing", parsed the whole parse corpus "by the probe's corpus digest mode at
+Its check 3b, "a rehearsal that decides nothing", parsed the whole parse corpus by the probe's corpus digest mode "at
 the stage's head then, `20e53654`, which requests the model, and at its parent `b92ef028`", and "Lines moved from
 accepted to refused outside that bound, so the bound, predeclared before the rehearsal ran, was too narrow"
 (Broiler.JS's bundle `sjl-15-001`'s README, its note of 2026-11-27 after check 3b was seen). Among them, that note
