@@ -9308,9 +9308,13 @@ tenth model commit and for any later one, and this entry's date moves nothing in
   by its pin commit (JSD-0088's decision D-pin) before window 1's base.
 - *Part F's checklist and this repository's records*: Broiler.JS's part F checklist reads SJL-15's milestone file, its
   list after "The facts are:", and JSD-0080 at this repository's `c1b33a71`, pinned by SHA-256, and Broiler.JS's records
-  say its later stages read them there. JSD-0080 is unchanged since; the milestone file gained a note at `510c7c94` and
-  gains another on this branch, and neither changes its list of facts. Bundle `sjl-15-001`'s correspondence and the
-  milestone file quote this by dated notes; nothing here asks the pin to move, and it is Broiler.JS's.
+  say its later stages read them there. Broiler.JS's bundle `sjl-15-001`'s README reads that "JSD-0080's rows, the
+  engine rows with a producer and bundle `sjl-13-001`'s part H's controls are printed and kept and decide nothing of
+  part F", and that a reporting site in code for EP0017 and EP0018 "is not taken: it needs new public API and changes
+  JSD-0080's input rows, which are Broiler.VM's". JSD-0080 is unchanged since; the milestone file gained a note at
+  `510c7c94` and gains another on this branch, and neither changes its list of facts. Bundle `sjl-15-001`'s
+  correspondence and the milestone file quote this by dated notes; nothing here asks the pin to move, and it is
+  Broiler.JS's.
 - *Row EE1 and the E6 lines, for the owner*: row EE1's column "Broiler.VM, wide path (`a86b6f5d`)" names "B22, B24
   (`arguments` in an initialiser, `JBE:185-275`)", and its last cell reads "SJL-15.2 reports them from the model;
   SJL-15.3 deletes the binder's checks, each code and place kept or listed by row"; bundle `sjl-13-001`'s
