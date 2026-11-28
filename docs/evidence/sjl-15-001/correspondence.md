@@ -695,6 +695,78 @@ none is made here. These are noted here for SJL-15.3 to read before window 1's b
 here: no cell and no row's class changes, no decision is revised and no rule is revised, and this family's code reads
 none of the model before SJL-15.3.
 
+*(Noted 2026-11-28, at Broiler.JS's SJL-15.2 stage 8, observed; every cell above is left as written.)* SJL-15's
+milestone file lists, after "The facts are:", "scopes and their kinds", "declarations and conflicts", "Annex B.3.3
+aliases", "per-function flags", "reference resolution with dynamic markers", "labels and jump targets", "private-name
+environments", "module records", "named-evaluation names", "free names and captures" and "every early error". Row EE1's
+column "Broiler.VM, wide path (`a86b6f5d`)" names, among this family's binder checks, "B22, B24 (`arguments` in an
+initialiser, `JBE:185-275`)", its class reads "Specification, but for LB1's and PN1's rows", and its last cell "SJL-15.2
+reports them from the model; SJL-15.3 deletes the binder's checks, each code and place kept or listed by row". Bundle
+`sjl-13-001`'s correspondence, this repository's, keeps row B24 in its list of every binder check, its check
+"`arguments` through eval in a field", its catalogue rows "EA0005 (EE0130)" and its reach "live (VB B3 E6 2206:0:0)";
+its row R25, "the field-initialiser context: `arguments` (EA0005)", reads, in its column "Probe or baseline", "probes
+RE22-RE26; baseline B3 `T028769` (E6 refused 2206:0:0; the others accepted)"; and its row N14 names "`arguments` in eval
+code inside a field initialiser (EA0005)" among the binder's diagnostics at no position.
+
+Stage 8 merged as Broiler-Platform/Broiler.JS#1151, `159fd811f74d0f43e7ed7327081267a96f8f1196`, the tenth model commit,
+"the library's last model commit" in Broiler.JS's stage list; it "adds no public member and no row, and answers no new
+vector" (Broiler.JS's plan, its note of 2026-11-27 at stage 8). Its decision D-js-part-f-tools reads that part F's
+checklist and site listing are committed "with `tools/broiler-vm-inputs.sha256` naming the Broiler.VM commit whose
+JSD-0080 and milestone file the checklist reads", and that "**Its listing of the milestone's facts and its listing of
+engine types decide part F, with the rule's part F control**"; its bundle `sjl-15-001`'s README names "the Broiler.VM
+commit whose JSD-0080 and milestone file the checklist reads, `c1b33a71db0e91494e8e588a6ad48c2f11dd4c22`
+(Broiler-Platform/Broiler.VM#232)", the file giving "The SHA-256 of the Broiler.VM inputs
+docs/evidence/sjl-15-001/tools/model_check.py reads, each as `git show c1b33a71db0e91494e8e588a6ad48c2f11dd4c22:<path>`
+gives it". Broiler-Platform/Broiler.JS#1151's description reads "The checklist reads JSD-0080 and the milestone file at
+Broiler.VM `c1b33a71`, as `tools/broiler-vm-inputs.sha256` pins them. Broiler.VM's `main` has since moved to `510c7c94`
+(Broiler-Platform/Broiler.VM#233), which adds a note at the end of the milestone file only; JSD-0080 is unchanged, and
+the milestone's facts lines read word for word as at `c1b33a71`." and "Later stages read the inputs at `c1b33a71`." The
+branch that files this note adds a note to the milestone file's SJL-15.2 and changes neither its list of facts nor
+JSD-0080, so the milestone file differs again from the digest pinned at `c1b33a71`, and its facts lines still read as
+they did there.
+
+Its check 3b, "a rehearsal that decides nothing", parsed the parse corpus with the model requested at the stage's head
+`20e53654` and at `b92ef028`, and "Lines moved from accepted to refused outside that bound, so the bound, predeclared
+before the rehearsal ran, was too narrow" (Broiler.JS's bundle `sjl-15-001`'s README, its note of 2026-11-27 after check
+3b was seen). Among them, that note reads: "**E6**, the eval request whose caller is a class field initialiser: T028759,
+T028761, T028764, T028766, T028768, T029504 and T029513 (variant E6 each), each refused by EA0005 (`JSE1905`,
+`class.initializer.arguments`, for `arguments` in eval code whose caller is a field initialiser, PerformEval step 11.h).
+Bundle `sjl-13-001`'s classification gives each of these lines `accepted` (column `expect`), with reason `eval-vm` and
+basis `B3:E6`, so the model's refusal differs from that classification. Nothing in bundle `sjl-13-001` is revised here."
+That bundle and its classification are Broiler.JS's. The owner's answer of 2026-11-27, given in chat, the owner's own,
+which that note quotes whole: Asked (2026-11-27, in chat): "Stage 8 (Broiler.JS's last semantic-model change) is built
+and pushed, and every other check passed. One rehearsal check failed, and its own rule makes that your call. That check,
+3b, parses the whole corpus with the model switched on, at stage 8 and at its parent. Before it ran, I wrote down which
+inputs could move from accepted to refused: 2,488 moved, and 20 of them were outside that list. Each of the 20 was
+traced to a named early-error row. 13 are test262 negative tests that test262 expects to fail with SyntaxError. The
+library now refuses them, as test262 expects. The other 7 are an eval case (E6) whose code runs from a class field
+initializer and uses `arguments`. Row EA0005 refuses these, as the spec's PerformEval step 11.h requires, but the
+existing classification in bundle sjl-13-001 expected them to be accepted, as Broiler.VM's E6 result. The rehearsal
+decides nothing on its own, but rewriting the list after seeing the results is a reading you reserve. How should I
+proceed?" Chosen: "Acknowledge, merge (Recommended)" — "Record a dated note that the predeclared list was too narrow and
+name all 20 lines with the row behind each, marked as weaker evidence because it is written after the rehearsal. Note
+that the 7 E6 lines differ from sjl-13-001's classification. Then open stage 8's PR and merge it, and take part B and
+parts F and G after the merge as planned. No code changes." Not taken: "Hold, examine E6 first" — "Keep stage 8
+unmerged. First check each of the 7 E6 lines against the spec and Broiler.VM, and report back on whether EA0005's
+refusal or sjl-13-001's classification is right. Then ask you again. Everything after it waits, about a few hours.";
+"Hold, revise classification" — "Keep stage 8 unmerged and prepare a dated revision of bundle sjl-13-001's
+classification for the 7 E6 lines for you to approve. Then re-take check 3b against it and merge." Broiler.JS's records
+read that reading as "weaker evidence, because it is written after the rehearsal was seen", and "Nothing is declared met
+or accepted by it".
+
+Broiler.JS's records read "None of it is accepted: no second holder exists to review it." The E6 difference is recorded
+here for the owner as an observation and not classified: Broiler.JS's classification gives the seven E6 lines
+`accepted`, with reason `eval-vm`, which the owner's question reads as "Broiler.VM's E6 result", and the model refuses
+them by EA0005, a row this bundle's row EE1 has SJL-15.2 report from the model; this repository's row B24 reads EA0005
+live in its E6 baseline and its row R25 one E6 input refused at 0:0 and "the others accepted", and neither names any of
+the seven. None of the seven is probed here, and whether this family accepts each of them today is not read here. Row
+EE1's last cell asks that SJL-15.3, when it deletes the binder's checks, keep each code and place or list it by row; the
+seven are noted here for SJL-15.3 to read before window 1's base. The checklist's pin is noted for the same reason: it
+reads this repository's milestone file and JSD-0080 at `c1b33a71`, and a later change to either is not read by it.
+Nothing is classified for them here: no cell and no row's class changes, no decision is revised and no rule is revised,
+nothing in either repository's bundle `sjl-13-001` is revised from here, and this family's code reads none of the model
+before SJL-15.3.
+
 ---
 
 ## What the rows find against the plan and the records

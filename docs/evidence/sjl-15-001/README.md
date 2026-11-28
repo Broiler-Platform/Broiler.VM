@@ -450,3 +450,59 @@ decision D-js-stages, with part B at its merge. The convention of the note of 20
 bundle's list and this repository's ledger observe each model commit after it merges, and that is no precondition of a
 model merge. The fourth and fifth items, the owner's publication and this family's tools commit and pin commit, still
 wait on the model; the note above of 2026-11-27, later, on the fourth is left as written. No other item changes.
+
+*(Noted 2026-11-28, at Broiler.JS's SJL-15.2 stage 8 and its part B, observed; the list and the notes above are left as
+written.)* The note of 2026-11-27, later yet, above reads "The rest of the model is still to come, from "**Next:**
+SJL-15.2 stage 8, the tenth model commit", "**stage 8**, the library's last model commit", by Broiler.JS's decision
+D-js-stages, with part B at its merge". SJL-15.2's stage 8 merged as Broiler-Platform/Broiler.JS#1151, and Broiler.JS's
+bundle `sjl-15-001`'s README, having read before the merge that "This branch's merge will be the tenth model commit:
+SJL-15.2 stage 8, the library's last model commit, named here once it exists", names it after: "**The tenth model commit
+is `159fd811f74d0f43e7ed7327081267a96f8f1196`**, the merge of Broiler-Platform/Broiler.JS#1151 (head `c8518398`), whose
+first parent is `b92ef028327b7420d4f489cb805ef5270623e760` (Broiler-Platform/Broiler.JS#1150, stage 7's part B
+records)", that "Its first parent is no model commit: nothing from `950bea8f` to `b92ef028` changes a path under
+`Broiler.ECMAScript/Broiler.ECMAScript.Frontend*`", and "Whether `159fd811` is the library commit is read only once the
+base commit exists (decision D-js-library-readings)." Part B of that bundle's rule was taken at it and at its first
+parent, and read in Broiler-Platform/Broiler.JS#1152, `2e4a3c9ece1d7dda129cad95a25f40524355e250`, records only, taken as
+recommended under the owner's direction: "**part B read MET on the retained runs at the model commits taken so far
+(`be6c4a5c3e389c7eb2aff71c34e31bdae5efe276`, `6c61879bce81b1a7badf987e16c7b0531030258d`,
+`d87044c9db5fe2a26841782308bd53e2f9294656`, `56272150fe23725a0e70978fb18e3c25f2548548`,
+`4d8aa93ad5023017b66534feb248c4c16f59bf6e`, `84d84cc3f68e3120299eb9faa44c6b9f0f2e7b8b`,
+`30af0dad83f73d2a5cf5495b2d4e3716cc7ed0df`, `2c48beb1e332dd7c9fa1577705ed5458b5686c1f`,
+`950bea8f315aa5f10d4b251a7d39ed7658912512`, `159fd811f74d0f43e7ed7327081267a96f8f1196`), limited to them; the part's
+verdict waits for the last model commit before the base.**" "At `159fd811` the rule's "the commit's CI run of every test
+project passed" is read on both workflows' push runs as they concluded, each in its first attempt, so the question of
+which attempt decides, flagged for the owner at the first model commit, does not arise here. Even now the verdict waits
+for the base: whether `159fd811` is the last model commit before the base is known only once the base commit exists, and
+the library commit is fixed only at SJL-15.5's merge. The readings at `be6c4a5c`, at `6c61879b`, at `d87044c9`, at
+`56272150`, at `4d8aa93a`, at `84d84cc3`, at `30af0dad`, at `2c48beb1` and at `950bea8f`, and the first one's flag, in
+the notes above of 2026-11-24, 2026-11-25, 2026-11-26 and 2026-11-27, stay as written. A NOT MET at any later model
+commit makes part B NOT MET." That is Broiler.JS's reading of its own bundle, not a run of this bundle's rule, and
+judges nothing here.
+
+Stage 8 adds no public member and no row; Broiler.JS's note of 2026-11-27 at it reads that it "answers no new vector",
+and its decision D-js-adapter-final reads "**The value vectors that earlier stages left to part F stay not
+implemented**". Its readings for its own bundle's parts F and G, decisions D-js-digest-model, D-js-vector-listing,
+D-js-part-f-tools, D-js-library-readings, D-js-adapter-final and D-js-last-model-commit, are each, in its words, "a
+reading or a decision of the session's, flagged for the owner, who may rule otherwise", "above all the reading of EP0017
+and EP0018 as "named, with its reason, as no row the model can report"". Two of them name this repository's records.
+Part F's checklist reads this repository's JSD-0080 and SJL-15's milestone file at a pinned commit: "the Broiler.VM
+commit whose JSD-0080 and milestone file the checklist reads, `c1b33a71db0e91494e8e588a6ad48c2f11dd4c22`
+(Broiler-Platform/Broiler.VM#232), is named with their digests", and Broiler-Platform/Broiler.JS#1151's description
+reads "Broiler.VM's `main` has since moved to `510c7c94` (Broiler-Platform/Broiler.VM#233), which adds a note at the end
+of the milestone file only; JSD-0080 is unchanged, and the milestone's facts lines read word for word as at `c1b33a71`"
+and "Later stages read the inputs at `c1b33a71`." And its check 3b, a rehearsal that decides nothing, found lines moving
+from accepted to refused outside the bound written before it ran, among them E6 eval requests refused by row EA0005,
+which "differ from bundle `sjl-13-001`'s classification, which gives them `accepted`, with reason `eval-vm`; nothing in
+bundle `sjl-13-001` is revised here", the bundle and its classification being Broiler.JS's; the owner's answer of
+2026-11-27 on that bound, the owner's own, chose "Acknowledge, merge (Recommended)". Both are quoted in this bundle's
+correspondence, its note of 2026-11-28 after its table, on the milestone's facts and on row EE1, and the E6 difference
+is recorded there for the owner as an observation; nothing is classified for it here, and no cell, row's class or rule
+changes.
+
+The rest of the SJL-15.2 item is still to come, from Broiler.JS's records' "**Next:** parts F and G and bundle
+`sjl-13-001`'s part E at the tenth model commit (decision D-js-library-runs), read at stage 8's commit, the library
+commit if no model commit lands before the base commit; then stage 9's listing". The convention of the note of
+2026-11-25 holds for this merge too: this bundle's list and this repository's ledger observe each model commit after it
+merges, and that is no precondition of a model merge. The fourth and fifth items, the owner's publication and this
+family's tools commit and pin commit, still wait on the model; the note above of 2026-11-27, later, on the fourth is
+left as written. No other item changes.
