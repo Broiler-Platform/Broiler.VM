@@ -30,7 +30,8 @@ read it.
 **Whose choice it is.** This revision is taken on 2026-11-28 as recommended under the owner's direction of 2026-10-18
 ("Please do all recommended decisions and skip waiting for review"), as JSD-0088's decision D-tables, whose member it
 serves, was "taken as recommended under the owner's direction of 2026-10-18, and recorded as the owner's decision of
-2026-11-16", and as decision D-ab1 of 2026-11-23 was taken; it is recorded in
+2026-11-16", as JSD-0088's section "The owner's decisions of 2026-11-16" reads of each of its decisions, and as decision
+D-ab1 of 2026-11-23 was taken; it is recorded in
 [JSD-0088](../../../src/Broiler.VM.Profile.JavaScript/docs/decisions/0088-static-semantics-move-to-the-shared-frontend.md)
 by a dated note on decision D-tables, and not as the owner's own dated answer. JSD-0088 names three kinds of entry not
 taken under that direction: "the start, which is a reading of the owner's words; decision D-census, which would revise
@@ -51,11 +52,13 @@ was the owner's own choice, and this one is the session's. **It is flagged for t
    read-only member to `SliceCompilation`" (JSD-0088, section "The owner's decisions of 2026-11-16"). Rule N10 holds
    that "The Broiler.VM.Profile.JavaScript family's three assemblies export exactly what
    src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt declares, compared in BOTH directions so an addition and a
-   removal are each a failure and a signature change is both." That file lists `SliceCompilation`'s members at its
-   lines 858 to 870, the constructor to `op_Inequality`, and the type at its line 2669; a public member added to the
-   record is an addition there, which N10 fails until the baseline gains its line. The file's own header reads
-   "GENERATED - regenerate with:", "BROILER_API_WRITE=1 dotnet test Broiler.VM.slnx -c Release", and "Rule N10 asserts
-   it otherwise. Decision JSD-0012 owns it."
+   removal are each a failure and a signature change is both." (the statement of rule N10's entry in
+   `src/tests/Broiler.VM.Architecture.Tests/rules.register.json`, at its lines 856 to 859). The baseline lists
+   `SliceCompilation`'s members at its lines 858 to 870, the constructor to `op_Inequality`, and the type at its line
+   2669; a public member added to the record is an addition there, which N10 fails until the baseline gains its line.
+   The baseline's own header reads "GENERATED - regenerate with:",
+   "BROILER_API_WRITE=1 dotnet test Broiler.VM.slnx -c Release", and "Rule N10 asserts it otherwise. Decision JSD-0012
+   owns it."
 2. **That file is outside the tools commit's path list.** The second condition, as the revision of 2026-11-16 revised
    it (its words are quoted under "What changed" below), names paths under the slice compiler composition's folder and
    `docs/`, `eng/compare-parse-corpus.py`, `SliceSourceCompiler.cs` for the member and the lines that fill it alone,
