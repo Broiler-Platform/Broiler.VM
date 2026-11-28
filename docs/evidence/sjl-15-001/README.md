@@ -484,20 +484,20 @@ and its decision D-js-adapter-final reads "**The value vectors that earlier stag
 implemented**". Its readings for its own bundle's parts F and G, decisions D-js-digest-model, D-js-vector-listing,
 D-js-part-f-tools, D-js-library-readings, D-js-adapter-final and D-js-last-model-commit, are each, in its words, "a
 reading or a decision of the session's, flagged for the owner, who may rule otherwise", "above all the reading of EP0017
-and EP0018 as "named, with its reason, as no row the model can report"". Two of them name this repository's records.
-Part F's checklist reads this repository's JSD-0080 and SJL-15's milestone file at a pinned commit: "the Broiler.VM
-commit whose JSD-0080 and milestone file the checklist reads, `c1b33a71db0e91494e8e588a6ad48c2f11dd4c22`
-(Broiler-Platform/Broiler.VM#232), is named with their digests", and Broiler-Platform/Broiler.JS#1151's description
-reads "Broiler.VM's `main` has since moved to `510c7c94` (Broiler-Platform/Broiler.VM#233), which adds a note at the end
-of the milestone file only; JSD-0080 is unchanged, and the milestone's facts lines read word for word as at `c1b33a71`"
-and "Later stages read the inputs at `c1b33a71`." And its check 3b, a rehearsal that decides nothing, found lines moving
-from accepted to refused outside the bound written before it ran, among them E6 eval requests refused by row EA0005,
-which "differ from bundle `sjl-13-001`'s classification, which gives them `accepted`, with reason `eval-vm`; nothing in
-bundle `sjl-13-001` is revised here", the bundle and its classification being Broiler.JS's; the owner's answer of
-2026-11-27 on that bound, the owner's own, chose "Acknowledge, merge (Recommended)". Both are quoted in this bundle's
-correspondence, its note of 2026-11-28 after its table, on the milestone's facts and on row EE1, and the E6 difference
-is recorded there for the owner as an observation; nothing is classified for it here, and no cell, row's class or rule
-changes.
+and EP0018 as "named, with its reason, as no row the model can report"". Two things in stage 8's records bear on this
+repository's. Part F's checklist, by decision D-js-part-f-tools, reads this repository's JSD-0080 and SJL-15's milestone
+file at a pinned commit: "the Broiler.VM commit whose JSD-0080 and milestone file the checklist reads,
+`c1b33a71db0e91494e8e588a6ad48c2f11dd4c22` (Broiler-Platform/Broiler.VM#232), is named with their digests", and
+Broiler-Platform/Broiler.JS#1151's description reads "Broiler.VM's `main` has since moved to `510c7c94`
+(Broiler-Platform/Broiler.VM#233), which adds a note at the end of the milestone file only; JSD-0080 is unchanged, and
+the milestone's facts lines read word for word as at `c1b33a71`" and "Later stages read the inputs at `c1b33a71`." And
+its check 3b, a rehearsal that decides nothing, found lines moving from accepted to refused outside the bound written
+before it ran, among them E6 eval requests refused by row EA0005, which "differ from bundle `sjl-13-001`'s
+classification, which gives them `accepted`, with reason `eval-vm`; nothing in bundle `sjl-13-001` is revised here", the
+bundle and its classification being Broiler.JS's; the owner's answer of 2026-11-27 on that bound, the owner's own, chose
+"Acknowledge, merge (Recommended)". Both are quoted in this bundle's correspondence, its note of 2026-11-28 after its
+table, on the milestone's facts and on row EE1, and the E6 difference is recorded there for the owner as an observation;
+nothing is classified for it here, and no cell, row's class or rule changes.
 
 The rest of the SJL-15.2 item is still to come, from Broiler.JS's records' "**Next:** parts F and G and bundle
 `sjl-13-001`'s part E at the tenth model commit (decision D-js-library-runs), read at stage 8's commit, the library
