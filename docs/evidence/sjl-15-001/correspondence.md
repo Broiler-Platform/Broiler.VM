@@ -725,34 +725,34 @@ branch that files this note adds a note to the milestone file's SJL-15.2 and cha
 JSD-0080, so the milestone file differs again from the digest pinned at `c1b33a71`, and its facts lines still read as
 they did there.
 
-Its check 3b, "a rehearsal that decides nothing", parsed the parse corpus with the model requested at the stage's head
-`20e53654` and at `b92ef028`, and "Lines moved from accepted to refused outside that bound, so the bound, predeclared
-before the rehearsal ran, was too narrow" (Broiler.JS's bundle `sjl-15-001`'s README, its note of 2026-11-27 after check
-3b was seen). Among them, that note reads: "**E6**, the eval request whose caller is a class field initialiser: T028759,
-T028761, T028764, T028766, T028768, T029504 and T029513 (variant E6 each), each refused by EA0005 (`JSE1905`,
-`class.initializer.arguments`, for `arguments` in eval code whose caller is a field initialiser, PerformEval step 11.h).
-Bundle `sjl-13-001`'s classification gives each of these lines `accepted` (column `expect`), with reason `eval-vm` and
-basis `B3:E6`, so the model's refusal differs from that classification. Nothing in bundle `sjl-13-001` is revised here."
-That bundle and its classification are Broiler.JS's. The owner's answer of 2026-11-27, given in chat, the owner's own,
-which that note quotes whole: Asked (2026-11-27, in chat): "Stage 8 (Broiler.JS's last semantic-model change) is built
-and pushed, and every other check passed. One rehearsal check failed, and its own rule makes that your call. That check,
-3b, parses the whole corpus with the model switched on, at stage 8 and at its parent. Before it ran, I wrote down which
-inputs could move from accepted to refused: 2,488 moved, and 20 of them were outside that list. Each of the 20 was
-traced to a named early-error row. 13 are test262 negative tests that test262 expects to fail with SyntaxError. The
-library now refuses them, as test262 expects. The other 7 are an eval case (E6) whose code runs from a class field
-initializer and uses `arguments`. Row EA0005 refuses these, as the spec's PerformEval step 11.h requires, but the
-existing classification in bundle sjl-13-001 expected them to be accepted, as Broiler.VM's E6 result. The rehearsal
-decides nothing on its own, but rewriting the list after seeing the results is a reading you reserve. How should I
-proceed?" Chosen: "Acknowledge, merge (Recommended)" — "Record a dated note that the predeclared list was too narrow and
-name all 20 lines with the row behind each, marked as weaker evidence because it is written after the rehearsal. Note
-that the 7 E6 lines differ from sjl-13-001's classification. Then open stage 8's PR and merge it, and take part B and
-parts F and G after the merge as planned. No code changes." Not taken: "Hold, examine E6 first" — "Keep stage 8
-unmerged. First check each of the 7 E6 lines against the spec and Broiler.VM, and report back on whether EA0005's
-refusal or sjl-13-001's classification is right. Then ask you again. Everything after it waits, about a few hours.";
-"Hold, revise classification" — "Keep stage 8 unmerged and prepare a dated revision of bundle sjl-13-001's
-classification for the 7 E6 lines for you to approve. Then re-take check 3b against it and merge." Broiler.JS's records
-read that reading as "weaker evidence, because it is written after the rehearsal was seen", and "Nothing is declared met
-or accepted by it".
+Its check 3b, "a rehearsal that decides nothing", parsed the whole parse corpus "by the probe's corpus digest mode at
+the stage's head then, `20e53654`, which requests the model, and at its parent `b92ef028`", and "Lines moved from
+accepted to refused outside that bound, so the bound, predeclared before the rehearsal ran, was too narrow"
+(Broiler.JS's bundle `sjl-15-001`'s README, its note of 2026-11-27 after check 3b was seen). Among them, that note
+reads: "**E6**, the eval request whose caller is a class field initialiser: T028759, T028761, T028764, T028766, T028768,
+T029504 and T029513 (variant E6 each), each refused by EA0005 (`JSE1905`, `class.initializer.arguments`, for `arguments`
+in eval code whose caller is a field initialiser, PerformEval step 11.h). Bundle `sjl-13-001`'s classification gives
+each of these lines `accepted` (column `expect`), with reason `eval-vm` and basis `B3:E6`, so the model's refusal
+differs from that classification. Nothing in bundle `sjl-13-001` is revised here." That bundle and its classification
+are Broiler.JS's. The owner's answer of 2026-11-27, given in chat, the owner's own, which that note quotes whole: Asked
+(2026-11-27, in chat): "Stage 8 (Broiler.JS's last semantic-model change) is built and pushed, and every other check
+passed. One rehearsal check failed, and its own rule makes that your call. That check, 3b, parses the whole corpus with
+the model switched on, at stage 8 and at its parent. Before it ran, I wrote down which inputs could move from accepted
+to refused: 2,488 moved, and 20 of them were outside that list. Each of the 20 was traced to a named early-error row. 13
+are test262 negative tests that test262 expects to fail with SyntaxError. The library now refuses them, as test262
+expects. The other 7 are an eval case (E6) whose code runs from a class field initializer and uses `arguments`. Row
+EA0005 refuses these, as the spec's PerformEval step 11.h requires, but the existing classification in bundle sjl-13-001
+expected them to be accepted, as Broiler.VM's E6 result. The rehearsal decides nothing on its own, but rewriting the
+list after seeing the results is a reading you reserve. How should I proceed?" Chosen: "Acknowledge, merge
+(Recommended)" — "Record a dated note that the predeclared list was too narrow and name all 20 lines with the row behind
+each, marked as weaker evidence because it is written after the rehearsal. Note that the 7 E6 lines differ from
+sjl-13-001's classification. Then open stage 8's PR and merge it, and take part B and parts F and G after the merge as
+planned. No code changes." Not taken: "Hold, examine E6 first" — "Keep stage 8 unmerged. First check each of the 7 E6
+lines against the spec and Broiler.VM, and report back on whether EA0005's refusal or sjl-13-001's classification is
+right. Then ask you again. Everything after it waits, about a few hours."; "Hold, revise classification" — "Keep stage 8
+unmerged and prepare a dated revision of bundle sjl-13-001's classification for the 7 E6 lines for you to approve. Then
+re-take check 3b against it and merge." Broiler.JS's records read that reading as "weaker evidence, because it is
+written after the rehearsal was seen", and "Nothing is declared met or accepted by it".
 
 Broiler.JS's records read "None of it is accepted: no second holder exists to review it." The E6 difference is recorded
 here for the owner as an observation and not classified: Broiler.JS's classification gives the seven E6 lines
