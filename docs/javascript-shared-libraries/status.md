@@ -9755,9 +9755,11 @@ the version move changes neither. It is the session's decision, taken as recomme
 binding tables or the messages, so that the version move's effect on them would first be seen at window 1's base.
 
 **What this repository files**, each a dated record quoting what it reads:
-- bundle [`sjl-15-001`](../evidence/sjl-15-001/README.md): the rule's revision of 2026-11-28, and a note in its README
-  after "What waits, in order", on its fourth item, the publication, done, and on the revision;
-- JSD-0088: a note on decision D-tables and a note under "Dated notes filed with this record";
+- bundle [`sjl-15-001`](../evidence/sjl-15-001/README.md): the rule's revision of 2026-11-28, a note in its README
+  under "Rule:", on the revision, and a note after "What waits, in order", on its fourth item, the publication, done,
+  and on the revision;
+- JSD-0088: a note on decision D-tables, a line in its status list and a note under "Dated notes filed with this
+  record";
 - this ledger: this entry, a dated note on the Next list's item on the owner's publication and this family's tools
   commit and pin commit, and "Last updated".
 
